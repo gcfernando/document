@@ -4721,4 +4721,14 @@ Good Python OOP means:
 *Happy coding! 🐍 Now go build something.*
 
 </div>
-```
+
+---
+
+<div align="center">
+
+**Complete Object-Oriented Programming with Python**
+*by Gehan Fernando*
+
+*Read it once. Use it forever. Break things on purpose.*
+
+</div>

@@ -1,6 +1,12 @@
+<div align="center">
+
 # 📖 The Complete Bible of Python Dunder Methods
 
-*Every single dunder method Python offers — explained so simply that even someone who has never coded before can master them. Written for students, professionals, and curious minds alike.*
+### *Every single dunder method Python offers — explained so simply that even someone who has never coded before can master them.*
+
+**_By Gehan Fernando_**
+
+</div>
 
 ---
 
@@ -3739,3 +3745,14 @@ That is the entire secret. With this bible in hand, you can build classes that f
 Come back to this guide whenever you need it. Bookmark the sections you use most. And when you find yourself thinking, *"I wish my object could do X"*, there is almost certainly a dunder method that makes it possible.
 
 *Welcome to Python mastery.* 🐍✨
+
+---
+
+<div align="center">
+
+**The Complete Bible of Python Dunder Methods**
+*by Gehan Fernando*
+
+*Read it once. Use it forever. Break things on purpose.*
+
+</div>
