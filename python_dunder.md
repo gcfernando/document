@@ -3751,7 +3751,7 @@ Come back to this guide whenever you need it. Bookmark the sections you use most
 <div align="center">
 
 **The Complete Bible of Python Dunder Methods**
-*by Gehan Fernando*
+*By Gehan Fernando*
 
 *Read it once. Use it forever. Break things on purpose.*
 

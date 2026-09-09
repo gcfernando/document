@@ -4727,7 +4727,7 @@ Good Python OOP means:
 <div align="center">
 
 **Complete Object-Oriented Programming with Python**
-*by Gehan Fernando*
+*By Gehan Fernando*
 
 *Read it once. Use it forever. Break things on purpose.*
 

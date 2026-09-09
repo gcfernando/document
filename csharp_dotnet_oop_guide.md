@@ -4,7 +4,7 @@
 
 ### *From "what is a class?" to "I can design, test, and refactor a real system."*
 
-**by Gehan Fernando**
+**_By Gehan Fernando_**
 
 ![Level](https://img.shields.io/badge/Level-Beginner%20%E2%86%92%20Professional-blue?style=for-the-badge)
 ![Language](https://img.shields.io/badge/C%23-Modern-239120?style=for-the-badge&logo=csharp&logoColor=white)
@@ -14253,7 +14253,7 @@ Now close the guide and go build something. 🚀
 <div align="center">
 
 **Complete Object-Oriented Programming with C# and .NET**
-*by Gehan Fernando*
+*By Gehan Fernando*
 
 *Read it once. Use it forever. Break things on purpose.*
 
