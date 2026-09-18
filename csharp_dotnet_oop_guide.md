@@ -8,8 +8,8 @@
 
 ![Level](https://img.shields.io/badge/Level-Beginner%20%E2%86%92%20Professional-blue?style=for-the-badge)
 ![Language](https://img.shields.io/badge/C%23-Modern-239120?style=for-the-badge&logo=csharp&logoColor=white)
-![Platform](https://img.shields.io/badge/.NET-9%2B-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
-![Chapters](https://img.shields.io/badge/Chapters-49-orange?style=for-the-badge)
+![Platform](https://img.shields.io/badge/.NET-8%2B-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![Chapters](https://img.shields.io/badge/Chapters-50-orange?style=for-the-badge)
 ![Use](https://img.shields.io/badge/Free-to%20learn-success?style=for-the-badge)
 
 </div>
@@ -77,6 +77,101 @@ Every chapter uses the same symbols, so you always know what you are looking at:
 | 🔗 **Connects to** | Where else in the guide this idea shows up |
 
 Difficulty is marked on each chapter: **⭐ Beginner** · **⭐⭐ Intermediate** · **⭐⭐⭐ Advanced**
+
+---
+
+## 🧾 How to read the code blocks
+
+This guide contains **539 C# code blocks**. They are not all the same kind of thing, and knowing
+which is which saves you from chasing compiler errors that were never yours:
+
+| Marker | What it is | What to do with it |
+|---|---|---|
+| *(none)* | **Complete and self-contained.** Everything it needs is in the block. | Paste into `Program.cs` and run |
+| **▶️ Continues** | **Continuation.** Uses a type declared earlier in the same chapter. | Keep the earlier block in the same file |
+| **📄 Fragment** | **A class member, a method body, or one file of a multi-project solution.** | Read it in place; it is not a program |
+| **❌ Does not compile — on purpose** | **Deliberately broken**, to show you the error. | Read the error given beside it |
+
+Where a block is a complete program, its console output is shown under **Output:**.
+
+**One C# detail worth knowing before you start.** A file using **top-level statements** (executable
+code with no `Main` method) must put that code **before** any `class` or `record` declaration:
+
+```csharp
+// ✅ This compiles: statements first, then types.
+Console.WriteLine(new Greeter().Hello());
+
+public class Greeter
+{
+    public string Hello() => "Hi";
+}
+```
+
+**Output:**
+
+```
+Hi
+```
+
+Reverse those two parts and you get `CS8803: Top-level statements must precede namespace and type
+declarations`. Several blocks in this guide show the type first and the usage after, for readability;
+when you run them, move the usage lines to the top of the file.
+
+---
+
+## 🧪 What was actually verified, and how
+
+Claims about correctness are worth only as much as the checking behind them, so here is exactly
+what was done.
+
+- **Toolchain:** **.NET SDK 10.0.401** on Windows 11, compiling against **`net10.0`** with
+  `<Nullable>enable</Nullable>` and `LangVersion latest`.
+- **Method:** every ` ```csharp ` block was extracted and passed through the Roslyn compiler.
+  Blocks containing a complete top-level declaration were additionally **semantically** compiled
+  against the .NET base class library, not merely parsed.
+- **Result of that pass:** the blocks compile, or fail only because they reference a type declared
+  in an earlier block in the same chapter. Those are the blocks now marked **▶️ Continues**.
+- **What this does NOT prove:** it does not prove that the surrounding prose is complete, that the
+  design advice is right for your situation, or that behaviour is identical on other .NET versions.
+  Runtime output shown under **Output:** was verified only for the self-contained programs.
+- **Not compiled:** blocks marked **📄 Fragment** (class members shown without their class, and
+  files belonging to the multi-project solution in [Chapter 46](#46--capstone-library-management-system))
+  and blocks marked **❌ Does not compile — on purpose**. These were reviewed by reading.
+- **Performance claims** are stated as expectations with their conditions, not as measured
+  benchmarks. Where this guide says one approach is faster, it says *why* and *when*; no timing
+  figures are reported, because none were measured. **Measure your own workload before optimising.**
+
+---
+
+## 🧩 Three different things, one word: "C#"
+
+Beginners lose a lot of time to a confusion this guide tries to head off early. When someone says
+"C# can do X", they might mean any of three separate layers:
+
+| Layer | What it is | Who decides it | Example |
+|---|---|---|---|
+| **The language** | Syntax and compile-time rules | The C# compiler (Roslyn) | `record`, `required`, pattern matching, nullable annotations |
+| **The runtime** | What happens while the program executes | The CLR | Garbage collection, JIT compilation, exceptions, threads |
+| **The framework** | Libraries that ship with .NET | The BCL / NuGet | `List<T>`, `HttpClient`, `System.Text.Json`, the DI container |
+
+**Why the distinction matters in practice:**
+
+- **`?` on a reference type is a language feature with no runtime effect.** `string?` and `string`
+  compile to exactly the same thing. The compiler warns you; the CLR does not check. This is
+  covered in depth in [Chapter 27](#27-️-nullable-reference-types-and-null-safety), and it is the
+  single most misunderstood feature in modern C#.
+- **`IDisposable` is a framework interface, not a runtime guarantee.** Nothing forces anyone to call
+  `Dispose()`. The `using` statement is a *language* feature that generates the call for you.
+  ([Chapter 12](#12-️-object-lifecycle-and-resource-management).)
+- **Garbage collection is a runtime service.** It is why C# has no destructors in the C++ sense, and
+  why finalizers run at an unpredictable time.
+- **`record` is a language feature** that generates ordinary IL; the runtime knows nothing about
+  records.
+
+Wherever a feature belongs clearly to one layer, this guide says so. **Language version
+requirements** are noted inline — for example, `required` members need **C# 11**, primary
+constructors on classes need **C# 12**, and collection expressions (`[1, 2, 3]`) need **C# 12**.
+Everything here targets **.NET 8 or later** unless stated otherwise.
 
 ---
 
@@ -159,7 +254,8 @@ Difficulty is marked on each chapter: **⭐ Beginner** · **⭐⭐ Intermediate*
 | 46 | [Capstone: Library Management System](#46--capstone-library-management-system) | ⭐⭐⭐ |
 | 47 | [Professional checklist](#47--professional-checklist) | — |
 | 48 | [30-day learning plan](#48--30-day-learning-plan) | — |
-| 49 | [Glossary and reference links](#49--glossary-and-reference-links) | — |
+| 49 | [Solutions to the foundation exercises](#49--solutions-to-the-foundation-exercises) | ⭐ |
+| 50 | [Glossary and reference links](#50--glossary-and-reference-links) | — |
 
 ---
 ---
@@ -1059,6 +1155,8 @@ unreadable expression just to use `=>`.
 
 ### `void` — a method that does something instead of returning something
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public void PrintReceipt() => Console.WriteLine("Thank you!");
 ```
@@ -1270,6 +1368,8 @@ public class PriceParser
 
 ### `ref` — modify the caller's variable
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public static void Swap(ref int a, ref int b)
 {
@@ -1287,6 +1387,8 @@ Console.WriteLine($"{x}, {y}");   // 2, 1
 clearer. `ref` on *reference types* is especially confusing and rarely what you want.
 
 ### `in` — read-only, but avoids copying
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public readonly struct Matrix4x4 { /* 64 bytes of data */ }
@@ -1541,6 +1643,8 @@ public class Person(string name, int age)
 
 Where it shines most — services with injected dependencies:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // ❌ The old, noisy way:
 public class OrderService
@@ -1754,6 +1858,8 @@ This is why every object in .NET already has four methods, **even if you never w
 
 Prove it to yourself:
 
+> **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
+
 ```csharp
 public class Car { }
 
@@ -1770,6 +1876,8 @@ Overriding it takes five seconds and pays back forever.
 
 ❌ **Without an override:**
 
+> **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
+
 ```csharp
 public class Product
 {
@@ -1782,6 +1890,8 @@ Console.WriteLine(laptop);   // "Product"   😞  tells you nothing
 ```
 
 ✅ **With an override:**
+
+> **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
 
 ```csharp
 public class Product
@@ -1918,6 +2028,8 @@ Console.WriteLine(b);   // 99
 ```
 
 🔑 **Reference type — a shared key:**
+
+> **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
 
 ```csharp
 public class Customer
@@ -2138,10 +2250,10 @@ a stream, a connection, a timer, a subscription, an unmanaged handle.
 **🚫 Don't implement it when:** your class only holds plain data and other managed objects.
 The GC has that covered.
 
-## 12.4 `using` — the safety net that never forgets
+## 12.4 `using` — the safety net that rarely forgets
 
 Calling `Dispose()` by hand is fragile: one exception, one early `return`, and you leak.
-`using` guarantees it runs no matter what.
+`using` makes the call for you on **every** path out of the block.
 
 **Classic `using` statement** — scope is the braces:
 
@@ -2151,8 +2263,39 @@ using (StreamWriter writer = new StreamWriter("log.txt"))
     writer.WriteLine("Application started.");
     throw new Exception("boom");     // 💥 even here...
 }
-// ...Dispose() is STILL called. Guaranteed.
+// ...Dispose() is STILL called, before the exception continues upward.
 ```
+
+### 🔬 What `using` actually is — it is not magic
+
+`using` is a **language** feature (see [Three different things, one word: "C#"](#-three-different-things-one-word-c)).
+The compiler rewrites it into a `try`/`finally`, and that is the whole mechanism:
+
+```csharp
+// What you write:
+using (var writer = new StreamWriter("log.txt"))
+{
+    writer.WriteLine("hello");
+}
+
+// What the compiler generates (roughly):
+{
+    StreamWriter writer = new StreamWriter("log.txt");
+    try
+    {
+        writer.WriteLine("hello");
+    }
+    finally
+    {
+        if (writer is not null)
+            ((IDisposable)writer).Dispose();
+    }
+}
+```
+
+Knowing this explains everything else about it: `Dispose()` runs on a normal exit, on an early
+`return`, on a `break`, and while an exception is unwinding — **because that is what `finally`
+does**, and for no other reason.
 
 **`using` declaration** (modern, preferred) — scope is the rest of the enclosing block:
 
@@ -2161,16 +2304,62 @@ void WriteLog()
 {
     using StreamWriter writer = new StreamWriter("log.txt");
     writer.WriteLine("Application started.");
-}   // 👈 Dispose() runs automatically here
+}   // 👈 Dispose() runs here, at the closing brace
 ```
 
 | Style | Use when |
 |---|---|
-| `using (...) { }` | You need the resource for only part of the method |
+| `using (...) { }` | You need the resource for only part of the method, or you need two scopes |
 | `using var x = ...;` | The resource lives until the end of the method — **prefer this** |
 
+### ⚠️ Where the guarantee genuinely does not hold
+
+"`using` always disposes" is close enough for everyday code, and stating it as an absolute leaves
+you unprepared for the cases where it is false. A `finally` block does **not** run when:
+
+| Situation | Why `finally` is skipped |
+|---|---|
+| `StackOverflowException` | The CLR terminates the process immediately; it cannot run managed code |
+| `Environment.FailFast(...)` | Deliberately bypasses `finally` blocks, by design |
+| The process is killed externally | Task Manager, `kill -9`, a container OOM kill, machine power loss |
+| An `ExecutionEngineException` or similar fatal CLR error | The runtime is no longer in a usable state |
+| An infinite loop or deadlock inside the `using` block | The block is never exited at all |
+
+**Why this matters, practically:** it is the reason a database still needs crash recovery and a file
+format still needs to tolerate truncation. Never design a system whose correctness depends on cleanup
+code having run — the operating system reclaims file handles, sockets, and memory when a process
+dies, but *your* invariants (a half-written file, an unreleased distributed lock) are your problem.
+
+**What this does NOT mean:** you should still use `using` everywhere. It handles every failure mode
+you can actually recover from. The exceptions above are ones where the process is already gone.
+
 > 🎓 **Professor's rule** — If a type implements `IDisposable`, it goes in a `using`.
-> No exceptions, no "I'll remember".
+> The rare cases where `finally` cannot run are cases where the process is dying anyway.
+
+### ⚠️ The other half of the contract: you must own it
+
+`using` disposes whatever you give it, which is wrong when you did not create the object:
+
+```csharp
+// ❌ Disposes a shared object the caller still needs.
+void BadWrite(StreamWriter sharedWriter)
+{
+    using (sharedWriter)                 // 💥 we did not create it — not ours to dispose
+    {
+        sharedWriter.WriteLine("hello");
+    }
+}   // the caller's writer is now closed
+```
+
+> **❌ Do not imitate the block above.** The rule is **whoever creates it, disposes it**. A method
+> that receives a disposable as a parameter should use it and leave it open; a method that
+> constructs one owns it.
+
+The same rule explains a common source of confusion with `HttpClient`: it implements `IDisposable`,
+but the recommended pattern is a single long-lived instance (via `IHttpClientFactory`), not a
+`using` per request. Wrapping every `HttpClient` in a `using` exhausts the machine's available
+sockets under load, because disposal does not immediately release the underlying TCP connection —
+it sits in `TIME_WAIT`. An interface promising "I can be disposed" does not mean "dispose me often".
 
 ## 12.5 `IAsyncDisposable` and `await using`
 
@@ -2392,6 +2581,8 @@ This one is subtle and catches almost everybody.
 
 ❌ **The leak:**
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Order
 {
@@ -2409,6 +2600,8 @@ order.Items = null!;            // 😱 breaks everything downstream
 You carefully wrote `AddItem()` with validation... and nobody has to use it.
 
 ✅ **The fix:**
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class Order
@@ -2581,6 +2774,8 @@ public abstract class Shape
 
 Two subclasses filling the hole differently:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Circle : Shape
 {
@@ -2713,6 +2908,8 @@ Printing a plain-text report.
 
 Extend behaviour instead of replacing it:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class TimestampedReport : Report
 {
@@ -2729,6 +2926,8 @@ public class TimestampedReport : Report
 This is exactly how the Decorator pattern thinks ([Chapter 40](#40--design-patterns-for-c-oop)).
 
 ### `sealed override` — stop the chain here
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class SecureReport : Report
@@ -2862,6 +3061,8 @@ public class Employee
 }
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Manager : Employee              // 👈 the ":" means "inherits from"
 {
@@ -2933,6 +3134,8 @@ public class B { }
 ```
 
 But a class may implement **as many interfaces as it likes**:
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class C : A, IPrintable, IComparable<C>, IDisposable   // ✅ 1 base + N interfaces
@@ -3192,6 +3395,8 @@ based on what the object *actually is*. That is **runtime polymorphism** (or *dy
 
 Adding a `Duck` tomorrow:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Duck : Animal
 {
@@ -3258,6 +3463,8 @@ public class CryptoPaymentProcessor : IPaymentProcessor
     public void Process(decimal amount) => Console.WriteLine($"₿ Crypto: {amount:C}");
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class CheckoutService
@@ -3345,6 +3552,8 @@ public class VipDiscountPolicy : IDiscountPolicy
 
 **Using it:**
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class PricingService
 {
@@ -3367,6 +3576,8 @@ Console.WriteLine(regularPricing.CalculateFinalPrice(1000m)); // 950
 ```
 
 **Picking the right policy at runtime** — the `switch` shrinks to one place, and one line:
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class DiscountPolicyFactory
@@ -3393,6 +3604,8 @@ public class DiscountPolicyFactory
 ## 16.5 🧪 Hands-on exercise
 
 Refactor this into polymorphic classes:
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public decimal CalculateShipping(string method, decimal weight)
@@ -3432,6 +3645,8 @@ public interface IPrintable
     void Print();          // 👈 no body — just the promise
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class Invoice : IPrintable
@@ -3529,6 +3744,8 @@ public interface IReadWriteFile : IReadable, IWritable
 ```
 
 A class implementing `IReadWriteFile` must supply **all three** members:
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class TextFile : IReadWriteFile
@@ -3710,6 +3927,8 @@ public interface IRepository<T>
 }
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class CustomerRepository : IRepository<Customer> { /* ... */ }
 public class ProductRepository  : IRepository<Product>  { /* ... */ }
@@ -3783,6 +4002,8 @@ public class OrderService
 
 In a test, you swap in a fake — **no real emails, no network, instant**:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class FakeEmailSender : IEmailSender
 {
@@ -3792,6 +4013,8 @@ public class FakeEmailSender : IEmailSender
         => Sent.Add((to, subject, body));
 }
 ```
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 [Fact]
@@ -3917,6 +4140,8 @@ public abstract class Employee
 }
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class SalariedEmployee : Employee
 {
@@ -3963,6 +4188,8 @@ public interface IEmailSender
 
 Implementations that share nothing at all:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class SmtpEmailSender : IEmailSender { /* talks to an SMTP server */ }
 public class SendGridEmailSender : IEmailSender { /* calls a REST API */ }
@@ -3994,6 +4221,8 @@ None of these is "a kind of" the others. They just do the same **job**.
 
 Professional code very often combines them. The interface is the contract the world depends on;
 the abstract class is a convenience for implementers.
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // 📜 The contract the rest of the application depends on.
@@ -4139,15 +4368,33 @@ Here is the same problem solved both ways. Judge for yourself.
 
 ❌ **With inheritance — the class count explodes:**
 
+> **❌ Does not compile — on purpose.** The `???` marks the exact place where the design breaks
+> down: there is no valid thing to write there, because C# allows only **one** base class.
+
 ```csharp
 public class Vehicle { }
 public class ElectricVehicle : Vehicle { }
 public class AutonomousVehicle : Vehicle { }
-public class AutonomousElectricVehicle : ??? // 💥 you can only pick ONE base class
+
+// 💥 There is no way to finish this line. An autonomous electric vehicle is BOTH,
+//    and a class may inherit from only one base class.
+public class AutonomousElectricVehicle : ???
 ```
 
+The error C# actually gives you here is `CS1031: Type expected`, which is the compiler's way of
+saying "you have not named a base class" — it cannot tell you the real problem, which is that
+the thing you want to express does not fit the model you chose.
+
+**Why one base class only?** Multiple inheritance of *implementation* creates the "diamond problem":
+if both parents define `Start()`, which one does the child get? C++ permits it and pays for it with
+complex resolution rules; C# and Java sidestep the question by allowing only one base class, while
+permitting any number of **interfaces** (which historically carried no implementation, so no conflict
+was possible). See [Chapter 15.4](#154-c-has-single-inheritance--and-why-thats-fine).
+
 You now need `ElectricCar`, `PetrolCar`, `AutonomousElectricCar`, `AutonomousPetrolCar`,
-`AutonomousElectricTruck`... The class count multiplies.
+`AutonomousElectricTruck`… Each new independent dimension **multiplies** the class count rather than
+adding to it: 2 power sources × 2 driver types × 3 body styles is already 12 classes, and adding a
+fourth dimension doubles it again.
 
 ✅ **With composition — features plug in:**
 
@@ -4210,6 +4457,8 @@ graph LR
 
 The weakest link. A passes through a method, and is gone.
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class ReportService
 {
@@ -4246,6 +4495,8 @@ public class Student
 ### ③ 🔗 Aggregation — "has, but they live independently"
 
 A whole-part relationship where the part **survives** the whole.
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class Department
@@ -4336,6 +4587,8 @@ Many-to-many  Student   ──── N:N ────  Courses
 
 In code:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Customer
 {
@@ -4368,6 +4621,8 @@ public class Enrollment
 > itself?"* (a date, a grade, a role). There almost always is. Make it a class.
 
 ## 19.5 Composition + interfaces = the professional default
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class OrderProcessor
@@ -4475,6 +4730,8 @@ Plus you get **IntelliSense**: type `OrderStatus.` and your editor lists every l
 
 ## 20.2 Using an enum properly
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Order
 {
@@ -4507,6 +4764,8 @@ public class Order
 ```
 
 Switching on an enum, with the compiler checking you:
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public string GetStatusMessage(OrderStatus status) => status switch
@@ -4648,6 +4907,8 @@ you have two better options.
 
 ### Option A — a `switch` expression over the enum (simple cases)
 
+> **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
+
 ```csharp
 public static class OrderStatusExtensions
 {
@@ -4736,6 +4997,8 @@ and a `LaptopBox`. You design **one** `Box<T>` and say what goes in it when you 
 ## 21.1 The problem generics solve
 
 ❌ **Without generics — write it once per type:**
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class IntList  { private int[] items;    /* 50 lines */ }
@@ -4837,6 +5100,8 @@ public interface IRepository<T>
 }
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class CustomerRepository : IRepository<Customer> { /* ... */ }
 public class ProductRepository  : IRepository<Product>  { /* ... */ }
@@ -4891,6 +5156,8 @@ public class Repository<T> where T : Entity      // 👈 "T is always an Entity 
 }
 ```
 
+> **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
+
 ```csharp
 public class Product : Entity { public string Name { get; set; } = ""; }
 public class Customer : Entity { public string Email { get; set; } = ""; }
@@ -4916,6 +5183,8 @@ var customers = new Repository<Customer>();
 | `where T : Delegate` | T is a delegate | Generic event plumbing |
 
 ### Multiple constraints
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class EntityFactory<T> where T : Entity, IValidatable, new()
@@ -5357,6 +5626,8 @@ List<Product> expensive = products.Where(p => p.Price > 100).ToList();   // ✅ 
 
 ## 22.6 Exposing collections safely (recap)
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Order
 {
@@ -5421,6 +5692,8 @@ after two, it never makes the other 98.
 
 ❌ **Without `yield` — build the whole list first:**
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public List<int> GetEvenNumbers(int max)
 {
@@ -5440,6 +5713,8 @@ var first5 = GetEvenNumbers(10_000_000).Take(5);   // built 5 million items, use
 
 ✅ **With `yield` — produce items only as they are asked for:**
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public IEnumerable<int> GetEvenNumbers(int max)
 {
@@ -5455,6 +5730,8 @@ var first5 = GetEvenNumbers(10_000_000).Take(5).ToList();
 ```
 
 ## 23.2 How `yield return` actually behaves
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public IEnumerable<string> Steps()
@@ -5505,6 +5782,8 @@ The method **suspends** at each `yield return` and **resumes** exactly where it 
 > ```
 
 ## 23.3 `yield break` — stopping early
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public IEnumerable<string> ReadUntilBlank(IEnumerable<string> lines)
@@ -5594,6 +5873,8 @@ Writing that traversal by hand, without `yield`, requires an explicit stack and 
 ## 23.5 `IAsyncEnumerable<T>` — streaming with `await`
 
 For data that arrives over time (a database cursor, an API with paging, a live feed):
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public async IAsyncEnumerable<Order> StreamOrdersAsync()
@@ -5843,6 +6124,8 @@ amount, versions by number).
 
 When there is no single natural order, or you need several:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class EmployeeByNameComparer : IComparer<Employee>
 {
@@ -5920,6 +6203,8 @@ Console.WriteLine(original.Address.City);   // "Colombo"  ✅ untouched
 
 ### `with` on records — a shallow copy with changes
 
+> **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
+
 ```csharp
 public record Person(string Name, Address Address);
 
@@ -5939,6 +6224,8 @@ Person renamed = original with { Name = "Maria" };   // ⚠️ SHALLOW — Addre
 | Serialise → deserialise (JSON) | Easy, generic | Slow, loses non-serialisable state |
 | `ICloneable` | Built-in interface | ❌ **Avoid** — its contract never says shallow or deep |
 | **Make everything immutable** | 🏆 No copying needed at all | Requires design discipline |
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // 🏆 The professional approach: a copy constructor
@@ -6001,6 +6288,8 @@ most of the time the answer is simple once you know the questions.
 | **🎯 Use for** | Entities, services | Tiny values (≤16 bytes) | DTOs, value objects | Tiny immutable values |
 
 ## 25.1 `class` — your default
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class Customer
@@ -6206,6 +6495,8 @@ domain **value object**.
 
 ## 25.5 `with` expressions — change by making a new one
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public record Order(int Id, string Customer, OrderStatus Status, decimal Total);
 ```
@@ -6291,6 +6582,8 @@ public record Level3(string Name);
 
 ### ⚠️ The trap: a collection inside an immutable object
 
+> **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
+
 ```csharp
 // ❌ Looks immutable. Isn't.
 public record Order(int Id, List<OrderItem> Items);
@@ -6300,6 +6593,8 @@ order.Items.Add(newItem);          // 😱 the "immutable" order just changed
 ```
 
 ✅ **The fix:**
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public record Order
@@ -6385,6 +6680,8 @@ Console.WriteLine(JsonSerializer.Serialize(product, options));
 
 Here is the trap. This class carefully protects itself:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Order
 {
@@ -6421,6 +6718,8 @@ graph LR
     W["🌐 The outside world<br/>JSON, HTTP, files"] <-->|"serialize /<br/>deserialize"| D["📋 DTO<br/>plain data, no rules<br/>(a record)"]
     D <-->|"map + VALIDATE"| E["🛡️ Domain entity<br/>full rules, invariants<br/>(a class)"]
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // 📋 The DTO — a dumb, honest data carrier. Safe to deserialize.
@@ -6639,6 +6938,8 @@ void Describe(object item)
 
 ### `switch` expression — the workhorse
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public abstract record Shape;
 public record Circle(double Radius) : Shape;
@@ -6656,6 +6957,8 @@ public static double Area(Shape shape) => shape switch
 
 Compare with the old style:
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 // ❌ The old way — six times as long
 public static double AreaOld(Shape shape)
@@ -6672,6 +6975,8 @@ public static double AreaOld(Shape shape)
 
 ### Property patterns — match on the contents
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public static string Classify(Order order) => order switch
 {
@@ -6684,6 +6989,8 @@ public static string Classify(Order order) => order switch
 ```
 
 ### Relational and logical patterns
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public static string Grade(int score) => score switch
@@ -6704,6 +7011,8 @@ public static bool IsValidAge(int age) => age is >= 0 and <= 130;
 
 ### `when` clauses — extra conditions
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public static decimal ShippingCost(Order order) => order switch
 {
@@ -6715,6 +7024,8 @@ public static decimal ShippingCost(Order order) => order switch
 ```
 
 ### List patterns
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public static string DescribeSequence(int[] numbers) => numbers switch
@@ -6746,6 +7057,8 @@ public static string DescribeSequence(int[] numbers) => numbers switch
 ## 26.6 ⚠️ When pattern matching is the WRONG tool
 
 Pattern matching on types is often a sign that **polymorphism** would be better.
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 // ⚠️ This switch will need editing every time a new shape appears.
@@ -6844,9 +7157,10 @@ Write a `TransactionDescriber` that takes an `object` and returns a description,
 *"billion-dollar mistake"* — because for 40 years, the single most common crash in software has
 been `NullReferenceException`.
 
-Modern C# fixes this at **compile time**. But you have to switch it on.
+Modern C# helps enormously with this — but **only at compile time**, and only if you switch it on.
+Understanding exactly where the help stops is the most important thing in this chapter.
 
-## 27.1 Turn it on — always
+## 27.1 Turn it on
 
 ```xml
 <PropertyGroup>
@@ -6854,23 +7168,138 @@ Modern C# fixes this at **compile time**. But you have to switch it on.
 </PropertyGroup>
 ```
 
-With this on, the compiler tracks which references can be `null` and warns you when you forget to
-check. Suddenly a whole class of runtime crashes becomes a squiggly line in your editor.
+With this on, the compiler tracks which references can be `null` and **warns** you when you forget
+to check. A whole class of runtime crashes becomes a squiggly line in your editor.
 
-## 27.2 The `?` changes everything
+> 💡 **Promote the warnings to errors** so they cannot be ignored:
+> ```xml
+> <PropertyGroup>
+>   <Nullable>enable</Nullable>
+>   <WarningsAsErrors>Nullable</WarningsAsErrors>
+> </PropertyGroup>
+> ```
+> Without this, nullable diagnostics are only warnings, and warnings in a large solution get
+> scrolled past.
+
+## 27.2 The `?` changes everything — at compile time
 
 ```csharp
 string name = "Anna";        // 🚫 NOT nullable — the compiler warns if you assign null
 string? phone = null;        // ✅ Nullable — you're saying "this may be missing"
 ```
 
+> **▶️ Continues** — uses `name` and `phone` from the block above.
+
 ```csharp
 Console.WriteLine(name.Length);      // ✅ fine — the compiler knows it's not null
 
-Console.WriteLine(phone.Length);     // ⚠️ WARNING: "Dereference of a possibly null reference"
+Console.WriteLine(phone.Length);     // ⚠️ CS8602: "Dereference of a possibly null reference"
 ```
 
 The `?` is you **documenting your intent**, and the compiler holding you to it.
+
+### 🔬 The single most important fact in this chapter
+
+**Nullable reference types are a compile-time feature with no runtime existence.** This is the
+language/runtime distinction from the [opening section](#-three-different-things-one-word-c), and it
+is where almost everyone is caught out once.
+
+`string` and `string?` compile to **exactly the same type**. The `?` produces a compiler annotation
+(recorded in metadata as an attribute), and the CLR does not check it. Nothing at runtime prevents a
+non-nullable reference from holding `null`:
+
+```csharp
+#nullable enable
+
+string definitelyNotNull = "hello";
+
+// Simulate a value arriving from somewhere the compiler cannot see:
+// old library code, reflection, deserialisation, or an interop boundary.
+object fromOutside = null!;
+definitelyNotNull = (string)fromOutside;      // no warning: the cast asserts it
+
+Console.WriteLine(definitelyNotNull is null); // True — a "non-nullable" string IS null
+Console.WriteLine(typeof(string) == definitelyNotNull?.GetType());   // False
+
+try
+{
+    Console.WriteLine(definitelyNotNull.Length);
+}
+catch (NullReferenceException)
+{
+    Console.WriteLine("NullReferenceException — the annotation stopped nothing");
+}
+```
+
+**Output:**
+
+```
+True
+False
+NullReferenceException — the annotation stopped nothing
+```
+
+**Read the first line again:** a variable the compiler considers non-nullable is holding `null`, and
+the CLR raised no objection at the point of assignment. The `NullReferenceException` arrives later,
+at the dereference — exactly the crash nullable types were meant to prevent.
+
+**One honest detail.** Compiling the block above *does* produce one warning —
+`CS8602` on the `.Length` line — because the compiler saw the `is null` test two lines earlier and
+correctly downgraded the variable's state to "maybe null". That is the flow analysis working well.
+It does not change the point: the compiler raised nothing on the **cast** that introduced the `null`,
+because `(string)fromOutside` is an assertion, and no runtime check exists to catch it.
+
+**What this means in practice.** The compiler's analysis is sound only over code it can see and that
+it has checked. `null` still walks in through:
+
+| Route in | Why the compiler cannot help |
+|---|---|
+| **JSON / XML deserialisation** | Values are produced by reflection, bypassing constructors entirely |
+| **Any library compiled without `<Nullable>enable</Nullable>`** | Its types are "null-oblivious" — neither nullable nor non-nullable |
+| **Reflection** (`Activator.CreateInstance`, `PropertyInfo.SetValue`) | No compile-time checking applies at all |
+| **Any use of `!`** (§27.4) | You explicitly told the compiler to stop checking |
+| **Arrays** (`new string[10]`) | Every element starts as `null`, and this is only a warning at most |
+| **A struct's default value** | `default(MyStruct)` leaves every reference field `null`, with no constructor run |
+
+Those last two rows are worth seeing run, because they surprise people who believe `enable` made
+`null` impossible:
+
+```csharp
+#nullable enable
+
+string[] names = new string[3];        // every element starts as null
+Console.WriteLine(names[0] is null);   // True
+
+Holder h = default;                     // no constructor runs at all
+Console.WriteLine(h.Value is null);    // True
+
+// Type declarations must come AFTER all top-level statements.
+struct Holder { public string Value; }
+```
+
+**Output:**
+
+```
+True
+True
+```
+
+### 🎯 So what is it good for?
+
+A great deal — this is not a reason to switch it off. It is a reason to know its shape:
+
+- **Inside code you compile with it on, it is close to airtight.** The overwhelming majority of
+  `NullReferenceException`s come from ordinary internal code, and the compiler now catches those.
+- **It is documentation that cannot go stale.** `string? PhoneNumber` tells every future reader that
+  the phone number may be missing, and the compiler enforces that they handle it.
+- **The gaps are all at boundaries** — deserialisation, reflection, old libraries — and boundaries
+  are exactly where you should be validating anyway.
+
+> 🎓 **Professor's rule** — Treat nullable annotations as an excellent *internal* discipline and a
+> *contract*, never as a runtime guarantee. At every boundary where data enters your system, validate
+> with a real runtime check (§27.3 ⑤), because that is the one thing the annotation cannot do.
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class Customer
@@ -6962,6 +7391,8 @@ This **silences the warning without adding any safety**. If you're wrong, you ge
 | A field the framework sets (EF Core entities) | Because you're "pretty sure" |
 | After a check the compiler can't see | Anywhere in normal business logic |
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // ✅ A common, legitimate use — EF Core sets navigation properties
 public class Order
@@ -6985,6 +7416,8 @@ The best null handling is not needing it.
 | `null` meaning "not found" | A `TryGet` method with `out` |
 | `null` meaning "no behaviour" | A **Null Object** ([Chapter 40](#40--design-patterns-for-c-oop)) |
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 // ❌ Every caller must remember to null-check
 public List<Order>? GetOrders(int customerId) { /* ... */ }
@@ -6995,6 +7428,8 @@ public IReadOnlyList<Order> GetOrders(int customerId)
     // ... returns an empty list if there are none
 }
 ```
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 // ✅ Naming that tells the truth
@@ -7088,6 +7523,8 @@ int alsoFine = age.GetValueOrDefault();
 ## 27.8 🧪 Hands-on exercise
 
 Take this class and make it fully null-safe:
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class UserProfile
@@ -7303,6 +7740,8 @@ methods deep — is gone forever. You will spend hours hunting a bug you had alr
 
 ## 28.6 Wrapping exceptions with `innerException`
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public Customer LoadCustomer(int id)
 {
@@ -7317,6 +7756,8 @@ public Customer LoadCustomer(int id)
     }
 }
 ```
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 catch (DataAccessException ex)
@@ -7355,6 +7796,8 @@ travelling **with its original stack intact**. An `if` + `throw;` is messier and
 Exceptions are for the **exceptional**. When failure is a normal, expected outcome, returning a
 result is often better.
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 // ❌ Using exceptions for expected, routine failures — slow and noisy
 public Customer GetCustomer(string email)
@@ -7382,6 +7825,8 @@ public readonly record struct Result<T>
     public static Result<T> Failure(string error) => new(false, default, error);
 }
 ```
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public Result<Customer> GetCustomer(string email)
@@ -7567,6 +8012,8 @@ Rules for `const`:
 > ➡️ For anything that could ever change, use `static readonly` instead — it's read at runtime.
 
 ## 29.4 `readonly` — set once, per object
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class Order
@@ -7949,6 +8396,8 @@ for (int i = 0; i < 3; i++)
 
 ## 30.4 Delegates as strategy — passing behaviour into a method
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class OrderProcessor
 {
@@ -8062,6 +8511,8 @@ public class OrderPlacedEventArgs : EventArgs
 }
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class OrderService
 {
@@ -8103,6 +8554,8 @@ react — and the publisher genuinely doesn't care who they are or whether anyon
 
 This is the #1 real-world event bug:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Subscriber
 {
@@ -8120,6 +8573,8 @@ holds one through the event. The subscriber can **never** be garbage collected. 
 long-running app and memory climbs forever.
 
 ✅ **The fix — unsubscribe, usually via `IDisposable`:**
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class Subscriber : IDisposable
@@ -8346,6 +8801,8 @@ A grab-bag of C# features that make your types feel like first-class citizens of
 
 An indexer lets people write `myObject[something]` instead of `myObject.Get(something)`.
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Classroom
 {
@@ -8474,6 +8931,8 @@ reader. Use a named method.
 
 ### Tuples — a quick, temporary group of values
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 // ❌ Needing a whole class just to return two numbers
 public class MinMaxResult { public int Min; public int Max; }
@@ -8582,6 +9041,8 @@ public partial class Customer
 }
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // Customer.Behaviour.cs — also hand-written
 public partial class Customer
@@ -8603,6 +9064,8 @@ to be readable, it has four responsibilities. Split it into four classes
 ([Chapter 37](#37--solid-principles)).
 
 ### Partial methods — hooks for generated code
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public partial class Customer
@@ -8673,14 +9136,30 @@ projections, quick grouping, shaping data just before printing it.
 **🚫 Do NOT use one when:** the values leave the method. You **cannot** write the type name, so
 you cannot use it as a return type, a parameter, or a field.
 
-```csharp
-// ❌ Impossible — there is no name to write here.
-public ??? GetSummary() => new { Name = "Laptop", Price = 1200m };
+> **❌ The first half does not compile — on purpose.** An anonymous type has no name you can
+> write, so it cannot appear in any signature.
 
-// ✅ Use a record instead the moment the shape crosses a method boundary.
+```csharp
+// ❌ Impossible — there is no name to write where the ??? is.
+public ??? GetSummary() => new { Name = "Laptop", Price = 1200m };
+```
+
+The compiler reports `CS1031: Type expected`. There is no workaround, because the type genuinely has
+no name — the compiler generates one that is deliberately unspeakable in C# source.
+
+> **📄 Fragment** — these two lines are class members; put them inside a class to compile them.
+
+```csharp
+// ✅ Use a record the moment the shape crosses a method boundary.
 public record ProductSummary(string Name, decimal Price);
+
 public ProductSummary GetSummary() => new("Laptop", 1200m);
 ```
+
+**The one escape hatch, and why it is rarely worth it.** You *can* return an anonymous type as
+`object` and read it back with `dynamic` or reflection — but you lose IntelliSense, compile-time
+checking, and refactoring support, and you gain a runtime failure whenever a property is renamed. A
+`record` costs one line and gives you all of that back.
 
 > 🎓 **Professor's rule** — Anonymous type **inside** one method. `record` the moment it
 > **leaves** that method. A `record` costs one line and gives you a name, documentation,
@@ -8692,6 +9171,8 @@ public ProductSummary GetSummary() => new("Laptop", 1200m);
 
 `nameof(something)` turns a code symbol into its name as text — but unlike a hand-typed string,
 the compiler **verifies it exists** and **renames it with you**.
+
+> **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
 
 ```csharp
 public class Customer
@@ -8739,6 +9220,8 @@ throw new ArgumentException("Name is required.", nameof(newName));
 A **local function** is a method declared *inside* another method. Use it when a helper is only
 meaningful to that one method, and putting it on the class would just add clutter.
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public decimal CalculateInvoiceTotal(IEnumerable<OrderLine> lines, decimal taxRate)
 {
@@ -8773,6 +9256,8 @@ to give a name to a step without expanding the class's surface.
 
 Local functions also solve the iterator-validation problem from
 [Chapter 23](#23--iterators-and-yield) neatly:
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public IEnumerable<int> TakeEvery(int step)
@@ -8822,6 +9307,8 @@ it to the kitchen, and serves other tables. When your food is ready, they come b
 
 ## 33.1 The shapes
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class OrderService
 {
@@ -8862,6 +9349,8 @@ public class OrderService
 
 ## 33.2 Async in interfaces — designing for it up front
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public interface IOrderRepository
 {
@@ -8870,6 +9359,8 @@ public interface IOrderRepository
     Task<IReadOnlyList<Order>> GetAllAsync(CancellationToken cancellationToken = default);
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class SqlOrderRepository : IOrderRepository
@@ -8897,6 +9388,8 @@ public class SqlOrderRepository : IOrderRepository
 ## 33.3 The rules that keep you out of trouble
 
 ### ✅ Async all the way — never block
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 // ❌ DEADLOCK RISK and thread starvation
@@ -8935,6 +9428,8 @@ Preferences p = await prefsTask;
 
 ### ✅ Always accept a `CancellationToken`
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public async Task<IReadOnlyList<Order>> SearchAsync(
     string term,
@@ -8960,6 +9455,8 @@ wants any more. Without it, your server keeps churning on abandoned requests.
 ## 33.4 Async and the four pillars
 
 Async doesn't change OOP — it changes method signatures.
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // 🎭 ABSTRACTION: the contract is async
@@ -8990,6 +9487,8 @@ public class ConsoleSender : INotificationSender
     }
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // 🧩 COMPOSITION: an orchestrator that doesn't care which sender it got
@@ -9039,6 +9538,8 @@ catch (HttpRequestException ex)
 > ```
 
 ## 33.6 `IAsyncDisposable` — async cleanup
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class AsyncOrderRepository : IAsyncDisposable
@@ -9159,6 +9660,15 @@ public class DisplayColumnAttribute : Attribute
 }
 ```
 
+> **▶️ Continues** — uses the `DisplayColumnAttribute` declared in the block above; keep both in
+> the same file.
+>
+> ⚠️ **Name collision worth knowing about.** `System.ComponentModel.DataAnnotations` already contains
+> a type called `DisplayColumnAttribute`. A type you declare yourself wins over one from a referenced
+> assembly, so this compiles even with that `using` present — but the two are unrelated, and the
+> ambiguity will confuse the next reader. In real code, give your attribute a name of your own
+> (`TableColumnAttribute`, say).
+
 ```csharp
 public class Product
 {
@@ -9177,6 +9687,8 @@ public class Product
 ```
 
 ## 34.3 Reading attributes with reflection
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public static class TableRenderer
@@ -9585,6 +10097,8 @@ public bool ShouldRetry { get; }      // decision
 
 ## 36.3 Formatting
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // ✅ Allman braces (opening brace on its own line) — the .NET standard
 public class Order
@@ -9629,6 +10143,8 @@ dotnet_diagnostic.CA1822.severity = suggestion
 ## 36.4 Class member ordering
 
 A consistent order means anyone can find anything:
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class Order
@@ -9684,6 +10200,8 @@ const int MaxRetries = 3;
 
 XML documentation comments on public APIs:
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 /// <summary>
 /// Calculates the total payable amount including tax and shipping.
@@ -9710,6 +10228,8 @@ public decimal CalculateTotal(decimal taxRate) { /* ... */ return 0; }
 ## 36.7 🧪 Hands-on exercise
 
 Rename everything in this class so it explains itself. Change **no logic** — names only.
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class DataManager
@@ -9762,6 +10282,8 @@ cleans. You do not buy a fridge-oven-dishwasher.
 
 ❌ **Bad — four reasons to change:**
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class InvoiceService
 {
@@ -9778,6 +10300,8 @@ PDF library changes, **or** the HTML design changes. Five teams edit the same fi
 risks breaking the other four.
 
 ✅ **Good — one reason each:**
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class InvoiceCalculator
@@ -9871,6 +10395,8 @@ public class ExpressShipping : IShippingMethod
 ```
 
 Adding **drone delivery** tomorrow:
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class DroneShipping : IShippingMethod
@@ -10058,6 +10584,8 @@ public interface IFax     { void Fax(string number); }
 public interface IStapler { void Staple(); }
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class SimplePrinter : IPrinter
 {
@@ -10074,6 +10602,8 @@ public class OfficeMultiFunction : IPrinter, IScanner, IFax, IStapler
 ```
 
 And consumers ask for exactly what they need:
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class ReportService
@@ -10103,6 +10633,8 @@ Think of a **lamp**. It doesn't know about the power station. It knows about a *
 
 ❌ **Bad — business logic welded to infrastructure:**
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class OrderService
 {
@@ -10124,6 +10656,8 @@ Problems:
 
 ✅ **Good — depend on abstractions, receive them from outside:**
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // The abstractions live with the BUSINESS code, not with the implementations.
 public interface IOrderRepository
@@ -10136,6 +10670,8 @@ public interface IEmailSender
     Task SendAsync(string to, string subject, string body, CancellationToken ct = default);
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class OrderService
@@ -10200,6 +10736,8 @@ business logic depending on the detail.
 
 Take this class and refactor it, applying **all five** principles. Write down which principle each
 change served:
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class ReportManager
@@ -10274,6 +10812,8 @@ public class BulkDiscountPolicy
 
 ❌ **Over-engineered:**
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public interface IStringReverser { string Reverse(string input); }
 public class StringReverserFactory { /* ... */ }
@@ -10282,6 +10822,8 @@ public class StringReverserService { /* ... */ }
 ```
 
 ✅ **What was actually needed:**
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public static string Reverse(this string text) => new string(text.Reverse().ToArray());
@@ -10349,6 +10891,8 @@ four and this line breaks. And if any link is null — crash.
 
 ✅ **Ask the object you actually have:**
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Order
 {
@@ -10389,6 +10933,8 @@ dependency anywhere in the business code.
 
 > **Detect problems as early and as loudly as possible.**
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Order
 {
@@ -10428,6 +10974,8 @@ A crash at line 3 with a clear message beats corrupt data discovered a week late
 ## 38.9 🧪 Hands-on exercise
 
 For each snippet below, name **which principle it breaks** and rewrite it:
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 // A
@@ -10478,6 +11026,8 @@ Change supplier? The barista doesn't notice. That's dependency injection.
 
 ❌ **Without DI:**
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class OrderService
 {
@@ -10502,6 +11052,8 @@ public class OrderService
 
 ✅ **With DI:**
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class OrderService
 {
@@ -10524,6 +11076,8 @@ public class OrderService
 
 Or, more concisely, with a primary constructor:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class OrderService(IOrderRepository repository, IEmailSender emailSender)
 {
@@ -10545,6 +11099,8 @@ sender." No hidden requirements.
 | 🏆 **Constructor** | Passed to the constructor | **Almost always** — required dependencies |
 | Property | Set via a public property | Rarely — genuinely optional dependencies |
 | Method | Passed to a single method | When only one method needs it |
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // 🏆 Constructor injection — the default
@@ -10626,6 +11182,8 @@ services.AddScoped<INotificationSender, SmsSender>();
 services.AddScoped<INotificationSender, PushSender>();
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // The consumer receives all three:
 public class NotificationService(IEnumerable<INotificationSender> senders)
@@ -10687,6 +11245,8 @@ load and are almost impossible to reproduce.
 
 If a singleton genuinely needs a scoped service, create a scope explicitly:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class BackgroundWorker(IServiceScopeFactory scopeFactory)
 {
@@ -10706,6 +11266,8 @@ services.AddKeyedScoped<IPaymentGateway, StripeGateway>("stripe");
 services.AddKeyedScoped<IPaymentGateway, PayPalGateway>("paypal");
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class CheckoutService([FromKeyedServices("stripe")] IPaymentGateway gateway)
 {
@@ -10714,6 +11276,8 @@ public class CheckoutService([FromKeyedServices("stripe")] IPaymentGateway gatew
 ```
 
 ## 39.6 ⚠️ The Service Locator anti-pattern
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // ❌ Don't do this
@@ -10737,6 +11301,8 @@ Why it's bad:
 
 ✅ Just declare the dependency:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class OrderService(IOrderRepository repository)
 {
@@ -10745,6 +11311,8 @@ public class OrderService(IOrderRepository repository)
 ```
 
 ## 39.7 The payoff: testing
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class OrderServiceTests
@@ -10924,6 +11492,8 @@ compression, sorting, validation, retry policies.
 
 **The problem:** business logic shouldn't know how data is stored.
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public interface IOrderRepository
 {
@@ -10933,6 +11503,8 @@ public interface IOrderRepository
     Task RemoveAsync(int id, CancellationToken ct = default);
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // Production
@@ -10976,6 +11548,8 @@ public class InMemoryOrderRepository : IOrderRepository
 
 **The problem:** several repository changes must all succeed, or all fail.
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public interface IUnitOfWork : IAsyncDisposable
 {
@@ -10986,6 +11560,8 @@ public interface IUnitOfWork : IAsyncDisposable
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class PlaceOrderService(IUnitOfWork unitOfWork)
@@ -11063,6 +11639,8 @@ ticker.UpdatePrice("MSFT", 450m);
 ## 40.6 🎁 Decorator
 
 **The problem:** add behaviour to an object without changing its class.
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public interface IPaymentGateway
@@ -11426,6 +12004,8 @@ public class SalesReportGenerator : ReportGenerator
 **The problem:** an object behaves completely differently depending on its state, and the
 `if`-chains are getting out of hand.
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public interface IOrderState
 {
@@ -11467,6 +12047,8 @@ public class CancelledState : IOrderState
     public IOrderState Cancel() => throw new DomainException("Order is already cancelled.");
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class Order
@@ -11591,6 +12173,8 @@ public sealed class NullLogger : ILogger
 }
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // ❌ Before — a null check at every single call site
 public class OrderService1(ILogger? logger)
@@ -11625,6 +12209,8 @@ public class OrderService2(ILogger? logger = null)
 ## 40.16 🔎 Specification
 
 **The problem:** business rules about "which items qualify" are scattered and duplicated.
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public interface ISpecification<T>
@@ -11758,6 +12344,8 @@ public abstract class Entity
 }
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Customer : Entity
 {
@@ -11785,6 +12373,8 @@ public class Customer : Entity
 A customer who changes their name, email, and address is still **customer #42**. ✅ Entity.
 
 ## 41.3 💎 Value objects — the values ARE the identity
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public readonly record struct Money(decimal Amount, string Currency)
@@ -11815,6 +12405,8 @@ A $100 note is interchangeable with any other $100 note. ✅ Value object.
 > ([Chapter 44](#44--common-oop-mistakes)).
 
 ### Why value objects pay for themselves
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 // ❌ Everything is a string. Nothing is validated. Anything can be swapped by mistake.
@@ -11847,6 +12439,8 @@ graph TD
     O["🌍 Outside world"] -->|"✅ allowed"| R
     O -.->|"❌ FORBIDDEN"| I1
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class Order : Entity
@@ -11912,6 +12506,8 @@ public class Order : Entity
 }
 ```
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class OrderItem : Entity
 {
@@ -11943,6 +12539,8 @@ public class OrderItem : Entity
 | One transaction changes **one** aggregate | Keeps transactions small and scalable |
 | Reference other aggregates **by ID**, not by object | Prevents accidentally loading half the database |
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // ❌ An object reference drags the whole Customer aggregate along
 public class Order { public Customer Customer { get; set; } }
@@ -11955,6 +12553,8 @@ public class Order { public int CustomerId { get; } }
 
 Some logic belongs to no single entity. That's a **domain service** — but it still contains
 **business rules**, not plumbing.
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class PricingService
@@ -11982,6 +12582,8 @@ entity's data, it belongs *on that entity*.
 
 An application service is a **conductor**. It contains **no business rules** — it fetches, calls,
 and saves.
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class PlaceOrderService(
@@ -12053,6 +12655,8 @@ Everything technical:
 
 Every one of these implements an interface **defined by the Domain or Application layer**:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // 🟢 Defined in Domain — expressed in business language
 public interface IOrderRepository
@@ -12114,6 +12718,8 @@ The compiler enforces it. `MyApp.Domain` has **no project references**, so it *c
 Entity Framework even if someone wants to.
 
 ## 41.9 Putting it together
+
+> **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
 
 ```csharp
 // ═══════════════ 🟢 DOMAIN ═══════════════
@@ -12210,6 +12816,8 @@ dotnet test
 
 ## 42.2 Your first test — Arrange, Act, Assert
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class BankAccountTests
 {
@@ -12230,6 +12838,8 @@ public class BankAccountTests
 
 ### Naming tests so failures explain themselves
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 // Pattern:  MethodName_Scenario_ExpectedResult
 [Fact] public void Withdraw_WhenAmountExceedsBalance_Throws() { }
@@ -12241,6 +12851,8 @@ When CI says *"Withdraw_WhenAmountExceedsBalance_Throws FAILED"*, you already kn
 before opening a single file.
 
 ## 42.3 Testing that something throws
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 [Fact]
@@ -12265,6 +12877,8 @@ public async Task PlaceOrderAsync_WhenCustomerNotFound_ThrowsDomainException()
 ```
 
 ## 42.4 `[Theory]` — one test, many inputs
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class DiscountTests
@@ -12308,6 +12922,8 @@ public class DiscountTests
 
 ### Hand-written fakes — clearer than you'd think
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class FakeEmailSender : IEmailSender
 {
@@ -12335,6 +12951,8 @@ public class InMemoryOrderRepository : IOrderRepository
     }
 }
 ```
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 [Fact]
@@ -12375,6 +12993,8 @@ await emailSender.Received(1).SendAsync(
 
 ❌ **Testing implementation — this test breaks on every refactor:**
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 [Fact]
 public void AddItem_CallsInternalValidateMethod()
@@ -12385,6 +13005,8 @@ public void AddItem_CallsInternalValidateMethod()
 ```
 
 ✅ **Testing behaviour — this test survives refactoring:**
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 [Fact]
@@ -12444,6 +13066,8 @@ This is the great secret: **if something is hard to test, its design is wrong.**
 
 The classic fix — injecting the clock:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // ❌ Untestable: the result depends on when the test runs
 public class Order
@@ -12462,6 +13086,8 @@ public class Order(IClock clock)
     public bool IsOverdue => clock.UtcNow > DueDate.ToDateTime(TimeOnly.MinValue).AddDays(30);
 }
 ```
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 [Fact]
@@ -12537,6 +13163,8 @@ Like tidying a workshop. Same tools, same jobs — but now you can find the scre
 
 ❌ **Before:**
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public void ProcessOrder(Order order)
 {
@@ -12561,6 +13189,8 @@ public void ProcessOrder(Order order)
 ```
 
 ✅ **After — each step is named and testable:**
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public void ProcessOrder(Order order)
@@ -12647,6 +13277,8 @@ property, and a compiler that will not let you pass a phone number where an emai
 
 ❌ **Before:**
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public decimal CalculateShipping(string method, decimal weight) => method switch
 {
@@ -12702,6 +13334,8 @@ public class ShippingMethodRegistry(IEnumerable<IShippingMethod> methods)
 
 ❌ **Before — these four always travel together:**
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public void CreateBooking(
     int roomId, DateOnly checkIn, DateOnly checkOut, int guests,
@@ -12709,6 +13343,8 @@ public void CreateBooking(
 ```
 
 ✅ **After:**
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public record BookingPeriod
@@ -12739,6 +13375,8 @@ The validation now lives with the data, and the parameter list is readable.
 
 ❌ **Before:**
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 public void Process(Order order)
 {
@@ -12759,6 +13397,8 @@ public void Process(Order order)
 ```
 
 ✅ **After:**
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 public void Process(Order order)
@@ -12804,6 +13444,8 @@ graph LR
 ## 43.8 🧪 Hands-on exercise
 
 Refactor this class step by step. After **each** step, list which refactoring you applied:
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class ReportService
@@ -12874,6 +13516,8 @@ public class OrderManager
 
 ❌ **Anemic — the `Order` is a glorified struct:**
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 public class Order
 {
@@ -12898,6 +13542,8 @@ The rule "completed orders are frozen" lives outside the object, so every new se
 remember it.
 
 ✅ **Rich — the object owns its rules:**
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 public class Order
@@ -12949,6 +13595,8 @@ at the top and five layers may break in ways no test catches.
 
 ## 44.4 🔓 Public mutable state
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // ❌ Every one of these is a hole in your design
 public class Order
@@ -12958,6 +13606,8 @@ public class Order
     public string Status { get; set; } = "";           // anyone can write anything
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // ✅
@@ -12972,6 +13622,8 @@ public class Order
 
 ## 44.5 🔤 Primitive obsession
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 // ❌ Everything is a string or a decimal
 public class Customer
@@ -12985,6 +13637,8 @@ public class Customer
 public void Transfer(string fromAccount, string toAccount, decimal amount, string currency) { }
 Transfer(toAccount, fromAccount, amount, currency);   // 😱 arguments swapped. Compiles fine.
 ```
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 // ✅ Types that carry their own rules and cannot be confused
@@ -13003,6 +13657,8 @@ public void Transfer(AccountNumber from, AccountNumber to, Money amount) { }
 
 ## 44.6 🔗 Tight coupling
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // ❌ Cannot be tested, cannot be changed
 public class OrderService
@@ -13019,6 +13675,8 @@ public class OrderService(IEmailSender sender, IOrderRepository repository) { }
 
 The opposite mistake, and just as real:
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // ❌ Six files, one behaviour, one implementation each. Nobody can follow it.
 public interface IUserNameFormatterFactory { IUserNameFormatter Create(); }
@@ -13028,6 +13686,8 @@ public class DefaultUserNameFormatterFactory : IUserNameFormatterFactory { }
 public class DefaultUserNameFormatter : IUserNameFormatter { }
 public class UserName : IUserName { }
 ```
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 // ✅ What was actually needed
@@ -13048,6 +13708,8 @@ public string FormatUserName(string first, string last) => $"{last}, {first}";
 
 ## 44.8 🖥️ Business logic in the UI
 
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
+
 ```csharp
 // ❌ In a button click handler
 private void CheckoutButton_Click(object sender, EventArgs e)
@@ -13062,6 +13724,8 @@ private void CheckoutButton_Click(object sender, EventArgs e)
 
 Now those pricing rules exist **only** in the desktop app. Build a mobile app or an API, and
 you rewrite them — slightly differently. Two truths, one of them wrong.
+
+> **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
 ```csharp
 // ✅ The UI does UI. The domain does rules.
@@ -13082,6 +13746,8 @@ Keep rules **in the domain**. Use the database for storage and for the things it
 better at (set-based reporting, constraints as a safety net).
 
 ## 44.10 🚫 Ignoring nullability
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // ❌ Warnings suppressed, `!` everywhere
@@ -13327,6 +13993,8 @@ public abstract class Entity
 
 ## 46.4 Value objects
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // LibraryManagement.Domain/Common/Money.cs
 namespace LibraryManagement.Domain;
@@ -13346,6 +14014,8 @@ public readonly record struct Money(decimal Amount, string Currency = "USD")
     public override string ToString() => $"{Amount:N2} {Currency}";
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // LibraryManagement.Domain/Books/Isbn.cs
@@ -13373,6 +14043,8 @@ public readonly record struct Isbn
 ```
 
 ## 46.5 The `Book` entity
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // LibraryManagement.Domain/Books/Book.cs
@@ -13437,6 +14109,8 @@ public class Book : Entity
 ```
 
 ## 46.6 The `Member` abstraction — the aggregate root
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // LibraryManagement.Domain/Members/Member.cs
@@ -13516,6 +14190,8 @@ public abstract class Member : Entity
 
 ## 46.7 Membership types — polymorphism in action
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // LibraryManagement.Domain/Members/RegularMember.cs
 namespace LibraryManagement.Domain;
@@ -13530,6 +14206,8 @@ public class RegularMember : Member
     public override string Tier => "Regular";
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // LibraryManagement.Domain/Members/PremiumMember.cs
@@ -13550,6 +14228,8 @@ Adding a `StudentMember` tomorrow requires **zero** changes to `Member`, `Book`,
 
 ## 46.8 The generic repository
 
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+
 ```csharp
 // LibraryManagement.Domain/Common/IRepository.cs
 namespace LibraryManagement.Domain;
@@ -13562,6 +14242,8 @@ public interface IRepository<T> where T : Entity
     bool Remove(int id);
 }
 ```
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // LibraryManagement.Domain/Common/InMemoryRepository.cs
@@ -13588,6 +14270,8 @@ public class InMemoryRepository<T> : IRepository<T> where T : Entity
 ```
 
 ## 46.9 The library service
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // LibraryManagement.Domain/LibraryService.cs
@@ -13739,6 +14423,8 @@ catch (DomainException ex)
 ```
 
 ## 46.11 Unit tests
+
+> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
 // LibraryManagement.Tests/LibraryTests.cs
@@ -14104,7 +14790,621 @@ fully tested.
 
 ---
 
-# 49. 📖 Glossary and reference links
+# 49. 🔑 Solutions to the foundation exercises
+
+**Level: ⭐ Beginner → ⭐⭐ Intermediate**
+
+This chapter answers the exercises from **Part 0 and Part 1** — the ones whose answers you most need
+to check while the ideas are still new. Later chapters' exercises are deliberately open-ended design
+problems with many valid answers; for those, the checklist in
+[Chapter 47](#47--professional-checklist) is the right way to grade your own work.
+
+**Covered here:** §4.1, §5.6, §6.7, §7.5, §8.10, §12.8, §27.8.
+
+> ⚠️ **Try the exercise before reading the answer.** Reading a solution creates a feeling of
+> understanding that typing one creates the real thing. If you are stuck, read only the
+> *Thinking it through* paragraph first — it is written to unstick you without giving the code away.
+
+**Every solution below was compiled with .NET SDK 10.0.401 against `net10.0` with
+`<Nullable>enable</Nullable>`, and executed. The output shown is the real output.**
+
+---
+
+## 49.1 §4.1 — The four pillars, in your own words
+
+This exercise has no code. Here are defensible answers to each part.
+
+**1. Adding `ApplePay` should change zero existing lines.** If it did not, the likely cause is a
+`switch` or `if` chain somewhere that tests *which* payment method it has. That test is the thing
+polymorphism exists to remove — see [§16.4](#164-replace-ifswitch-with-polymorphism).
+
+**2. Where encapsulation protects something.** Any `private` field holding state that has a rule
+attached — a balance, a status, a collection. Make it `public` and the rule becomes unenforceable:
+any code anywhere can set the field directly, so the invariant the class promised is now only a
+hope. The class can no longer guarantee anything about itself.
+
+**3. What `Checkout` knows about `CreditCard`.** Nothing. It holds a reference typed as the
+*interface*, so the compiler will not let it call anything `CreditCard` adds. You can prove this to
+yourself by adding a `public void SwipeChip()` method to `CreditCard` only, then trying to call it
+from `Checkout` — you get `CS1061`, and that error is the abstraction doing its job.
+
+**4. Each pillar in one sentence, without using its name:**
+
+| Pillar | A sentence that does not use the word |
+|---|---|
+| Encapsulation | Keep the data where only the rules can reach it, and offer buttons instead. |
+| Abstraction | Describe *what* a thing can do, so callers never depend on *how* it does it. |
+| Inheritance | Build a specialised thing on top of a general thing, keeping what still applies. |
+| Polymorphism | Ask several different things the same question and let each answer in its own way. |
+
+If your sentences differ but mean the same thing, they are correct. The point of the exercise is
+that a definition you can only recite is not a definition you own.
+
+---
+
+## 49.2 §5.6 — `Student`, with a validated `Age`
+
+**Thinking it through.** The first half is a plain class. The second half — "refuse any value below
+0 or above 130" — is impossible with an auto-property, because there is no place to put the check.
+That is precisely *why* properties with bodies exist: you need a setter you can write code inside.
+
+```csharp
+public class Student
+{
+    private int age;
+
+    public string Name { get; init; } = "";
+    public string Grade { get; init; } = "";
+
+    public int Age
+    {
+        get => age;
+        set
+        {
+            if (value is < 0 or > 130)
+                throw new ArgumentOutOfRangeException(
+                    nameof(value), value, "Age must be between 0 and 130.");
+            age = value;
+        }
+    }
+
+    public void DisplayInfo()
+    {
+        Console.WriteLine($"Name: {Name}");
+        Console.WriteLine($"Age: {Age}");
+        Console.WriteLine($"Grade: {Grade}");
+    }
+}
+```
+
+> **▶️ Continues** — uses the `Student` class above.
+
+```csharp
+var s = new Student { Name = "Anna", Age = 22, Grade = "A" };
+s.DisplayInfo();
+
+try { s.Age = 200; }
+catch (ArgumentOutOfRangeException e) { Console.WriteLine($"rejected: {e.ParamName} = 200"); }
+```
+
+**Output:**
+
+```
+Name: Anna
+Age: 22
+Grade: A
+rejected: value = 200
+```
+
+**Three decisions worth explaining:**
+
+- **`private int age;` is the backing field.** Once a property has a body, you need somewhere to
+  keep the value. Writing `Age = value` inside the setter would call the setter again — infinite
+  recursion, and a `StackOverflowException` that kills the process outright.
+- **`value is < 0 or > 130`** is a *relational pattern* (C# 9+). It reads closer to the requirement
+  than `value < 0 || value > 130` and cannot be mistyped as `&&`.
+- **`init` on `Name` and `Grade`** means they can be set in an object initialiser and never again.
+  If a student's name genuinely changes, use `set`; the point is to choose deliberately.
+
+⚠️ **A limitation to notice.** `Name` and `Grade` default to `""`, so `new Student()` is legal and
+produces a nameless student. Making them `required` (C# 11+) forces the caller to supply them:
+
+```csharp
+public class Student
+{
+    public required string Name { get; init; }
+    public required string Grade { get; init; }
+}
+```
+
+Now `new Student()` is a **compile error**, which is strictly better than a runtime surprise. See
+[§27.6](#276-required--the-compile-time-guarantee).
+
+---
+
+## 49.3 §6.7 — `Thermostat`
+
+**Thinking it through.** Each requirement maps to a different property shape, and choosing the right
+shape *is* the exercise:
+
+| Requirement | Property shape |
+|---|---|
+| Readable by anyone, changeable only inside | `{ get; private set; }` |
+| Settable, but validated | Full property with a body |
+| Computed from the other two | Expression-bodied `=>`, no backing field |
+
+```csharp
+public class Thermostat
+{
+    private double target = 20.0;
+
+    public double CurrentTemperature { get; private set; }
+
+    public double TargetTemperature
+    {
+        get => target;
+        set
+        {
+            if (value is < 5 or > 30)
+                throw new ArgumentOutOfRangeException(
+                    nameof(value), value, "Target must be between 5 and 30 °C.");
+            target = value;
+        }
+    }
+
+    public bool IsHeating => CurrentTemperature < TargetTemperature;
+
+    public void SetTarget(double celsius) => TargetTemperature = celsius;
+
+    public void RecordReading(double celsius)
+    {
+        if (double.IsNaN(celsius) || celsius is < -90 or > 60)
+            throw new ArgumentOutOfRangeException(
+                nameof(celsius), celsius, "Reading is outside any plausible range.");
+        CurrentTemperature = celsius;
+    }
+}
+```
+
+> **▶️ Continues** — uses the `Thermostat` class above.
+
+```csharp
+var t = new Thermostat();
+t.SetTarget(22);
+t.RecordReading(18.5);
+Console.WriteLine($"current={t.CurrentTemperature} target={t.TargetTemperature} heating={t.IsHeating}");
+
+t.RecordReading(23.0);
+Console.WriteLine($"current={t.CurrentTemperature} heating={t.IsHeating}");
+
+try { t.SetTarget(40); }
+catch (ArgumentOutOfRangeException) { Console.WriteLine("rejected: target 40 is out of range"); }
+```
+
+**Output:**
+
+```
+current=18.5 target=22 heating=True
+current=23 heating=False
+rejected: target 40 is out of range
+```
+
+**Why `IsHeating` is computed and not stored.** If you kept a `bool isHeating` field, you would have
+to remember to update it in `SetTarget` **and** in `RecordReading`. Forget one, and the thermostat
+reports a lie. A computed property cannot drift out of sync, because there is nothing to keep in
+sync — it recalculates on every read. This is the general rule for derived values
+([§6.4](#64-the-property-toolbox--six-kinds-and-when-each-one-is-right)).
+
+**Why `SetTarget` delegates to the property.** The validation lives in exactly one place. Had
+`SetTarget` written `target = celsius` directly, there would be two doors into the field and only
+one of them locked.
+
+⚠️ **Note what is still not protected.** `CurrentTemperature` has a `private set`, so outside code
+cannot assign it — but `RecordReading` is `public`, so anyone can still push an implausible reading
+within the ±90/60 band. Encapsulation bounds what can happen; it cannot make data true.
+
+---
+
+## 49.4 §7.5 — `SafeDivider` and the `Try` pattern
+
+**Thinking it through.** The method must answer two questions at once — *did it work?* and *what is
+the answer?* A single return value cannot carry both without inventing a sentinel. The `Try` pattern
+is .NET's standard answer: `bool` for success, `out` for the value.
+
+```csharp
+public class SafeDivider
+{
+    public bool TryDivide(double numerator, double denominator, out double result)
+    {
+        if (denominator == 0)
+        {
+            result = 0;        // MUST assign before returning — the compiler enforces this
+            return false;
+        }
+
+        result = numerator / denominator;
+        return true;
+    }
+}
+```
+
+> **▶️ Continues** — uses the `SafeDivider` class above.
+
+```csharp
+var d = new SafeDivider();
+
+Console.WriteLine(d.TryDivide(10, 4, out double ok) ? $"10/4 = {ok}" : "failed");
+Console.WriteLine(d.TryDivide(10, 0, out double bad)
+    ? $"10/0 = {bad}"
+    : $"10/0 refused, result left at {bad}");
+```
+
+**Output:**
+
+```
+10/4 = 2.5
+10/0 refused, result left at 0
+```
+
+**The rule the compiler enforces:** every code path must assign an `out` parameter before returning.
+Delete `result = 0;` and you get `CS0177: The out parameter 'result' must be assigned to before
+control leaves the current method`. This is why an `out` parameter is never left holding garbage —
+unlike a C-style pointer, C# guarantees it was written.
+
+⚠️ **The caller's obligation.** `result` is `0` on failure, and `0` is a perfectly plausible
+division result. **Never read the `out` value without checking the `bool` first.** This is why the
+pattern always reads as `if (TryX(..., out var v))` — the check and the use are bound together.
+
+💡 **Why this is worth doing at all.** `10.0 / 0` in C# does *not* throw — it returns
+`double.PositiveInfinity`, which then propagates silently through later arithmetic and surfaces as
+`NaN` somewhere unrelated. (Integer division by zero *does* throw `DivideByZeroException`.) The
+`Try` pattern turns a silent bad value into an explicit decision at the call site. Compare:
+
+```csharp
+Console.WriteLine(10.0 / 0);                    // ∞
+Console.WriteLine(10.0 / 0 - 10.0 / 0);         // NaN — and now every later result is NaN
+```
+
+**Output:**
+
+```
+∞
+NaN
+```
+
+**When to prefer an exception instead:** when a zero denominator means the *caller has a bug*, not
+that they asked a reasonable question with no answer. `Try` is for expected failure; exceptions are
+for broken assumptions ([§28.8](#288-exceptions-vs-the-result-pattern)).
+
+---
+
+## 49.5 §8.10 — `BankAccount` that cannot be born invalid
+
+**Thinking it through.** The requirement "prove you cannot create an invalid account from outside"
+is the real exercise. It means every route in must pass through validation — so there must be no
+public setter, no parameterless constructor, and the second constructor must **chain** rather than
+duplicate the checks.
+
+```csharp
+public class BankAccount
+{
+    public const decimal MinimumBalance = 25.00m;
+
+    public string AccountHolder { get; }              // read-only: set once, in the constructor
+    public decimal Balance { get; private set; }      // readable outside, writable only inside
+
+    public BankAccount(string accountHolder, decimal openingBalance)
+    {
+        if (string.IsNullOrWhiteSpace(accountHolder))
+            throw new ArgumentException("Account holder is required.", nameof(accountHolder));
+        if (openingBalance < 0)
+            throw new ArgumentOutOfRangeException(
+                nameof(openingBalance), openingBalance, "Opening balance cannot be negative.");
+
+        AccountHolder = accountHolder;
+        Balance = openingBalance;
+    }
+
+    // Chains to the constructor above: the validation exists in ONE place.
+    public BankAccount(string accountHolder) : this(accountHolder, 0m) { }
+
+    public void Deposit(decimal amount)
+    {
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount), amount, "Deposit must be positive.");
+        Balance += amount;
+    }
+
+    public void Withdraw(decimal amount)
+    {
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount), amount, "Withdrawal must be positive.");
+        if (Balance - amount < MinimumBalance)
+            throw new InvalidOperationException(
+                $"Withdrawal would leave {Balance - amount:C}, below the {MinimumBalance:C} minimum.");
+
+        Balance -= amount;
+    }
+}
+```
+
+> **▶️ Continues** — uses the `BankAccount` class above.
+
+```csharp
+var acc = new BankAccount("Anna Perera", 100m);
+acc.Deposit(50m);
+Console.WriteLine($"balance after deposit: {acc.Balance}");
+
+try { acc.Withdraw(140m); }
+catch (InvalidOperationException e) { Console.WriteLine($"refused: {e.Message}"); }
+
+acc.Withdraw(125m);
+Console.WriteLine($"balance after withdrawal: {acc.Balance}");
+
+try { _ = new BankAccount("   ", 10m); }
+catch (ArgumentException e) { Console.WriteLine($"refused: {e.ParamName} was blank"); }
+
+var empty = new BankAccount("Bob");
+Console.WriteLine($"chained constructor balance: {empty.Balance}");
+```
+
+**Output** (run on a machine with a `$` currency setting — see the note below):
+
+```
+balance after deposit: 150
+refused: Withdrawal would leave $10.00, below the $25.00 minimum.
+balance after withdrawal: 25
+refused: accountHolder was blank
+chained constructor balance: 0
+```
+
+⚠️ **That `$` is not fixed.** The `:C` format specifier uses the **current culture**, so the same
+program prints `£10.00` in the UK and `10,00 €` in Germany. For a message that must be identical
+everywhere — a log line, a test assertion, an API response — pass an explicit culture, or do not use
+`:C` at all:
+
+```csharp
+using System.Globalization;
+
+decimal amount = 10m;
+Console.WriteLine(amount.ToString("C", CultureInfo.GetCultureInfo("en-US")));   // $10.00
+Console.WriteLine(amount.ToString("C", CultureInfo.GetCultureInfo("de-DE")));   // 10,00 €
+Console.WriteLine(amount.ToString(CultureInfo.InvariantCulture));                // 10
+```
+
+**Output:**
+
+```
+$10.00
+10,00 €
+10
+```
+
+This is a genuinely common source of tests that pass on a developer's machine and fail in CI.
+
+**Four choices worth explaining:**
+
+- **`decimal`, never `double`, for money.** `double` is binary floating point and cannot represent
+  `0.1` exactly; `decimal` is base-10 and can. Using `double` for currency produces cent-level
+  drift that accumulates ([§11.1](#111-which-is-which)).
+- **`AccountHolder` has no setter at all.** It is assigned once, in the constructor, and is
+  thereafter immutable. `{ get; }` is stronger than `{ get; private set; }` — it stops *the class
+  itself* from changing it by accident.
+- **Constructor chaining with `: this(...)`.** The one-argument constructor has no body, because the
+  two-argument one already does everything. Copying the two validation checks into it would create a
+  second place to forget an update ([§8.4](#84-constructor-chaining-with-this--never-duplicate-validation)).
+- **`InvalidOperationException` for the minimum-balance rule, not `ArgumentException`.** The
+  argument (`140m`) was perfectly valid in itself; what failed was the *account's current state*.
+  Choosing the exception type that matches the real cause is what lets callers handle the two cases
+  differently.
+
+---
+
+## 49.6 §12.8 — `TemporaryFile` and deterministic cleanup
+
+**Thinking it through.** The whole point is the last requirement: *throw an exception in the middle
+and verify the file was still deleted*. That is what `using` buys you, and the exercise is designed
+so you see it rather than take it on trust.
+
+```csharp
+public sealed class TemporaryFile : IDisposable
+{
+    private bool disposed;
+
+    public string Path { get; }
+
+    public TemporaryFile()
+    {
+        Path = System.IO.Path.Combine(
+            System.IO.Path.GetTempPath(), $"demo-{Guid.NewGuid():N}.txt");
+        File.WriteAllText(Path, string.Empty);
+    }
+
+    public void Write(string text)
+    {
+        ObjectDisposedException.ThrowIf(disposed, this);
+        File.AppendAllText(Path, text + Environment.NewLine);
+    }
+
+    public void Dispose()
+    {
+        if (disposed) return;                     // safe to call more than once
+        disposed = true;
+        try { if (File.Exists(Path)) File.Delete(Path); }
+        catch (IOException) { /* best effort — never throw from Dispose */ }
+    }
+}
+```
+
+> **▶️ Continues** — uses the `TemporaryFile` class above.
+
+```csharp
+string captured = "";
+
+try
+{
+    using var tmp = new TemporaryFile();
+    captured = tmp.Path;
+    tmp.Write("line one");
+    Console.WriteLine($"exists inside using: {File.Exists(captured)}");
+
+    throw new InvalidOperationException("boom");
+}
+catch (InvalidOperationException)
+{
+    Console.WriteLine("exception was thrown and caught");
+}
+
+Console.WriteLine($"exists after using:  {File.Exists(captured)}");
+```
+
+**Output:**
+
+```
+exists inside using: True
+exception was thrown and caught
+exists after using:  False
+```
+
+That `False` is the entire lesson. `Dispose()` ran **while the exception was unwinding**, because
+`using` compiles to `try`/`finally` ([§12.4](#124-using--the-safety-net-that-rarely-forgets)).
+
+**Five details that make this a good `IDisposable`:**
+
+- **`sealed`.** The full Dispose pattern with `protected virtual Dispose(bool)` exists only so
+  *subclasses* can participate in cleanup. Sealing the class removes that requirement entirely, and
+  the simple one-method form becomes correct ([§12.6](#126-the-full-dispose-pattern-for-inheritable-classes)).
+- **The `disposed` flag.** `Dispose()` must be safe to call twice — `using` calls it, and a
+  defensive caller might too. The contract requires idempotence.
+- **`ObjectDisposedException.ThrowIf`.** Using a disposed object is a bug; saying so loudly beats
+  writing to a file you already deleted.
+- **`Dispose()` swallows `IOException`.** Throwing from `Dispose` during exception unwinding would
+  *replace* the original exception, hiding the real failure behind a cleanup failure. Cleanup should
+  never be the thing that reports a problem.
+- **`Guid.NewGuid()` in the filename.** A fixed name would collide between two instances, and
+  between two test runs in parallel.
+
+⚠️ **No finalizer here, deliberately.** This class holds no unmanaged handle — `File.Delete` is a
+managed call. A finalizer would add GC cost and could run at shutdown when it cannot do anything
+useful ([§12.7](#127-finalizers--the-last-resort-you-should-avoid)).
+
+---
+
+## 49.7 §27.8 — Making `UserProfile` null-safe
+
+**Thinking it through.** The original has four problems, and the fix for each is different. Work out
+which is which before reading on: `Name` must exist; `Bio` and `Address` may be missing; `Tags` must
+never be null; and `GetSummary()` must not throw whatever is absent.
+
+The starting point:
+
+> **❌ Does not compile — on purpose.** With `<Nullable>enable</Nullable>` every one of these four
+> properties raises `CS8618: Non-nullable property must contain a non-null value when exiting
+> constructor`. Fixing that is the exercise.
+
+```csharp
+public class UserProfile
+{
+    public string Name { get; set; }          // CS8618: never assigned
+    public string Bio { get; set; }           // CS8618
+    public Address Address { get; set; }      // CS8618
+    public List<string> Tags { get; set; }    // CS8618
+
+    public string GetSummary()
+        => $"{Name} from {Address.City} — {Bio.Substring(0, 50)} — {Tags.Count} tags";
+}
+```
+
+`GetSummary()` can throw in **three** separate ways: `Address` may be null, `Bio` may be null, and
+`Bio.Substring(0, 50)` throws `ArgumentOutOfRangeException` whenever the bio is shorter than 50
+characters — a bug that has nothing to do with null at all.
+
+The fixed version:
+
+```csharp
+public class Address
+{
+    public required string City { get; init; }
+}
+
+public class UserProfile
+{
+    private readonly List<string> tags = new();       // never null, by construction
+
+    public required string Name { get; init; }        // caller MUST supply it
+    public string? Bio { get; set; }                  // genuinely optional
+    public Address? Address { get; set; }             // genuinely optional
+
+    public IReadOnlyList<string> Tags => tags;        // exposed, but not mutable from outside
+
+    public void AddTag(string tag)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(tag);
+        tags.Add(tag);
+    }
+
+    public string GetSummary()
+    {
+        string city = Address?.City ?? "an unknown location";
+        string bio = string.IsNullOrWhiteSpace(Bio)
+            ? "no bio"
+            : Bio.Length <= 50 ? Bio : Bio[..50] + "…";
+
+        return $"{Name} from {city} — {bio} — {tags.Count} tags";
+    }
+}
+```
+
+> **▶️ Continues** — uses the two classes above.
+
+```csharp
+var full = new UserProfile
+{
+    Name = "Anna",
+    Bio = "Engineer",
+    Address = new Address { City = "Colombo" }
+};
+full.AddTag("csharp");
+Console.WriteLine(full.GetSummary());
+
+var sparse = new UserProfile { Name = "Bob" };     // everything optional omitted
+Console.WriteLine(sparse.GetSummary());
+```
+
+**Output:**
+
+```
+Anna from Colombo — Engineer — 1 tags
+Bob from an unknown location — no bio — 0 tags
+```
+
+**Each fix, and why that one:**
+
+| Problem | Fix | Why not something else |
+|---|---|---|
+| `Name` could be missing | `required string` | A `string?` would push the check onto every caller; a constructor also works but loses initialiser syntax |
+| `Bio`, `Address` optional | `string?`, `Address?` | The `?` is the documentation *and* the compiler check |
+| `Tags` could be null | private `List`, exposed as `IReadOnlyList` | A public `List` setter lets a caller assign `null` **and** mutate your collection |
+| `Substring(0, 50)` throws | `Bio.Length <= 50 ? Bio : Bio[..50]` | Length must be checked; `null` safety alone does not fix this |
+
+**Two things worth noticing:**
+
+- **`Bio[..50]` is a range expression** (C# 8+), equivalent to `Bio.Substring(0, 50)` but harder to
+  get wrong. It still requires the length check — ranges do not clamp.
+- **`Tags` returns `IReadOnlyList<string>`, and this is a shallow guard.** A caller cannot add or
+  remove items, but `IReadOnlyList<T>` is an *interface over the same object*, so a determined caller
+  could cast it back to `List<string>` and mutate it. For a genuine copy, return
+  `tags.ToArray()` — at the cost of an allocation per call
+  ([§13.3](#133-protecting-collections--the-leak-everyone-misses)).
+
+⚠️ **And the boundary caveat from [§27.2](#272-the--changes-everything--at-compile-time):** if this
+class is populated by JSON deserialisation, the deserialiser writes properties by reflection and can
+leave `Name` null despite `required`. Validate after deserialising; the annotation is a contract for
+*your* code, not a runtime gate.
+
+---
+
+# 50. 📖 Glossary and reference links
 
 ## 49.1 Glossary
 

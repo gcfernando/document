@@ -11,7 +11,7 @@
 ![MySQL](https://img.shields.io/badge/MySQL-8.4%20LTS-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![Chapters](https://img.shields.io/badge/Chapters-66-orange?style=for-the-badge)
 ![Examples](https://img.shields.io/badge/Every%20example-Real%20World-success?style=for-the-badge)
-![Tested](https://img.shields.io/badge/Every%20script-Tested%20on%20both%20engines-brightgreen?style=for-the-badge)
+![Verified](https://img.shields.io/badge/MSSQL%20scripts-Re--verified%20on%20SQL%20Server%202025-brightgreen?style=for-the-badge)
 
 **[🚀 Start here](#-start-here--your-first-hour)** &nbsp;·&nbsp; **[📚 Contents](#-table-of-contents)** &nbsp;·&nbsp; **[🎨 Box legend](#-how-to-read-the-colored-boxes-your-legend)** &nbsp;·&nbsp; **[📖 Glossary](#667--glossary)**
 
@@ -44,9 +44,10 @@
 
 > [!NOTE]
 > - **🧰 What you need:** SQL Server 2019 or newer (the free **Developer** or **Express** edition is fine) and/or **MySQL 8.4 LTS**. You can start with just one of them.
-> - **✅ Tested:** every script in this guide was run and checked on **SQL Server 2019** and **MySQL 8.4**. MySQL 8.0.31 or newer also works, but MySQL 8.0 reached its end of life in April 2026, so install 8.4.
+> - **✅ Verification:** see [What was verified, and what was not](#-what-was-verified-and-what-was-not) below — it states precisely which scripts were executed, on which engine, and which were not.
 > - **🎯 Goal:** take you from *"I don't know what a row is"* to *"I can design, query, speed up, secure, and run a real database."*
 > - **⏱️ How long:** about 35 focused days if you follow the plan in [Chapter 66](#666--your-35-day-learning-plan).
+> - **📌 MySQL version note:** MySQL 8.0 reached end of life in April 2026. Install **8.4 LTS**. Scripts here generally work on 8.0.31+, but new installs should not start on an unsupported release.
 
 ---
 
@@ -110,6 +111,87 @@ New to databases? Do these four steps **in this order**. Each one takes about 15
 > - **"Something is slow in production right now."** → Go straight to Chapters 46, 47, 48. Start with 48.1.
 > - **"I write application code that talks to a database."** → Chapters 55, 63, 65 — parameterization, concurrency, and the calling patterns that cause most outages.
 > - **"We change our schema by hand and it scares me."** → Chapter 64, then 56.
+
+---
+
+## 🔍 What was verified, and what was not
+
+A guide that says "everything is tested" without saying *how* is asking for trust it has not earned.
+Here is the precise position.
+
+### ✅ Executed and confirmed
+
+| What | How |
+|---|---|
+| **The ShopDB build script** ([§4.3](#43--build-shopdb--mssql-version)) and all seed data ([§4.5](#45--seed-the-data-identical-in-both-engines)) | Run start-to-finish on a clean instance |
+| **The row counts in [§4.6](#46--verify-your-build)** | Every one of the eight counts reproduced exactly |
+| **The MSSQL/T-SQL query blocks** | Extracted and executed against the freshly built ShopDB; blocks that change data ran inside a transaction that was rolled back |
+| **Sampled published result tables** | Compared cell-by-cell against live output |
+| **Error messages quoted in the text** | Confirmed, including `Msg 8114` in [§23.3](#233-️-implicit-conversion--the-silent-performance-killer) |
+
+**Engine used for that pass:** Microsoft SQL Server **2025 (RTM-CU3), Express Edition**, 17.0.4025.3,
+on Windows 11.
+
+### ⚠️ Not executed — and you should know which
+
+| What | Why not | What that means for you |
+|---|---|---|
+| **Every MySQL block** | No MySQL instance was available for this verification pass | The MySQL scripts were reviewed by reading against the MySQL 8.4 reference manual, not run. Treat them as carefully checked, not machine-confirmed |
+| **Administrative scripts** — `BACKUP`, `RESTORE`, `CREATE LOGIN`, `DBCC`, replication, `sp_configure` | Running them would alter or damage a real server | Read them; run them only on an instance you own and can rebuild |
+| **Partitioning, Full-Text, and columnstore examples** ([Ch 50](#50-partitioning-and-very-large-tables), [Ch 58](#58-json-xml-and-semi-structured-data)) | Require features or editions not present on Express | Syntax reviewed; behaviour not observed |
+| **Anything requiring Enterprise edition** — for example `WITH (ONLINE = ON)` index rebuilds | Express edition refuses them (`Msg 1712`) | The syntax is correct; the feature needs the right edition |
+| **Timing and "this is faster" statements** | No benchmark was run for this guide | Every such claim is explained by **mechanism** and stated with **conditions**. None is a measured figure. **Measure on your own data before acting on any of them** |
+
+### 📌 Version sensitivity
+
+SQL Server 2025 accepted every T-SQL block, but the guide targets **2019+**. Where a feature needs a
+newer release the text says so inline — for example `STRING_AGG` (2017+), `AT TIME ZONE` (2016+),
+`GENERATE_SERIES` (2022+), and `TRIM` with characters (2022+). If a script fails on your server, check
+the version note beside it first.
+
+---
+
+## 🧾 How to read the code blocks
+
+Every SQL block in this guide carries an engine marker as its **first comment line**. That marker is
+the most important thing on the block — SQL Server and MySQL disagree about syntax far more often
+than beginners expect.
+
+| Marker | Meaning |
+|---|---|
+| `-- ✅ Works in BOTH` | Standard SQL. Paste into either engine unchanged |
+| `-- 🟥 MSSQL` or `-- ✅ MSSQL` | **SQL Server only.** Will not run on MySQL |
+| `-- 🟦 MySQL` or `-- ✅ MySQL` | **MySQL only.** Will not run on SQL Server |
+| `-- ❌ ...FAILS...` | **Deliberately broken**, to show you the error. The expected message is given with it |
+
+> [!WARNING]
+> ⚠️ **Some blocks show both engines in one box**, with a `-- 🟥 MSSQL` section followed by a
+> `-- 🟦 MySQL` section. **Do not paste the whole box into one query window** — run only the half for
+> the engine you are using. The other half will raise a syntax error, and it is not a mistake in the
+> script.
+
+### 🔁 Blocks that build on earlier ones
+
+Most chapters are cumulative: a query in §11.4 may drop a column that §11.1 added. If a script
+complains that an object *does not exist* or *already exists*, you have almost certainly run the
+chapter out of order.
+
+**The reset is always the same, and it is cheap:**
+
+```text
+1. Re-run the build script for your engine  — §4.3 (MSSQL) or §4.4 (MySQL)
+2. Re-run the seed data                      — §4.5
+3. Re-run the verification query             — §4.6, and check the eight counts
+```
+
+That takes a few seconds and puts ShopDB back exactly as this guide assumes. **Do this whenever a
+result stops matching the guide** — it is faster than working out which experiment left something
+behind, and the chapters from 8 onwards deliberately create, alter, and drop objects.
+
+> [!TIP]
+> 💡 **Keep the three scripts from Chapter 4 in a file called `rebuild_shopdb.sql`.** You will use it
+> more than any other script in this guide, and being able to destroy your practice data without
+> worrying is what lets you experiment properly.
 
 ---
 
@@ -2554,8 +2636,13 @@ INSERT INTO categories VALUES (NULL, 'Wearables', 'Smartwatches and fitness band
 
 ## 12.2 📦 Inserting multiple rows at once
 
+> 💡 **Why one multi-row `INSERT` beats three single-row ones:** each separate statement is its own
+> round trip to the server and, under autocommit, its own transaction — with its own log flush. One
+> statement means one round trip and one commit. The gap is negligible for three rows and large for
+> thousands; it grows with network latency and with how durable your commit settings are.
+
 ```sql
--- ✅ Works in BOTH — and it is MUCH faster than 3 separate statements
+-- ✅ Works in BOTH — and it is one round trip instead of three
 INSERT INTO categories (category_name, description) VALUES
 ('Cameras',     'Action cameras and camcorders'),
 ('Networking',  'Routers, switches, cables'),
@@ -3960,7 +4047,16 @@ WHERE order_id IN (SELECT order_id FROM orders WHERE status = 'Cancelled');
 TRUNCATE TABLE staging_products;
 ```
 
-**Why it is so much faster than `DELETE`:** `DELETE` writes every removed row into the transaction log, so that each one can be undone. `TRUNCATE` simply releases the table's storage blocks in one go. Removing 50 million rows takes minutes with `DELETE` and under a second with `TRUNCATE`.
+**Why it is so much faster than `DELETE`:** `DELETE` is row-by-row. It writes every removed row into
+the transaction log so each one can be rolled back, fires any `DELETE` triggers, and updates every
+index. `TRUNCATE` instead deallocates the table's storage pages and logs only the deallocations — a
+tiny, fixed amount of work regardless of how many rows were in the table.
+
+That difference in **mechanism** is why `TRUNCATE` scales differently: `DELETE` cost grows with the
+row count, `TRUNCATE` cost does not. On a large table the practical gap is commonly several orders of
+magnitude — but the exact numbers depend on row size, index count, trigger count, recovery model, and
+your storage. **Measure on your own data rather than trusting any figure quoted in a guide**, this one
+included.
 
 > [!WARNING]
 > ⚠️ **Three things that will bite you:**
@@ -16125,6 +16221,961 @@ var recent = await db.Orders
 38. Write a safe dynamic search procedure with four optional filters.
 39. Implement SCD Type 2 on a customer dimension and simulate a city change.
 40. Identify the three slowest queries you have written in this guide and tune them.
+
+</details>
+
+---
+
+## 66.4b 🔑 Solutions to exercises 1–30
+
+> ⚠️ **Try each one first.** A solution you read produces a feeling of competence; a solution you
+> wrote produces the real thing. If you are stuck, read only the 💡 hint line before the query.
+
+**How these were checked:** every query below was executed against a freshly built ShopDB on
+**SQL Server 2025 Express (17.0.4025.3)**, and the row counts and values shown are the real output.
+The MySQL variants are given where the syntax differs, but were **not executed** — see
+[What was verified, and what was not](#-what-was-verified-and-what-was-not).
+
+**Before you start:** rebuild ShopDB (§4.3 → §4.5 → §4.6) so your data matches these answers. Earlier
+chapters add and drop columns, and a leftover change will shift the numbers.
+
+<details>
+<summary><b>Level 1 — Basics (1–10)</b></summary>
+
+**1. List all products, most expensive first.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT product_name, unit_price
+FROM products
+ORDER BY unit_price DESC;
+```
+
+18 rows, starting `WorkStation X17 | 2450.00`, `UltraBook Pro 14 | 1499.00`, `UltraBook Air 13 | 999.00`.
+
+💡 Note that `Zenith Phone 12 Mini` and `VisionPanel 32 4K` both cost `749.00`. Their relative order
+is **not defined** — add a tie-breaker (`ORDER BY unit_price DESC, product_name`) whenever you need a
+stable, repeatable order. This matters far more than beginners expect; see [§16](#16-order-by-sorting-results).
+
+---
+
+**2. Find all customers in the UK or Germany.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT full_name, country
+FROM customers
+WHERE country IN ('UK', 'Germany')
+ORDER BY country, full_name;
+```
+
+| full_name | country |
+|---|---|
+| Hannah Weiss | Germany |
+| John Baker | UK |
+
+💡 `IN` is shorthand for `country = 'UK' OR country = 'Germany'`. Only two rows — that is correct for
+this data, not a mistake in your query.
+
+---
+
+**3. Show orders placed in March 2026 (SARGable).**
+
+```sql
+-- ✅ Works in BOTH
+SELECT order_id, order_date
+FROM orders
+WHERE order_date >= '2026-03-01'
+  AND order_date <  '2026-04-01'
+ORDER BY order_date;
+```
+
+| order_id | order_date |
+|---|---|
+| 1007 | 2026-03-03 |
+| 1008 | 2026-03-12 |
+| 1009 | 2026-03-21 |
+
+💡 **This is the point of the exercise.** `WHERE MONTH(order_date) = 3` returns the same rows and
+**cannot use an index**, because wrapping the column in a function makes the predicate
+non-SARGable ([§48](#48-query-optimization-and-sargability)). The half-open range `>= start AND < next_start`
+is the SARGable form, and using `<` for the upper bound means you never have to think about whether
+the month has 28, 30, or 31 days — or about time components hiding at `23:59:59.997`.
+
+---
+
+**4. Find products below their reorder level.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT product_name, units_in_stock, reorder_level
+FROM products
+WHERE units_in_stock < reorder_level
+ORDER BY product_name;
+```
+
+| product_name | units_in_stock | reorder_level |
+|---|---|---|
+| ArchiveDrive 8TB | 4 | 10 |
+| Legacy Netbook 10 | 0 | 5 |
+| Stream Cam 4K | 9 | 10 |
+
+💡 You can compare two **columns**, not just a column with a literal. That is what makes this a
+business rule rather than a hard-coded threshold.
+
+---
+
+**5. List every distinct country customers come from.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT DISTINCT country FROM customers ORDER BY country;
+```
+
+12 rows: Czechia, Denmark, Germany, India, Italy, Japan, Nigeria, Singapore, Spain, Sri Lanka, UAE, UK.
+
+💡 Twelve customers, twelve countries — one each. Keep that in mind for exercise 26, where it makes
+every customer rank 1 in their own country.
+
+---
+
+**6. Show the 5 cheapest non-discontinued products.**
+
+```sql
+-- 🟥 MSSQL
+SELECT TOP (5) product_name, unit_price
+FROM products
+WHERE discontinued = 0
+ORDER BY unit_price ASC, product_name;
+```
+
+```sql
+-- 🟦 MySQL
+SELECT product_name, unit_price
+FROM products
+WHERE discontinued = 0
+ORDER BY unit_price ASC, product_name
+LIMIT 5;
+```
+
+| product_name | unit_price |
+|---|---|
+| Silent Mouse Pro | 45.00 |
+| PodMic USB | 99.00 |
+| NanoSSD 1TB | 109.00 |
+| MechKey RGB Keyboard | 129.00 |
+| Stream Cam 4K | 159.00 |
+
+💡 `TOP`/`LIMIT` without `ORDER BY` returns an **arbitrary** five rows — the engine is free to give you
+any five. "Cheapest" only means something once you have said how to sort.
+
+---
+
+**7. Find customers whose email is at `example.com`.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT full_name, email
+FROM customers
+WHERE email LIKE '%@example.com'
+ORDER BY full_name;
+```
+
+All 12 customers — every seeded address uses that domain.
+
+⚠️ **A leading `%` makes this non-SARGable**: the engine cannot seek, so it scans every row. Fine on 12
+rows, and a real problem on 12 million. If you genuinely need to search by domain at scale, store the
+domain in its own column and index it. See [§48](#48-query-optimization-and-sargability).
+
+---
+
+**8. Show orders that have not shipped.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT order_id, order_date, status
+FROM orders
+WHERE ship_date IS NULL
+ORDER BY order_id;
+```
+
+| order_id | order_date | status |
+|---|---|---|
+| 1004 | 2026-02-09 | Cancelled |
+| 1009 | 2026-03-21 | Paid |
+| 1013 | 2026-05-06 | Pending |
+| 1017 | 2026-06-15 | Refunded |
+| 1020 | 2026-07-19 | Paid |
+| 1022 | 2026-08-14 | Pending |
+
+⚠️ **`IS NULL`, never `= NULL`.** `ship_date = NULL` returns **zero rows** and no error, because
+comparing anything to `NULL` yields *unknown*, not *true* ([§15](#15-null-the-value-that-is-not-there)).
+This is the most common silent bug in beginner SQL.
+
+💡 Note the result mixes genuinely-unshipped orders with `Cancelled` and `Refunded` ones. A business
+question is rarely answered by one column — you would usually add `AND status NOT IN ('Cancelled','Refunded')`.
+
+---
+
+**9. List products priced between 100 and 500.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT product_name, unit_price
+FROM products
+WHERE unit_price BETWEEN 100 AND 500
+ORDER BY unit_price;
+```
+
+10 rows, from `NanoSSD 1TB | 109.00` to `VisionPanel 27 QHD | 399.00`.
+
+💡 `BETWEEN` is **inclusive at both ends**. That is safe here, and dangerous with dates and times:
+`BETWEEN '2026-03-01' AND '2026-03-31'` silently excludes anything at `2026-03-31 00:00:01`. Use the
+half-open range from exercise 3 for anything with a time component.
+
+---
+
+**10. Count customers per loyalty tier.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT loyalty_tier, COUNT(*) AS customers
+FROM customers
+GROUP BY loyalty_tier
+ORDER BY customers DESC, loyalty_tier;
+```
+
+| loyalty_tier | customers |
+|---|---|
+| Bronze | 5 |
+| Gold | 3 |
+| Silver | 3 |
+| Platinum | 1 |
+
+💡 `COUNT(*)` counts rows; `COUNT(column)` counts **non-NULL values** of that column. They differ the
+moment nulls appear, and the difference is a common source of wrong totals ([§25](#25-aggregate-functions)).
+
+</details>
+
+<details>
+<summary><b>Level 2 — Joins and aggregation (11–20)</b></summary>
+
+**11. Every order with its customer name and sales rep name.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT o.order_id,
+       c.full_name AS customer,
+       COALESCE(e.first_name + ' ' + e.last_name, '(none)') AS sales_rep
+FROM orders AS o
+INNER JOIN customers AS c ON c.customer_id = o.customer_id
+LEFT  JOIN employees AS e ON e.employee_id = o.employee_id
+ORDER BY o.order_id;
+```
+
+23 rows, beginning `1000 | Amara Silva | Priya Raman`.
+
+💡 **Why `INNER` for the customer and `LEFT` for the employee.** `orders.customer_id` is `NOT NULL`,
+so every order has a customer — an inner join loses nothing. `orders.employee_id` **is** nullable
+(a web order has no sales rep), so an inner join there would silently drop those orders. Match the
+join type to the column's nullability, every time.
+
+🟦 **MySQL:** `+` does not concatenate strings. Use `CONCAT_WS(' ', e.first_name, e.last_name)`, and
+`IFNULL(...)` in place of `COALESCE(...)` if you prefer (both work in MySQL).
+
+---
+
+**12. Each product with its category and supplier names.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT p.product_name,
+       c.category_name,
+       COALESCE(s.company_name, '(none)') AS supplier
+FROM products AS p
+INNER JOIN categories AS c ON c.category_id = p.category_id
+LEFT  JOIN suppliers  AS s ON s.supplier_id = p.supplier_id
+ORDER BY p.product_name;
+```
+
+| product_name | category_name | supplier |
+|---|---|---|
+| ArchiveDrive 8TB | Storage | Baltic Components |
+| Budget Phone A3 | Smartphones | Lanka Distributors |
+| Concert Over-Ear | Audio | EuroSound GmbH |
+| … | … | … |
+
+💡 Same rule as exercise 11: `products.category_id` is `NOT NULL` (inner), `products.supplier_id` is
+nullable (left).
+
+---
+
+**13. Total revenue per category.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT c.category_name,
+       CAST(SUM(oi.unit_price * oi.quantity * (1 - oi.discount)) AS DECIMAL(12,2)) AS revenue
+FROM order_items AS oi
+JOIN products   AS p ON p.product_id  = oi.product_id
+JOIN categories AS c ON c.category_id = p.category_id
+GROUP BY c.category_name
+ORDER BY revenue DESC;
+```
+
+| category_name | revenue |
+|---|---|
+| Laptops | 13223.35 |
+| Smartphones | 5874.55 |
+| Monitors | 3719.10 |
+| Audio | 2053.85 |
+| Storage | 1311.00 |
+| Peripherals | 1200.00 |
+
+⚠️ **Use `order_items.unit_price`, not `products.unit_price`.** The order line records the price
+**at the time of sale**; the product table holds today's price. Joining to `products` for the price
+would silently restate history every time someone changes a price. This is exactly the deliberate
+duplication explained in [§4.6](#46--verify-your-build) and [§52](#52-denormalization-and-when-to-break-the-rules).
+
+---
+
+**14. Top 5 customers by lifetime spend.**
+
+```sql
+-- 🟥 MSSQL (MySQL: drop TOP (5) and add LIMIT 5 at the end)
+SELECT TOP (5)
+       c.full_name,
+       CAST(SUM(oi.unit_price * oi.quantity * (1 - oi.discount)) AS DECIMAL(12,2)) AS lifetime_spend
+FROM customers   AS c
+JOIN orders      AS o  ON o.customer_id = c.customer_id
+JOIN order_items AS oi ON oi.order_id   = o.order_id
+GROUP BY c.customer_id, c.full_name
+ORDER BY lifetime_spend DESC;
+```
+
+| full_name | lifetime_spend |
+|---|---|
+| Mei Chen | 7976.45 |
+| John Baker | 4040.15 |
+| Fatima Al-Sayed | 3459.20 |
+| Grace Adeyemi | 3388.00 |
+| Kenji Watanabe | 2887.65 |
+
+💡 **Group by `customer_id` as well as `full_name`.** Two customers could share a name; grouping by
+the key keeps them separate and tells the engine the name is functionally dependent on it.
+
+---
+
+**15. Products that have never been ordered.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT p.product_name
+FROM products AS p
+WHERE NOT EXISTS (
+    SELECT 1 FROM order_items AS oi WHERE oi.product_id = p.product_id
+)
+ORDER BY p.product_name;
+```
+
+One row: `Legacy Netbook 10`.
+
+⚠️ **Prefer `NOT EXISTS` over `NOT IN` here.** If the subquery column ever contains a `NULL`,
+`NOT IN` returns **no rows at all** — silently, with no error, because `x NOT IN (1, NULL)` evaluates
+to *unknown* rather than *true*. `NOT EXISTS` is immune. See [§30](#30-subqueries-and-exists).
+
+💡 The `LEFT JOIN … WHERE oi.product_id IS NULL` anti-join is an equally valid third form.
+
+---
+
+**16. Every customer, including those with zero orders, showing 0 correctly.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT c.full_name, COUNT(o.order_id) AS order_count
+FROM customers AS c
+LEFT JOIN orders AS o ON o.customer_id = c.customer_id
+GROUP BY c.customer_id, c.full_name
+ORDER BY order_count DESC, c.full_name;
+```
+
+12 rows, from `Mei Chen | 4` down to several with `1`. In this data every customer has ordered at
+least once, so no zero appears — **but the query is still the correct one**, and here is how to prove
+it to yourself:
+
+```sql
+-- ✅ Works in BOTH: add a customer with no orders, then re-run exercise 16
+INSERT INTO customers (full_name, email, city, country, signup_date, loyalty_tier)
+VALUES ('Test Nobody', 'nobody@example.com', 'Nowhere', 'UK', '2026-09-01', 'Bronze');
+```
+
+Re-run the query and `Test Nobody | 0` appears at the bottom. Then remove it, or rebuild from §4.3–4.5.
+
+⚠️ **`COUNT(o.order_id)`, never `COUNT(*)`.** With a `LEFT JOIN`, an unmatched customer still produces
+one row — with all the `orders` columns `NULL`. `COUNT(*)` counts that row and reports **1**;
+`COUNT(o.order_id)` skips `NULL`s and correctly reports **0**. This single character is the whole
+exercise.
+
+---
+
+**17. Orders with no captured payment.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT o.order_id, o.status
+FROM orders AS o
+WHERE NOT EXISTS (
+    SELECT 1 FROM payments AS pay
+    WHERE pay.order_id = o.order_id
+      AND pay.status   = 'Captured'
+)
+ORDER BY o.order_id;
+```
+
+| order_id | status |
+|---|---|
+| 1004 | Cancelled |
+| 1013 | Pending |
+| 1017 | Refunded |
+| 1022 | Pending |
+
+💡 The `AND pay.status = 'Captured'` belongs **inside** the subquery. Move it outside and you change
+the question from "has no captured payment" to something that also matches orders whose payment rows
+exist but failed — a different, and usually wrong, answer.
+
+---
+
+**18. Every employee with their manager's name, including the CEO.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT e.first_name + ' ' + e.last_name AS employee,
+       COALESCE(m.first_name + ' ' + m.last_name, '(no manager)') AS manager
+FROM employees AS e
+LEFT JOIN employees AS m ON m.employee_id = e.manager_id
+ORDER BY e.employee_id;
+```
+
+| employee | manager |
+|---|---|
+| Sarah Mitchell | (no manager) |
+| David Okafor | Sarah Mitchell |
+| Priya Raman | David Okafor |
+| … | … |
+
+💡 This is a **self join**: one table joined to itself under two aliases. The aliases are not optional
+styling — without them the engine cannot tell which `first_name` you mean. "Including the CEO" is the
+hint that it must be a `LEFT` join, since `Sarah Mitchell.manager_id` is `NULL`.
+
+---
+
+**19. Orders per status, with each as a percentage of the total.**
+
+```sql
+-- ✅ Works in BOTH (window functions: MSSQL 2012+, MySQL 8.0+)
+SELECT status,
+       COUNT(*) AS n,
+       CAST(100.0 * COUNT(*) / SUM(COUNT(*)) OVER () AS DECIMAL(5,1)) AS pct
+FROM orders
+GROUP BY status
+ORDER BY n DESC, status;
+```
+
+| status | n | pct |
+|---|---|---|
+| Delivered | 15 | 65.2 |
+| Paid | 2 | 8.7 |
+| Pending | 2 | 8.7 |
+| Shipped | 2 | 8.7 |
+| Cancelled | 1 | 4.3 |
+| Refunded | 1 | 4.3 |
+
+💡 **`SUM(COUNT(*)) OVER ()` looks impossible and is not.** Aggregation runs first, producing one row
+per status; the window function then runs *over those grouped rows*, summing the six counts to 23.
+Understanding that ordering is what makes window functions click ([§33](#33-window-functions)).
+
+⚠️ **`100.0`, not `100`.** With integer `100`, `100 * 15 / 23` is integer division in SQL Server and
+yields `65` with the fraction discarded before the cast. One decimal point changes the whole
+expression to decimal arithmetic.
+
+---
+
+**20. Categories with more than 3 products and an average price above 200.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT c.category_name,
+       COUNT(*) AS product_count,
+       CAST(AVG(p.unit_price) AS DECIMAL(10,2)) AS avg_price
+FROM products   AS p
+JOIN categories AS c ON c.category_id = p.category_id
+GROUP BY c.category_name
+HAVING COUNT(*) > 3 AND AVG(p.unit_price) > 200
+ORDER BY avg_price DESC;
+```
+
+| category_name | product_count | avg_price |
+|---|---|---|
+| Laptops | 4 | 1311.75 |
+
+💡 **`HAVING`, not `WHERE`.** `WHERE` filters individual rows *before* grouping; `HAVING` filters the
+groups *after*. A condition on `COUNT(*)` or `AVG(...)` can only go in `HAVING`, because those values
+do not exist until the grouping has happened ([§26](#26-group-by-and-having)).
+
+</details>
+
+<details>
+<summary><b>Level 3 — Subqueries, CTEs, window functions (21–30)</b></summary>
+
+**21. Products priced above their own category's average.**
+
+```sql
+-- ✅ Works in BOTH
+SELECT p.product_name, p.unit_price, c.category_name
+FROM products   AS p
+JOIN categories AS c ON c.category_id = p.category_id
+WHERE p.unit_price > (
+    SELECT AVG(p2.unit_price)
+    FROM products AS p2
+    WHERE p2.category_id = p.category_id     -- correlated to the outer row
+)
+ORDER BY c.category_name, p.unit_price DESC;
+```
+
+10 rows, including `WorkStation X17 | 2450.00 | Laptops` and `Concert Over-Ear | 349.00 | Audio`.
+
+💡 This is a **correlated subquery**: it references `p.category_id` from the outer query, so it is
+conceptually re-evaluated per row. The window-function form is usually clearer and lets the engine do
+one pass:
+
+```sql
+-- ✅ Works in BOTH — same answer, one pass
+WITH priced AS (
+    SELECT p.product_name, p.unit_price, c.category_name,
+           AVG(p.unit_price) OVER (PARTITION BY p.category_id) AS cat_avg
+    FROM products AS p
+    JOIN categories AS c ON c.category_id = p.category_id
+)
+SELECT product_name, unit_price, category_name
+FROM priced
+WHERE unit_price > cat_avg
+ORDER BY category_name, unit_price DESC;
+```
+
+Note the `WHERE` must live **outside** the CTE — you cannot filter on a window function in the same
+`SELECT` that computes it, because window functions are evaluated after `WHERE`.
+
+---
+
+**22. Each customer's most recent order.**
+
+```sql
+-- ✅ Works in BOTH
+WITH ranked AS (
+    SELECT o.customer_id, o.order_id, o.order_date,
+           ROW_NUMBER() OVER (PARTITION BY o.customer_id
+                              ORDER BY o.order_date DESC, o.order_id DESC) AS rn
+    FROM orders AS o
+)
+SELECT c.full_name, r.order_id, r.order_date
+FROM ranked AS r
+JOIN customers AS c ON c.customer_id = r.customer_id
+WHERE r.rn = 1
+ORDER BY c.full_name;
+```
+
+12 rows — one per customer — beginning `Amara Silva | 1016 | 2026-06-04`.
+
+💡 **The `, o.order_id DESC` tie-breaker matters.** Two orders on the same date would otherwise make
+the "most recent" arbitrary and the result non-repeatable.
+
+💡 **`ROW_NUMBER` versus `RANK`:** `ROW_NUMBER` always gives exactly one row per partition;
+`RANK` gives *all* tied rows the same number, so `rn = 1` could return two orders. Choose by whether
+ties should produce one row or several.
+
+---
+
+**23. Top 2 best-selling products in each category.**
+
+```sql
+-- ✅ Works in BOTH
+WITH sales AS (
+    SELECT p.category_id, p.product_name, SUM(oi.quantity) AS units
+    FROM order_items AS oi
+    JOIN products AS p ON p.product_id = oi.product_id
+    GROUP BY p.category_id, p.product_name
+),
+ranked AS (
+    SELECT s.*,
+           ROW_NUMBER() OVER (PARTITION BY s.category_id
+                              ORDER BY s.units DESC, s.product_name) AS rn
+    FROM sales AS s
+)
+SELECT c.category_name, r.product_name, r.units
+FROM ranked AS r
+JOIN categories AS c ON c.category_id = r.category_id
+WHERE r.rn <= 2
+ORDER BY c.category_name, r.rn;
+```
+
+| category_name | product_name | units |
+|---|---|---|
+| Audio | PodMic USB | 4 |
+| Audio | StudioBuds Wireless | 4 |
+| Laptops | UltraBook Pro 14 | 4 |
+| Laptops | UltraBook Air 13 | 3 |
+| … | … | … |
+
+💡 **Two stacked CTEs**: aggregate first, then rank the aggregates. Trying to do both in one step
+fails, because you cannot rank a `SUM` in the same `SELECT` that computes it.
+
+💡 Audio has a genuine tie at 4 units, broken alphabetically by the `, s.product_name` clause. Use
+`RANK()` instead if you would rather return **both** tied products and sometimes get three rows.
+
+---
+
+**24. Running total of revenue by month.**
+
+```sql
+-- 🟥 MSSQL
+WITH monthly AS (
+    SELECT DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1) AS month_start,
+           SUM(oi.unit_price * oi.quantity * (1 - oi.discount))      AS revenue
+    FROM orders AS o
+    JOIN order_items AS oi ON oi.order_id = o.order_id
+    GROUP BY DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1)
+)
+SELECT month_start,
+       CAST(revenue AS DECIMAL(12,2)) AS revenue,
+       CAST(SUM(revenue) OVER (ORDER BY month_start
+                               ROWS UNBOUNDED PRECEDING) AS DECIMAL(12,2)) AS running_total
+FROM monthly
+ORDER BY month_start;
+```
+
+🟦 **MySQL:** replace `DATEFROMPARTS(YEAR(x), MONTH(x), 1)` with `DATE_FORMAT(o.order_date, '%Y-%m-01')`.
+
+| month_start | revenue | running_total |
+|---|---|---|
+| 2026-01-01 | 6379.15 | 6379.15 |
+| 2026-02-01 | 2597.20 | 8976.35 |
+| 2026-03-01 | 4059.10 | 13035.45 |
+| 2026-04-01 | 2492.50 | 15527.95 |
+| 2026-05-01 | 3495.75 | 19023.70 |
+| 2026-06-01 | 3291.00 | 22314.70 |
+| 2026-07-01 | 3101.05 | 25415.75 |
+| 2026-08-01 | 1966.10 | 27381.85 |
+
+⚠️ **Write `ROWS UNBOUNDED PRECEDING` explicitly.** The default frame when you supply `ORDER BY` is
+`RANGE UNBOUNDED PRECEDING`, which groups **all rows with an equal sort value** into the same frame.
+Month starts are unique here so both give the same answer — but on a column with duplicates, `RANGE`
+silently produces a different running total. Making the frame explicit is a habit worth forming
+([§34](#34-ranking-running-totals-and-moving-averages)).
+
+💡 Grouping by the **first day of the month** rather than by a `'2026-01'` string keeps the values
+sortable as real dates and avoids a text sort that would put `2026-10` before `2026-2`.
+
+---
+
+**25. Month-over-month revenue change, amount and percentage.**
+
+```sql
+-- 🟥 MSSQL (MySQL: as in exercise 24, swap DATEFROMPARTS for DATE_FORMAT)
+WITH monthly AS (
+    SELECT DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1) AS month_start,
+           SUM(oi.unit_price * oi.quantity * (1 - oi.discount))      AS revenue
+    FROM orders AS o
+    JOIN order_items AS oi ON oi.order_id = o.order_id
+    GROUP BY DATEFROMPARTS(YEAR(o.order_date), MONTH(o.order_date), 1)
+)
+SELECT month_start,
+       CAST(revenue AS DECIMAL(12,2)) AS revenue,
+       CAST(revenue - LAG(revenue) OVER (ORDER BY month_start) AS DECIMAL(12,2)) AS change_amount,
+       CAST(100.0 * (revenue - LAG(revenue) OVER (ORDER BY month_start))
+            / NULLIF(LAG(revenue) OVER (ORDER BY month_start), 0) AS DECIMAL(6,1)) AS change_pct
+FROM monthly
+ORDER BY month_start;
+```
+
+| month_start | revenue | change_amount | change_pct |
+|---|---|---|---|
+| 2026-01-01 | 6379.15 | NULL | NULL |
+| 2026-02-01 | 2597.20 | -3781.95 | -59.3 |
+| 2026-03-01 | 4059.10 | 1461.90 | 56.3 |
+| 2026-04-01 | 2492.50 | -1566.60 | -38.6 |
+| 2026-05-01 | 3495.75 | 1003.25 | 40.3 |
+| 2026-06-01 | 3291.00 | -204.75 | -5.9 |
+| 2026-07-01 | 3101.05 | -189.95 | -5.8 |
+| 2026-08-01 | 1966.10 | -1134.95 | -36.6 |
+
+💡 **The first row is `NULL`, and that is right.** January has no previous month, so `LAG` returns
+`NULL` and the arithmetic propagates it. Do not "fix" this with `COALESCE(..., 0)` — a 0% change is a
+claim that revenue was flat, which is false. `NULL` correctly says *"unknown"*.
+
+⚠️ **`NULLIF(prev, 0)` prevents a divide-by-zero.** If a month ever had zero revenue, the percentage
+would otherwise raise `Msg 8134`. `NULLIF` turns the 0 into `NULL`, and `NULL` division yields `NULL`
+instead of an error.
+
+---
+
+**26. Rank customers by spend within their country.**
+
+```sql
+-- ✅ Works in BOTH
+WITH spend AS (
+    SELECT c.customer_id, c.full_name, c.country,
+           SUM(oi.unit_price * oi.quantity * (1 - oi.discount)) AS total
+    FROM customers   AS c
+    JOIN orders      AS o  ON o.customer_id = c.customer_id
+    JOIN order_items AS oi ON oi.order_id   = o.order_id
+    GROUP BY c.customer_id, c.full_name, c.country
+)
+SELECT country, full_name,
+       CAST(total AS DECIMAL(12,2)) AS total,
+       RANK() OVER (PARTITION BY country ORDER BY total DESC) AS rank_in_country
+FROM spend
+ORDER BY country, rank_in_country;
+```
+
+12 rows — and **every one has `rank_in_country = 1`**, because ShopDB happens to hold exactly one
+customer per country (exercise 5). The query is correct; the data simply gives it nothing to rank.
+
+💡 **Prove it works** by adding a second UK customer with an order, or test the logic by partitioning
+on something with repeats instead — `PARTITION BY c.loyalty_tier` produces genuine rankings of 1, 2,
+3 with this data. Verifying a query against data that cannot exercise it is a habit worth breaking
+early.
+
+---
+
+**27. The full org chart with indentation levels.**
+
+```sql
+-- 🟥 MSSQL (MySQL 8.0+: identical, but write WITH RECURSIVE org AS ...)
+WITH org AS (
+    -- Anchor: everyone with no manager
+    SELECT employee_id, first_name, last_name, manager_id, 0 AS lvl
+    FROM employees
+    WHERE manager_id IS NULL
+
+    UNION ALL
+
+    -- Recursive step: everyone who reports to someone already found
+    SELECT e.employee_id, e.first_name, e.last_name, e.manager_id, o.lvl + 1
+    FROM employees AS e
+    JOIN org AS o ON o.employee_id = e.manager_id
+)
+SELECT lvl,
+       REPLICATE('    ', lvl) + first_name + ' ' + last_name AS org_chart
+FROM org
+ORDER BY lvl, org_chart;
+```
+
+| lvl | org_chart |
+|---|---|
+| 0 | Sarah Mitchell |
+| 1 | &nbsp;&nbsp;&nbsp;&nbsp;Amara Nwosu |
+| 1 | &nbsp;&nbsp;&nbsp;&nbsp;David Okafor |
+| 1 | &nbsp;&nbsp;&nbsp;&nbsp;Elena Petrova |
+| 2 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Marco Rossi |
+| 2 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Priya Raman |
+| 2 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tom Becker |
+| 2 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yuki Sato |
+
+💡 **A recursive CTE always has exactly two parts** joined by `UNION ALL`: an *anchor* that does not
+reference the CTE, and a *recursive member* that does. Get the anchor wrong and you get no rows; get
+the join direction wrong and you walk the tree upward instead of downward.
+
+🟦 **MySQL:** `REPLICATE` is `REPEAT`, and `+` concatenation is `CONCAT`. MySQL also requires the
+`RECURSIVE` keyword, and caps depth at `cte_max_recursion_depth` (default 1000).
+
+⚠️ **A cycle in the data — A manages B, B manages A — loops forever.** SQL Server stops at 100 levels
+by default (`OPTION (MAXRECURSION n)` changes it); MySQL uses the setting above. If your hierarchy
+comes from user input, assume a cycle will eventually appear.
+
+---
+
+**28. Find gaps in the `order_id` sequence.**
+
+```sql
+-- 🟥 MSSQL 2022+ (GENERATE_SERIES)
+WITH bounds AS (SELECT MIN(order_id) AS lo, MAX(order_id) AS hi FROM orders)
+SELECT n.value AS missing_order_id
+FROM bounds AS b
+CROSS APPLY GENERATE_SERIES(b.lo, b.hi) AS n
+WHERE NOT EXISTS (SELECT 1 FROM orders AS o WHERE o.order_id = n.value)
+ORDER BY n.value;
+```
+
+**Result on a freshly built ShopDB: no rows.** Order IDs run 1000–1022 with no gaps — so the honest
+answer to this exercise is *"there are none"*, and a query returning nothing is the correct result,
+not a failure.
+
+**Prove the query actually works** by creating a gap and removing it again:
+
+```sql
+-- 🟥 MSSQL: make a gap, look for it, then undo everything
+BEGIN TRANSACTION;
+
+DELETE FROM payments    WHERE order_id = 1005;
+DELETE FROM order_items WHERE order_id = 1005;   -- children first: FK order matters
+DELETE FROM orders      WHERE order_id = 1005;
+
+WITH bounds AS (SELECT MIN(order_id) AS lo, MAX(order_id) AS hi FROM orders)
+SELECT n.value AS missing_order_id
+FROM bounds AS b
+CROSS APPLY GENERATE_SERIES(b.lo, b.hi) AS n
+WHERE NOT EXISTS (SELECT 1 FROM orders AS o WHERE o.order_id = n.value);
+-- returns: 1005
+
+ROLLBACK TRANSACTION;    -- 🔑 puts all three tables back
+```
+
+The `ROLLBACK` is what makes this safe to run on your practice database — see
+[§42](#42-transactions-and-acid).
+
+**On SQL Server 2019/2022 without `GENERATE_SERIES`**, generate the numbers from a system catalog:
+
+```sql
+-- 🟥 MSSQL 2016+ : no GENERATE_SERIES needed
+WITH nums AS (
+    SELECT TOP (100)
+           ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) - 1
+           + (SELECT MIN(order_id) FROM orders) AS n
+    FROM sys.all_objects
+)
+SELECT n AS missing_order_id
+FROM nums
+WHERE n <= (SELECT MAX(order_id) FROM orders)
+  AND NOT EXISTS (SELECT 1 FROM orders AS o WHERE o.order_id = n)
+ORDER BY n;
+```
+
+💡 **A different, often better approach** needs no number series at all — compare each row with the
+next using `LEAD`:
+
+```sql
+-- ✅ Works in BOTH (MSSQL 2012+, MySQL 8.0+)
+WITH seq AS (
+    SELECT order_id, LEAD(order_id) OVER (ORDER BY order_id) AS next_id
+    FROM orders
+)
+SELECT order_id + 1 AS gap_starts, next_id - 1 AS gap_ends
+FROM seq
+WHERE next_id > order_id + 1
+ORDER BY order_id;
+```
+
+This reads only the table itself and scales to any range, where the numbers approach must materialise
+every value between the bounds.
+
+⚠️ **Gaps in an `IDENTITY`/`AUTO_INCREMENT` column are normal and expected.** A rolled-back transaction
+consumes its number permanently. Never treat such a column as a gapless counter — if you need one, see
+[§41](#41-sequences-and-generated-columns).
+
+---
+
+**29. Each category's share of revenue, plus a cumulative percentage (Pareto).**
+
+```sql
+-- ✅ Works in BOTH
+WITH cat AS (
+    SELECT c.category_name,
+           SUM(oi.unit_price * oi.quantity * (1 - oi.discount)) AS revenue
+    FROM order_items AS oi
+    JOIN products    AS p ON p.product_id  = oi.product_id
+    JOIN categories  AS c ON c.category_id = p.category_id
+    GROUP BY c.category_name
+)
+SELECT category_name,
+       CAST(revenue AS DECIMAL(12,2))                              AS revenue,
+       CAST(100.0 * revenue / SUM(revenue) OVER () AS DECIMAL(5,1)) AS pct_of_total,
+       CAST(100.0 * SUM(revenue) OVER (ORDER BY revenue DESC ROWS UNBOUNDED PRECEDING)
+            / SUM(revenue) OVER () AS DECIMAL(5,1))                 AS cumulative_pct
+FROM cat
+ORDER BY revenue DESC;
+```
+
+| category_name | revenue | pct_of_total | cumulative_pct |
+|---|---|---|---|
+| Laptops | 13223.35 | 48.3 | 48.3 |
+| Smartphones | 5874.55 | 21.5 | 69.7 |
+| Monitors | 3719.10 | 13.6 | 83.3 |
+| Audio | 2053.85 | 7.5 | 90.8 |
+| Storage | 1311.00 | 4.8 | 95.6 |
+| Peripherals | 1200.00 | 4.4 | 100.0 |
+
+💡 **Two different windows in one `SELECT`.** `SUM(revenue) OVER ()` — no `ORDER BY`, no frame — is the
+grand total on every row. `SUM(revenue) OVER (ORDER BY revenue DESC ROWS UNBOUNDED PRECEDING)` is the
+running total. Being able to read the difference between those two `OVER` clauses is the single most
+useful window-function skill.
+
+💡 This is a **Pareto chart**: the top two categories account for 69.7% of revenue. That is the
+question a business actually asks, and it is one query away.
+
+---
+
+**30. Customers whose spend is above the overall customer average.**
+
+```sql
+-- ✅ Works in BOTH
+WITH spend AS (
+    SELECT c.customer_id, c.full_name,
+           SUM(oi.unit_price * oi.quantity * (1 - oi.discount)) AS total
+    FROM customers   AS c
+    JOIN orders      AS o  ON o.customer_id = c.customer_id
+    JOIN order_items AS oi ON oi.order_id   = o.order_id
+    GROUP BY c.customer_id, c.full_name
+)
+SELECT full_name, CAST(total AS DECIMAL(12,2)) AS total
+FROM spend
+WHERE total > (SELECT AVG(total) FROM spend)
+ORDER BY total DESC;
+```
+
+| full_name | total |
+|---|---|
+| Mei Chen | 7976.45 |
+| John Baker | 4040.15 |
+| Fatima Al-Sayed | 3459.20 |
+| Grace Adeyemi | 3388.00 |
+| Kenji Watanabe | 2887.65 |
+| Amara Silva | 2423.00 |
+
+⚠️ **"Average customer spend" is not `AVG(oi.unit_price * …)`.** You must aggregate **per customer
+first**, then average those totals. Averaging the line items directly gives the average *line value*,
+a completely different number. Naming the CTE `spend` and reusing it twice makes the intent
+unmistakable.
+
+💡 **A CTE can be referenced more than once in the same statement** — here in the `FROM` and again in
+the subquery. Whether the engine evaluates it once or twice is its choice; if the cost matters,
+check the execution plan ([§47](#47-execution-plans)).
+
+</details>
+
+<details>
+<summary><b>Level 4 — Advanced (31–40)</b></summary>
+
+These ten are **build exercises** rather than single queries: each asks you to design a procedure, a
+trigger, an index, or a dimension table, and there are several defensible answers to every one. Rather
+than a single "right" solution, use the chapter that covers each and the checklist in
+[§66.9](#669--the-professional-checklist) to grade your own work.
+
+| # | Task | Read first | The thing to get right |
+|:---:|---|---|---|
+| 31 | Monthly revenue pivot, categories as columns | [§35](#35-pivot-and-unpivot) | MSSQL `PIVOT` needs a fixed column list; a dynamic one needs [§59](#59-dynamic-sql) |
+| 32 | Every date in H1 2026 with zeros for quiet days | [§31](#31-ctes-and-recursive-queries) | A calendar table `LEFT JOIN`ed to sales — the zeros come from the join, not from the data |
+| 33 | Average days between each customer's orders | [§34](#34-ranking-running-totals-and-moving-averages) | `LAG(order_date)` per customer, then average the differences; customers with one order yield `NULL` |
+| 34 | Stored procedure placing an order atomically | [§37](#37-stored-procedures), [§42](#42-transactions-and-acid) | One transaction, stock checked **and** decremented inside it, `TRY…CATCH` with `ROLLBACK` |
+| 35 | Trigger logging every price change | [§39](#39-triggers) | Triggers fire **per statement, not per row** — use `inserted`/`deleted`, never a scalar variable |
+| 36 | Indexed view / summary table of category sales | [§36](#36-views), [§46](#46-indexes-the-complete-guide) | MSSQL indexed views need `SCHEMABINDING` and `COUNT_BIG(*)`; MySQL has no equivalent — use a summary table |
+| 37 | Foreign key columns lacking an index | [§46](#46-indexes-the-complete-guide) | Query the system catalog; an unindexed FK makes parent deletes scan the child table |
+| 38 | Safe dynamic search with four optional filters | [§59](#59-dynamic-sql), [§55](#55-sql-injection-and-how-to-stop-it) | **Parameterise every value.** `sp_executesql` with parameters, never string concatenation |
+| 39 | SCD Type 2 on a customer dimension | [§53](#53-data-modeling-and-the-star-schema) | `valid_from` / `valid_to` / `is_current`; a change **closes** the old row and inserts a new one |
+| 40 | Tune your three slowest queries | [§47](#47-execution-plans), [§48](#48-query-optimization-and-sargability) | Measure **before** and **after**; a change you did not measure is not a tuning |
+
+> 🎓 **The honest standard for Level 4:** your answer is good if it survives being run twice, handles
+> the empty case, and does not corrupt data when a concurrent session runs it at the same moment.
+> That last one is what separates exercise SQL from production SQL.
 
 </details>
 

@@ -47,12 +47,120 @@ Throughout this guide you'll see the same friendly icons. Here's what each one m
 | Icon | Label | What it gives you |
 |:---:|---|---|
 | 📌 | **In plain words** | The idea explained with zero jargon |
-| 🌍 | **Real-world analogy** | A everyday-life comparison |
+| 🌍 | **Real-world analogy** | An everyday-life comparison |
 | 🛠️ | **How to use it** | The actual code / steps |
 | 🎯 | **When to use it** | The right situations |
 | ⚠️ | **When to avoid it** | The traps and wrong situations |
 | 💡 | **Pro tip** | A shortcut experts know |
 | 🧪 | **Try it yourself** | A hands-on exercise |
+
+---
+
+## 🧪 How to run the examples (and how they were checked)
+
+### The three kinds of code block
+
+Because this guide teaches with code, it matters that you can tell at a glance what you are looking at:
+
+| Marker | Meaning | What to do |
+|---|---|---|
+| *(none)* | **Complete program.** Everything it needs is in the block. | Save as `demo.py`, run `python demo.py` |
+| **▶️ Continues from §X.Y** | **Continuation.** Needs the class defined in the named section above it. | Paste it below that earlier block in the same file |
+| **📄 Fragment** | **Part of a multi-file project.** Cannot run alone by design. | Follow the file layout shown beside it |
+
+Blocks that are *meant* to fail are labelled **❌ This example fails on purpose** together with the exact error, so a traceback never leaves you wondering whether you typed something wrong.
+
+Where output matters, an **Expected output** block follows the code. Two things in real output vary and are shown generically:
+
+- memory addresses — `<__main__.Car object at 0x...>`
+- absolute paths — `/path/to/project/main.py`
+
+### What was actually verified
+
+- **Environment:** CPython **3.12.10** on Windows 11, with **mypy 2.1.0** for every static-typing claim.
+- **Method:** every complete-program block was extracted and executed, and its printed output compared against the "Expected output" shown here.
+- **Scope of that check:** it confirms the code runs and prints what is claimed on this one interpreter. It does not prove the surrounding prose is complete, nor that behaviour is identical on other Python versions or platforms.
+- **Not executed:** fragments belonging to multi-file projects (the capstone in [Section 35](#35-complete-capstone-project-library-management-system), the packaging examples in [Section 26](#26-modules-packages-environments-and-project-structure), and the `pytest` files in [Section 31](#31-unit-testing-oop-code)). These were reviewed by reading, not by running, and are labelled **📄 Fragment**.
+- **Version-dependent features** are labelled inline: `match` statements need 3.10+, `Self` needs 3.11+, and `@dataclass(slots=True)` needs 3.10+.
+
+### A note on `sys.getsizeof`, timings, and memory figures
+
+Any number this guide reports for object size or speed came from the machine above. Those figures are implementation-specific — run them yourself rather than quoting them.
+
+---
+
+## 🐍 Python's three levels of enforcement (read this before Section 5)
+
+This is the single most important thing to understand about Python OOP, and it is where people coming from Java or C# go wrong most often.
+
+When another language says `private`, the compiler *stops* you. Python has three separate mechanisms that look similar and behave very differently:
+
+| Level | Mechanism | Enforced by | Can you bypass it? |
+|---|---|---|---|
+| **1. Convention** | `_name` (one underscore) | Nothing — it is a comment to humans | Yes, trivially |
+| **2. Static check** | Type hints, `Protocol`, `mypy` | A separate tool you choose to run | Yes — the program still runs |
+| **3. Runtime** | `@property`, `raise`, `__slots__`, `frozen=True` | The interpreter, while running | No |
+
+### See all three in one class
+
+This is a complete program. Each `try` block probes one of the three levels, so you can see exactly which ones Python actually stops.
+
+```python
+class Account:
+    def __init__(self, balance: float) -> None:
+        self._balance = balance
+
+    @property
+    def balance(self) -> float:
+        return self._balance
+
+    def deposit(self, amount: float) -> None:
+        if amount <= 0:
+            raise ValueError("Amount must be positive.")
+        self._balance += amount
+
+a = Account(100.0)
+
+a._balance = 999999.0                 # level 1: no protection at all
+print(a.balance)
+
+try:
+    a.deposit("not a number")          # level 2: no runtime protection either
+except TypeError as e:
+    print(f"TypeError: {e}")
+
+try:
+    a.balance = 5.0                    # level 3: THIS is enforced
+except AttributeError as e:
+    print(f"AttributeError: {e}")
+
+try:
+    a.deposit(-10)                     # level 3: THIS is enforced
+except ValueError as e:
+    print(f"ValueError: {e}")
+```
+
+**Expected output:**
+
+```
+999999.0
+TypeError: '<=' not supported between instances of 'str' and 'int'
+AttributeError: property 'balance' of 'Account' object has no setter
+ValueError: Amount must be positive.
+```
+
+### What each line teaches
+
+- **`a._balance = 999999.0` succeeded.** The underscore is documentation. Anyone *can* reach in; the convention says they accept the consequences when your internals change. Python's philosophy here is "we are all consenting adults" — it optimises for the person debugging at 3 a.m. over the person trying to prevent misuse.
+- **`a.deposit("not a number")` was not caught by the hint.** `amount: float` is not checked at runtime. The error that eventually arrives is a confusing `TypeError` from deep inside the comparison, not a clear "wrong argument type." Run `mypy` and you get the clear message *before* the program starts.
+- **`a.balance = 5.0` was blocked.** A `@property` with no setter is real, interpreter-enforced protection.
+- **`a.deposit(-10)` was blocked.** An explicit `raise` is the other reliable mechanism.
+
+### The practical rule
+
+> **If a rule genuinely must hold, enforce it at level 3** — a property, an explicit `raise`, `frozen=True`, or a validating constructor. Use levels 1 and 2 to *communicate intent* and to *catch mistakes early*, never as your only line of defence.
+
+Every later chapter depends on this distinction, so the guide flags which level is in play wherever it matters — especially [Section 7 (Access conventions)](#7-access-conventions), [Section 13 (Protocols)](#13-protocols-and-interfaces), and [Section 20 (None safety)](#20-none-safety-and-optional-values).
 
 ---
 
@@ -327,28 +435,138 @@ class Car:
 
 ## 4.2 🚗 Object — an instance of a class
 
-An object is an instance of a class.
+An **object** (or **instance**) is one concrete thing built from the class.
+
+**▶️ Continues from §4.1** — the snippets in 4.2 to 4.4 all build on the `Car` class above. Paste them into the same file, below the class, and run it. At the end of 4.4 you will find the whole thing as one complete program.
 
 ```python
 car = Car("Toyota", "Corolla", 2024)
 car.start()
 ```
 
-> 🎯 **When to use:** Create a new object every time you need a new, independent "thing" with its own data.
+**Expected output:**
+
+```
+Toyota Corolla is starting.
+```
+
+### 📌 What `Car(...)` actually did
+
+Reading left to right, four things happened:
+
+1. Python created a new, empty `Car` object in memory.
+2. It called `__init__` on that object, passing `"Toyota"`, `"Corolla"`, and `2024`.
+3. `__init__` stored those three values on the object as `self.brand`, `self.model`, and `self.year`.
+4. The finished object was handed back and bound to the name `car`.
+
+`self` inside `__init__` refers to *that specific object*. You never pass it yourself — Python supplies it.
+
+### 📌 Each object is independent
+
+This is the point of classes, so it is worth seeing rather than being told:
+
+```python
+class Car:
+    def __init__(self, brand: str, model: str, year: int) -> None:
+        self.brand = brand
+        self.model = model
+        self.year = year
+
+    def start(self) -> None:
+        print(f"{self.brand} {self.model} is starting.")
+
+car_a = Car("Toyota", "Corolla", 2024)
+car_b = Car("Honda", "Civic", 2023)
+
+car_a.start()
+car_b.start()
+
+car_a.year = 2025                   # changing one...
+print(car_a.year, car_b.year)       # ...does not touch the other
+print(car_a is car_b)               # False — two distinct objects
+```
+
+**Expected output:**
+
+```
+Toyota Corolla is starting.
+Honda Civic is starting.
+2025 2023
+False
+```
+
+One class, two objects, two independent sets of data. The class is the drawing; each object is a house built from it.
+
+> 🎯 **When to use:** create a new object every time you need a new, independent "thing" with its own data.
 
 ## 4.3 🧾 Object attributes
 
-Attributes are values stored on an object.
+**Attributes** are the values stored on an object. You read them with a dot.
+
+**▶️ Continues from §4.1.**
 
 ```python
-print(car.brand)
-print(car.model)
-print(car.year)
+print(car.brand)     # Toyota
+print(car.model)     # Corolla
+print(car.year)      # 2024
 ```
+
+**Expected output:**
+
+```
+Toyota
+Corolla
+2024
+```
+
+### ⚠️ Python lets you add attributes that were never declared
+
+This surprises people arriving from stricter languages, and it is worth knowing early because it turns typos into silent bugs:
+
+```python
+class Car:
+    def __init__(self, brand: str, model: str, year: int) -> None:
+        self.brand = brand
+        self.model = model
+        self.year = year
+
+car = Car("Toyota", "Corolla", 2024)
+
+car.colour = "red"           # never mentioned in the class — allowed anyway
+print(car.colour)            # red
+
+car.yaer = 2030              # a TYPO for 'year' — silently creates a new attribute
+print(car.year)              # 2024 — the real value is unchanged
+print(car.__dict__)          # you can see both
+```
+
+**Expected output:**
+
+```
+red
+2024
+{'brand': 'Toyota', 'model': 'Corolla', 'year': 2024, 'colour': 'red', 'yaer': 2030}
+```
+
+`__dict__` is the dictionary where an ordinary object keeps its attributes. Both additions are visible in it: the deliberate `colour` and the accidental `yaer`, sitting side by side with no way to tell them apart.
+
+The `yaer` typo did not raise anything. It created a brand-new attribute and left `year` alone, so the program carries on with stale data.
+
+**Three ways to protect yourself**, in increasing strictness:
+
+| Approach | Catches the typo | Covered in |
+|---|---|---|
+| Run `mypy` or `pyright` | Before the program runs | [Section 20.6](#206--use-static-analysis) |
+| `__slots__` | At runtime, immediately | [Section 19.7](#197--slots) |
+| `@dataclass(frozen=True)` | At runtime, blocks all assignment | [Section 19.3](#193--frozen-dataclass) |
+
+This is the "level 1 / level 2 / level 3" distinction from the [enforcement section](#-pythons-three-levels-of-enforcement-read-this-before-section-5), showing up for the first time.
 
 ## 4.4 🏷️ Object creation with keyword arguments
 
-Keyword arguments make object creation clearer and safer — you can *see* what each value means.
+Keyword arguments name each value at the call site, which makes the code readable and makes a whole class of mistakes impossible.
+
+**▶️ Continues from §4.1.**
 
 ```python
 car = Car(
@@ -356,9 +574,116 @@ car = Car(
     model="Corolla",
     year=2024,
 )
+car.start()
 ```
 
-> 💡 **Pro tip:** Prefer keyword arguments when a constructor has several parameters. `Car("Toyota", "Corolla", 2024)` is easy to get wrong; `Car(brand=..., model=..., year=...)` is self-documenting.
+**Expected output:**
+
+```
+Toyota Corolla is starting.
+```
+
+### 📌 Why this matters more than it looks
+
+Positional arguments are silently order-sensitive. Swap two of the same type and nothing complains:
+
+```python
+class Car:
+    def __init__(self, brand: str, model: str, year: int) -> None:
+        self.brand = brand
+        self.model = model
+        self.year = year
+
+    def start(self) -> None:
+        print(f"{self.brand} {self.model} is starting.")
+
+wrong = Car("Corolla", "Toyota", 2024)     # brand and model swapped
+wrong.start()                               # no error — just wrong
+
+right = Car(brand="Toyota", model="Corolla", year=2024)
+right.start()
+```
+
+**Expected output:**
+
+```
+Corolla Toyota is starting.
+Toyota Corolla is starting.
+```
+
+Both are strings, so nothing — not Python, not a type checker — can detect the swap. Keyword arguments remove the possibility.
+
+### 💡 Forcing keywords with `*`
+
+If a constructor is genuinely too easy to get wrong, you can *require* keywords. Everything after a bare `*` must be passed by name:
+
+```python
+class Car:
+    def __init__(self, *, brand: str, model: str, year: int) -> None:
+        self.brand = brand
+        self.model = model
+        self.year = year
+
+car = Car(brand="Toyota", model="Corolla", year=2024)      # fine
+print(car.brand)
+
+try:
+    Car("Toyota", "Corolla", 2024)                          # now rejected
+except TypeError as e:
+    print(f"TypeError: {e}")
+```
+
+**Expected output:**
+
+```
+Toyota
+TypeError: Car.__init__() takes 1 positional argument but 4 were given
+```
+
+> 🎯 **When to force it:** three or more parameters, or two of the same type that could be transposed. For a one- or two-parameter constructor such as `Point(x, y)` it is unnecessary ceremony.
+
+### ✅ The whole chapter as one runnable program
+
+Save this as `cars.py` and run `python cars.py`:
+
+```python
+class Car:
+    def __init__(self, brand: str, model: str, year: int) -> None:
+        self.brand = brand
+        self.model = model
+        self.year = year
+
+    def start(self) -> None:
+        print(f"{self.brand} {self.model} is starting.")
+
+    def describe(self) -> str:
+        return f"{self.year} {self.brand} {self.model}"
+
+# 4.2 — create objects
+car = Car("Toyota", "Corolla", 2024)
+car.start()
+
+# 4.3 — read attributes
+print(car.brand, car.model, car.year)
+
+# 4.4 — keyword arguments
+other = Car(brand="Honda", model="Civic", year=2023)
+print(other.describe())
+
+# independence
+print(car.describe(), "|", other.describe())
+```
+
+**Expected output:**
+
+```
+Toyota Corolla is starting.
+Toyota Corolla 2024
+2023 Honda Civic
+2024 Toyota Corolla | 2023 Honda Civic
+```
+
+> 💡 **Pro tip:** prefer keyword arguments when a constructor has several parameters. `Car("Toyota", "Corolla", 2024)` is easy to get wrong; `Car(brand=..., model=..., year=...)` documents itself.
 
 ## 4.5 ⚡ Dataclass option — less typing
 
@@ -876,6 +1201,8 @@ __all__ = ["BankAccount"]
 
 ## 8.1 👶 Object creation
 
+**▶️ Continues from §8's `Customer` example** — assumes a simple `class Customer` with a `name` attribute.
+
 ```python
 customer = Customer("Anna")
 ```
@@ -1057,6 +1384,8 @@ class BankAccount:
 > 🎯 **When to encapsulate:** whenever invalid data would cause bugs or break business rules — which is *most* of the time for real objects.
 
 ## 9.3 📦 Protecting collections
+
+**▶️ Continues** — assumes an `OrderItem` class. A complete, runnable version of this pattern (including the exact errors each variant produces) is in [§17.8](#178-️-expose-collections-safely).
 
 **Bad — the internal list is exposed and mutable:**
 
@@ -1276,6 +1605,8 @@ class Dog(Animal):
 ```
 
 ## 11.4 ⬆️ Calling base behavior with `super()`
+
+**▶️ Continues from §11.1** — assumes the `BankAccount` base class defined earlier in this chapter.
 
 Extend the parent's behavior instead of fully replacing it.
 
@@ -1530,7 +1861,49 @@ class Entity(Protocol):
 
 ## 13.4 🔍 Runtime-checkable protocols
 
-Protocols are mainly for static type checking. Use `@runtime_checkable` when you need `isinstance` checks.
+Protocols exist mainly for **static** type checking — by default, `isinstance` against a Protocol raises. Add `@runtime_checkable` when you genuinely need a runtime test.
+
+```python
+from typing import Protocol, runtime_checkable
+
+class NotCheckable(Protocol):
+    def print_item(self) -> None:
+        ...
+
+@runtime_checkable
+class Printable(Protocol):
+    def print_item(self) -> None:
+        ...
+
+class Invoice:                       # note: does NOT inherit from Printable
+    def print_item(self) -> None:
+        print("printing invoice")
+
+class Customer:
+    def greet(self) -> None:
+        print("hello")
+
+invoice = Invoice()
+print(isinstance(invoice, Printable))      # True  — it has print_item
+print(isinstance(Customer(), Printable))   # False — it does not
+
+try:
+    isinstance(invoice, NotCheckable)       # without the decorator:
+except TypeError as e:
+    print(f"TypeError: {e}")
+```
+
+**Expected output:**
+
+```
+True
+False
+TypeError: Instance and class checks can only be used with @runtime_checkable protocols
+```
+
+`Invoice` was never declared as `Printable` anywhere — `isinstance` returned `True` purely because the method name matches. That is **structural** typing, and it is the whole point of protocols: a class satisfies the contract by shape, not by declaration.
+
+> ⚠️ **Runtime checks are shallow, and this matters.** `@runtime_checkable` verifies only that the **attribute names exist**. It does not check signatures, parameter types, or return types:
 
 ```python
 from typing import Protocol, runtime_checkable
@@ -1540,11 +1913,26 @@ class Printable(Protocol):
     def print_item(self) -> None:
         ...
 
-invoice = Invoice()
-print(isinstance(invoice, Printable))
+class Liar:
+    def print_item(self, required_arg: int, another: str) -> int:
+        return 0                     # wrong parameters AND wrong return type
+
+print(isinstance(Liar(), Printable))     # True — isinstance is fooled
+
+try:
+    Liar().print_item()                   # ...and then it fails for real
+except TypeError as e:
+    print(f"TypeError: {e}")
 ```
 
-> ⚠️ Only simple structural checks are supported at runtime (it checks *method names* exist, not their signatures).
+**Expected output:**
+
+```
+True
+TypeError: Liar.print_item() missing 2 required positional arguments: 'required_arg' and 'another'
+```
+
+`mypy` would reject `Liar` as a `Printable`; `isinstance` cannot. Treat `@runtime_checkable` as a convenience for dispatching on capability, never as validation. This is the level-2-versus-level-3 distinction from the [enforcement section](#-pythons-three-levels-of-enforcement-read-this-before-section-5): protocols are a static tool, and adding `@runtime_checkable` does not promote them to a runtime guarantee.
 
 ## 13.5 🧱 Generic protocol
 
@@ -1843,6 +2231,8 @@ class Entity:
 
 ## 16.5 🗃️ Generic repository with a bound
 
+**▶️ Continues from §16.4** — assumes the `Entity` base class defined there. A fully runnable version, with a worked explanation of `bound=`, is in [§16.6](#166-️-typevar-constraints-and-bounds).
+
 ```python
 from typing import Generic, TypeVar
 
@@ -1866,22 +2256,112 @@ class InMemoryRepository(Generic[TEntity]):
 
 ## 16.6 🎚️ TypeVar constraints and bounds
 
-A **bound** means the type must be a subtype of a given base type.
+A plain `TypeVar` accepts *any* type. A **bound** and a **constraint** are the two ways to narrow that, and they mean different things.
+
+### 📌 A bound — "anything that IS-A this"
 
 ```python
+from typing import TypeVar
+
+class Entity:
+    def __init__(self, entity_id: int) -> None:
+        self.id = entity_id
+
+class Customer(Entity):
+    pass
+
 TEntity = TypeVar("TEntity", bound=Entity)
+
+def describe(item: TEntity) -> str:
+    return f"{type(item).__name__} with id {item.id}"     # .id is safe: Entity has it
+
+print(describe(Customer(7)))      # Customer with id 7
+print(describe(Entity(1)))        # Entity with id 1
 ```
 
-**Constraints** mean the type must be one of a specific set.
+**Expected output:**
+
+```
+Customer with id 7
+Entity with id 1
+```
+
+The bound is what lets `describe` use `item.id`. Without `bound=Entity`, a type checker would reject that line, because an unbounded `TEntity` might be an `int`, which has no `.id`.
+
+### 📌 A constraint — "exactly one of these"
 
 ```python
-Number = TypeVar("Number", int, float)
+from typing import TypeVar
+
+Number = TypeVar("Number", int, float)      # note: no 'bound='
 
 def double(value: Number) -> Number:
     return value * 2
+
+print(double(5))        # 10
+print(double(2.5))      # 5.0
 ```
 
-> 💡 **Bound vs constraint:** a *bound* says "anything that IS-A Entity"; a *constraint* says "exactly `int` OR exactly `float`, nothing else."
+**Expected output:**
+
+```
+10
+5.0
+```
+
+### 📌 The difference that matters
+
+| | **Bound** `TypeVar("T", bound=X)` | **Constraint** `TypeVar("T", A, B)` |
+|---|---|---|
+| Accepts | `X` and any subclass of `X` | Exactly `A` or exactly `B` |
+| Subclasses of the listed types | Allowed | **Resolved to the listed type**, not kept |
+| Use when | You need the base class's members | The types are unrelated but interchangeable |
+
+That second row is the subtle one. With a constraint, a `bool` (which subclasses `int`) is treated as `int`, and the return type is reported as `int`, not `bool`. With a bound, the actual subclass is preserved:
+
+```python
+from typing import TypeVar
+
+Bounded = TypeVar("Bounded", bound=int)
+Constrained = TypeVar("Constrained", int, float)
+
+def keep(value: Bounded) -> Bounded:
+    return value
+
+def collapse(value: Constrained) -> Constrained:
+    return value
+
+# Both run fine — the difference is what a TYPE CHECKER infers:
+print(keep(True), collapse(True))     # True True
+```
+
+**Expected output:**
+
+```
+True True
+```
+
+**And what mypy sees.** `reveal_type()` is a checker-only helper that reports an inferred type. Add these two lines to the same file:
+
+```text
+reveal_type(keep(True))        # mypy: Revealed type is "bool"
+reveal_type(collapse(True))    # mypy: Revealed type is "int"
+```
+
+⚠️ `reveal_type` is understood by `mypy` and `pyright` but is **not** a Python builtin — running the file with `python` raises `NameError`. Add it while checking types, then delete it. (Since 3.11 there is a real `typing.reveal_type` you can import, which prints at runtime *and* is understood by checkers.)
+
+Running `mypy` on the file gives:
+
+```
+note: Revealed type is "bool"
+note: Revealed type is "int"
+```
+
+The **bound** preserved `bool`; the **constraint** collapsed it to `int`, because `bool` is not one of the two listed types and `int` is its nearest listed ancestor. If a function must return exactly the subclass it was given, use a bound.
+
+⚠️ **This distinction is invisible at runtime.** Both calls print `True`; only `mypy` or `pyright` sees the difference. That is the recurring theme of this chapter — see [Section 20.6](#206--use-static-analysis) and the note on Python's three levels of enforcement in [Section 2](#2-what-oop-means).
+
+> 💡 **Rule of thumb:** use a **bound** when the type parameter must *have certain members* (the common case); use **constraints** only for a small, closed set of unrelated types such as `int`/`float` or `str`/`bytes`.
 
 ## 16.7 📨 Generic service with protocol constraint
 
@@ -1944,6 +2424,8 @@ class Consumer(Generic[T_contra]):
 
 ## 16.10 🔒 Invariance
 
+**▶️ Continues from §16.9** — assumes the `Animal` and `Dog` classes defined there. Note that the point of this section is what a **type checker** rejects; every line here runs fine under plain Python.
+
 Most mutable generic containers are **invariant**.
 
 ```python
@@ -1957,6 +2439,8 @@ dogs: list[Dog] = []
 > 💡 **Why?** If it were allowed, you could add a `Cat` to a `list[Dog]` through the `list[Animal]` reference — a disaster waiting to happen.
 
 ## 16.11 🌍 Generics in real Python code
+
+**▶️ Continues** — assumes a simple `Student` class.
 
 You'll use these constantly:
 
@@ -2005,79 +2489,194 @@ Then use the **same** repository for both `Product` and `Customer`.
 
 > 🌍 **Analogy:** A `list` is a **shopping list** (ordered, duplicates allowed). A `set` is a **guest list** (no duplicates). A `dict` is a **phone book** (look up a number by name instantly).
 
-## 17.2 📋 List of objects
+## 17.2 📋 The shared example for this whole section
+
+Sections 17.2 to 17.7 all use the same four products. This block is the **setup**: run it first, then paste each later snippet underneath it in the same file.
 
 ```python
 class Product:
-    def __init__(self, product_id: int, name: str, price: float) -> None:
+    def __init__(self, product_id: int, name: str, price: float, category: str) -> None:
         self.id = product_id
         self.name = name
         self.price = price
+        self.category = category
+
+    def __repr__(self) -> str:
+        return f"Product({self.id}, {self.name!r}, {self.price}, {self.category!r})"
 
 products = [
-    Product(1, "Laptop", 1200.0),
-    Product(2, "Mouse", 25.0),
+    Product(1, "Laptop", 1200.0, "computing"),
+    Product(2, "Mouse", 25.0, "accessories"),
+    Product(3, "Monitor", 340.0, "computing"),
+    Product(4, "Cable", 9.0, "accessories"),
 ]
+
+for p in products:
+    print(p)
 ```
+
+**Expected output:**
+
+```
+Product(1, 'Laptop', 1200.0, 'computing')
+Product(2, 'Mouse', 25.0, 'accessories')
+Product(3, 'Monitor', 340.0, 'computing')
+Product(4, 'Cable', 9.0, 'accessories')
+```
+
+`__repr__` is defined here for a practical reason: printing a *list* of objects calls `repr` on each element, so without it every line below would read `<__main__.Product object at 0x...>`. See [Section 25.3](#253-️-string-representation).
 
 ## 17.3 🔑 Dictionary
 
-```python
-products_by_id: dict[int, Product] = {}
+**▶️ Continues from §17.2.**
 
-products_by_id[1] = Product(1, "Laptop", 1200.0)
-
-product = products_by_id[1]
-```
-
-Use `.get()` when the key **may not exist** (returns `None` instead of crashing):
+A `dict` maps a key to an object, so lookups are instant instead of requiring a scan.
 
 ```python
-product = products_by_id.get(999)
+products_by_id: dict[int, Product] = {p.id: p for p in products}
+
+print(products_by_id[1])                 # direct lookup by key
+print(products_by_id.get(999))           # missing key -> None, no crash
+print(products_by_id.get(999, "unknown"))  # ...or your own fallback
+
+try:
+    products_by_id[999]                   # square brackets DO crash
+except KeyError as e:
+    print(f"KeyError: {e}")
 ```
 
-> 🎯 **When to use a dict:** when you frequently look items up by a unique key (ID, email, username). Much faster than scanning a list.
+**Expected output:**
+
+```
+Product(1, 'Laptop', 1200.0, 'computing')
+None
+unknown
+KeyError: 999
+```
+
+### 📌 `[key]` versus `.get(key)` — choose deliberately
+
+| | `d[key]` | `d.get(key)` |
+|---|---|---|
+| Key missing | Raises `KeyError` | Returns `None` (or your default) |
+| Use when | The key **must** exist; its absence is a bug | The key is **legitimately optional** |
+
+Reaching for `.get()` everywhere looks defensive but is usually wrong: it converts a loud, immediate `KeyError` into a `None` that travels through your program and fails somewhere far away with `AttributeError: 'NoneType' object has no attribute 'name'`. Use `[key]` when absence means something is broken.
+
+> 🎯 **When to use a dict:** when you look items up by a unique key (ID, email, username). A dict lookup takes roughly the same time whether it holds ten items or ten million; scanning a list gets slower in proportion to its length.
 
 ## 17.4 🔎 Querying objects with comprehensions
 
-Python has no LINQ, but list comprehensions, generator expressions, `sorted`, `filter`, `map`, and `itertools` cover most needs.
+**▶️ Continues from §17.2.**
+
+Python has no LINQ, but comprehensions, `sorted`, and `itertools` cover the same ground.
 
 ```python
-expensive_products = [
-    product
-    for product in products
-    if product.price > 100
-]
+expensive = [p for p in products if p.price > 100]
+print(expensive)
 
-expensive_products = sorted(expensive_products, key=lambda product: product.name)
+by_name = sorted(expensive, key=lambda p: p.name)
+print([p.name for p in by_name])
+
+by_price_desc = sorted(products, key=lambda p: p.price, reverse=True)
+print([(p.name, p.price) for p in by_price_desc])
 ```
 
-> 💡 Read a comprehension as a sentence: *"give me each `product` from `products` **where** its price > 100."*
+**Expected output:**
+
+```
+[Product(1, 'Laptop', 1200.0, 'computing'), Product(3, 'Monitor', 340.0, 'computing')]
+['Laptop', 'Monitor']
+[('Laptop', 1200.0), ('Monitor', 340.0), ('Mouse', 25.0), ('Cable', 9.0)]
+```
+
+> 💡 Read a comprehension as a sentence: *"give me each `p` from `products` **where** its price is over 100."* The order matches: output expression, then `for`, then `if`.
+
+**The `key=` argument** takes a function that extracts the value to sort *by*. `sorted` never modifies the original list — it returns a new one — whereas `products.sort()` sorts in place and returns `None`.
 
 ## 17.5 🌊 Generator expressions
 
-Use generators when you don't need the whole list at once — they produce items lazily, saving memory.
+**▶️ Continues from §17.2.**
+
+A generator expression looks like a list comprehension with `( )` instead of `[ ]`, and produces items one at a time instead of building the whole list.
 
 ```python
-expensive_names = (
-    product.name
-    for product in products
-    if product.price > 100
-)
+expensive_names = (p.name for p in products if p.price > 100)
 
+print(type(expensive_names).__name__)     # generator, not list
 for name in expensive_names:
     print(name)
+
+# A generator is single-use — it is now exhausted:
+print(list(expensive_names))              # []
 ```
 
-> 🎯 **When to use a generator:** processing large data streams, or when you only loop once. Note the `( )` instead of `[ ]`.
+**Expected output:**
+
+```
+generator
+Laptop
+Monitor
+[]
+```
+
+### ⚠️ The single-use behaviour catches people
+
+That final `[]` is not a bug; it is the defining property. A generator holds a *position*, not a collection. Once consumed, it stays consumed.
+
+**When that bites:** passing a generator to two functions, or looping over it twice. If you need the data more than once, materialise it with `list(...)` first.
+
+```python
+products = ["Laptop", "Monitor"]
+
+gen = (name.upper() for name in products)
+names = list(gen)           # materialise ONCE into a real list
+print(names)                # ['LAPTOP', 'MONITOR']
+print(names)                # ['LAPTOP', 'MONITOR'] — a list can be reused
+print(list(gen))            # [] — the generator behind it is still exhausted
+```
+
+**Expected output:**
+
+```
+['LAPTOP', 'MONITOR']
+['LAPTOP', 'MONITOR']
+[]
+```
+
+> 🎯 **When to use a generator:** large or streaming data, or when you loop exactly once and want to avoid holding everything in memory. For four products, a list is simpler and the memory difference is meaningless — use generators when the data is big, not because they look clever.
 
 ## 17.6 ➕ Aggregation
 
+**▶️ Continues from §17.2.**
+
 ```python
-total = sum(product.price for product in products)
+print(sum(p.price for p in products))                  # total
+print(min(products, key=lambda p: p.price).name)       # cheapest
+print(max(products, key=lambda p: p.price).name)       # most expensive
+print(len([p for p in products if p.price > 100]))     # how many are expensive
+print(any(p.price > 1000 for p in products))           # is anything over 1000?
+print(all(p.price > 5 for p in products))              # is everything over 5?
 ```
 
+**Expected output:**
+
+```
+1574.0
+Cable
+Laptop
+2
+True
+True
+```
+
+Note `min`/`max` with `key=` return the **object**, not the price — which is usually what you want, since you can then read any of its fields.
+
+⚠️ **`min()` and `max()` raise `ValueError` on an empty sequence.** Pass `default=` when the collection might be empty: `max(products, key=..., default=None)`.
+
 ## 17.7 🗂️ Grouping with dictionaries
+
+**▶️ Continues from §17.2.**
 
 ```python
 from collections import defaultdict
@@ -2086,21 +2685,104 @@ products_by_category: dict[str, list[Product]] = defaultdict(list)
 
 for product in products:
     products_by_category[product.category].append(product)
+
+for category, items in sorted(products_by_category.items()):
+    print(f"{category}: {[p.name for p in items]}")
 ```
 
-> 💡 `defaultdict(list)` auto-creates an empty list the first time you touch a new key — no more "does this key exist yet?" checks.
+**Expected output:**
+
+```
+accessories: ['Mouse', 'Cable']
+computing: ['Laptop', 'Monitor']
+```
+
+> 💡 `defaultdict(list)` calls `list()` automatically the first time you touch a new key, so `products_by_category["computing"].append(...)` works even though that key did not exist. Without it you would need `if key not in d: d[key] = []` on every iteration.
+
+⚠️ **One gotcha:** merely *reading* `products_by_category["nonexistent"]` creates an empty list for that key, growing the dict as a side effect of a lookup. Use `.get(key, [])` when you only want to read.
+
+```python
+from collections import defaultdict
+
+d: defaultdict[str, list[int]] = defaultdict(list)
+print(len(d))            # 0
+d["ghost"]               # just READING it...
+print(len(d))            # 1 — the key now exists
+print(dict(d))           # {'ghost': []}
+```
+
+**Expected output:**
+
+```
+0
+1
+{'ghost': []}
+```
 
 ## 17.8 🛡️ Expose collections safely
 
-**Prefer:**
+Handing out your internal list lets callers mutate your object's state behind its back.
 
 ```python
-@property
-def items(self) -> tuple[OrderItem, ...]:
-    return tuple(self._items)
+class OrderItem:
+    def __init__(self, name: str, quantity: int) -> None:
+        self.name = name
+        self.quantity = quantity
+
+    def __repr__(self) -> str:
+        return f"OrderItem({self.name!r}, {self.quantity})"
+
+class LeakyOrder:
+    def __init__(self) -> None:
+        self.items: list[OrderItem] = []
+
+class SafeOrder:
+    def __init__(self) -> None:
+        self._items: list[OrderItem] = []
+
+    @property
+    def items(self) -> tuple[OrderItem, ...]:
+        return tuple(self._items)          # a snapshot, not the real list
+
+    def add_item(self, item: OrderItem) -> None:
+        if item.quantity <= 0:
+            raise ValueError("Quantity must be positive.")
+        self._items.append(item)
+
+# The leak: outside code bypasses every rule.
+leaky = LeakyOrder()
+leaky.items.append(OrderItem("ghost", -99))     # no validation ran
+print(leaky.items)
+
+# The safe version refuses:
+safe = SafeOrder()
+safe.add_item(OrderItem("book", 2))
+try:
+    safe.items.append(OrderItem("ghost", -99))
+except AttributeError as e:
+    print(f"AttributeError: {e}")
+print(safe.items)
+
+try:
+    safe.add_item(OrderItem("ghost", -99))       # the real door, with the rule
+except ValueError as e:
+    print(f"ValueError: {e}")
 ```
 
-> ⚠️ Avoid exposing mutable internal lists unless external mutation is truly intended (see [Section 9.3](#93-protecting-collections)).
+**Expected output:**
+
+```
+[OrderItem('ghost', -99)]
+AttributeError: 'tuple' object has no attribute 'append'
+(OrderItem('book', 2),)
+ValueError: Quantity must be positive.
+```
+
+**What the tuple bought you:** an item with quantity `-99` got into `LeakyOrder` without any validation, because `.items` *was* the internal list. `SafeOrder` hands out a `tuple`, which has no `append`, so the only way in is `add_item` — where the rule lives.
+
+⚠️ **This is a shallow guard.** The tuple protects the *list*; it does not freeze the items inside it. `safe.items[0].quantity = -99` still works, because the `OrderItem` objects are themselves mutable. For full protection make the items immutable too — see [Section 19.3](#193--frozen-dataclass).
+
+> ⚠️ Avoid exposing mutable internal lists unless external mutation is genuinely intended (see [Section 9.3](#93--protecting-collections)).
 
 ---
 
@@ -2255,6 +2937,8 @@ class Point(NamedTuple):
 
 ## 19.5 🔄 `replace` for immutable objects
 
+**▶️ Continues from §19.3** — assumes the frozen `CustomerDto` dataclass defined there.
+
 Since you can't edit a frozen object, you make a *modified copy*.
 
 ```python
@@ -2321,34 +3005,192 @@ class Product:
 
 ## 20.1 ❓ Optional and non-optional references
 
+The `|` in a type hint means "or". `str | None` declares a value that is **either** a string **or** missing.
+
 ```python
-name: str = "Anna"        # Should not be None
-phone: str | None = None  # May be None
+name: str = "Anna"          # should never be None
+phone: str | None = None    # may legitimately be None
+
+print(name, phone)
 ```
+
+**Expected output:**
+
+```
+Anna None
+```
+
+> 💡 `str | None` requires Python 3.10+. On older versions the equivalent is `Optional[str]` from `typing`. They mean exactly the same thing; `Optional` is the older spelling and still very common in existing code.
+
+⚠️ **Remember which level this is.** A type hint is *level 2* from the [enforcement section](#-pythons-three-levels-of-enforcement-read-this-before-section-5) — it is checked by `mypy`, not by Python. Nothing stops `name = None` at runtime. The value of the hint is that a checker, a reader, and your IDE can all see which variables are allowed to be empty.
 
 ## 20.2 ✅ None check
 
+The safe pattern is to check first, then use the value inside the check.
+
 ```python
-if phone is not None:
-    print(len(phone))
+def show(phone: str | None) -> None:
+    if phone is not None:
+        print(f"digits: {len(phone)}")
+    else:
+        print("no phone on file")
+
+show("0771234567")
+show(None)
 ```
+
+**Expected output:**
+
+```
+digits: 10
+no phone on file
+```
+
+### 📌 Why `is not None` and not `!= None`
+
+`is` compares identity, and `None` is a singleton — there is exactly one `None` object in a Python process. `is None` therefore cannot be affected by a class's `__eq__`, while `== None` can:
+
+```python
+class Weird:
+    def __eq__(self, other) -> bool:
+        return True          # claims to equal everything
+
+w = Weird()
+print(w == None)             # True  — the class lied
+print(w is None)             # False — identity cannot be faked
+```
+
+**Expected output:**
+
+```
+True
+False
+```
+
+Always write `is None` / `is not None`.
+
+### 💡 Narrowing: what the check buys you
+
+A type checker follows the `if`. Inside the `is not None` branch, `phone` is narrowed from `str | None` to plain `str`, so `len(phone)` is accepted. Without the check, `mypy` reports:
+
+```
+error: Argument 1 to "len" has incompatible type "str | None"; expected "Sized"
+```
+
+That message is the payoff for writing the hint in the first place: a crash that would have happened in production, reported before the program ran.
 
 ## 20.3 🎚️ Default value
 
 ```python
-display_phone = phone if phone is not None else "No phone number"
+def label(phone: str | None) -> str:
+    return phone if phone is not None else "No phone number"
+
+print(label("0771234567"))
+print(label(None))
+print(label(""))              # an empty string is a real value — preserved
 ```
 
-> ⚠️ Do **not** use `phone or "No phone number"` if an empty string `""` is a meaningful value — because `""` is "falsy" and would be wrongly replaced.
+**Expected output:**
+
+```
+0771234567
+No phone number
+
+```
+
+The last line is blank because `""` was passed through unchanged, which is correct: the caller supplied a value, even if it is empty.
+
+### ⚠️ The `or` shortcut is a trap
+
+`phone or "default"` looks tidier and is subtly different — it replaces **every falsy value**, not just `None`:
+
+```python
+def with_or(phone: str | None) -> str:
+    return phone or "No phone number"
+
+def with_is_none(phone: str | None) -> str:
+    return phone if phone is not None else "No phone number"
+
+for value in ("0771234567", None, ""):
+    print(f"{value!r:14} or-> {with_or(value)!r:20} is-None-> {with_is_none(value)!r}")
+```
+
+**Expected output:**
+
+```
+'0771234567'   or-> '0771234567'         is-None-> '0771234567'
+None           or-> 'No phone number'    is-None-> 'No phone number'
+''             or-> 'No phone number'    is-None-> ''
+```
+
+The third row is the bug. An empty string means *"the user deliberately cleared this field"*; `or` silently rewrites that to "No phone number", losing the distinction. The same applies to `0`, `0.0`, `False`, `[]`, and `{}` — all falsy, all frequently meaningful.
+
+**When `or` is fine:** when every falsy value should genuinely be replaced — `page = requested_page or 1`, where `0` is not a valid page either. Use it deliberately, not as a shorter way to write a `None` check.
 
 ## 20.4 🧰 Safe helper method
+
+Push the `None` handling into one place so callers do not repeat it.
 
 ```python
 def display_length(text: str | None) -> int:
     if text is None:
         return 0
     return len(text)
+
+print(display_length("Anna"))     # 4
+print(display_length(None))       # 0
+print(display_length(""))         # 0
 ```
+
+**Expected output:**
+
+```
+4
+0
+0
+```
+
+### 💡 Safe navigation, Python style
+
+Languages like C# have `?.` for "call this only if not null". Python has no such operator, and these are the idiomatic equivalents:
+
+```python
+class Address:
+    def __init__(self, city: str) -> None:
+        self.city = city
+
+class Customer:
+    def __init__(self, address: Address | None) -> None:
+        self.address = address
+
+def city_of(customer: Customer) -> str:
+    # 1. Explicit check — clearest, and the one to prefer.
+    if customer.address is None:
+        return "unknown"
+    return customer.address.city
+
+def city_of_walrus(customer: Customer) -> str:
+    # 2. Assign-and-test in one step (Python 3.8+).
+    if (address := customer.address) is not None:
+        return address.city
+    return "unknown"
+
+print(city_of(Customer(Address("Colombo"))))
+print(city_of(Customer(None)))
+print(city_of_walrus(Customer(Address("Kandy"))))
+print(getattr(Customer(None).address, "city", "unknown"))   # 3. terse, but opaque
+```
+
+**Expected output:**
+
+```
+Colombo
+unknown
+Kandy
+unknown
+```
+
+The third form works but hides the intent behind a string attribute name that no type checker or refactoring tool can follow. Prefer the explicit check.
 
 ## 20.5 🚨 Fail fast
 
@@ -2420,33 +3262,149 @@ Make errors specific and meaningful.
 ```python
 class InsufficientBalanceError(Exception):
     def __init__(self, balance: float, requested_amount: float) -> None:
+        # Keep the values as attributes so callers can USE them, not just read text.
+        self.balance = balance
+        self.requested_amount = requested_amount
+        self.shortfall = requested_amount - balance
         super().__init__(
             f"Balance {balance} is not enough for withdrawal {requested_amount}."
         )
 ```
 
-**Usage:**
+**Usage — a complete, runnable example:**
 
 ```python
-raise InsufficientBalanceError(balance=100, requested_amount=200)
+class InsufficientBalanceError(Exception):
+    def __init__(self, balance: float, requested_amount: float) -> None:
+        self.balance = balance
+        self.requested_amount = requested_amount
+        self.shortfall = requested_amount - balance
+        super().__init__(
+            f"Balance {balance} is not enough for withdrawal {requested_amount}."
+        )
+
+class Account:
+    def __init__(self, balance: float) -> None:
+        self.balance = balance
+
+    def withdraw(self, amount: float) -> None:
+        if amount > self.balance:
+            raise InsufficientBalanceError(self.balance, amount)
+        self.balance -= amount
+
+account = Account(100)
+
+try:
+    account.withdraw(200)
+except InsufficientBalanceError as e:
+    print(f"Message : {e}")
+    print(f"Shortfall: {e.shortfall}")      # callers can act on the data
+    print(f"Suggest  : deposit at least {e.shortfall:.2f} first")
 ```
 
-> 🎯 **When to use custom exceptions:** when calling code needs to react *differently* to different failures (e.g., "insufficient funds" vs. "account frozen").
+**Expected output:**
+
+```
+Message : Balance 100 is not enough for withdrawal 200.
+Shortfall: 100
+Suggest  : deposit at least 100.00 first
+```
+
+### 💡 The point is the attributes, not the class name
+
+A custom exception that only carries a message is barely better than `ValueError("...")`. The value appears when the caller can **react to structured data** — here, `e.shortfall` lets the UI say "deposit at least £100" without parsing the message string. Messages are for humans; attributes are for code.
+
+> 🎯 **When to use custom exceptions:** when calling code needs to react *differently* to different failures ("insufficient funds" → offer a deposit; "account frozen" → show support contact). If every caller would just log the message and give up, a built-in exception type is enough.
+
+> ⚠️ **Inherit from the closest built-in that fits.** `InsufficientBalanceError` could reasonably subclass `ValueError`, so that code catching `ValueError` still works. Subclass `Exception` directly only when no built-in category applies.
 
 ## 21.4 🏛️ Domain exception
 
-A base class for all your business-rule errors.
+A shared base class for all your business-rule errors, so callers can catch *your* failures as a group without also swallowing bugs.
+
+```python
+class DomainError(Exception):
+    """Base class for every business-rule violation in this application."""
+
+class OrderNotPaidError(DomainError):
+    pass
+
+class OrderAlreadyShippedError(DomainError):
+    pass
+
+class Order:
+    def __init__(self) -> None:
+        self.paid = False
+        self.shipped = False
+
+    def ship(self) -> None:
+        if not self.paid:
+            raise OrderNotPaidError("Order cannot be shipped before payment.")
+        if self.shipped:
+            raise OrderAlreadyShippedError("Order was already shipped.")
+        self.shipped = True
+        print("Order shipped.")
+
+order = Order()
+
+# 1. Catch one specific business rule:
+try:
+    order.ship()
+except OrderNotPaidError as e:
+    print(f"specific  -> {type(e).__name__}: {e}")
+
+# 2. Or catch every business-rule failure as a group:
+try:
+    order.ship()
+except DomainError as e:
+    print(f"as a group -> {type(e).__name__}: {e}")
+
+order.paid = True
+order.ship()
+```
+
+**Expected output:**
+
+```
+specific  -> OrderNotPaidError: Order cannot be shipped before payment.
+as a group -> OrderNotPaidError: Order cannot be shipped before payment.
+Order shipped.
+```
+
+### 📌 Why the base class earns its place
+
+A web handler can now write one `except DomainError:` that turns any business-rule violation into a clean `400 Bad Request`, while a genuine bug — a `KeyError` or `AttributeError` — falls through to the generic handler and gets logged as a `500`. Without the shared base you would either list every exception type by hand (and forget the new one someone adds next month) or catch `Exception` and hide your own bugs.
 
 ```python
 class DomainError(Exception):
     pass
+
+class OrderNotPaidError(DomainError):
+    pass
+
+def handle(action) -> str:
+    try:
+        action()
+    except DomainError as e:
+        return f"400 Bad Request: {e}"        # the user's fault — explain it
+    except Exception as e:
+        return f"500 Internal Error: {type(e).__name__}"   # our fault — log it
+    return "200 OK"
+
+print(handle(lambda: None))
+print(handle(lambda: (_ for _ in ()).throw(OrderNotPaidError("pay first"))))
+print(handle(lambda: {}["missing"]))
 ```
 
-**Usage:**
+**Expected output:**
 
-```python
-raise DomainError("Order cannot be shipped before payment.")
 ```
+200 OK
+400 Bad Request: pay first
+500 Internal Error: KeyError
+```
+
+The `KeyError` is a programming mistake, and it correctly does **not** get reported to the user as a business rule. That separation is the whole reason for a domain-exception base class.
 
 ## 21.5 📏 Exception rules
 
@@ -2459,6 +3417,8 @@ raise DomainError("Order cannot be shipped before payment.")
 - ⚠️ Avoid bare `except:` unless doing controlled cleanup and re-raising.
 
 ## 21.6 🔗 Exception chaining
+
+**▶️ Continues from §21.4** — assumes the `DomainError` base class defined there.
 
 Keep the original cause visible using `from`.
 
@@ -2546,6 +3506,8 @@ class AppSettings:
 
 ## 22.5 📦 Utility modules
 
+**📄 Fragment (two files)** — create both files side by side, then run `python main.py`.
+
 In Python, a **module with functions** is often better than a utility class.
 
 **Good:**
@@ -2617,6 +3579,8 @@ print(calculate(2, 3, add))
 ```
 
 ## 23.2 λ Lambda callback
+
+**▶️ Continues from §23.1** — assumes the `calculate` function defined there.
 
 For tiny throwaway functions:
 
@@ -2767,15 +3731,113 @@ def greet(name: str) -> None:
 
 ## 24.4 🐒 Monkey patching warning
 
-Python allows adding attributes to objects or classes at runtime.
+**Monkey patching** means replacing or adding attributes on a class (or module) *at runtime*, after it was defined, from outside its own source file.
+
+### 📌 What Python does and does not allow
+
+You can patch classes **you or a library defined in Python**. You cannot patch the built-in types:
 
 ```python
-# Possible, but usually not recommended.
-str.custom_method = lambda self: self.upper()
+class Greeter:
+    def hello(self) -> str:
+        return "hello"
+
+# Adding a method to a Python-defined class: allowed.
+Greeter.shout = lambda self: self.hello().upper()
+print(Greeter().shout())          # HELLO
+
+# Replacing an existing method: also allowed.
+Greeter.hello = lambda self: "patched"
+print(Greeter().hello())          # patched
+
+# Built-in C types are immutable — this is refused:
+try:
+    str.custom_method = lambda self: self.upper()
+except TypeError as e:
+    print(f"TypeError: {e}")
 ```
 
+**Expected output:**
+
+```
+HELLO
+patched
+TypeError: cannot set 'custom_method' attribute of immutable type 'str'
+```
+
+**Why built-ins are protected:** `str`, `int`, `list`, and friends are implemented in C with fixed layouts, and every part of the interpreter depends on their behaviour. Allowing a patch would let one library silently change the meaning of `str` for every other library in the process. (Languages that *do* permit this — notably Ruby and JavaScript — have a long history of libraries breaking each other this way.)
+
+### ⚠️ Why to avoid it even where it is allowed
+
+The `Greeter` patch above is legal and is still a bad idea in production code:
+
+- **It is invisible.** Someone reading `greeter.py` sees `hello` returning `"hello"`. The real behaviour depends on whether some other module was imported first.
+- **It is order-dependent.** Whether the patch has been applied depends on import order, which can change for unrelated reasons.
+- **It does not compose.** Two libraries patching the same method silently means the last import wins.
+- **Tools cannot follow it.** Type checkers, IDEs, and `grep` will not connect the call site to the patched implementation.
+
+### ✅ What to do instead
+
+| Goal | Better approach |
+|---|---|
+| Add behaviour to a class you own | Add the method to the class |
+| Add behaviour to a class you do not own | A plain function: `def shout(g: Greeter) -> str: ...` |
+| Add behaviour to many classes | A **mixin** ([Section 24.2](#242--mixin)) |
+| Wrap or adapt an object's behaviour | The **Decorator** or **Adapter** pattern ([Sections 29.6](#296--decorator-pattern), [29.7](#297--adapter)) |
+| Add behaviour to a built-in type | Subclass it, or write a free function |
+
+For the last row — since you cannot patch `str`, subclassing is the supported route:
+
+```python
+class ShoutyStr(str):
+    def shout(self) -> str:
+        return self.upper()
+
+s = ShoutyStr("hello")
+print(s.shout())         # HELLO
+print(s + " world")      # hello world  — still behaves as a str
+print(isinstance(s, str))  # True
+```
+
+**Expected output:**
+
+```
+HELLO
+hello world
+True
+```
+
+### 🎯 The one legitimate use: tests
+
+Temporarily replacing a dependency during a test is the accepted exception, because it is scoped and reversed automatically. Use `unittest.mock.patch`, which restores the original when the block ends:
+
+```python
+from unittest.mock import patch
+
+class Clock:
+    def now(self) -> str:
+        return "real time"
+
+def report(clock: Clock) -> str:
+    return f"Report at {clock.now()}"
+
+with patch.object(Clock, "now", return_value="2026-01-01"):
+    print(report(Clock()))        # Report at 2026-01-01
+
+print(report(Clock()))            # Report at real time — automatically restored
+```
+
+**Expected output:**
+
+```
+Report at 2026-01-01
+Report at real time
+```
+
+The `with` block is what makes this acceptable: the patch is visible, narrow, and guaranteed to be undone. See [Section 31.5](#315--using-unittestmock).
+
 > [!WARNING]
-> Monkey patching can **surprise other developers and break assumptions**. Prefer explicit functions, wrappers, or mixins. Reserve monkey patching for narrow cases like test mocking.
+> Outside tests, monkey patching surprises other developers and breaks the assumption that a class's source file describes its behaviour. Prefer explicit functions, wrappers, or mixins.
 
 ---
 
@@ -2786,6 +3848,8 @@ str.custom_method = lambda self: self.upper()
 > 🌍 **Analogy:** Dunder methods are **universal adapters** 🔌. Implement `__len__` and suddenly the built-in `len()` speaks your object's language.
 
 ## 25.1 🔢 Indexing with `__getitem__`
+
+**▶️ Continues** — the usage snippet assumes a `classroom` object built from the `Classroom` class above it. For the full contract of `__getitem__`, including slicing and the `IndexError` requirement, see the companion `python_dunder.md`, Entry 68.
 
 ```python
 class Classroom:
@@ -3003,6 +4067,8 @@ my_app/
 
 ## 26.6 📥 Import style
 
+**📄 Fragment** — the paths below refer to the `my_app` package laid out in [§26.5](#265-️-recommended-structure); they are illustrations of import *style*, not runnable on their own.
+
 Prefer clear, explicit imports.
 
 ```python
@@ -3119,23 +4185,93 @@ A derived class should be usable **wherever** the base class is expected — wit
 ```python
 class Bird:
     def fly(self) -> None:
-        pass
+        print(f"{type(self).__name__} is flying")
 
 class Penguin(Bird):
     def fly(self) -> None:
         raise NotImplementedError("Penguins cannot fly.")
+
+def migrate(birds: list[Bird]) -> None:
+    for bird in birds:
+        bird.fly()          # promised to work for every Bird
+
+try:
+    migrate([Bird(), Penguin()])
+except NotImplementedError as e:
+    print(f"NotImplementedError: {e}")
 ```
+
+**Expected output:**
+
+```
+Bird is flying
+NotImplementedError: Penguins cannot fly.
+```
+
+**This is the violation, concretely.** `migrate` was written against `Bird`, and the type system says a `Penguin` *is* a `Bird`. Yet substituting one crashes a function that was correct. The subclass narrowed what the base class promised, which is exactly what Liskov forbids.
+
+Note the symptom: the bug surfaces in `migrate`, which is correct code that was never changed. Every caller of `Bird.fly()` is now unsafe, and no type checker will warn you — `Penguin.fly` has the right signature; it just does not honour it.
 
 **✅ Better — don't promise flight to non-fliers:**
 
 ```python
+from typing import Protocol
+
 class Bird:
-    pass
+    """Every bird can do this much — and nothing is promised about flying."""
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+    def eat(self) -> None:
+        print(f"{self.name} is eating")
 
 class FlyingBird(Protocol):
+    """A separate contract, satisfied only by birds that really fly."""
+
+    name: str
+
     def fly(self) -> None:
         ...
+
+class Sparrow(Bird):
+    def fly(self) -> None:
+        print(f"{self.name} is flying")
+
+class Penguin(Bird):
+    def swim(self) -> None:
+        print(f"{self.name} is swimming")
+
+def migrate(birds: list[FlyingBird]) -> None:
+    for bird in birds:
+        bird.fly()          # safe: the parameter type promises fly()
+
+all_birds: list[Bird] = [Sparrow("Jack"), Penguin("Pip")]
+for b in all_birds:
+    b.eat()                 # safe for every Bird
+
+migrate([Sparrow("Jack"), Sparrow("Jill")])
+# migrate(all_birds)        # a type checker rejects this: Penguin has no fly()
 ```
+
+**Expected output:**
+
+```
+Jack is eating
+Pip is eating
+Jack is flying
+Jill is flying
+```
+
+**What changed, and why it fixes the violation.** `fly()` moved out of `Bird` and into a separate `FlyingBird` contract. Now:
+
+- `Bird` promises only what *every* bird can do, so no subclass has to break a promise.
+- `migrate` asks for `list[FlyingBird]`, so a `Penguin` can never reach it.
+- `Penguin` gains `swim()` instead of a `fly()` that raises.
+
+The error moved from **runtime, in unrelated code** to **the type checker, at the call site** — the whole point of respecting Liskov.
+
+⚠️ **Note what Python does and does not enforce here.** The commented-out `migrate(all_birds)` line would *run* without complaint until it reached `Pip`, then raise `AttributeError`. Only `mypy` or `pyright` catches it beforehand. Protocols are a static-checking tool; see [Section 13](#13-protocols-and-interfaces).
 
 > 🌍 **Analogy:** If a recipe says "use any fruit," swapping in an apple shouldn't blow up the kitchen. A subtype that explodes when substituted violates Liskov.
 
@@ -3146,6 +4282,8 @@ Do not force classes to implement methods they don't need.
 **❌ Bad — one fat contract:**
 
 ```python
+from typing import Protocol
+
 class Machine(Protocol):
     def print_item(self) -> None:
         ...
@@ -3155,7 +4293,34 @@ class Machine(Protocol):
 
     def fax(self) -> None:
         ...
+
+# A simple printer is now forced to implement scanning and faxing it cannot do:
+class SimplePrinter:
+    def print_item(self) -> None:
+        print("printing")
+
+    def scan(self) -> None:
+        raise NotImplementedError("this printer cannot scan")
+
+    def fax(self) -> None:
+        raise NotImplementedError("this printer cannot fax")
+
+p = SimplePrinter()
+p.print_item()
+try:
+    p.scan()
+except NotImplementedError as e:
+    print(f"NotImplementedError: {e}")
 ```
+
+**Expected output:**
+
+```
+printing
+NotImplementedError: this printer cannot scan
+```
+
+Two of the three methods exist only to satisfy the contract, and both are landmines. That is the smell Interface Segregation names.
 
 **✅ Better — small, focused contracts:**
 
@@ -3244,6 +4409,8 @@ order_service.checkout(100.0)
 
 ## 28.2 🔧 Function-based dependency injection
 
+**▶️ Continues from §28.1** — assumes the `PaymentGateway` protocol defined there.
+
 ```python
 def checkout(total: float, payment_gateway: PaymentGateway) -> None:
     payment_gateway.charge(total)
@@ -3252,6 +4419,8 @@ def checkout(total: float, payment_gateway: PaymentGateway) -> None:
 > 💡 This is often enough for small Python applications. Don't reach for a DI framework prematurely.
 
 ## 28.3 🌱 Composition root
+
+**▶️ Continues from §28.1** — assumes `OrderService` and its dependencies from that section.
 
 Create objects in **one place** near application startup.
 
@@ -3399,6 +4568,8 @@ class Repository(Protocol[T]):
 Coordinates multiple repository operations in one transaction (all-or-nothing).
 
 ```python
+from typing import Protocol
+
 class UnitOfWork(Protocol):
     def commit(self) -> None:
         ...
@@ -3453,6 +4624,8 @@ class EventBus:
 Add behavior without changing the original object.
 
 ```python
+from typing import Protocol
+
 class PaymentGateway(Protocol):
     def charge(self, amount: float) -> None:
         ...
@@ -3474,13 +4647,17 @@ class LoggingPaymentGateway:
 Make incompatible interfaces work together.
 
 ```python
+from typing import Protocol
+
 class EmailSender(Protocol):
     def send_email(self, to: str, message: str) -> None:
         ...
 
+# A third-party class we cannot change: its method has the wrong name AND
+# the wrong parameter names for our EmailSender contract.
 class ThirdPartyMailer:
     def send(self, recipient: str, body: str) -> None:
-        pass
+        print(f"[third-party] to={recipient} body={body}")
 
 class ThirdPartyMailerAdapter:
     def __init__(self, mailer: ThirdPartyMailer) -> None:
@@ -3493,6 +4670,8 @@ class ThirdPartyMailerAdapter:
 > 🌍 **Analogy:** A **travel plug adapter** 🔌 — lets your device fit a foreign socket without rewiring anything.
 
 ## 29.8 📜 Command
+
+**▶️ Continues from §29.7** — assumes the `EmailSender` protocol defined there.
 
 Encapsulate a request as an object.
 
@@ -3595,6 +4774,8 @@ class Money:
 
 ## 30.3 🧩 Aggregate
 
+**▶️ Continues from §30.1** — assumes the `Entity` base class defined there.
+
 An aggregate is a **consistency boundary** — one entity that controls a cluster of related objects and guards their rules.
 
 ```text
@@ -3641,6 +4822,8 @@ class Order(Entity):
 
 ## 30.4 🧠 Domain service
 
+**▶️ Continues from §30.3** — assumes the `Order` aggregate defined there.
+
 Use a domain service when business logic doesn't naturally belong to one entity or value object.
 
 ```python
@@ -3656,6 +4839,8 @@ class PricingService:
 ```
 
 ## 30.5 🎬 Application service
+
+**▶️ Continues from §30.3 and §30.4** — assumes the `Order` aggregate and a `Repository` protocol.
 
 Coordinates use cases (the "orchestrator").
 
@@ -3733,6 +4918,8 @@ pytest
 
 ## 31.2 ✅ Example test with pytest
 
+**📄 Fragment** — a test file belonging to the project laid out in [§31.1](#311-️-create-a-test-project). It imports from your `banking` package and is run with `pytest`, never with `python`.
+
 ```python
 from banking.bank_account import BankAccount
 
@@ -3748,6 +4935,8 @@ def test_deposit_should_increase_balance() -> None:
 > 💡 Notice the **Arrange, Act, Assert** rhythm: set up, do the thing, check the result.
 
 ## 31.3 💥 Test exceptions
+
+**📄 Fragment** — same project as [§31.2](#312--example-test-with-pytest); run with `pytest`.
 
 ```python
 import pytest
@@ -3870,10 +5059,57 @@ def calculate_shipping(method: str) -> float:
 **After:**
 
 ```python
+from typing import Protocol
+
 class ShippingMethod(Protocol):
     def calculate_cost(self) -> float:
         ...
+
+class StandardShipping:
+    def calculate_cost(self) -> float:
+        return 5.0
+
+class ExpressShipping:
+    def calculate_cost(self) -> float:
+        return 15.0
+
+class OvernightShipping:          # NEW — added without touching anything above
+    def calculate_cost(self) -> float:
+        return 29.0
+
+def total_with_shipping(subtotal: float, shipping: ShippingMethod) -> float:
+    return subtotal + shipping.calculate_cost()
+
+for method in (StandardShipping(), ExpressShipping(), OvernightShipping()):
+    print(f"{type(method).__name__:20} {total_with_shipping(100.0, method):.2f}")
 ```
+
+**Expected output:**
+
+```
+StandardShipping     105.00
+ExpressShipping      115.00
+OvernightShipping    129.00
+```
+
+### 📌 What the refactoring actually bought
+
+| | **Before** (`match` on a string) | **After** (one class per method) |
+|---|---|---|
+| Adding a method | Edit the existing function | Add a new class; touch nothing else |
+| Invalid value | Fails at runtime, with a string typo | Impossible — there is no string to mistype |
+| Method-specific data (weight bands, zones) | Nowhere natural to put it | Lives in its own class |
+| Testing one method | Must go through the dispatcher | Test the class directly |
+
+### ⚠️ And the honest trade-off
+
+This refactoring is **not** automatically an improvement. It replaced six obvious lines with four classes, which is more code and more files to navigate. It pays off when:
+
+- new cases are added **often**, or by people who should not edit shared logic;
+- each case carries **its own data or extra behaviour**, not just a number;
+- the same `match` on the same values appears in **more than one place** — the real signal.
+
+If shipping costs are three fixed numbers that change once a year, the original `match` statement is clearer and you should keep it. A dictionary of `{"standard": 5.0, "express": 15.0}` is another perfectly good middle ground. Reach for polymorphism when the conditional is *duplicated* or the branches are *growing*, not merely because a conditional exists.
 
 ## 32.4 🔁 Refactoring workflow
 
@@ -3904,6 +5140,8 @@ One class does everything.
 - Hard to understand
 
 ## 33.2 🩸 Anemic domain model
+
+**▶️ Continues** — assumes an `OrderItem` class with a `total` attribute.
 
 Classes only have attributes, no behavior (all data, no rules).
 
@@ -3965,6 +5203,8 @@ Using `str`, `int`, and `float` everywhere instead of meaningful types (see the 
 
 ## 33.6 🔗 Tight coupling
 
+**▶️ Continues** — assumes an `EmailSenderProtocol` of the kind shown in [§13](#13-protocols-and-interfaces).
+
 Classes directly instantiate their dependencies.
 
 **❌ Bad:**
@@ -4019,7 +5259,9 @@ Use type hints, explicit validation, and tests (see [Section 20](#20-none-safety
 ## 33.11 ⚠️ Mutable default arguments
 
 > [!WARNING]
-> This is a famous Python gotcha. A mutable default is created **once** and shared across all calls!
+> This is the most famous Python gotcha of all. A mutable default is created **once**, when the function is defined, and then shared by every call that does not supply its own value.
+
+### 📌 See the bug happen
 
 **❌ Bad:**
 
@@ -4027,34 +5269,169 @@ Use type hints, explicit validation, and tests (see [Section 20](#20-none-safety
 def add_item(item, items=[]):
     items.append(item)
     return items
+
+print(add_item("apple"))     # ['apple']          — looks fine
+print(add_item("banana"))    # ['apple', 'banana'] — the list REMEMBERED
+print(add_item("cherry"))    # ['apple', 'banana', 'cherry']
 ```
 
-**✅ Better:**
+**Expected output:**
+
+```
+['apple']
+['apple', 'banana']
+['apple', 'banana', 'cherry']
+```
+
+Each call was supposed to start from an empty list. Instead, all three share one list that keeps growing.
+
+### 📌 Why it happens
+
+Default values are evaluated **once, when the `def` statement runs** — not on each call. The empty list is created at definition time and stored on the function object itself. Every call that omits `items` receives *that same list*.
+
+You can see the shared list directly:
+
+```python
+def add_item(item, items=[]):
+    items.append(item)
+    return items
+
+print(add_item.__defaults__)      # ([],)          — before any call
+add_item("apple")
+print(add_item.__defaults__)      # (['apple'],)   — the default itself changed
+print(add_item.__defaults__[0] is add_item("x"))   # True — same object
+```
+
+**Expected output:**
+
+```
+([],)
+(['apple'],)
+True
+```
+
+`__defaults__` is the tuple of default values stored on the function (covered in `python_dunder.md`, Entry 132). Watching it change from `([],)` to `(['apple'],)` is the whole bug in one line.
+
+### ✅ The fix: use `None` as the sentinel
 
 ```python
 def add_item(item, items=None):
     if items is None:
-        items = []
+        items = []          # a FRESH list on every call that needs one
     items.append(item)
     return items
+
+print(add_item("apple"))     # ['apple']
+print(add_item("banana"))    # ['banana'] — independent, as intended
+print(add_item("cherry", ["existing"]))   # ['existing', 'cherry']
 ```
 
-**With classes, prefer:**
+**Expected output:**
+
+```
+['apple']
+['banana']
+['existing', 'cherry']
+```
+
+`None` works as the sentinel because it is immutable and unambiguous. The `if items is None:` check runs on **every** call, so a new list is built each time.
+
+### ⚠️ Which defaults are affected
+
+The rule is about **mutability**, not about being a container:
+
+| Default | Safe? | Why |
+|---|:---:|---|
+| `x=0`, `x="abc"`, `x=(1, 2)`, `x=None`, `x=True` | ✅ | Immutable — sharing them is harmless |
+| `x=[]`, `x={}`, `x=set()` | ❌ | Mutable — one shared object accumulates state |
+| `x=datetime.now()` | ❌ | Evaluated once at import; the "now" is frozen forever |
+| `x=SomeClass()` | ❌ | One shared instance across all calls |
+
+The `datetime.now()` row catches people who understand the list case: a timestamp default silently reports the time the *module was imported*, not the time of the call.
+
+### 📌 The same bug in classes
+
+**❌ Bad** — a mutable **class attribute** is shared by every instance:
+
+```python
+class Order:
+    items = []                      # class attribute: ONE list for ALL orders
+
+    def add(self, item):
+        self.items.append(item)
+
+a, b = Order(), Order()
+a.add("book")
+print(b.items)                      # ['book'] — b sees a's item!
+print(a.items is b.items)           # True — literally the same list
+```
+
+**Expected output:**
+
+```
+['book']
+True
+```
+
+**✅ Good** — create it per instance in `__init__`:
 
 ```python
 class Order:
     def __init__(self) -> None:
-        self.items = []
+        self.items: list[str] = []     # a new list for each object
+
+    def add(self, item: str) -> None:
+        self.items.append(item)
+
+a, b = Order(), Order()
+a.add("book")
+print(a.items, b.items)             # ['book'] []
+print(a.items is b.items)           # False — independent
 ```
 
-**For dataclasses, use `field(default_factory=...)`:**
+**Expected output:**
+
+```
+['book'] []
+False
+```
+
+This is the same mechanism as the function-default bug: anything created in the *class body* (or in a default value) exists once, while anything created in `__init__` exists once per object. See [Section 22.6](#226-️-mutable-class-attribute-warning) for more on this distinction.
+
+### ✅ For dataclasses, use `field(default_factory=...)`
+
+A dataclass will not even let you make the mistake:
 
 ```python
 from dataclasses import dataclass, field
 
+# This is REJECTED at class-creation time:
+try:
+    @dataclass
+    class Broken:
+        items: list[str] = []
+except ValueError as e:
+    print(f"ValueError: {e}")
+
 @dataclass
 class Order:
     items: list[str] = field(default_factory=list)
+
+a, b = Order(), Order()
+a.items.append("book")
+print(a.items, b.items)      # ['book'] []
+```
+
+**Expected output:**
+
+```
+ValueError: mutable default <class 'list'> for field items is not allowed: use default_factory
+['book'] []
+```
+
+`default_factory=list` stores the *function* `list`, which the generated `__init__` calls once per instance, producing a fresh list every time.
+
+**This is one of the strongest reasons to prefer dataclasses** for data-holding classes: the error is caught when the class is defined, long before any confusing runtime behaviour.
 
 ---
 
@@ -4178,6 +5555,25 @@ dependencies = []
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 ```
+
+> [!IMPORTANT]
+> **📄 Every code block from §35.3 to §35.12 is a Fragment** — one file of the multi-file project laid out in [§35.2](#352-️-create-project). The first line of each block is its path inside that project.
+>
+> They cannot be run individually with `python`. To run the finished application:
+>
+> ```bash
+> # from the project root, with the virtual environment active
+> pip install -e .
+> python -m library_management.console_app
+> ```
+>
+> To run the tests from [§35.12](#3512--unit-tests):
+>
+> ```bash
+> pytest
+> ```
+>
+> Build the files in the order given — each one imports from the ones before it.
 
 ## 35.3 🚨 Domain exception
 
