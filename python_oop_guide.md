@@ -15,9 +15,6 @@
 > **🎯 Goal:** learn object-oriented programming from beginner syntax all the way to professional Python design — even if you have *never* written a class before.
 > **🧰 Recommended setup:** Python 3.11 or newer, Visual Studio Code or PyCharm, plus `uv`, `pip`, `venv`, `pytest`, and `mypy` or `pyright` for optional type checking.
 > **🗓️ Last updated:** 2026-06-25.
-
----
-
 ## 🗺️ How to read this guide (please read this first!)
 
 > [!IMPORTANT]
@@ -54,21 +51,34 @@ Throughout this guide you'll see the same friendly icons. Here's what each one m
 | 💡 | **Pro tip** | A shortcut experts know |
 | 🧪 | **Try it yourself** | A hands-on exercise |
 
+Two larger blocks appear at fixed places rather than inline:
+
+| Block | Where it appears | What it gives you |
+|---|---|---|
+| 🧭 **In practice** | At the end of each numbered section | The five questions you actually need answered before using something: **how** to use it (steps, prerequisites, expected result), **when** to use it, **where** in a real system it belongs, **when _not_ to use it**, and the **best practices** — including the mistakes people make and any safety, performance, or maintenance cost. |
+| ✅ **Checkpoint** | At the end of each Part | A teach-back test. If you can answer *“What is this? Why does it matter? How does it work? Can I give an example?”* in your own words, move on. Sample answers are in a collapsible block. |
+
 ---
 
 ## 🧪 How to run the examples (and how they were checked)
 
-### The three kinds of code block
+### The four kinds of code block
 
 Because this guide teaches with code, it matters that you can tell at a glance what you are looking at:
 
 | Marker | Meaning | What to do |
 |---|---|---|
 | *(none)* | **Complete program.** Everything it needs is in the block. | Save as `demo.py`, run `python demo.py` |
-| **▶️ Continues from §X.Y** | **Continuation.** Needs the class defined in the named section above it. | Paste it below that earlier block in the same file |
+| Introduced by **Usage:** | **A usage snippet.** The two or three lines that exercise the class defined in the block **immediately above it**. It is not a program on its own. | Paste it under that block, in the same file |
+| **▶️ Continues from §X.Y** | **Continuation.** Needs the class defined in the *named* section, which may be several pages back. | Paste it below that earlier block in the same file |
 | **📄 Fragment** | **Part of a multi-file project.** Cannot run alone by design. | Follow the file layout shown beside it |
 
 Blocks that are *meant* to fail are labelled **❌ This example fails on purpose** together with the exact error, so a traceback never leaves you wondering whether you typed something wrong.
+
+> [!TIP]
+> **The short rule:** if a block is preceded by the word **Usage:**, it continues from the block
+> directly above. Running it on its own gives `NameError: name 'X' is not defined` — which means you
+> have found a usage snippet, not a bug.
 
 Where output matters, an **Expected output** block follows the code. Two things in real output vary and are shown generically:
 
@@ -82,7 +92,6 @@ Where output matters, an **Expected output** block follows the code. Two things 
 - **Scope of that check:** it confirms the code runs and prints what is claimed on this one interpreter. It does not prove the surrounding prose is complete, nor that behaviour is identical on other Python versions or platforms.
 - **Not executed:** fragments belonging to multi-file projects (the capstone in [Section 35](#35-complete-capstone-project-library-management-system), the packaging examples in [Section 26](#26-modules-packages-environments-and-project-structure), and the `pytest` files in [Section 31](#31-unit-testing-oop-code)). These were reviewed by reading, not by running, and are labelled **📄 Fragment**.
 - **Version-dependent features** are labelled inline: `match` statements need 3.10+, `Self` needs 3.11+, and `@dataclass(slots=True)` needs 3.10+.
-
 ### A note on `sys.getsizeof`, timings, and memory figures
 
 Any number this guide reports for object size or speed came from the machine above. Those figures are implementation-specific — run them yourself rather than quoting them.
@@ -166,8 +175,20 @@ Every later chapter depends on this distinction, so the guide flags which level 
 
 ## 📚 Table of contents
 
+The 39 sections are grouped into five parts. Each part ends with a ✅ **Checkpoint** — a short teach-back test you can use to decide whether to move on.
+
+| Part | Sections | What you can do at the end of it |
+|---|:---:|---|
+| 🟢 **1 · Foundations** | 1–8 | Write a class with rules that cannot be bypassed, and explain what an object *is* |
+| 🟣 **2 · The four pillars, in depth** | 9–15 | Choose correctly between inheritance, composition, protocols, and abstract base classes |
+| 🟠 **3 · Building real types** | 16–26 | Use generics, collections, equality, dataclasses, `None` safety, and errors properly — and lay a project out |
+| 🔴 **4 · Professional design** | 27–33 | Apply SOLID and dependency injection *and name what each one costs* |
+| 🟡 **5 · Practice and reference** | 34–39 | Build a complete application, and look things up afterwards |
+
 <details>
 <summary><b>Click to expand the full 39-topic map</b></summary>
+
+**🟢 Part 1 — Foundations**
 
 1. [Prerequisites and setup](#1-prerequisites-and-setup)
 2. [What OOP means](#2-what-oop-means)
@@ -177,6 +198,9 @@ Every later chapter depends on this distinction, so the guide flags which level 
 6. [Constructors and object initialization](#6-constructors-and-object-initialization)
 7. [Access conventions](#7-access-conventions)
 8. [Object lifecycle and resource management](#8-object-lifecycle-and-resource-management)
+
+**🟣 Part 2 — The four pillars, in depth**
+
 9. [Encapsulation](#9-encapsulation)
 10. [Abstraction](#10-abstraction)
 11. [Inheritance](#11-inheritance)
@@ -184,6 +208,9 @@ Every later chapter depends on this distinction, so the guide flags which level 
 13. [Protocols and interfaces](#13-protocols-and-interfaces)
 14. [Abstract base classes vs protocols](#14-abstract-base-classes-vs-protocols)
 15. [Composition and object relationships](#15-composition-and-object-relationships)
+
+**🟠 Part 3 — Building real types**
+
 16. [Generics with OOP](#16-generics-with-oop)
 17. [Collections and object queries](#17-collections-and-object-queries)
 18. [Equality and object comparison](#18-equality-and-object-comparison)
@@ -195,6 +222,9 @@ Every later chapter depends on this distinction, so the guide flags which level 
 24. [Extension-style techniques](#24-extension-style-techniques)
 25. [Special methods, operators, nested classes, and code organization](#25-special-methods-operators-nested-classes-and-code-organization)
 26. [Modules, packages, environments, and project structure](#26-modules-packages-environments-and-project-structure)
+
+**🔴 Part 4 — Professional design**
+
 27. [SOLID principles](#27-solid-principles)
 28. [Dependency injection](#28-dependency-injection)
 29. [Design patterns for Python OOP](#29-design-patterns-for-python-oop)
@@ -202,6 +232,9 @@ Every later chapter depends on this distinction, so the guide flags which level 
 31. [Unit testing OOP code](#31-unit-testing-oop-code)
 32. [Refactoring OOP code](#32-refactoring-oop-code)
 33. [Common OOP mistakes](#33-common-oop-mistakes)
+
+**🟡 Part 5 — Practice and reference**
+
 34. [Hands-on projects](#34-hands-on-projects)
 35. [Complete capstone project: Library Management System](#35-complete-capstone-project-library-management-system)
 36. [Professional checklist](#36-professional-checklist)
@@ -210,6 +243,16 @@ Every later chapter depends on this distinction, so the guide flags which level 
 39. [Reference links](#39-reference-links)
 
 </details>
+
+---
+
+<div align="center">
+
+# 🟢 PART 1 — FOUNDATIONS
+
+*The vocabulary and the mechanics. Sections 1-8 are the ground everything else stands on.*
+
+</div>
 
 ---
 
@@ -301,6 +344,19 @@ oop_practice/
 └── pyproject.toml
 ```
 
+> ### 🧭 In practice — a virtual environment and project layout
+>
+> **How to use it.** Install Python 3.11 or newer, then from your project folder run `python -m venv .venv`, activate it (`.venv\Scripts\Activate.ps1` on Windows, `source .venv/bin/activate` elsewhere), and `pip install pytest mypy ruff`. **Prerequisite:** nothing but the Python installer. **Expected result:** `python --version` reports 3.11+, and `pip list` shows only the packages you just installed — not the dozens your operating system or another project put there.
+>
+> **When to use it.** At the very start of every project, before you install the first third-party package. The cost is about thirty seconds; the cost of skipping it is discovered months later, when two projects need different versions of the same library and one of them stops working.
+>
+> **Where to use it.** On your own machine while learning, and identically in continuous-integration pipelines and Docker images — the same three commands work in all three places. **Scenario:** you are learning from this guide with `pytest 8`, and you also help on an older project pinned to `pytest 6`. Two virtual environments keep both working, on one computer, with no conflict.
+>
+> **When _not_ to use it.** For a single throwaway script that imports nothing outside the standard library, a virtual environment is ceremony with no benefit. For command-line *tools* you want available everywhere (`ruff`, `black`, `httpie`), use `pipx` instead — it gives each tool its own hidden environment so they cannot break each other.
+>
+> **Best practices.** Never `pip install` into the system Python; on Linux and macOS that can damage packages your operating system depends on. Add `.venv/` to `.gitignore` and commit `pyproject.toml` instead — the environment is rebuildable, so it does not belong in version control. Recreating a broken environment (delete `.venv`, run the two commands again) is almost always faster than debugging one.
+
+
 ---
 
 # 2. What OOP means
@@ -358,6 +414,19 @@ This class represents a real concept: a bank account. It holds money (data), let
 > - Python relies on **conventions** more than strict access modifiers.
 > - Type hints (like `: float`) are optional at runtime, but very useful for readability and tools.
 
+> ### 🧭 In practice — modelling something as an object
+>
+> **How to use it.** Four steps. **(1)** Name the thing — usually a noun from the business: `Order`, `Account`, `Booking`. **(2)** List the data it holds. **(3)** List the operations people perform on it. **(4)** Write down the rules that must never be broken, and enforce them in `__init__` and in the methods, not in the calling code. **Prerequisite:** you can write a function and a dictionary. **Expected result:** there is no way for code outside the class to put an instance into an invalid state.
+>
+> **When to use it.** When you notice the same bundle of variables being passed into function after function — `def charge(account_number, balance, currency, overdraft_limit)` repeated six times. That bundle is an object waiting to be named. Also when a rule about some data has to hold everywhere, forever.
+>
+> **Where to use it.** The **domain layer** of an application — the part that models the business, as opposed to the screens, the database driver, or the web framework. **Scenario:** an online shop's checkout. `Order` guarantees that it always has at least one line, that the total always equals the sum of its lines, and that a shipped order cannot be edited. Those three guarantees hold whether the order arrived from the website, a phone operator, or a nightly import job — because they live in the object, not in the three different code paths.
+>
+> **When _not_ to use it.** For a twenty-line script, a single data transformation, or pure mathematics with no stored state. A dictionary plus two functions is clearer than a class with no rules, and modern Python offers better middle grounds: a `dataclass` for a bag of values ([§19.2](#192--dataclass)), a plain module for a group of related functions ([§22.5](#225--utility-modules)).
+>
+> **Best practices.** Start from the rules, not from the getters and setters — a class with nothing but `get_x`/`set_x` has not encapsulated anything, it has only made the data harder to reach. Keep the public surface small: every public method is a promise you have to keep. And resist creating a class purely to group functions; in Python, a module already does that job.
+
+
 ---
 
 # 3. The four pillars of OOP
@@ -410,6 +479,19 @@ print_any_report(ExcelReport())
 
 > 🎯 **When it helps:** `print_any_report` doesn't care *what* the object is — only that it can `print_report()`. This keeps code flexible and short.
 
+> ### 🧭 In practice — the four pillars, as a working vocabulary
+>
+> **How to use it.** Read the four names as a **checklist for reviewing a design**, not as four steps to perform. Take any class you have written and ask: what does it protect (encapsulation), what does it hide (abstraction), what does it genuinely specialise (inheritance), and what can be swapped for it (polymorphism)? **Expected result:** you can justify each class in one sentence, or you discover you cannot — which is the useful outcome.
+>
+> **When to use it.** In code review, in design discussions, and in interviews — these four words are the shared language for talking about structure. You will also meet them in every codebase's documentation and every senior developer's feedback.
+>
+> **Where to use it.** Conversation and review rather than any particular layer of a system. **Scenario:** a colleague proposes `class PdfInvoice(Invoice)` and `class EmailInvoice(Invoice)`. The vocabulary lets you say precisely what is wrong in one sentence — “that is not specialisation, it is a delivery method; an invoice **has a** delivery channel” — instead of a vague feeling that it looks off.
+>
+> **When _not_ to use it.** Do not use them as *goals*. “Make this more polymorphic” is not a requirement; it is a property some designs happen to have. Code written to display all four pillars is usually worse than code written to solve the problem. Beginners in particular over-apply inheritance because it is the most visible of the four.
+>
+> **Best practices.** In real professional Python, encapsulation and polymorphism appear constantly, abstraction appears at boundaries between layers, and deep inheritance is rare. Learn the names so you can read other people's code and reviews — then judge each design on whether it is easy to change, which is the thing the four pillars are all ultimately about.
+
+
 ---
 
 # 4. Classes and objects
@@ -432,6 +514,25 @@ class Car:
 ```
 
 > 🌍 **Analogy:** The `Car` class is like the **architect's drawing** of a house. No one lives in a drawing — but you can build many houses from it.
+
+```mermaid
+graph LR
+    C["CLASS: Car<br/>(written once, in your code)<br/>brand, model, year<br/>start()"]
+    C -->|Car#40;...#41;| O1["object<br/>Toyota Corolla 2024"]
+    C -->|Car#40;...#41;| O2["object<br/>Honda Civic 2023"]
+    C -->|Car#40;...#41;| O3["object<br/>Tesla Model 3 2025"]
+```
+
+**In words, if the diagram does not render:** one `Car` class sits in your source file. Each call to
+`Car(...)` builds a separate object in memory with its own `brand`, `model`, and `year`. The class
+defines *what attributes exist*; each object holds *the actual values*.
+
+| | Class | Object |
+|---|---|---|
+| Exists | Once, in your source code | Many times, in memory while the program runs |
+| Costs | Nothing at runtime | Memory |
+| Defines | Which attributes and methods exist | The actual values |
+| Analogy | Blueprint, recipe, mould | House, cake, casting |
 
 ## 4.2 🚗 Object — an instance of a class
 
@@ -721,7 +822,12 @@ Age: 22
 Grade: A
 ```
 
-**Starter code:**
+> [!TIP]
+> **Write it before you open the solution.** You need `__init__` with three parameters, three
+> assignments to `self`, and one method that prints three lines. Everything you need is in §4.1–4.4.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
 
 ```python
 class Student:
@@ -738,6 +844,36 @@ class Student:
 student = Student("Anna", 22, "A")
 student.display_info()
 ```
+
+**Expected output:**
+
+```
+Name: Anna
+Age: 22
+Grade: A
+```
+
+**What to check in your own version.** Did you store the values on `self`, rather than in local
+variables that vanish when `__init__` returns? Did `display_info` take `self` as its first
+parameter? Those two are where almost every first attempt goes wrong.
+
+**Then extend it.** Add a second student and print both. Two independent objects from one class is
+the entire point of §4 — see it happen rather than take it on trust.
+
+</details>
+
+> ### 🧭 In practice — classes and objects
+>
+> **How to use it.** Write `class Car:` with an `__init__` that takes the values each car needs and stores them on `self`. Create instances with `Car(brand="Toyota", model="Corolla", year=2024)`. **Prerequisite:** functions and parameters. **Expected result:** each call to `Car(...)` returns a separate object with its own data — change `car_a.year` and `car_b.year` is untouched, and `car_a is car_b` is `False`.
+>
+> **When to use it.** Whenever you need several independent things of the same shape, each carrying its own values. One class, many objects: one `Product` class, ten thousand products.
+>
+> **Where to use it.** Everywhere objects are created — but the *creation* usually belongs near the edges of your program (reading a request, loading a file), while the class itself lives in the domain layer. **Scenario:** a CSV import reads 5,000 rows and calls `Product(...)` 5,000 times; every product validates itself on the way in, so a malformed row fails at the row that caused it rather than corrupting a later report.
+>
+> **When _not_ to use it.** When there will only ever be one of something with no rules attached — module-level constants or a simple dictionary are clearer. And when the class is a pure bag of values, `@dataclass` ([§4.5](#45--dataclass-option--less-typing)) writes `__init__`, `__repr__`, and `__eq__` for you; writing them by hand is wasted work and one more place for a typo.
+>
+> **Best practices.** Prefer keyword arguments once a constructor takes three or more parameters — `Car("Corolla", "Toyota", 2024)` silently swaps two strings and nothing, not even `mypy`, can detect it. Be aware that Python lets you invent attributes that were never declared, so `car.yaer = 2030` creates a *new* attribute instead of raising; a type checker, `__slots__`, or a frozen dataclass are the three defences, in increasing strictness.
+
 
 ---
 
@@ -942,6 +1078,19 @@ class Printer:
 
 > 🎯 **When to use which:** reach for **default arguments** first (simplest), **`*args`** when the count varies, and **`singledispatchmethod`** only when behavior genuinely depends on the *type* of the argument.
 
+> ### 🧭 In practice — attributes, properties, and methods
+>
+> **How to use it.** Start with a plain public attribute (`self.price = price`). The moment that value acquires a rule, rename the stored field to `self._price` and add a `@property` with the public name plus a `@price.setter` that validates. **Prerequisite:** §4. **Expected result:** calling code keeps working unchanged — `product.price = 60` still reads the same — but `product.price = -5` now raises `ValueError`.
+>
+> **When to use it.** Use a **property** when reading or writing a value needs validation, a calculation, or a side effect. Use a **read-only property** for anything decided at creation and never changed (a created-at timestamp, an ID). Use a **computed property** whenever a value is derived from others, such as `total = unit_price * quantity`.
+>
+> **Where to use it.** Inside domain classes that own business rules, and in any class whose data other code will touch. **Scenario:** a `BankAccount` exposes `balance` as read-only and offers `deposit()` and `withdraw()` as the only ways to change it. The rule “balance never goes negative” is then enforced in exactly two methods rather than in every screen, script, and API handler that touches money.
+>
+> **When _not_ to use it.** Do not wrap every attribute in a property “just in case” — that is Java habit, not Python. With no rule to enforce, a public attribute is correct, and you can always promote it to a property later without breaking callers. Avoid putting expensive work (a database call, a big loop) behind a property: readers assume `obj.x` is cheap, so use a method named `fetch_x()` when it is not.
+>
+> **Best practices.** Python has no method overloading — defining `add` twice simply replaces the first. Reach for default arguments first, `*args` when the count varies, and `functools.singledispatchmethod` only when behaviour genuinely depends on the argument's *type*. Never store a value you can compute: a stored `total` that someone forgets to update produces a wrong invoice, and a computed property makes that failure impossible.
+
+
 ---
 
 # 6. Constructors and object initialization
@@ -1128,6 +1277,115 @@ Create a `BankAccount` with:
 - `withdraw`
 - a minimum balance rule
 
+**Make it impossible to break.** An account should refuse to be created with a blank holder name or
+an opening balance below the minimum, refuse a non-positive deposit or withdrawal, refuse a
+withdrawal that would breach the minimum, and refuse to let anyone assign to `balance` directly.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+This uses §6.4 (constructor validation), §5.5 (read-only property with a private setter style), and
+§21.3 (a custom exception that carries useful data).
+
+```python
+class InsufficientFundsError(Exception):
+    """Raised when a withdrawal would breach the minimum balance."""
+
+
+class BankAccount:
+    MINIMUM_BALANCE = 25.0
+
+    def __init__(self, account_holder: str, opening_balance: float) -> None:
+        if not account_holder.strip():
+            raise ValueError("Account holder is required.")
+        if opening_balance < self.MINIMUM_BALANCE:
+            raise ValueError(
+                f"Opening balance must be at least {self.MINIMUM_BALANCE}."
+            )
+
+        self.account_holder = account_holder
+        self._balance = opening_balance
+
+    @property
+    def balance(self) -> float:
+        return self._balance
+
+    def deposit(self, amount: float) -> None:
+        if amount <= 0:
+            raise ValueError("Deposit must be positive.")
+        self._balance += amount
+
+    def withdraw(self, amount: float) -> None:
+        if amount <= 0:
+            raise ValueError("Withdrawal must be positive.")
+        if self._balance - amount < self.MINIMUM_BALANCE:
+            raise InsufficientFundsError(
+                f"Balance cannot fall below {self.MINIMUM_BALANCE}. "
+                f"Available to withdraw: {self._balance - self.MINIMUM_BALANCE:.2f}"
+            )
+        self._balance -= amount
+
+
+account = BankAccount("Anna", 100.0)
+account.deposit(50.0)
+print(f"After deposit : {account.balance:.2f}")
+
+account.withdraw(100.0)
+print(f"After withdraw: {account.balance:.2f}")
+
+for bad in (lambda: account.withdraw(100.0),
+            lambda: account.deposit(-5),
+            lambda: BankAccount("", 100.0),
+            lambda: BankAccount("Bob", 10.0)):
+    try:
+        bad()
+    except (InsufficientFundsError, ValueError) as e:
+        print(f"{type(e).__name__}: {e}")
+
+try:
+    account.balance = 1_000_000
+except AttributeError as e:
+    print(f"AttributeError: {e}")
+```
+
+**Expected output:**
+
+```
+After deposit : 150.00
+After withdraw: 50.00
+InsufficientFundsError: Balance cannot fall below 25.0. Available to withdraw: 25.00
+ValueError: Deposit must be positive.
+ValueError: Account holder is required.
+ValueError: Opening balance must be at least 25.0.
+AttributeError: property 'balance' of 'BankAccount' object has no setter
+```
+
+**The three decisions worth noticing.**
+
+1. **`_balance` is private and `balance` is a read-only property.** That last `AttributeError` is
+   the proof: there is no way to set the balance except through `deposit` and `withdraw`, which is
+   where the rules live. A public `self.balance` would make every rule optional.
+2. **`MINIMUM_BALANCE` is a class attribute**, not a number repeated in three places — so the rule
+   changes in one edit. It is safe as a class attribute because it is *immutable* (§22.6).
+3. **The custom exception carries the shortfall in its message**, so the caller can tell the user
+   what is actually possible rather than just "no". Giving it a `shortfall` **attribute** as well
+   would be the next improvement — see §21.3 for why attributes beat message strings.
+
+</details>
+
+> ### 🧭 In practice — constructors and object initialization
+>
+> **How to use it.** Define `__init__(self, ...)`, validate the arguments **first**, and only then assign them to `self`. For a second way of building the same object, add a `@classmethod` that fills in some values and calls `cls(...)`. **Expected result:** `Product("", -1)` raises immediately, so an invalid `Product` never exists anywhere in your program.
+>
+> **When to use it.** Every time an object has any requirement for being valid. Use a **class method as a named constructor** (`Product.free(name)`, `AppSettings.development()`) when there are several distinct, well-named ways to build the same type — Python does not allow multiple `__init__` methods.
+>
+> **Where to use it.** At every boundary where data enters your program: parsing a web request, reading a CSV row, loading configuration. **Scenario:** a signup form posts a blank name. Validating in `Customer.__init__` means the request fails at the point of entry with a clear message, instead of a blank name travelling through the system and surfacing three days later in a report nobody can explain.
+>
+> **When _not_ to use it.** Do not do real work in a constructor — no network calls, no file reads, no database queries. A constructor that can hang or fail for external reasons makes the class painful to test and surprising to use; expose an explicit `load()` or a factory function instead. And avoid `__new__` in application code almost entirely: it creates the object before `__init__` fills it in, and reaching for it usually means a class method would have been clearer.
+>
+> **Best practices.** **Fail fast**: if an object cannot be valid, refuse to build it. That single habit removes a whole category of “how did this get into the database?” bugs. For data-shaped classes, prefer a `@dataclass` with validation in `__post_init__` — you keep the generated `__init__` and still get your rules. When inheriting, call `super().__init__(...)` **before** setting the subclass's own attributes, so the object is fully built in base-then-derived order.
+
+
 ---
 
 # 7. Access conventions
@@ -1193,6 +1451,19 @@ __all__ = ["BankAccount"]
 
 > 🎯 **When to use `__all__`:** when you publish a module/package and want to declare its official, supported public names.
 
+> ### 🧭 In practice — access conventions
+>
+> **How to use it.** Name anything that is part of your public API plainly (`balance`), prefix internal details with a single underscore (`_balance`), and use a double underscore (`__secret`) only to avoid name clashes in subclasses. In a module, list the supported public names in `__all__`. **Expected result:** a reader can tell at a glance which names they are allowed to depend on — nothing is blocked by the interpreter.
+>
+> **When to use it.** On every class and module you expect anyone else (including future you) to use. The underscore is how Python communicates “this may change without warning” in the absence of a `private` keyword.
+>
+> **Where to use it.** Most valuable at the edges of a package or library, where the distinction between supported API and implementation detail actually matters. **Scenario:** you publish a small package. Six months later you rename `_parse_header` and nobody complains, because the underscore told everyone not to call it. Rename `parse_header` and you have broken every user.
+>
+> **When _not_ to use it.** Do not rely on any of it for **security**. Name mangling is not encryption or protection — `obj._Example__secret` retrieves a double-underscore attribute in one line. Never use underscores to hide credentials, tokens, or anything an untrusted caller must not reach; that requires a real boundary such as a separate process, a permission check, or a secret store.
+>
+> **Best practices.** Start with a small public surface and treat everything else as internal — it is easy to make a name public later and painful to take one back. Use double underscores sparingly; their real purpose is avoiding accidental collisions in subclass hierarchies, not privacy, and they make debugging and testing noticeably more awkward.
+
+
 ---
 
 # 8. Object lifecycle and resource management
@@ -1201,7 +1472,7 @@ __all__ = ["BankAccount"]
 
 ## 8.1 👶 Object creation
 
-**▶️ Continues from §8's `Customer` example** — assumes a simple `class Customer` with a `name` attribute.
+**📄 Fragment** — `Customer` is the one-attribute class defined just below in [§8.2](#82--object-references). This single line is shown on its own only to isolate what `Customer("Anna")` does; run it as part of that block.
 
 ```python
 customer = Customer("Anna")
@@ -1325,6 +1596,81 @@ class NativeResourceWrapper:
 
 > ⚠️ **When to avoid:** almost always. **Prefer context managers over `__del__` for resource cleanup.** Treat `__del__` as a last-resort safety net, never your main plan.
 
+> ### 🧭 In practice — object lifecycle and resource management
+>
+> **How to use it.** For anything that must be released — files, sockets, database connections, locks — use a `with` block. To make your own class work with `with`, define `__enter__` (acquire, return the usable thing) and `__exit__` (release); for simple cases, the `@contextmanager` decorator does it in six lines. **Expected result:** the resource is released when the block ends, including when an exception is raised inside it.
+>
+> **When to use it.** Whenever a resource is *scarce or held exclusively*. Memory is handled for you by reference counting plus a cycle detector, so you almost never free memory by hand — but file handles, connections, and locks are limited, and holding them too long is what exhausts a connection pool or deadlocks a service.
+>
+> **Where to use it.** Anywhere your program touches the outside world: file processing, HTTP clients, database access, temporary directories. **Scenario:** a report job opens a file per customer. Written with `with`, a failure on customer 300 closes that file and moves on. Written with a manual `close()` after the work, the exception skips the close, and by customer 900 the process dies with “too many open files” — an error that points nowhere near the real cause.
+>
+> **When _not_ to use it.** Do not use `__del__` as your cleanup plan. You cannot reliably know *when* it runs; it may not run at all if the object is caught in a reference cycle at interpreter shutdown, and exceptions raised inside it are swallowed. Treat it as a last-resort safety net behind a context manager, never as the mechanism. Equally, do not write a context manager for something with no resource to release — it is noise.
+>
+> **Best practices.** Prefer `@contextmanager` for a simple acquire/release pair and a full class when the resource needs extra methods or state. Remember that `customer_b = customer_a` copies a *reference*, not the object — the single most common beginner surprise in this chapter, and the reason a “copy” that you then modify can change something you did not expect ([§8.2](#82--object-references)).
+
+
+---
+
+<div align="center">
+
+## ✅ Checkpoint — Part 1: Foundations
+
+</div>
+
+> [!IMPORTANT]
+> **The honest test is whether you can _produce_ an explanation, not recognise one.** Cover the guide and answer out loud, in your own words. If a sentence will not come, that is the section to re-read — not a sign that you are slow.
+
+### 🗣️ Teach it back
+
+For each idea, answer the same four questions: **What is it? Why does it matter? How does it work? Can I give an example?**
+
+- An **object** (§2)
+- A **class** versus an **object** (§4.1-4.2)
+- The **four pillars** (§3)
+- An **attribute**, a **property**, and a **method** (§5)
+- A **constructor** (§6)
+- Python's **three levels of enforcement** ([front matter](#-pythons-three-levels-of-enforcement-read-this-before-section-5))
+
+### 🧪 Self-check questions
+
+1. Without using the word "object", what does a class give you that a loose group of variables and functions does not?
+2. `customer_b = customer_a` runs. What exactly was copied?
+3. Someone writes `account._balance = 999999` and Python allows it. Has encapsulation failed? What *would* have stopped them?
+4. When should a plain public attribute be promoted to a `@property`?
+5. Why is `with open(...) as f:` preferred over calling `f.close()` yourself — and why is `__del__` not a substitute?
+6. `Car("Corolla", "Toyota", 2024)` swaps the brand and model. Why does neither Python nor `mypy` catch it, and what change makes the mistake impossible?
+
+<details>
+<summary><b>📝 Sample answers</b></summary>
+
+1. **It keeps the data and the rules about that data in one place, and makes that pairing reusable.** You can stamp out as many independent copies as you need, and every one of them carries its own values *and* the same rules. Loose variables have no rules attached, so every piece of code that touches them has to remember to check — and one day, one of them forgets.
+
+2. **Only the reference, not the object.** Both names now point at the same object in memory, like two remote controls aimed at one TV. Changing `customer_b.name` changes what `customer_a.name` reads, because there is only one customer. See [§8.2](#82--object-references).
+
+3. **No — level 1 was never a lock.** A single leading underscore is a sign, not a door. It says "this is an internal detail; if you touch it, you accept that it may change without warning." What *would* have stopped them is level 3: a `@property` with no setter, or an explicit `raise` inside a `deposit()` method. Use underscores to communicate intent; use properties and exceptions when a rule genuinely must hold. See the [three levels of enforcement](#-pythons-three-levels-of-enforcement-read-this-before-section-5).
+
+4. **The moment the value acquires a rule, a calculation, or a side effect.** Price must not be negative; age must be 0-130; `total` is derived from `price x quantity`. Until then, a plain public attribute is perfectly Pythonic — and because `@property` keeps the `object.attribute` syntax, you can add the rule later *without changing a single line of calling code*. That is exactly why properties exist. See [§5.3](#53--property-with-validation).
+
+5. **Because `with` cannot be forgotten, and it runs even when an exception is raised.** A hand-written `f.close()` is skipped the moment anything between the open and the close raises. `__del__` is not a substitute because you cannot know *when* it runs — CPython usually calls it promptly, but that is an implementation detail, not a promise, and it never runs at all if the object is caught in a reference cycle at interpreter shutdown. Treat `__del__` as a last-resort safety net. See [§8.4](#84--resources-that-must-be-closed) and [§8.7](#87--destructors-with-__del__).
+
+6. **Because both arguments are strings, so there is nothing to disagree with.** Position is the only thing that distinguishes them, and position is invisible at the call site. Passing them by name (`Car(brand=..., model=...)`) makes the mistake impossible to express; adding a bare `*` to the signature makes it impossible to *avoid* naming them. See [§4.4](#44--object-creation-with-keyword-arguments).
+
+</details>
+
+### 🎯 Give a simple example
+
+Describe a **vending machine** as an object. Name its data, its behaviour, its rules, and what gives it identity. If you can do that without looking back at §2, Part 1 is done.
+
+---
+
+<div align="center">
+
+# 🟣 PART 2 — THE FOUR PILLARS, IN DEPTH
+
+*Sections 9-15 take the four words from Section 3 and turn each one into working technique.*
+
+</div>
+
 ---
 
 # 9. Encapsulation
@@ -1385,7 +1731,7 @@ class BankAccount:
 
 ## 9.3 📦 Protecting collections
 
-**▶️ Continues** — assumes an `OrderItem` class. A complete, runnable version of this pattern (including the exact errors each variant produces) is in [§17.8](#178-️-expose-collections-safely).
+**▶️ Continues** — assumes an `OrderItem` class. A complete, runnable version of this pattern (including the exact errors each variant produces) is in [§17.8](#178--expose-collections-safely).
 
 **Bad — the internal list is exposed and mutable:**
 
@@ -1430,6 +1776,19 @@ Examples:
 
 > [!IMPORTANT]
 > OOP design should **protect invariants inside the object** — not scatter the checks across the whole program. The object is the single source of truth for its own rules.
+
+> ### 🧭 In practice — encapsulation
+>
+> **How to use it.** Write down the object's **invariants** — the statements that must always be true of it — then make each one impossible to break. Store the data in `_underscore` fields, expose a read-only `@property` for anything callers may see, and provide named methods (`deposit`, `withdraw`) as the only ways to change it. Hand out copies of internal collections (`tuple(self._items)`) rather than the list itself. **Expected result:** `account.balance = -1` and `order.items.append(junk)` both fail; the only routes in are the methods that check.
+>
+> **When to use it.** Whenever invalid data would break a business rule or cause a bug — which is most of the time for objects that model something real. The clearest trigger is being able to finish this sentence: “this must *never* be...”.
+>
+> **Where to use it.** The domain layer, and any class whose data is touched by more than one caller. **Scenario:** a warehouse system where stock must never go below zero. Three different code paths decrement stock — the web checkout, a phone order screen, and a nightly reconciliation job. Encapsulating the rule inside `StockItem.remove(quantity)` means one check protects all three, and the fourth code path someone adds next year.
+>
+> **When _not_ to use it.** For a pure data carrier with no rules — a row read from a CSV, a response about to be serialised to JSON — encapsulation adds ceremony and nothing else. Use a `@dataclass`, or a frozen one if it should not change. Note too that encapsulation in Python is a *convention plus runtime checks*, not a security boundary; it protects against mistakes, not against a determined caller.
+>
+> **Best practices.** Put the rule in the object, not in the caller — that is the whole idea, and the single most common failure is validating in the user interface and trusting the object. Be aware that handing out a `tuple` is a **shallow** guard: it stops `items.append(...)` but not `items[0].quantity = -99`, so make the contained objects immutable too if they need protecting ([§17.8](#178--expose-collections-safely)).
+
 
 ---
 
@@ -1536,6 +1895,19 @@ class DataImporter(ABC):
 
 > 🎯 **When to use the template method:** when several classes share the *same overall process* but differ in a few steps.
 
+> ### 🧭 In practice — abstraction with abstract base classes
+>
+> **How to use it.** Import `ABC` and `abstractmethod` from `abc`, inherit your base from `ABC`, and decorate the methods every subclass must supply with `@abstractmethod`. Subclasses inherit the shared code and fill in the gaps. **Expected result:** Python refuses to instantiate any subclass that has not implemented every abstract method — you get a `TypeError` at the moment of construction, not a mysterious failure later.
+>
+> **When to use it.** When several classes share the *same overall process* but differ in a few steps, and when you want the interpreter itself to enforce that the steps are supplied. The **template method** shape (§10.4) is the classic case: a fixed `read → clean → save` workflow in the base class, with `read` and `save` left abstract.
+>
+> **Where to use it.** At the boundaries of a system, where one family of things must be interchangeable. **Scenario:** a data-import feature that must accept CSV files, an internal API, and a legacy fixed-width format. `DataImporter` owns the shared sequence and the cleaning rules; `CsvImporter`, `ApiImporter`, and `LegacyImporter` supply only the reading and saving. Adding a fourth source next quarter means writing one class and changing nothing else.
+>
+> **When _not_ to use it.** When the implementations are genuinely unrelated and share no code, a **protocol** ([§13](#13-protocols-and-interfaces)) is the better tool — it describes a capability without forcing a family tree. And do not create an abstract base class for a single implementation; you have added a file and an indirection to buy nothing.
+>
+> **Best practices.** Keep abstract base classes shallow. An `ABC` is still inheritance, so it carries inheritance's costs: changing the base can break every subclass, and a deep chain is hard to follow. The reliable division is the one in [§14.3](#143--professional-rule) — abstract base classes model *identity* (“what is this?”), protocols model *capability* (“what can it do?”).
+
+
 ---
 
 # 11. Inheritance
@@ -1606,7 +1978,7 @@ class Dog(Animal):
 
 ## 11.4 ⬆️ Calling base behavior with `super()`
 
-**▶️ Continues from §11.1** — assumes the `BankAccount` base class defined earlier in this chapter.
+**▶️ Continues from [§9.2](#92--better-encapsulation)** — assumes the `BankAccount` class defined there, with its validating `deposit` method.
 
 Extend the parent's behavior instead of fully replacing it.
 
@@ -1653,6 +2025,83 @@ class Invoice(Printable, Serializable):
 
 > ⚠️ **Use with care.** Multiple inheritance can get confusing fast. Prefer small, focused **mixins** when it genuinely improves clarity.
 
+### 🧭 Which parent wins? The method resolution order
+
+As soon as a class has two parents, an obvious question appears: if **both** define `describe()`, which one runs? Python answers this with the **method resolution order** (**MRO**) — a single, fixed list of classes it searches from left to right.
+
+You can read it directly. Every class has a `__mro__` attribute:
+
+```python
+class LoudMixin:
+    def describe(self) -> str:
+        return "LOUD: " + super().describe()
+
+class PoliteMixin:
+    def describe(self) -> str:
+        return "Please note: " + super().describe()
+
+class Base:
+    def describe(self) -> str:
+        return "a thing"
+
+class Announcement(LoudMixin, PoliteMixin, Base):
+    pass
+
+print(Announcement().describe())
+
+for cls in Announcement.__mro__:
+    print(cls.__name__)
+```
+
+**Expected output:**
+
+```
+LOUD: Please note: a thing
+Announcement
+LoudMixin
+PoliteMixin
+Base
+object
+```
+
+### 📌 What that output is telling you
+
+Read the second half first: the MRO is `Announcement → LoudMixin → PoliteMixin → Base → object`. Python looks for `describe` in that order and stops at the first class that has one — `LoudMixin`.
+
+Now read the first line. `LoudMixin.describe` calls `super().describe()`, and **this is the part that surprises people**: `super()` does *not* mean "my parent class." It means **"the next class in the MRO after me."** `LoudMixin` does not inherit from `PoliteMixin` at all, yet its `super()` call lands there — because `PoliteMixin` is next in the list.
+
+That is why the three parts compose into one sentence. Each mixin adds its own prefix and passes the rest along the chain, and `Base` — which calls no `super()` — ends it.
+
+> 🌍 **Analogy:** the MRO is a **relay race with a fixed running order**, not a family tree. `super()` hands the baton to whoever runs next in *this* race, which depends on how the class was assembled — not on who each runner's parents are.
+
+### ⚠️ Two consequences worth knowing
+
+**1. Order matters, and it is left to right.** Writing `class Announcement(PoliteMixin, LoudMixin, Base)` instead produces `Please note: LOUD: a thing`. Same classes, different sentence.
+
+**2. Python refuses impossible orderings.** If no consistent order exists, the class cannot even be defined:
+
+```python
+class A: pass
+class B(A): pass
+
+try:
+    class D(A, B):          # A before B, but B is a subclass of A
+        pass
+except TypeError as e:
+    print(f"TypeError: {e}")
+```
+
+**Expected output:**
+
+```
+TypeError: Cannot create a consistent method resolution
+order (MRO) for bases A, B
+```
+
+The rule Python enforces is that a class must always appear **before** its own base classes. Listing `A` first while `B` derives from `A` demands the opposite, so there is no valid order and Python says so at class-definition time rather than misbehaving later.
+
+> 💡 **The practical rules.** Put mixins **before** the main base class (`class X(Mixin, Base)`), give each mixin a `super()` call so the chain is not broken, and if you find yourself drawing a diagram to work out which method runs, that is the signal to use **composition** instead. Multiple inheritance is a sharp tool with a narrow good use: small, focused, cooperative mixins.
+
 ## 11.7 🏚️ The fragile base class problem
 
 > [!WARNING]
@@ -1660,6 +2109,19 @@ class Invoice(Printable, Serializable):
 
 > [!IMPORTANT]
 > **Professional rule:** Use inheritance for *true specialization*, not just to avoid retyping code. When in doubt, prefer **composition** ([Section 15](#15-composition-and-object-relationships)).
+
+> ### 🧭 In practice — inheritance
+>
+> **How to use it.** Write `class Manager(Employee):`, and in the subclass's `__init__` call `super().__init__(...)` first, then set the subclass's own attributes. Override a method simply by defining it again; call `super().method()` inside the override when you want to *extend* the parent's behaviour rather than replace it. **Expected result:** the subclass has everything the parent had, plus its own additions, and `isinstance(manager, Employee)` is `True`.
+>
+> **When to use it.** Only when the derived type genuinely **is a** kind of the base type. Say the sentence out loud: “a `Manager` **is an** `Employee`” passes; “a `Car` **is an** `Engine`” does not. That one-sentence test settles most cases correctly.
+>
+> **Where to use it.** Within a single, stable family of types that you own — shapes, employee categories, membership tiers, exception hierarchies. **Scenario:** the capstone library system in [§35](#35-complete-capstone-project-library-management-system) has `RegularMember` and `PremiumMember` differing only in a borrow limit. All the borrowing logic lives once in `Member`; the subclasses supply one number each. That is inheritance doing exactly the job it is good at.
+>
+> **When _not_ to use it.** Do not inherit merely to reuse code — that is what composition is for, and it is the most common misuse of inheritance by a wide margin. Avoid deep chains (`Base → Person → Employee → Manager → RegionalManager`): they are fragile, and a change near the top can silently break everything below. Be careful with multiple inheritance; prefer small focused mixins when you need it at all.
+>
+> **Best practices.** Inheritance creates the tightest coupling available in object-oriented code — the **fragile base class** problem is real. Prefer composition whenever inheritance feels forced ([§15](#15-composition-and-object-relationships)). Never let a subclass break a promise the base class made: a `Penguin` that raises inside `fly()` is a Liskov violation whose crash appears in *correct, unchanged* code ([§27.3](#273--l-liskov-substitution-principle)). Mark a class `@final` to tell readers and type checkers not to subclass it.
+
 
 ---
 
@@ -1785,6 +2247,19 @@ def calculate_discount(policy: DiscountPolicy) -> float:
 ```
 
 > 🎯 **When to use this:** when you see a big `if/elif` or `match` that branches on a "type" string. Adding a new customer type should mean adding a *class*, not editing old logic.
+
+> ### 🧭 In practice — polymorphism
+>
+> **How to use it.** Give several classes a method with the same name and signature — through a shared base class, a protocol, or nothing at all — then write code that calls that method without checking which class it holds. **Expected result:** a single loop such as `for animal in animals: animal.make_sound()` produces the right behaviour for each element, and adding a new type requires no change to the loop.
+>
+> **When to use it.** When you notice a conditional that branches on a *type* or a type-like string: `if customer_type == "premium"`, `match shape.kind`. Each branch is a class waiting to be extracted. Polymorphism is also what makes dependency injection useful — the real and the fake implementation are interchangeable because both answer the same call.
+>
+> **Where to use it.** Anywhere a family of behaviours must grow over time: payment methods, notification channels, export formats, pricing rules, report renderers. **Scenario:** a checkout supporting card and PayPal. Next month a business deal adds Apple Pay. With polymorphism you write one new class; the checkout code is not opened, not retested, and cannot regress.
+>
+> **When _not_ to use it.** Do not refactor a conditional into classes when the branches are a few fixed values that rarely change — a `match` statement or a plain dictionary (`{"standard": 5.0, "express": 15.0}`) is clearer and shorter. The honest signal to refactor is that the *same* conditional appears in more than one place, or that branches are accumulating their own data. See the trade-off table in [§32.3](#323--example-replace-conditional-with-polymorphism).
+>
+> **Best practices.** In Python you often need no base class at all — **duck typing** means an object that has the method simply works. Use a `Protocol` when you want a type checker to verify that, without forcing an inheritance relationship. Keep the substitutable methods honest: same name, same parameters, same meaning. A method that matches the signature but violates the intent is worse than no polymorphism, because it removes the error the caller would otherwise have seen.
+
 
 ---
 
@@ -1968,6 +2443,19 @@ PaymentProcessor
 
 > 💡 Some teams still use names like `IRepository`, but that is less Pythonic. Prefer plain, descriptive names.
 
+> ### 🧭 In practice — protocols
+>
+> **How to use it.** Define `class Repository(Protocol):` in a `typing` import and list the methods with `...` as the body. Any class that has those methods satisfies it — no inheritance, no registration. Type your function parameters with the protocol (`def save(repo: Repository)`) and run `mypy` or `pyright`. Add `@runtime_checkable` only if you genuinely need `isinstance`. **Expected result:** the type checker flags mismatches before the program runs; Python itself is unaffected.
+>
+> **When to use it.** When you need a *capability* rather than a family: “anything that can send a notification”, “anything that can be printed”. Especially valuable at layer boundaries and in tests, where a fake and the real thing must be interchangeable without sharing a base class.
+>
+> **Where to use it.** Between the layers of an application — an application service declaring what it needs (`EmailSender`, `Repository[Customer]`) while infrastructure supplies the concrete class. **Scenario:** `OrderService` is typed against an `EmailSender` protocol. Production passes an SMTP class; tests pass a five-line fake that records messages in a list. Neither class inherits from anything, and neither knows the other exists.
+>
+> **When _not_ to use it.** Do not create a protocol for every class. With one implementation and no test substitution, it is pure indirection: two files to read instead of one, and “go to definition” landing on `...`. Do not rely on `@runtime_checkable` for validation either — it checks only that an *attribute name* exists, not its signature or types, so a class with the wrong parameters passes `isinstance` and then fails when called.
+>
+> **Best practices.** Name protocols for what they do (`PaymentProcessor`, `Validator`), not with an `I` prefix — that is a C#/Java convention, not a Python one. Remember which enforcement level you are on: a protocol is a **static** tool, so its guarantees exist only if someone actually runs the type checker. Wire that into your editor and your CI, or the protocol is documentation rather than protection.
+
+
 ---
 
 # 14. Abstract base classes vs protocols
@@ -2039,6 +2527,19 @@ Create abstractions only when you need:
 - 🧱 A stable boundary between layers
 - 🔌 Plugin-like behavior
 
+> ### 🧭 In practice — choosing between an abstract base class and a protocol
+>
+> **How to use it.** Ask one question: does the relationship answer **“what _is_ this?”** or **“what can this _do_?”** Identity with shared code and shared state → abstract base class. Capability across unrelated types → protocol. **Expected result:** a decision you can defend in one sentence, rather than a habit.
+>
+> **When to use it.** At the moment you are about to introduce *any* abstraction — and the more useful half of this section is the reminder to check whether you need one at all.
+>
+> **Where to use it.** Mostly at design time and in code review. **Scenario:** `Manager` **is an** `Employee` and shares pay-calculation code → abstract base class. `Manager` **can approve** expenses, and so can a `Director` and an automated `PolicyEngine` that is not an employee at all → protocol. Both can be true of the same class at the same time, which is precisely why they are different tools.
+>
+> **When _not_ to use it.** Do not create either one for a class with a single implementation, no test substitution, no layer boundary, and no plugin behaviour. Premature abstraction freezes a design before you know what the second case needs, and the second case almost never fits the shape you guessed.
+>
+> **Best practices.** Create abstractions when a concrete need arrives — a second implementation, a test double, a dependency to invert, a stable boundary between layers — and not before. The cost of adding one later is small; the cost of an abstraction shaped around a case that never appeared is paid by every reader, forever.
+
+
 ---
 
 # 15. Composition and object relationships
@@ -2049,6 +2550,24 @@ Create abstractions only when you need:
 > **Professional OOP relies heavily on composition.** When you're unsure between inheritance and composition, composition is usually the safer bet.
 
 > 🌍 **Analogy:** A **car HAS an engine, HAS wheels, HAS seats**. You can swap the engine without rebuilding the whole car. That flexibility is why composition wins so often.
+
+```mermaid
+graph TB
+    subgraph INHERIT["INHERITANCE - is a"]
+        A1["Animal"] --> D1["Dog"]
+        A1 --> C1["Cat"]
+    end
+    subgraph COMPOSE["COMPOSITION - has a"]
+        CAR["Car"] --> E1["Engine"]
+        CAR --> W1["Wheels"]
+        CAR --> S1["Seats"]
+    end
+```
+
+**In words:** the arrows mean different things on each side. On the left, `Dog` **is a** kind of
+`Animal` — it inherits everything `Animal` has. On the right, `Car` **has an** `Engine` — it holds a
+separate object and asks it to do things. The test is the sentence: say it out loud, and the wrong
+one sounds absurd ("a Car is an Engine").
 
 ## 15.1 🧩 Composition example
 
@@ -2156,6 +2675,81 @@ One-to-many:  Customer has Orders.
 Many-to-many: Student has Courses, Course has Students.
 ```
 
+> ### 🧭 In practice — composition and object relationships
+>
+> **How to use it.** Instead of inheriting, take the collaborator as a constructor parameter and store it: `def __init__(self, engine: Engine): self._engine = engine`. Then delegate — `self._engine.start()`. **Prerequisite:** §6 (constructors). **Expected result:** you can hand the object a different engine, or a fake one in a test, without touching the class.
+>
+> **When to use it.** Whenever the relationship is “has-a” rather than “is-a”, which in practice is most relationships. Also whenever inheritance feels forced, or you find yourself inheriting purely to reuse a method.
+>
+> **Where to use it.** Throughout the domain layer and across every layer boundary — it is the mechanism underneath dependency injection, the Strategy pattern, and testable design generally. **Scenario:** a `Car` holds an `Engine`. Swapping to an `ElectricEngine` changes one line at the composition root; the `Car` class is untouched. Had `Car` inherited from `PetrolEngine`, the same change would be a rewrite.
+>
+> **When _not_ to use it.** When the relationship is genuinely specialisation, composition is the wrong tool and produces tedious delegation — a dozen methods that do nothing but forward the call. That forwarding is the honest cost of composition, and it is the one thing inheritance does better.
+>
+> **Best practices.** Learn the distinctions, because they change how you handle deletion and lifetime: **aggregation** is weak (employees outlive a closed department) and **composition** is strong (order items do not outlive a deleted order). Depend on the narrowest thing that works — a protocol parameter rather than a concrete class — so the collaborator stays swappable. When in doubt between inheritance and composition, composition is the safer default.
+
+
+---
+
+<div align="center">
+
+## ✅ Checkpoint — Part 2: The four pillars
+
+</div>
+
+> [!IMPORTANT]
+> Part 2 is where most people *think* they understand OOP and then design something rigid. The questions below are chosen to find that out.
+
+### 🗣️ Teach it back
+
+**What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
+
+- **Encapsulation** and the word **invariant** (§9)
+- **Abstraction** via an abstract base class (§10)
+- **Inheritance** and the `is-a` test (§11)
+- **Polymorphism** (§12)
+- A **protocol** versus an **abstract base class** (§13–14)
+- **Composition**, and why it is usually preferred (§15)
+
+### 🧪 Self-check questions
+
+1. What is an *invariant*, and why is "protect it inside the object" better than "check it everywhere"?
+2. `Car(Engine)` versus a `Car` that holds an `Engine`. Which is right, and what is the one-sentence test?
+3. A `Penguin` inherits from `Bird` and raises an error in `fly()`. Name the principle this breaks, and describe the symptom a reader would actually see.
+4. `Invoice` never mentions `Printable` anywhere, yet `isinstance(invoice, Printable)` returns `True`. How — and what has that check *not* verified?
+5. When does an abstract base class beat a protocol?
+6. You find `if customer_type == "regular": ... elif "premium": ...` repeated in three files. What is the refactoring, and when should you *not* do it?
+
+<details>
+<summary><b>📝 Sample answers</b></summary>
+
+1. **An invariant is a rule that must be true for an object at all times** — a balance never below its minimum, an order never completed while empty. Protecting it inside the object means the rule lives in exactly **one** place, so it cannot be skipped. Scatter the checks and you have as many chances to forget as you have call sites, and no way to prove the rule holds. See [§9.4](#94--invariants).
+
+2. **Composition: a car _has_ an engine.** The test is the sentence itself — say "a Car **is an** Engine" out loud and it is obviously false. Inheritance is for genuine specialisation (`Manager` **is an** `Employee`); everything else is a part, and parts are held, not inherited. The practical payoff is that you can swap the engine without rebuilding the car. See [§11.2](#112--the-is-a-rule) and [§15](#15-composition-and-object-relationships).
+
+3. **Liskov substitution.** The symptom is the nasty part: the crash appears inside `migrate()`, which is *correct code that nobody changed*. The subclass narrowed a promise the base class made, so every existing caller of `Bird.fly()` silently became unsafe. No type checker warns you, because `Penguin.fly` has the right signature — it simply refuses to honour it. The fix is to move `fly()` out of `Bird` into a separate contract that only flying birds satisfy. See [§27.3](#273--l-liskov-substitution-principle).
+
+4. **Structural typing.** A `@runtime_checkable` protocol asks only "does an attribute with this name exist?" `Invoice` has a `print_item` attribute, so the answer is yes. What it has **not** checked is the signature, the parameter types, or the return type — a class whose `print_item` demands two extra arguments still passes `isinstance` and then fails when called. `mypy` catches that; `isinstance` cannot. See [§13.4](#134--runtime-checkable-protocols).
+
+5. **When you need shared implementation, shared state, a real `is-a` identity, or runtime enforcement** that subclasses actually implement the required methods. A protocol gives you none of those — it describes a capability and is checked by a tool you have to remember to run. Short version: **ABCs model identity, protocols model capability.** See [§14.3](#143--professional-rule).
+
+6. **Replace the conditional with polymorphism** — one class per customer type, each owning its own discount. Do *not* do it when the branches are three fixed numbers that change once a year: you would trade six obvious lines for four classes and more files to navigate. The real signal is that the same conditional is **duplicated across files** (as it is here) or that each branch is growing its own data and behaviour. A plain dictionary is often the right middle ground. See [§32.3](#323--example-replace-conditional-with-polymorphism).
+
+</details>
+
+### 🎯 Give a simple example
+
+Model a **coffee machine** twice: once with inheritance (`EspressoMachine(CoffeeMachine)`) and once with composition (a `CoffeeMachine` holding a `BrewingStrategy`). Say in one sentence which you would ship, and why.
+
+---
+
+<div align="center">
+
+# 🟠 PART 3 — BUILDING REAL TYPES
+
+*Sections 16–26 are the everyday toolkit: generics, collections, equality, dataclasses, errors, and how to lay a project out.*
+
+</div>
+
 ---
 
 # 16. Generics with OOP
@@ -2231,7 +2825,7 @@ class Entity:
 
 ## 16.5 🗃️ Generic repository with a bound
 
-**▶️ Continues from §16.4** — assumes the `Entity` base class defined there. A fully runnable version, with a worked explanation of `bound=`, is in [§16.6](#166-️-typevar-constraints-and-bounds).
+**▶️ Continues from §16.4** — assumes the `Entity` base class defined there. A fully runnable version, with a worked explanation of `bound=`, is in [§16.6](#166--typevar-constraints-and-bounds).
 
 ```python
 from typing import Generic, TypeVar
@@ -2359,7 +2953,7 @@ note: Revealed type is "int"
 
 The **bound** preserved `bool`; the **constraint** collapsed it to `int`, because `bool` is not one of the two listed types and `int` is its nearest listed ancestor. If a function must return exactly the subclass it was given, use a bound.
 
-⚠️ **This distinction is invisible at runtime.** Both calls print `True`; only `mypy` or `pyright` sees the difference. That is the recurring theme of this chapter — see [Section 20.6](#206--use-static-analysis) and the note on Python's three levels of enforcement in [Section 2](#2-what-oop-means).
+⚠️ **This distinction is invisible at runtime.** Both calls print `True`; only `mypy` or `pyright` sees the difference. That is the recurring theme of this chapter — see [Section 20.6](#206--use-static-analysis) and [Python's three levels of enforcement](#-pythons-three-levels-of-enforcement-read-this-before-section-5).
 
 > 💡 **Rule of thumb:** use a **bound** when the type parameter must *have certain members* (the common case); use **constraints** only for a small, closed set of unrelated types such as `int`/`float` or `str`/`bytes`.
 
@@ -2424,7 +3018,7 @@ class Consumer(Generic[T_contra]):
 
 ## 16.10 🔒 Invariance
 
-**▶️ Continues from §16.9** — assumes the `Animal` and `Dog` classes defined there. Note that the point of this section is what a **type checker** rejects; every line here runs fine under plain Python.
+**📄 Fragment** — assumes any `class Animal` with a subclass `class Dog(Animal)`; two empty classes are enough. Note that the point of this section is what a **type checker** rejects: every line here runs fine under plain Python, so there is nothing to observe by running it.
 
 Most mutable generic containers are **invariant**.
 
@@ -2467,6 +3061,130 @@ Build:
 - `remove`
 
 Then use the **same** repository for both `Product` and `Customer`.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+The key decision is `TypeVar("TEntity", bound=Entity)`. The **bound** is what lets the repository
+use `item.id` — without it a type checker must assume `TEntity` could be anything, including an
+`int`, which has no `.id` (§16.6).
+
+```python
+from typing import Generic, TypeVar
+
+
+class Entity:
+    def __init__(self, entity_id: int) -> None:
+        self.id = entity_id
+
+
+class Product(Entity):
+    def __init__(self, entity_id: int, name: str, price: float) -> None:
+        super().__init__(entity_id)
+        self.name = name
+        self.price = price
+
+    def __repr__(self) -> str:
+        return f"Product({self.id}, {self.name!r}, {self.price})"
+
+
+class Customer(Entity):
+    def __init__(self, entity_id: int, full_name: str) -> None:
+        super().__init__(entity_id)
+        self.full_name = full_name
+
+    def __repr__(self) -> str:
+        return f"Customer({self.id}, {self.full_name!r})"
+
+
+TEntity = TypeVar("TEntity", bound=Entity)
+
+
+class InMemoryRepository(Generic[TEntity]):
+    def __init__(self) -> None:
+        self._items: dict[int, TEntity] = {}
+
+    def add(self, item: TEntity) -> None:
+        if item.id in self._items:
+            raise ValueError(f"Id {item.id} already exists.")
+        self._items[item.id] = item
+
+    def get_by_id(self, item_id: int) -> TEntity | None:
+        return self._items.get(item_id)
+
+    def get_all(self) -> list[TEntity]:
+        return list(self._items.values())
+
+    def remove(self, item_id: int) -> bool:
+        return self._items.pop(item_id, None) is not None
+
+
+products: InMemoryRepository[Product] = InMemoryRepository()
+products.add(Product(1, "Laptop", 1200.0))
+products.add(Product(2, "Mouse", 25.0))
+
+customers: InMemoryRepository[Customer] = InMemoryRepository()
+customers.add(Customer(1, "Anna"))
+
+print(products.get_by_id(1))
+print(products.get_by_id(99))
+print(products.get_all())
+print(customers.get_all())
+
+print(products.remove(2))
+print(products.remove(2))
+print(products.get_all())
+
+try:
+    products.add(Product(1, "Duplicate", 0.0))
+except ValueError as e:
+    print(f"ValueError: {e}")
+```
+
+**Expected output:**
+
+```
+Product(1, 'Laptop', 1200.0)
+None
+[Product(1, 'Laptop', 1200.0), Product(2, 'Mouse', 25.0)]
+[Customer(1, 'Anna')]
+True
+False
+[Product(1, 'Laptop', 1200.0)]
+ValueError: Id 1 already exists.
+```
+
+**Four things worth noticing.**
+
+1. **One class serves both types.** `products` and `customers` are separate objects with separate
+   storage, and a type checker knows `products.get_by_id(1)` returns `Product | None` while
+   `customers.get_by_id(1)` returns `Customer | None`. That is the whole return on the generic.
+2. **A `dict` keyed by id, not a list.** §17.3's reasoning applies directly: lookup by key is what
+   this class does, and a dictionary does it in roughly constant time.
+3. **`remove` returns a `bool` rather than raising.** A missing id on delete is a legitimate outcome,
+   not a broken program — compare with `add`, where a duplicate id *is* a bug and raises.
+4. **`get_all` returns `list(...)`, a copy.** Handing out the internal collection would let callers
+   bypass `add` entirely (§17.8).
+
+⚠️ **What this is not.** This repository is in memory only. It demonstrates the *shape* of the
+pattern — nothing here persists, and nothing here is safe across threads or processes. Swapping in
+a database-backed implementation behind the same method names is exactly the point of
+[§29.3](#293--repository).
+
+</details>
+
+> ### 🧭 In practice — generics
+>
+> **How to use it.** Create a type variable (`T = TypeVar("T")`), inherit from `Generic[T]`, and use `T` wherever the element type appears. Add `bound=Entity` when the parameter must *have* certain members; use constraints (`TypeVar("Number", int, float)`) only for a small closed set of unrelated types. **Prerequisite:** type hints. **Expected result:** `mypy` knows that `repo.get_by_id(1)` on an `InMemoryRepository[Customer]` returns `Customer | None`, and flags it if you treat it as a `Product`.
+>
+> **When to use it.** When the *same* logic applies to many types and you do not want to copy it per type — a repository, a cache, a result wrapper, a typed event bus. Reach for generics when you catch yourself about to duplicate a class with one word changed.
+>
+> **Where to use it.** Mostly in infrastructure and shared library code, rather than in individual domain classes. **Scenario:** one `InMemoryRepository[TEntity]` serves `Product`, `Customer`, and `Order` in the capstone project. Without generics you would maintain three near-identical classes and a type checker that could tell you nothing useful about any of them.
+>
+> **When _not_ to use it.** Do not add generics to a class used with exactly one type — the annotations cost readability and buy nothing. And remember generics are **erased at runtime**: they are a tool for the type checker, so they cannot validate untrusted input. Use explicit checks or a validation library for that.
+>
+> **Best practices.** Prefer a **bound** to constraints; it is the common case and it preserves the actual subclass, while a constraint collapses a `bool` to `int`. Note that the entire difference is invisible when you run the program — `reveal_type()` under `mypy` is how you see it. Run the type checker in your editor and in CI, or generics become decorative.
+
 
 ---
 
@@ -2524,7 +3242,7 @@ Product(3, 'Monitor', 340.0, 'computing')
 Product(4, 'Cable', 9.0, 'accessories')
 ```
 
-`__repr__` is defined here for a practical reason: printing a *list* of objects calls `repr` on each element, so without it every line below would read `<__main__.Product object at 0x...>`. See [Section 25.3](#253-️-string-representation).
+`__repr__` is defined here for a practical reason: printing a *list* of objects calls `repr` on each element, so without it every line below would read `<__main__.Product object at 0x...>`. See [Section 25.3](#253--string-representation).
 
 ## 17.3 🔑 Dictionary
 
@@ -2784,6 +3502,19 @@ ValueError: Quantity must be positive.
 
 > ⚠️ Avoid exposing mutable internal lists unless external mutation is genuinely intended (see [Section 9.3](#93--protecting-collections)).
 
+> ### 🧭 In practice — collections and querying objects
+>
+> **How to use it.** Choose the container by the question you ask most: `list` for order, `dict` for lookup by key, `set` for uniqueness, `tuple` for a fixed snapshot. Filter and reshape with comprehensions (`[p for p in products if p.price > 100]`), sort with `sorted(..., key=lambda p: p.name)`, summarise with `sum`, `min`, `max`, `any`, `all`, and group with `defaultdict(list)`. **Expected result:** the same answers a database query would give, over objects already in memory.
+>
+> **When to use it.** As soon as you have more than one object. Use a `dict` the moment you look items up by an ID or email — a dictionary lookup takes roughly the same time with ten items or ten million, while scanning a list gets slower in proportion to its length.
+>
+> **Where to use it.** Throughout application and domain code: filtering an order's lines, grouping products by category, finding the cheapest option, checking whether any item is out of stock. **Scenario:** an invoice screen needs subtotal, the most expensive line, and lines grouped by tax band. Three comprehensions and a `defaultdict` produce all three from one list, with no database round trip.
+>
+> **When _not_ to use it.** Do not hold a large dataset in memory just to filter it — if the data lives in a database, filter it *there* (see the [SQL guide](sql_complete_guide.md)); loading a million rows to keep four is a common and expensive mistake. Do not reach for a generator when a list is simpler: for four products the memory difference is meaningless and the single-use behaviour is a trap.
+>
+> **Best practices.** Use `d[key]` when a missing key means something is broken and `.get(key)` only when absence is legitimate — reaching for `.get()` everywhere converts a loud `KeyError` into a `None` that fails far away with a confusing `AttributeError`. Pass `default=` to `min`/`max` when a collection may be empty. Never hand out your internal list; return `tuple(self._items)` so callers cannot bypass your rules ([§17.8](#178--expose-collections-safely)).
+
+
 ---
 
 # 18. Equality and object comparison
@@ -2875,6 +3606,19 @@ class PriorityTask:
 
 > ⚠️ Be careful: ordering should represent a **meaningful business concept**, not just "whatever field comes first."
 
+> ### 🧭 In practice — equality and comparison
+>
+> **How to use it.** Decide first whether two objects are equal by **identity** (the same thing) or by **value** (the same contents). For value equality, implement `__eq__` — returning `NotImplemented` for foreign types — and implement `__hash__` alongside it over the same fields. For ordering, use `@dataclass(order=True)` or `functools.total_ordering`. **Expected result:** `Money(100, "USD") == Money(100, "USD")` is `True`, and both can be stored in a `set` and found again.
+>
+> **When to use it.** Whenever objects represent a *value*: money, coordinates, email addresses, date ranges, identifiers. Also whenever you need to put objects in a `set`, use them as dictionary keys, or compare them in a test assertion.
+>
+> **Where to use it.** Value objects in the domain layer, and any object that ends up in a `set` or as a `dict` key. **Scenario:** a deduplication step collects `EmailAddress` objects in a set. Without `__eq__` and `__hash__`, two objects holding the identical address count as two different people, and the mailing goes out twice.
+>
+> **When _not_ to use it.** Do not define `__eq__` on a mutable entity that has an ID — compare the IDs instead, and do not make it hashable, because mutating a hashed field loses the object inside its own set. Do not add `order=True` to a dataclass unless ordering means something in the business; “whatever field happens to come first” is not an ordering, it is an accident waiting to surprise someone.
+>
+> **Best practices.** If you override `__eq__`, always think about `__hash__` in the same breath: defining `__eq__` alone silently makes the class unhashable. Prefer `@dataclass` or `@dataclass(frozen=True)` for value objects — you get correct `__eq__`, `__repr__`, and (when frozen) `__hash__` for free, and hand-written versions are where subtle bugs live. Use `is` only for identity and for `None`.
+
+
 ---
 
 # 19. Classes, dataclasses, named tuples, and immutability
@@ -2937,9 +3681,9 @@ class Point(NamedTuple):
 
 ## 19.5 🔄 `replace` for immutable objects
 
-**▶️ Continues from §19.3** — assumes the frozen `CustomerDto` dataclass defined there.
+**▶️ Continues from [§19.2](#192--dataclass)** — assumes the `CustomerDto` dataclass defined there.
 
-Since you can't edit a frozen object, you make a *modified copy*.
+`dataclasses.replace` builds a **new** object from an existing one, changing only the fields you name. It works on any dataclass, but it is *essential* for frozen ones: since you cannot edit a frozen object, making a modified copy is the only way to "change" it.
 
 ```python
 from dataclasses import replace
@@ -2948,7 +3692,7 @@ original = CustomerDto(1, "Anna")
 changed = replace(original, name="Maria")
 ```
 
-> 💡 For this to be safer, use a frozen dataclass.
+> 💡 `replace` calls `__init__` on the new object, so any validation in `__post_init__` runs again — the copy cannot be invalid. Note that `original` is untouched: `replace` returns a new object rather than modifying the old one. Pair this with `frozen=True` ([§19.3](#193--frozen-dataclass)) and "make a changed copy" becomes the *only* way to change anything, which is exactly what makes immutable code easy to reason about.
 
 ## 19.6 🧊 Immutability
 
@@ -2994,6 +3738,19 @@ class Product:
 ```
 
 > 🎯 **When to use:** when you create *many* instances (memory matters) or want to catch typos like `product.pirce = 5`. Use it when helpful, not automatically.
+
+> ### 🧭 In practice — choosing between class, dataclass, named tuple, and frozen
+>
+> **How to use it.** Pick by the job. Rules and behaviour → a plain class. A bag of values → `@dataclass`. A value that must never change → `@dataclass(frozen=True)`, with validation in `__post_init__`. A tiny fixed record you also want to unpack → `NamedTuple`. Many instances, or you want typos caught → add `slots=True`. To “change” a frozen object, use `dataclasses.replace(original, field=new)`. **Expected result:** the least code that still makes invalid states impossible.
+>
+> **When to use it.** At the moment you create any data-holding type — which is constantly. The decision takes ten seconds and saves a refactor later.
+>
+> **Where to use it.** Frozen dataclasses belong in the domain layer as value objects; plain dataclasses are the natural shape for data crossing a boundary (a parsed request, a row, a response). **Scenario:** an API handler parses JSON into a plain `CustomerDto` dataclass, then constructs a frozen `EmailAddress` value object that validates the address. The DTO is a convenience; the value object is a guarantee.
+>
+> **When _not_ to use it.** A `NamedTuple` is the wrong choice when the type may gain behaviour or optional fields later — it is deliberately rigid, and callers who unpack it break when you add a field. Do not use `slots=True` reflexively: it blocks adding attributes dynamically and interacts awkwardly with multiple inheritance and some caching decorators. Use it when you measure a need or want typo protection.
+>
+> **Best practices.** Reach for immutability wherever a value represents a *fact* rather than a thing that changes — it makes code easier to reason about, safer to share between threads, and impossible to corrupt at a distance. Validate inside `__post_init__` so a frozen object cannot exist in an invalid state. Note that `replace()` re-runs `__init__`, so validation applies to the copy as well.
+
 
 ---
 
@@ -3217,6 +3974,19 @@ mypy src
 
 > 💡 **Pro tip:** Running a type checker in your editor is like having a spell-checker for `None` bugs.
 
+> ### 🧭 In practice — None safety
+>
+> **How to use it.** Annotate anything that may legitimately be absent as `str | None`, then narrow it with an explicit `if value is not None:` before use. Push the handling into one helper rather than repeating it at every call site, and reject `None` at the boundary (`if name is None: raise ValueError(...)`) so the rest of your code can trust the value. Run `mypy src`. **Expected result:** the type checker reports the missing check *before the program runs*, with a message naming the exact argument.
+>
+> **When to use it.** Every time a value is optional — a phone number, a middle name, a lookup that may find nothing, a configuration setting with no default. `None` handling is one of the largest single sources of production crashes in any language, and annotations make the risk visible.
+>
+> **Where to use it.** At every boundary: parsed input, database lookups that may return nothing, external API responses, optional configuration. **Scenario:** `repository.get_by_id(99)` returns `Customer | None`. The annotation forces the caller to decide what a missing customer means — a 404, a default, an error — instead of discovering it as `AttributeError: 'NoneType' object has no attribute 'name'` in a log at 2 a.m.
+>
+> **When _not_ to use it.** Do not use `x or default` as a shorthand for a `None` check. `or` replaces **every falsy value**, so `""`, `0`, `0.0`, `False`, `[]`, and `{}` are silently rewritten — and an empty string usually means “the user cleared this field”, which is real information. Use `or` only where every falsy value genuinely should be replaced, such as `page = requested_page or 1`.
+>
+> **Best practices.** Always write `is None` / `is not None`, never `== None`: `is` compares identity and cannot be fooled by a class with a strange `__eq__`. Remember annotations are enforcement **level 2** — checked by a tool, not by Python — so nothing stops `name = None` at runtime; pair them with explicit validation where a rule must actually hold. Python has no `?.` operator; prefer the explicit check over `getattr(obj, "field", default)`, which no type checker or refactoring tool can follow.
+
+
 ---
 
 # 21. Exceptions and custom domain errors
@@ -3431,6 +4201,19 @@ except ValueError as error:
 
 > 💡 `from error` preserves the whole story — future-you debugging at 2 AM will be grateful.
 
+> ### 🧭 In practice — exceptions and custom domain errors
+>
+> **How to use it.** Raise when a method cannot deliver what its name promises. Define one base class for your business-rule failures (`class DomainError(Exception)`) and subclass it per rule. Give each exception **attributes**, not just a message, so callers can act on the data. Preserve the original cause with `raise DomainError(...) from error`. **Expected result:** callers can catch one specific rule, or all of your rules as a group, without also swallowing genuine bugs.
+>
+> **When to use it.** Use a custom exception when calling code needs to react *differently* to different failures — “insufficient funds” offers a deposit, “account frozen” shows a support number. If every caller would simply log the message and give up, a built-in exception type is enough.
+>
+> **Where to use it.** At the seam between your domain and whatever calls it — a web handler, a CLI, a job runner. **Scenario:** a web application writes one `except DomainError:` that returns `400 Bad Request` with the message, while a `KeyError` falls through to the generic handler and is logged as a `500`. That single distinction — the user's fault versus ours — is the entire reason the base class exists.
+>
+> **When _not_ to use it.** Do not use exceptions for ordinary control flow; a lookup that is *expected* to miss should return `None` or a default, not raise. Do not catch what you cannot handle, and avoid bare `except:` outside controlled cleanup that re-raises — it hides `KeyboardInterrupt` and genuine programming errors alike.
+>
+> **Best practices.** Subclass the closest built-in that fits (`InsufficientBalanceError(ValueError)`) so existing `except ValueError` code still works; subclass `Exception` directly only when no category applies. Validate inputs early so failures happen near their cause. Keep the traceback — `raise ... from error` preserves the whole story, and losing it is what turns a five-minute diagnosis into an afternoon.
+
+
 ---
 
 # 22. Class attributes, constants, static methods, and utility modules
@@ -3552,6 +4335,19 @@ class Team:
         self.members: list[str] = []
 ```
 
+> ### 🧭 In practice — class attributes, constants, static and class methods
+>
+> **How to use it.** Put per-object data in `__init__` (`self.name = name`) and shared data in the class body (`name = "OOP Guide"`). Use `@staticmethod` for a helper that needs neither `self` nor `cls`, and `@classmethod` when you need the class itself — chiefly for alternative constructors that `return cls(...)`. Name constants in `UPPER_CASE`. **Expected result:** `AppSettings.development()` builds a configured instance without the caller knowing the arguments.
+>
+> **When to use it.** Class attributes suit values genuinely shared by every instance — a version string, a default rate, a registry. Class methods suit named constructors. Static methods suit small helpers that belong conceptually to the class but need nothing from it.
+>
+> **Where to use it.** Configuration objects, domain types with several construction paths, and small shared lookup tables. **Scenario:** `Order.from_csv_row(row)` and `Order.from_api_payload(payload)` are two class methods that both end in `cls(...)`, so all validation stays in one `__init__` while each entry point keeps a clear name.
+>
+> **When _not_ to use it.** Do not create a class purely to hold functions — in Python a **module** already groups related functions, and `MathHelper.square(5)` is just `square(5)` with extra typing. If a static method never touches the class, it probably wants to be a module-level function.
+>
+> **Best practices.** Never use a **mutable** class attribute (`members = []`) — every instance shares the one object, so adding a member to one team makes it appear in all of them. Create mutable state in `__init__`, or use `field(default_factory=list)` in a dataclass. Python does not enforce constants; `UPPER_CASE` is a convention, so treat it as a message to humans, not a lock.
+
+
 ---
 
 # 23. Callbacks, events, and observer-style design
@@ -3656,6 +4452,19 @@ class OrderService:
 Use observer-style design when many objects need to react to something that happened.
 
 > ⚠️ **When to avoid:** don't make *everything* event-driven. Events can make program flow harder to follow if overused. Use them when decoupling genuinely helps.
+
+> ### 🧭 In practice — callbacks and events
+>
+> **How to use it.** For a single “do this afterwards”, pass a function as an argument and type it with `Callable[[int, int], int]`. For “many things care about this”, keep a list of handlers, expose a `on_x(handler)` method to append to it, and loop over the list when the event happens. Carry the details in a small frozen dataclass (`OrderPlacedEvent(order_id=...)`) rather than loose arguments. **Expected result:** the publisher does not know who its subscribers are, and new subscribers require no change to it.
+>
+> **When to use it.** When one action must trigger several *independent* reactions that the acting code should not know about — an order is placed, so send a confirmation, update stock, and notify the warehouse.
+>
+> **Where to use it.** User-interface code, plugin systems, and the boundary between a domain action and its side effects. **Scenario:** `OrderService.place_order` raises an `OrderPlacedEvent`. Email, stock, and analytics each subscribe. Adding a loyalty-points reaction next quarter means one new subscriber and zero changes to `place_order` — which is the whole point.
+>
+> **When _not_ to use it.** Do not make everything event-driven. Events trade an explicit call for an invisible one: the program's flow stops being readable from the source, and “who actually handles this?” becomes a search rather than a click. When exactly one thing reacts and always will, a direct method call is clearer and easier to debug.
+>
+> **Best practices.** Decide explicitly what happens when a handler raises — by default one failing subscriber stops the rest, which is rarely what you want. Beware retention: a subscriber list holds references, so handlers that are never removed keep their objects alive, which is a genuine memory leak in long-running processes. Provide a way to unsubscribe if subscribers are added dynamically.
+
 
 ---
 
@@ -3839,6 +4648,19 @@ The `with` block is what makes this acceptable: the patch is visible, narrow, an
 > [!WARNING]
 > Outside tests, monkey patching surprises other developers and breaks the assumption that a class's source file describes its behaviour. Prefer explicit functions, wrappers, or mixins.
 
+> ### 🧭 In practice — extension-style techniques
+>
+> **How to use it.** To add behaviour to a type you do not own, write a **plain function** that takes it as a parameter. To share small behaviour across unrelated classes, use a **mixin**. To wrap a function without editing it, use a **decorator** with `functools.wraps`. To adapt an object's interface, wrap it in a class. **Expected result:** the new behaviour is reachable, greppable, and visible to your editor and type checker.
+>
+> **When to use it.** Whenever you want C#-style extension methods, which Python does not have. The order above is the order of preference: free function first, mixin when several classes need the same thing, decorator when the concern is cross-cutting (logging, timing, caching).
+>
+> **Where to use it.** Utility layers, cross-cutting concerns, and integration with third-party libraries. **Scenario:** a third-party mailer's method is called `send(recipient, body)` but your code is written against `send_email(to, message)`. A six-line adapter class translates between them, and the rest of your codebase never learns that the library exists.
+>
+> **When _not_ to use it.** Avoid **monkey patching** outside tests. Patching a class at runtime makes its source file a lie, the result depends on import order, two libraries patching the same method means last-import-wins, and no tool can follow the call site to the real implementation. Note also that you *cannot* patch built-in C types — `str.custom = ...` raises `TypeError` — so subclass or write a function instead.
+>
+> **Best practices.** The single legitimate exception is a test, using `unittest.mock.patch` inside a `with` block: scoped, visible, and automatically reversed. Prefer the plainest tool that works — in Python a module-level function is very often the right answer, and reaching for a mixin or decorator when a function would do is over-engineering.
+
+
 ---
 
 # 25. Special methods, operators, nested classes, and code organization
@@ -3972,6 +4794,19 @@ Python does not have partial classes. Alternatives:
 - Keep classes small.
 - Use generated code in separate files.
 
+> ### 🧭 In practice — special methods and operator overloading
+>
+> **How to use it.** Define the double-underscore method that corresponds to the syntax you want: `__len__` for `len(obj)`, `__getitem__` for `obj[0]`, `__eq__` for `==`, `__add__` for `+`, `__call__` to make the object callable, `__enter__`/`__exit__` for `with`. Define them **in the class body** — Python looks them up on the type, never on the instance. **Expected result:** your object works with built-in syntax exactly as a built-in type would.
+>
+> **When to use it.** When the syntax has an obvious, natural meaning for your type: adding two `Money` values, taking the length of a `Classroom`, indexing a collection wrapper. Always define `__repr__`; it costs three lines and turns every debugging session and every list printout from `<object at 0x...>` into something readable.
+>
+> **Where to use it.** Value objects, collection wrappers, and resource holders. **Scenario:** a `Classroom` defines `__len__` and `__getitem__`, so `len(classroom)`, `classroom[0]`, and `for student in classroom:` all work — and every Python programmer already knows how to use it without reading your documentation.
+>
+> **When _not_ to use it.** Do not overload an operator to mean something surprising. `+` that sends an email, `<<` that saves to a database, or `-` that is really “remove from list” makes code shorter and comprehension much worse. If the meaning is not immediately obvious to a reader, use a named method. Nested classes are similarly best avoided; module-level classes are clearer in Python.
+>
+> **Best practices.** Use `__str__` for people and `__repr__` for developers, and if you only write one, write `__repr__` — `print()` falls back to it, and containers use it regardless. Return `NotImplemented` (not an exception) when an operator receives a type you do not handle, so Python can try the other operand and then produce a clear `TypeError`. The full contract for every one of these methods is in the companion [dunder guide](python_dunder.md).
+
+
 ---
 
 # 26. Modules, packages, environments, and project structure
@@ -4067,7 +4902,7 @@ my_app/
 
 ## 26.6 📥 Import style
 
-**📄 Fragment** — the paths below refer to the `my_app` package laid out in [§26.5](#265-️-recommended-structure); they are illustrations of import *style*, not runnable on their own.
+**📄 Fragment** — the paths below refer to the `my_app` package laid out in [§26.5](#265--recommended-structure); they are illustrations of import *style*, not runnable on their own.
 
 Prefer clear, explicit imports.
 
@@ -4095,6 +4930,82 @@ Coming from C#? Here's the translation:
 | Project | Python package/distribution |
 | Assembly | installed package/wheel, loosely speaking |
 | Solution | repository/workspace with multiple packages/apps |
+
+> ### 🧭 In practice — modules, packages, and project structure
+>
+> **How to use it.** Put each cohesive group of classes in its own `.py` module, group modules into packages (folders with `__init__.py`), and place the whole thing under `src/your_package/`. Declare the project in `pyproject.toml`, install it in editable mode with `pip install -e .`, and import explicitly: `from my_app.domain.customers import Customer`. **Expected result:** imports work identically when you run the app, run `pytest`, and run it from another folder.
+>
+> **When to use it.** From the second file onwards. Retrofitting a layout onto a project that grew as one 3,000-line file is far more work than choosing one on day one.
+>
+> **Where to use it.** Every project beyond a single script. The layered layout — `domain/` for business rules, `application/` for use cases, `infrastructure/` for databases and email — is what keeps a growing codebase navigable. **Scenario:** swapping a database library touches only `infrastructure/`; the `domain/` package does not import it and does not change. That is the payoff for the directory structure.
+>
+> **When _not_ to use it.** For a genuine one-file script, a package structure is overhead — keep the script. And do not create deep package trees speculatively; a folder per layer is usually enough until the code actually demands more.
+>
+> **Best practices.** Avoid wildcard imports (`from module import *`) in application code: they hide where names come from and cause silent shadowing. Use `__all__` to declare the supported public names of a package you publish. Keep the dependency direction one-way — infrastructure may import the domain, never the reverse — because that single rule is what makes the business logic testable without a database.
+
+
+---
+
+<div align="center">
+
+## ✅ Checkpoint — Part 3: Building real types
+
+</div>
+
+> [!IMPORTANT]
+> Part 3 is the longest stretch of the guide, and much of it turns on a distinction Python itself does not enforce: what a **type checker** knows versus what the **interpreter** does. Most questions below sit on that line.
+
+### 🗣️ Teach it back
+
+**What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
+
+- A **generic** type, and a **bound** versus a **constraint** (§16)
+- Value equality (`__eq__`) versus identity (`is`), and why `__hash__` comes with it (§18)
+- A **dataclass**, a **frozen dataclass**, and a **named tuple** (§19)
+- `None` safety and the `or` trap (§20)
+- A **custom domain exception** (§21)
+- A **callback** and an **event** (§23)
+- **Modules and packages** (§26)
+
+### 🧪 Self-check questions
+
+1. `list[Dog]` cannot be used where `list[Animal]` is expected. Give the concrete disaster that rule prevents.
+2. You override `__eq__` on a mutable class and put instances in a `set`. What goes wrong?
+3. `return phone or "No phone number"` looks tidier than the `is not None` version. Show the input where it is wrong, and say why that input matters.
+4. Why does `def add(item, items=[])` accumulate values between calls — and why does `@dataclass` refuse to let you write it?
+5. A custom exception carries only a message string. What has it bought you over `ValueError("...")`?
+6. A generator expression works the first time you loop over it and yields nothing the second time. Is that a bug?
+
+<details>
+<summary><b>📝 Sample answers</b></summary>
+
+1. **You could add a `Cat` to a `list[Dog]`.** If `animals = dogs` were allowed, `animals` is typed `list[Animal]`, so appending a `Cat` to it is legal — and now the `list[Dog]` that other code is reading contains a cat. Mutable containers are therefore **invariant**. See [§16.10](#1610--invariance).
+
+2. **The object gets lost in the set.** A `set` files objects by hash. Change a field that `__hash__` depends on and the object is now filed in the wrong bucket: `obj in my_set` returns `False` even though the object is physically in there. This is why mutable objects should generally not be hashable, and why frozen dataclasses are the natural home for value equality. See [§18.3](#183--why-__hash__-matters).
+
+3. **An empty string.** `""` is falsy, so `or` replaces it — but an empty string usually means *"the user deliberately cleared this field"*, which is a different fact from *"we never had one"*. `or` silently erases that distinction, and does the same to `0`, `0.0`, `False`, `[]`, and `{}`, all frequently meaningful. Use `or` deliberately, for cases like `page = requested_page or 1` where `0` really is invalid too. See [§20.3](#203--default-value).
+
+4. **Because a default value is evaluated once, when the `def` statement runs** — not on each call. The empty list is created at definition time and stored on the function object itself, so every call that omits the argument receives *that same list*; you can watch it change by printing `add.__defaults__`. `@dataclass` refuses because it can detect the mistake at class-creation time and raise, long before any confusing runtime behaviour. It offers `field(default_factory=list)` instead, which stores the *function* and calls it once per instance. See [§33.11](#3311--mutable-default-arguments).
+
+5. **Almost nothing.** The value of a custom exception is that callers can react to **structured data**: `except InsufficientBalanceError as e:` followed by `e.shortfall` lets the interface say "deposit at least 100 first" without parsing a message string. Messages are for humans; attributes are for code. If every caller would just log the text and give up, a built-in exception type is enough. See [§21.3](#213--custom-exception).
+
+6. **No — that is the defining property.** A generator holds a *position*, not a collection; once consumed it stays consumed. It bites when you pass one to two functions, or loop twice. If you need the data more than once, materialise it with `list(...)`. Use generators when the data is large or streaming, not because they look clever. See [§17.5](#175--generator-expressions).
+
+</details>
+
+### 🎯 Give a simple example
+
+Design a `Money` value object in your head: frozen, validated, with value equality and a `+` that refuses to add different currencies. Name which section of Part 3 gave you each of those four properties.
+
+---
+
+<div align="center">
+
+# 🔴 PART 4 — PROFESSIONAL DESIGN
+
+*Sections 27–33 are about designing systems rather than classes — and about the cost of every principle.*
+
+</div>
 
 ---
 
@@ -4366,6 +5277,19 @@ class OrderService:
 
 > 💡 This directly sets up the next topic: **Dependency Injection**.
 
+> ### 🧭 In practice — the SOLID principles
+>
+> **How to use it.** Use them as **review questions**, one at a time, on code you have already written. *Does this class have one reason to change?* *Can I add a case without editing this file?* *Does every subclass honour what the base promised?* *Is any implementer forced to write a method it cannot support?* *Does my business logic name a concrete database or email class?* **Expected result:** each “no” points at a specific refactoring, not a vague feeling.
+>
+> **When to use it.** During code review and when a change turns out to be harder than it should have been. SOLID is diagnostic: its value is in explaining *why* a change was painful, so the next one is not.
+>
+> **Where to use it.** Application and domain code that will live for years and be edited by several people. **Scenario:** adding a third payment provider requires edits in four files. Open/Closed names the cause (a `match` on provider type in each of them) and points at the fix (one class per provider, selected once at startup).
+>
+> **When _not_ to use it.** Do not apply all five to a 200-line script, a prototype, or a piece of code you will delete next week — the cost is real and the payoff is measured in years. Interface Segregation and Dependency Inversion in particular can produce a swarm of one-method protocols that make a small program much harder to read.
+>
+> **Best practices.** Treat them as *forces to balance*, not rules to satisfy. Single Responsibility taken literally produces classes so small that following a single request means opening nine files. The honest test for all five is the same: **when the next change arrives, how many files do I have to open, and how many working ones do I risk breaking?**
+
+
 ---
 
 # 28. Dependency injection
@@ -4456,6 +5380,19 @@ Python doesn't have built-in DI lifetimes like some frameworks, but the ideas st
 - 🏛️ Cleaner architecture
 - 🔄 Replaceable implementations
 - 📦 Better separation of concerns
+
+> ### 🧭 In practice — dependency injection
+>
+> **How to use it.** Stop calling `SmtpEmailSender()` inside a class. Accept the dependency as a constructor parameter typed with a protocol, store it, and use it. Build the real objects in **one** place near startup — a `build_order_service()` function, the *composition root*. **Prerequisite:** §13 (protocols). **Expected result:** the class can be constructed in a test with a fake in one line, and no test ever sends a real email or charges a real card.
+>
+> **When to use it.** Whenever a class needs something slow, external, or non-deterministic: a database, an email service, a payment gateway, a clock, a random number source. The symptom that you need it is a test you cannot write without a network connection.
+>
+> **Where to use it.** Between application services and infrastructure. **Scenario:** `OrderService` takes a `PaymentGateway` protocol. Production passes the Stripe implementation; a test passes a fake that records the amount. The same class, unmodified, is used in both — which is the entire benefit.
+>
+> **When _not_ to use it.** Do not inject values that never vary and have no external cost — a `Decimal` tax rate or a string format does not need a protocol and a constructor parameter. Do not reach for a DI *framework* in a small Python application: plain constructor injection plus one composition-root function covers most projects, and a container adds indirection that only pays off at scale.
+>
+> **Best practices.** Keep infrastructure objects out of your domain model — a `Customer` should not hold a database connection. Avoid global mutable state; it is dependency injection's opposite and the reason tests interfere with each other. Be deliberate about lifetimes: create short-lived objects for stateful work, reuse expensive thread-safe clients if the library says to, and scope anything per-request to the request.
+
 
 ---
 
@@ -4735,6 +5672,19 @@ APPLICATION_NAME = "OOP App"
 
 > 💡 Avoid complex singleton classes unless there's a strong reason. A module-level value usually does the job.
 
+> ### 🧭 In practice — design patterns in Python
+>
+> **How to use it.** Learn the **problem** each pattern solves, then reach for the simplest Python tool that solves it. Strategy is usually a function or a protocol parameter; Factory is often a dictionary; Observer is a list of callables; Singleton is usually a module. Use the full class-based shape only when the extra structure earns its place. **Expected result:** less code than the textbook version, doing the same job.
+>
+> **When to use it.** When you recognise the problem, not when you recognise the name. Strategy when behaviour must be swappable at run time; Repository when business code should not know where data lives; Adapter when two interfaces do not match; Decorator when you want to add behaviour around an object without changing it.
+>
+> **Where to use it.** Mostly at seams — between your code and a third-party library (Adapter), between domain and storage (Repository), between a use case and its varying rules (Strategy). **Scenario:** shipping cost varies by carrier. A `ShippingCostStrategy` protocol with one class per carrier lets the checkout stay unchanged as carriers are added, and lets each carrier's odd rules live in its own file.
+>
+> **When _not_ to use it.** Do not apply patterns because a list says they are good practice. Many classic patterns exist to work around limitations Python does not have: Python has first-class functions, so Strategy and Command often collapse to a function; modules are already singletons; decorators and duck typing replace several others. A pattern applied to a problem you do not have is pure cost.
+>
+> **Best practices.** Do not confuse the **Decorator pattern** (wrapping an object) with Python's `@decorator` syntax (wrapping a function) — related ideas, different things. Be honest about Singleton: it is global mutable state, it makes tests interfere with each other, and a module-level value or an injected instance is nearly always better. When a pattern's name helps a reader, use the name; when it only impresses, use the plain solution.
+
+
 ---
 
 # 30. Domain modeling and architecture
@@ -4879,8 +5829,39 @@ Presentation -> Application -> Domain
 Infrastructure -> Application/Domain abstractions
 ```
 
+```mermaid
+graph LR
+    P["Presentation<br/>CLI, web, UI"] --> APP["Application<br/>use cases, services"]
+    APP --> DOM["DOMAIN<br/>entities, value objects<br/>business rules"]
+    INF["Infrastructure<br/>database, email, HTTP"] -.->|implements protocols<br/>declared by| APP
+    INF -.-> DOM
+```
+
+**In words:** every arrow points **inward**, toward the domain. Presentation may call the
+application layer; the application layer may use the domain. Infrastructure sits outside and
+*implements* the protocols the inner layers declare — which is why its arrows are dotted and point
+inward too, rather than the domain reaching out to it.
+
+**Why that single rule matters:** the domain imports nothing technical, so you can test every
+business rule without a database, a web server, or a network connection — and you can replace any
+of those three without editing a single domain class. If you ever find `import sqlalchemy` in an
+entity, the rule has been broken and both benefits are gone.
+
 > [!IMPORTANT]
 > **Business logic should not depend directly on databases, UI, or external systems.** The domain sits at the center; everything else points *inward* toward it.
+
+> ### 🧭 In practice — domain modelling and architecture
+>
+> **How to use it.** Separate the ideas. Things with identity that survives change are **entities** (`Order`, `Customer`). Things that are entirely their values are **value objects** (`Money`, `EmailAddress`), and they should be frozen. One entity that guards a cluster of related objects is an **aggregate** (`Order` guarding its `OrderItem`s). Logic belonging to no single object is a **domain service**; orchestration of a use case is an **application service**. **Expected result:** the business rules live in one layer, and that layer imports nothing technical.
+>
+> **When to use it.** When a system grows past a few screens and the rules start repeating in different places. The signal is finding the same business check in a web handler, a background job, and an import script.
+>
+> **Where to use it.** The core of any application with non-trivial business rules — finance, logistics, booking, healthcare, e-commerce. **Scenario:** `Order.add_item()` is the only way to add a line, so the rule “you cannot change a completed order” holds for every entry point automatically, and a new entry point cannot forget it.
+>
+> **When _not_ to use it.** For a CRUD screen over a single table — a form that saves a row and reads it back — this layering is overhead with no return. Most applications contain both kinds of feature; apply the structure where rules are genuinely complex, and keep the simple parts simple.
+>
+> **Best practices.** Keep the dependency direction pointing **inward**: presentation depends on application, application depends on the domain, and the domain depends on nothing technical. That one rule is what lets you test the business logic without a database and swap infrastructure without touching the rules. Guard an aggregate through its root — if outside code can reach the parts directly, the boundary is decorative.
+
 
 ---
 
@@ -4918,7 +5899,7 @@ pytest
 
 ## 31.2 ✅ Example test with pytest
 
-**📄 Fragment** — a test file belonging to the project laid out in [§31.1](#311-️-create-a-test-project). It imports from your `banking` package and is run with `pytest`, never with `python`.
+**📄 Fragment** — a test file belonging to the project laid out in [§31.1](#311--create-a-test-project). It imports from your `banking` package and is run with `pytest`, never with `python`.
 
 ```python
 from banking.bank_account import BankAccount
@@ -4990,6 +5971,19 @@ def test_order_service_sends_email() -> None:
 - ❌ Avoid brittle tests.
 - ✅ Use fake dependencies when needed.
 - ✅ Mock **external systems**, not your domain model.
+
+> ### 🧭 In practice — unit testing
+>
+> **How to use it.** Install `pytest`, create a `tests/` folder, and write functions named `test_<what>_should_<expected>`. Follow **Arrange, Act, Assert**: build the object, call one method, assert one outcome. Use `pytest.raises(ValueError)` for expected failures, and hand in a small **fake** for external dependencies. Run `pytest`. **Expected result:** a failing test names the behaviour that broke, so you know what changed without reading a stack trace.
+>
+> **When to use it.** Before every refactoring — tests are what make changing code safe rather than brave — and around every business rule you cannot afford to get wrong. A rule with no test is a rule that will be broken by someone who does not know it exists.
+>
+> **Where to use it.** Around the domain layer first, where the rules live and the tests are fast and need nothing external. **Scenario:** `test_borrow_book_should_raise_when_limit_reached` constructs a member, borrows three books, and asserts the fourth raises. It runs in milliseconds, needs no database, and will still be protecting that rule in five years.
+>
+> **When _not_ to use it.** Do not unit-test through the user interface, and do not test private methods — both produce brittle tests that break when you improve the design without changing behaviour. Do not mock your own domain model; mocking what you own tests your mocks. And do not chase a coverage percentage: a test that asserts nothing meaningful still counts as coverage.
+>
+> **Best practices.** Test **behaviour**, not implementation: assert what the object did, not which internal method it called. Prefer a hand-written fake over `Mock` where you can — `assert_called_once()` couples the test to the current design, while a fake that records messages lets you assert the outcome. Keep tests independent: one test's state must never affect another's, or you get failures that depend on ordering.
+
 
 ---
 
@@ -5122,6 +6116,19 @@ If shipping costs are three fixed numbers that change once a year, the original 
 > [!IMPORTANT]
 > **Never refactor without tests.** Tests are what let you change code confidently, knowing you didn't break anything.
 
+> ### 🧭 In practice — refactoring
+>
+> **How to use it.** Work in a tight loop. **(1)** Make sure tests cover the current behaviour. **(2)** Make **one** small design change. **(3)** Run the tests. **(4)** Rename anything now misleading. **(5)** Repeat. **Prerequisite:** §31. **Expected result:** behaviour is byte-for-byte identical and the structure is better — if behaviour changed, it was not a refactoring.
+>
+> **When to use it.** When the design starts to resist a change you need to make — that resistance is the signal, and it is more reliable than any code-smell checklist. Common triggers: a method too long to hold in your head, a class with too many reasons to change, the same conditional appearing in a third file, a primitive `str` that keeps needing the same validation.
+>
+> **Where to use it.** Immediately before adding a feature to code that makes the feature awkward. **Scenario:** you need a fourth shipping method and find the same `match` statement in three files. Extract it into shipping classes *first*, verify the tests still pass, then add the new method as a new class — touching none of the working logic.
+>
+> **When _not_ to use it.** Never refactor without tests. Without them you are not refactoring, you are rewriting and hoping, and the bug you introduce will be found by a user. Also avoid refactoring code you are about to delete, and resist mixing a refactoring with a behaviour change in the same commit — when something breaks, you will not know which half did it.
+>
+> **Best practices.** Change one thing at a time and keep the tests green between steps; a large refactoring is many small ones, not one big leap. Remember that a refactoring is not automatically an improvement — replacing six obvious lines with four classes is a net loss unless the cases are genuinely growing. The table in [§32.3](#323--example-replace-conditional-with-polymorphism) sets out that trade-off honestly.
+
+
 ---
 
 # 33. Common OOP mistakes
@@ -5199,7 +6206,7 @@ Avoid exposing mutable internal lists and dictionaries unless external mutation 
 
 ## 33.5 🔢 Primitive obsession
 
-Using `str`, `int`, and `float` everywhere instead of meaningful types (see the `EmailAddress` fix in [32.2](#322-example-primitive-obsession)).
+Using `str`, `int`, and `float` everywhere instead of meaningful types (see the `EmailAddress` fix in [32.2](#322--example-primitive-obsession)).
 
 ## 33.6 🔗 Tight coupling
 
@@ -5396,7 +6403,7 @@ print(a.items is b.items)           # False — independent
 False
 ```
 
-This is the same mechanism as the function-default bug: anything created in the *class body* (or in a default value) exists once, while anything created in `__init__` exists once per object. See [Section 22.6](#226-️-mutable-class-attribute-warning) for more on this distinction.
+This is the same mechanism as the function-default bug: anything created in the *class body* (or in a default value) exists once, while anything created in `__init__` exists once per object. See [Section 22.6](#226--mutable-class-attribute-warning) for more on this distinction.
 
 ### ✅ For dataclasses, use `field(default_factory=...)`
 
@@ -5432,6 +6439,81 @@ ValueError: mutable default <class 'list'> for field items is not allowed: use d
 `default_factory=list` stores the *function* `list`, which the generated `__init__` calls once per instance, producing a fresh list every time.
 
 **This is one of the strongest reasons to prefer dataclasses** for data-holding classes: the error is caught when the class is defined, long before any confusing runtime behaviour.
+
+> ### 🧭 In practice — recognising common OOP mistakes
+>
+> **How to use it.** Read this section as a **symptom list** and check your current project against it: a class that does everything, classes with data but no rules, inheritance chains more than two or three deep, public mutable lists, `str` and `int` where a meaningful type belongs, classes constructing their own dependencies, and mutable default arguments. **Expected result:** a short list of specific things to fix, each with a named remedy elsewhere in the guide.
+>
+> **When to use it.** Periodically, and especially before a codebase grows past the point where fixing it is cheap. Most of these are much easier to correct in the week they appear than in the year afterwards.
+>
+> **Where to use it.** Existing code more than new code — these are patterns you inherit rather than choose. **Scenario:** a `ReportService` has grown to 900 lines and fourteen dependencies. Recognising the God-class symptom turns a vague “this file is horrible” into a concrete plan: split by responsibility, one at a time, with tests at each step.
+>
+> **When _not_ to use it.** Do not treat the list as a set of rules to enforce mechanically. A 60-line class with three responsibilities in a small script is fine. An anemic data class is exactly right for a DTO crossing a boundary. The mistakes are mistakes *in context* — when the rules are important and the code is long-lived.
+>
+> **Best practices.** Learn the mutable-default trap properly, because it is the one on this list that bites everybody: `def f(items=[])` creates the list **once**, at definition time, and every call that omits the argument shares it. The same mechanism makes a mutable class attribute shared by every instance. `None` as a sentinel fixes functions; `field(default_factory=list)` fixes dataclasses — and a dataclass refuses to let you make the mistake at all.
+
+
+---
+
+<div align="center">
+
+## ✅ Checkpoint — Part 4: Professional design
+
+</div>
+
+> [!IMPORTANT]
+> Part 4 is where advice becomes *conditional*. Every principle here has a cost, and being able to name that cost is the difference between using a principle and repeating it.
+
+### 🗣️ Teach it back
+
+**What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
+
+- Each letter of **SOLID** (§27)
+- **Dependency injection** and a **composition root** (§28)
+- **Strategy**, **Repository**, **Adapter**, **Decorator** (§29)
+- **Entity** versus **value object** versus **aggregate** (§30)
+- A **fake** versus a **mock** (§31)
+- The **refactoring loop** (§32)
+
+### 🧪 Self-check questions
+
+1. Explain dependency injection to a non-technical person in one sentence, using no software words.
+2. What does the Open/Closed principle actually ask you to *do* on Monday morning?
+3. What is the difference between an entity and a value object, and which one should be frozen?
+4. Why does a shared `DomainError` base class earn its place in a web application?
+5. Your test asserts that `OrderService` called `email_sender.send`. Is that a good test?
+6. Name one concrete cost of introducing a protocol for a class that has exactly one implementation.
+
+<details>
+<summary><b>📝 Sample answers</b></summary>
+
+1. **A chef who is handed the ingredients can cook whatever you bring; a chef who insists on growing their own vegetables can only ever make one dish.** Handing things in from outside is what makes the chef reusable — and what lets you hand them plastic vegetables to rehearse with.
+
+2. **Design so that adding a new case means adding a new file, not editing an old one.** Concretely: when a new payment method, discount type, or shipping option arrives, you should be writing a new class and registering it — not opening a working `if`/`match` chain and risking what already ships. The point is not "never edit code"; it is "do not edit code that is already correct in order to add something unrelated to it."
+
+3. **An entity has identity that survives its data changing** — you are still you after changing your name and address, because the ID is the same. **A value object is entirely its values** — any ten-dollar note is as good as any other. Value objects should be frozen: if two objects are interchangeable by definition, letting one mutate is meaningless at best and a shared-state bug at worst. See [§30.1](#301--entity) and [§30.2](#302--value-object).
+
+4. **It separates "the user's fault" from "our fault".** One `except DomainError:` turns any business-rule violation into a clean `400 Bad Request`, while a genuine bug — a `KeyError`, an `AttributeError` — falls through to the generic handler and is logged as a `500`. Without the shared base you either list every exception type by hand and forget the one someone adds next month, or catch `Exception` and hide your own bugs. See [§21.4](#214--domain-exception).
+
+5. **It is a weak test, and often a bad one.** It asserts on *how* the service did its job rather than *what* happened, so it breaks when you refactor something that still works correctly. Prefer a **fake** that records what was sent, then assert on the observable result ("a welcome message containing the order number was queued"). Mock external systems; do not mock your own domain model. See [§31.4](#314--fake-dependency) and [§31.6](#316--testing-principles).
+
+6. **Indirection with no payoff.** Every reader now opens two files to learn what one class does, "go to definition" lands on a method body full of `...`, and the abstraction freezes a design before you know what a second implementation would need. Create the protocol when the second implementation, the test substitution, or the layer boundary actually arrives. See [§14.4](#144--avoid-unnecessary-abstractions) and [§33.7](#337--overusing-protocols).
+
+</details>
+
+### 🎯 Give a simple example
+
+Take the `OrderService` from §28 and describe, in plain words, what changes in a test when the payment gateway is injected instead of constructed inside. Then name the one thing DI made *worse*.
+
+---
+
+<div align="center">
+
+# 🟡 PART 5 — PRACTICE AND REFERENCE
+
+*Sections 34–39 are where you stop reading and start building.*
+
+</div>
 
 ---
 
@@ -5484,6 +6566,19 @@ ValueError: mutable default <class 'list'> for field items is not allowed: use d
 - [ ] Unit tests
 - [ ] At least one design pattern
 - [ ] Refactoring
+
+> ### 🧭 In practice — the practice projects
+>
+> **How to use it.** Pick one project at your level and build it end to end, using the checklist in [§34.4](#344--what-every-project-should-practice) as your acceptance criteria. Start with the domain classes and their rules, add tests as you go, and only then write the console interface. **Expected result:** a small program you can run, explain, and show someone — with rules enforced inside the objects rather than in the input-handling code.
+>
+> **When to use it.** After finishing a part of this guide, not after finishing all of it. The material stops being theory the first time you design classes for a problem nobody has designed for you.
+>
+> **Where to use it.** Your own machine, as a portfolio piece. **Scenario:** the Hotel Booking System forces decisions this guide only describes — is a `Room` an entity or a value object? Where does “no double booking” live? Answering those for yourself is what converts recognition into understanding.
+>
+> **When _not_ to use it.** Do not start with the advanced list if the beginner one still feels uncertain, and do not start by designing a database schema or a web API. The point is object design; adding a framework early means spending your time on the framework.
+>
+> **Best practices.** Build the domain first and the interface last — if the rules only work when driven through your menu code, they are in the wrong place. Write at least a few tests as you go rather than at the end. And keep it small enough to finish: a completed small project teaches more than an abandoned large one.
+
 
 ---
 
@@ -5557,7 +6652,7 @@ pythonpath = ["src"]
 ```
 
 > [!IMPORTANT]
-> **📄 Every code block from §35.3 to §35.12 is a Fragment** — one file of the multi-file project laid out in [§35.2](#352-️-create-project). The first line of each block is its path inside that project.
+> **📄 Every code block from §35.3 to §35.12 is a Fragment** — one file of the multi-file project laid out in [§35.2](#352--create-project). The first line of each block is its path inside that project.
 >
 > They cannot be run individually with `python`. To run the finished application:
 >
@@ -5896,11 +6991,27 @@ Ready for more? Add:
 - CLI menu
 - FastAPI Web API version
 
+> ### 🧭 In practice — the capstone project
+>
+> **How to use it.** Create the project layout from [§35.2](#352--create-project), then build the files in the order given — each imports from the ones before it. Install it with `pip install -e .`, run it with `python -m library_management.console_app`, and run the tests with `pytest`. **Prerequisite:** most of the guide; this deliberately combines it. **Expected result:** a working console application whose borrowing rules are enforced by the domain objects and covered by tests.
+>
+> **When to use it.** As the final exercise, when you want to see how the separate techniques fit together. Reading about entities, protocols, generics, and dependency injection separately is very different from watching them interlock in one program.
+>
+> **Where to use it.** A multi-file Python package — which is itself part of the lesson, since every real project is one. **Scenario:** `LibraryService` receives two repositories rather than creating them, so the same service class runs against in-memory storage in tests and could run against a database in production with no change to its code.
+>
+> **When _not_ to use it.** Do not copy the whole thing in one pass and run it. The value is in building it file by file and understanding why each layer imports only from the layer beneath. If you want to skip ahead, skip the console layer, not the domain layer.
+>
+> **Best practices.** Note which concepts converge in `Member` — inheritance from `Entity`, abstraction via `ABC`, encapsulation of `_borrowed_books` behind a read-only `tuple`, and a domain rule enforced in `borrow_book`. That convergence is what professional object design looks like. When it runs, take one of the extensions in [§35.13](#3513--capstone-extensions): adding a `NotificationSender` protocol will teach you more than re-reading the chapter.
+
+
 ---
 
 # 36. Professional checklist
 
 > 📌 **In plain words:** A self-assessment. When you can confidently check every box, you're ready for professional Python OOP work. ✅
+
+> [!NOTE]
+> **No 🧭 In practice block from here on, and that is deliberate.** Sections 36–39 are reference material — a checklist, a schedule, a dictionary, and a link list. “How / when / where / when not / best practices” describes *techniques*, and these four sections do not contain techniques: there is nothing to apply in the wrong situation, and no failure mode to warn you about beyond “do not treat a checklist as a substitute for building something.” Use them the way you use an index.
 
 ## 36.1 🔤 Core syntax
 
@@ -6028,6 +7139,68 @@ Ready for more? Add:
 | 30 | Review, refactor, document |
 
 🎁 **Deliverable:** complete library management system.
+
+---
+
+
+<div align="center">
+
+## ✅ Checkpoint — the whole guide
+
+</div>
+
+> [!IMPORTANT]
+> This is the last one, and it is the only checkpoint that matters after you close the guide. It asks
+> nothing about syntax.
+
+### 🗣️ Teach it back
+
+Explain each of these to a colleague who does not write Python, in one or two sentences each, **without using the word itself**:
+
+- Why an object is more useful than a group of variables
+- Why a rule belongs inside the object rather than in the code that uses it
+- Why composition is usually preferred to inheritance
+- Why dependency injection makes code testable
+- Why you should not refactor without tests
+
+### 🧪 Self-check questions
+
+1. Someone says “good Python OOP means making everything a class.” What is wrong with that?
+2. Name the one measurement that tells you whether a design is any good.
+3. Which single Python feature, learned properly, prevents the largest number of bugs for a beginner?
+4. You have inherited a 900-line class with fourteen dependencies. What is your first move?
+
+<details>
+<summary><b>📝 Sample answers</b></summary>
+
+1. **It confuses the tool with the goal.** Python gives you modules, functions, dataclasses, and
+   plain dictionaries, and each is the right answer sometimes. A class earns its place when it has
+   **rules to protect**; a class with no rules is a dictionary with extra syntax. The guide's own
+   closing advice is that the goal is not the most object-oriented code possible, but code that is
+   clear, safe, and easy to change.
+
+2. **When the next change arrives, how many files do you have to open, and how many working ones do
+   you risk breaking?** Every principle in this guide — encapsulation, polymorphism, SOLID,
+   dependency injection, composition — exists to make that number small. It is the only measure that
+   does not care what the code looks like.
+
+3. **Understanding the three levels of enforcement** — that `_name` is a sign, a type hint is
+   checked only by a tool you have to run, and only a `@property`, an explicit `raise`, `frozen=True`
+   or a validating constructor is enforced by the interpreter. Almost every "but I thought Python
+   would stop me" bug comes from confusing these three.
+
+4. **Write tests around its current behaviour first**, then extract one responsibility at a time,
+   running the tests after each step. Not a rewrite: a rewrite of code you do not fully understand
+   reproduces its bugs and loses its undocumented behaviour, and you will not know which. See
+   [§32.4](#324--refactoring-workflow).
+
+</details>
+
+### 🎯 Give a simple example
+
+Pick any class you have written in the last month. In three sentences: what does it protect, what
+can be swapped for it, and how would you test it without touching a database or a network? If all
+three answers come easily, this guide has done its job.
 
 ---
 

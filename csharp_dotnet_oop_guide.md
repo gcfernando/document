@@ -23,9 +23,6 @@
 > written a line of code), and once in **working code** you can copy, run, and break.
 >
 > Nothing is assumed. Nothing is left as *"you'll figure it out."*
-
----
-
 ## 🎯 Who this is for
 
 | You are... | This guide gives you... |
@@ -77,6 +74,13 @@ Every chapter uses the same symbols, so you always know what you are looking at:
 | 🔗 **Connects to** | Where else in the guide this idea shows up |
 
 Difficulty is marked on each chapter: **⭐ Beginner** · **⭐⭐ Intermediate** · **⭐⭐⭐ Advanced**
+
+Two larger blocks appear at fixed places rather than inline:
+
+| Block | Where | What it gives you |
+|---|---|---|
+| 🧭 **In practice** | End of every teaching chapter (1–46) | The five things you need before using something: **how** to use it (steps, prerequisites, expected result), **when** to use it, **where** in a real system it belongs, **when _not_ to** — with the limitation and the alternative — and the **best practices**, including the specific mistakes people make and any safety, performance, or maintenance cost. |
+| ✅ **Checkpoint** | End of each Part | A teach-back test. If you can answer *“What is this? Why does it matter? How does it work? Can I give an example?”* in your own words, move on. Sample answers are collapsed so you can try first. |
 
 ---
 
@@ -158,11 +162,11 @@ Beginners lose a lot of time to a confusion this guide tries to head off early. 
 
 - **`?` on a reference type is a language feature with no runtime effect.** `string?` and `string`
   compile to exactly the same thing. The compiler warns you; the CLR does not check. This is
-  covered in depth in [Chapter 27](#27-️-nullable-reference-types-and-null-safety), and it is the
+  covered in depth in [Chapter 27](#27--nullable-reference-types-and-null-safety), and it is the
   single most misunderstood feature in modern C#.
 - **`IDisposable` is a framework interface, not a runtime guarantee.** Nothing forces anyone to call
   `Dispose()`. The `using` statement is a *language* feature that generates the call for you.
-  ([Chapter 12](#12-️-object-lifecycle-and-resource-management).)
+  ([Chapter 12](#12--object-lifecycle-and-resource-management).)
 - **Garbage collection is a runtime service.** It is why C# has no destructors in the C++ sense, and
   why finalizers run at an unpredictable time.
 - **`record` is a language feature** that generates ordinary IL; the runtime knows nothing about
@@ -258,7 +262,7 @@ Everything here targets **.NET 8 or later** unless stated otherwise.
 | 50 | [Glossary and reference links](#50--glossary-and-reference-links) | — |
 
 ---
----
+
 
 <div align="center">
 
@@ -375,6 +379,19 @@ Not "unlikely". *Impossible.* The object enforces it for you, forever, without y
 > lambdas, records) every single day. OOP gives you the structure; functional style gives you
 > the plumbing. They are partners, not rivals.
 
+> ### 🧭 In practice — deciding that a problem wants objects
+>
+> **How to use it.** Look for data that has **rules attached**. If you can finish the sentence “this value must never...”, that value and its rule belong together in a class. **Expected result:** the rule becomes impossible to break from anywhere in the program, rather than something every caller must remember.
+>
+> **When to use it.** When the program models real things that persist and change — accounts, orders, bookings — and when more than one person will maintain the code.
+>
+> **Where to use it.** The business layer of an application. **Scenario:** a `decimal balance` floating loose in a program can be set to `-50000` by any line of code anywhere. Wrapped in a `BankAccount` with a private field and a validating `Withdraw`, a negative balance stops being unlikely and becomes *impossible*.
+>
+> **When _not_ to use it.** A twenty-line script, a pure calculation with no stored state, or a one-off data transformation gains nothing from classes — LINQ over a sequence is usually cleaner. Modern C# is multi-paradigm; you are not obliged to make everything an object.
+>
+> **Best practices.** Ask “who owns this rule?” rather than “what steps do I run?” That single change of question is what separates procedural code from object-oriented design. Expect to mix paradigms daily: OOP gives you the structure, LINQ and lambdas give you the plumbing.
+
+
 ---
 
 # 2. 🛠️ Prerequisites and setup
@@ -413,7 +430,10 @@ Verify it worked:
 dotnet --version
 ```
 
-You should see something like `9.0.100` or higher.
+You should see something like `10.0.100` or higher. **This guide was validated on SDK 10.0.401**
+(see [What was actually verified](#-what-was-actually-verified-and-how)). Anything from **.NET 8**
+onwards will run almost everything here; the handful of features that need a newer language version
+are flagged inline where they appear.
 
 ## 2.3 Create your practice project
 
@@ -434,7 +454,8 @@ Open `OopPractice.csproj` and make it look like this:
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <!-- Match this to your installed SDK. This guide was validated on net10.0. -->
+    <TargetFramework>net10.0</TargetFramework>
 
     <!-- 🔒 Turns on null-safety warnings. Non-negotiable. See Chapter 27. -->
     <Nullable>enable</Nullable>
@@ -452,7 +473,8 @@ Open `OopPractice.csproj` and make it look like this:
 > 💡 **Tip** — `TreatWarningsAsErrors` is harsh, and that is exactly the point. While learning, a
 > warning you ignore is a lesson you skipped. You can relax it later on real projects.
 
-> ⚠️ **Gotcha** — If your installed SDK is newer, use the matching framework (`net10.0`, etc.).
+> ⚠️ **Gotcha** — `TargetFramework` must not be *newer* than your installed SDK. If
+> `dotnet --version` reports `9.x`, set `net9.0` here; if it reports `10.x`, `net10.0` is correct.
 > A mismatch between `TargetFramework` and your installed SDK is the #1 "it won't build" cause.
 
 ### 🧰 Which editor?
@@ -487,7 +509,21 @@ public class Greeter
 > middle is a compiler error. On real projects, put each class in **its own file** named after
 > the class (`Greeter.cs`). See [Chapter 36](#36--naming-and-coding-conventions).
 
+> ### 🧭 In practice — setting up your practice project
+>
+> **How to use it.** Install the .NET SDK (not just the runtime — you need it to *build*), then `dotnet new console -n OopPractice`, `cd OopPractice`, `dotnet run`. Edit the `.csproj` to enable `Nullable`, `ImplicitUsings`, and — while learning — `TreatWarningsAsErrors`. **Expected result:** `Hello, World!` on screen, and a project that refuses to build when you ignore a warning.
+>
+> **When to use it.** Once, before Chapter 3. Every later chapter assumes you can paste a class into `Program.cs` and run it.
+>
+> **Where to use it.** Your own machine. **Scenario:** you paste an example and the compiler reports `CS8803`. That is the top-level-statements rule — executable code must come *before* any `class` or `record` declaration in the file. Knowing that one rule saves an hour on your first day.
+>
+> **When _not_ to use it.** `TreatWarningsAsErrors` is deliberately harsh for learning and often too strict for a real project with legacy code — relax it once warnings are a signal rather than a wall. And do not set `TargetFramework` **newer** than your installed SDK; that mismatch is the single most common “it will not build” cause.
+>
+> **Best practices.** Enable `<Nullable>enable</Nullable>` from the very first project and never turn it off — retrofitting null-safety onto an existing codebase is a long, noisy job, while starting with it costs nothing. Pick one editor and stop comparing them. On real projects, put each class in its own file named after the class.
+
+
 ---
+
 <div align="center">
 
 # 🔵 PART 1 — FOUNDATIONS
@@ -599,6 +635,19 @@ Console.WriteLine(account.GetBalance());   // 750
 
 🧪 **Try it** — Model a `TrafficLight`. Its data is the current colour. Its rule is that it can
 only go Green → Yellow → Red → Green. Nothing else. Try to make an illegal transition impossible.
+
+> ### 🧭 In practice — modelling something as an object
+>
+> **How to use it.** Identify the noun, decide what it stores (private fields), decide what may be seen (public properties), decide what may be done (public methods), and put the rules in the constructor and the methods. **Expected result:** the compiler itself rejects `account.balance = -999` and `account.AccountNumber = "X"`, because one is private and the other has no setter.
+>
+> **When to use it.** When something has data **and** rules, represents a real-world noun, has a lifecycle, or needs swappable implementations.
+>
+> **Where to use it.** The domain layer. **Scenario:** an `Order` guarantees it always has at least one line and that a shipped order cannot be edited. Those guarantees hold whether the order came from the website, a call-centre screen, or an overnight import — because they live in the object rather than in three separate code paths.
+>
+> **When _not_ to use it.** Do not make an object out of a single pure calculation (use a static method), a bag of values with no rules (use a `record` — Chapter 25), or a class whose only job is to hold other classes' work (that is a God class — Chapter 44).
+>
+> **Best practices.** **An object is not a container for variables; it is a guardian of rules.** If your class has no rules, ask whether it should be a `record` instead. Keep the public surface small: every public member is a promise you have to keep for as long as the class exists.
+
 
 ---
 
@@ -740,6 +789,19 @@ Take the payment example above and, **without looking back at it**, do the follo
 
 If you can do step 4, you understand this chapter. If you cannot, re-read the table above —
 that is the whole point of it.
+
+> ### 🧭 In practice — the four pillars
+>
+> **How to use it.** Use them as four review questions on a design you already have: what does this class **protect**, what does it **hide**, what does it genuinely **specialise**, and what can be **substituted** for it? **Expected result:** you can justify each class in one sentence — or you discover you cannot, which is the useful outcome.
+>
+> **When to use it.** In code review, design discussions, and interviews. They are the shared vocabulary for talking about structure, so their value is in communication as much as in design.
+>
+> **Where to use it.** Conversation more than any particular layer. **Scenario:** someone proposes `class PdfInvoice : Invoice` and `class EmailInvoice : Invoice`. The vocabulary lets you say exactly what is wrong — *“that is not specialisation, it is a delivery method; an invoice **has a** delivery channel”* — instead of a vague sense that it looks off.
+>
+> **When _not_ to use it.** Do not treat them as targets. “Make this more polymorphic” is not a requirement, and code written to display all four pillars is usually worse than code written to solve the problem.
+>
+> **Best practices.** In professional C#, encapsulation and polymorphism appear constantly, abstraction appears at boundaries, and **deep inheritance is rare** — which is the opposite of the weighting most courses give them. The honest test of a design is not how many pillars it exhibits but how many existing lines change when a new requirement arrives.
+
 
 ---
 
@@ -887,6 +949,19 @@ Grade: A
 
 **Then extend it:** make `Age` refuse any value below 0 or above 130. You will need
 [Chapter 6](#6--fields-properties-and-methods) for that — come back after reading it.
+
+> ### 🧭 In practice — classes and objects
+>
+> **How to use it.** Declare the blueprint with `class`, create instances with `new`. Set several properties at once with an object initializer (`new Car { Brand = "Toyota" }`), or shorten the type name with `var` or target-typed `new()`. **Expected result:** each `new` produces an independent object on the heap; the variable holds a *reference* to it.
+>
+> **When to use it.** Whenever you need more than one independent thing of the same shape — or might later.
+>
+> **Where to use it.** Everywhere, though creation usually belongs near the edges of the program while the class itself lives in the domain. **Scenario:** an import reads 5,000 rows and constructs 5,000 `Product` objects, each validating itself, so a malformed row fails at the row that caused it.
+>
+> **When _not_ to use it.** Do not use an **object initializer** for a type that has rules. The initializer runs *after* the constructor, so the object briefly exists in an invalid state and nothing forces the caller to supply anything. For types with invariants, pass the values through the constructor instead.
+>
+> **Best practices.** Remember `var` is not `dynamic` — C# stays fully static and the type is fixed at compile time. Prefer `var` when the type is obvious from the right-hand side and the explicit type when it is not. Understanding that the variable holds a reference, not the object, is what makes [Chapter 11](#11--value-types-vs-reference-types) make sense.
+
 
 ---
 
@@ -1204,6 +1279,19 @@ Build a `Thermostat` class:
 
 Then try to break it from the outside. You should not be able to.
 
+> ### 🧭 In practice — fields, properties, and methods
+>
+> **How to use it.** Keep fields `private`. Expose data through properties, starting with an auto-property (`{ get; set; }`) and adding a validating setter the moment a rule appears. Use `{ get; private set; }` when only the object may change its own state, `{ get; init; }` for immutable objects built with initializers, `required` when a value has no sensible default, and an expression body (`=> Price * Qty`) for anything derived. **Expected result:** calling code is unchanged when you add validation later — which is the entire reason properties exist.
+>
+> **When to use it.** Properties for all public data. The private setter in particular is the workhorse of encapsulation: outsiders may look at `Balance`, but only `Deposit` and `Withdraw` may change it.
+>
+> **Where to use it.** Every class you write. **Scenario:** `Total => UnitPrice * Quantity` as a computed property can never disagree with its inputs. Store it instead and every place that changes `Quantity` must remember to update `Total`; one day someone forgets, and the invoice is wrong.
+>
+> **When _not_ to use it.** **Never make a field `public`.** It has no validation, cannot be part of an interface, and cannot later gain a rule without breaking every caller. Do not use a computed property for anything expensive — readers assume `obj.X` is cheap, so a database call or a big loop belongs in a method whose name says it costs something.
+>
+> **Best practices.** **Cheap and derived → computed property. Expensive or side-effecting → method.** Prefer `required` over a nullable property plus a runtime null check: `required` is enforced at compile time, which is strictly better. Never store what you can calculate.
+
+
 ---
 
 # 7. 🎛️ Method parameters in depth
@@ -1406,6 +1494,19 @@ Write a `SafeDivider` class with a method
 `bool TryDivide(double numerator, double denominator, out double result)`
 that returns `false` (instead of throwing) when the denominator is zero.
 Then call it both ways — with a valid and an invalid divisor.
+
+> ### 🧭 In practice — method parameters
+>
+> **How to use it.** Use optional parameters for sensible defaults, **named arguments** to make call sites readable, `params` for a varying count, and `out` to return a second value alongside the first. `ref` and `in` exist and are rarely needed. **Expected result:** a call site that reads like a sentence instead of `CreateUser("anna", "a@b.com", true, false, true)`.
+>
+> **When to use it.** Named arguments whenever a call has two or more booleans or same-typed parameters in a row. `out` with the `TryXxx` naming convention when an operation can fail as part of *normal* use — parsing input, looking up a key — and throwing would be overkill.
+>
+> **Where to use it.** Public APIs and anywhere a call is read more often than it is written. **Scenario:** `int.TryParse("123", out int number)` returns a `bool` and hands back the value. Every C# developer recognises that shape instantly, which is why following the convention matters more than inventing a nicer one.
+>
+> **When _not_ to use it.** Avoid `ref` in modern C# — returning a value or a tuple is almost always clearer, and `ref` on a reference type is especially confusing. Use `in` only for a large `struct` in a hot loop; sprinkling it everywhere achieves nothing. And avoid optional parameters in a **published library**: defaults are compiled into the *caller*, so changing one does not take effect until every consumer recompiles.
+>
+> **Best practices.** If a call has more than one `true`/`false` in a row, use named arguments — or better, replace the booleans with an [enum](#20--enums-and-type-safe-choices). Many optional parameters is a sign you want a small options object instead. `params` must be last, and there can be only one.
+
 
 ---
 
@@ -1702,6 +1803,19 @@ Create a `BankAccount` with:
 
 Then prove to yourself that you cannot create an invalid account from outside.
 
+> ### 🧭 In practice — constructors
+>
+> **How to use it.** Validate first, assign second. Chain constructors with `: this(...)` to keep validation in one place, and call `: base(...)` when inheriting. **Expected result:** an object that exists is an object that is valid — there is no window in which it is half-built.
+>
+> **When to use it.** Whenever a type has any requirement for being valid, and whenever a dependency must be supplied (constructor injection — [Chapter 39](#39--dependency-injection)).
+>
+> **Where to use it.** Every boundary where data enters. **Scenario:** a signup posts a blank name. Validating in `Customer`'s constructor fails the request at the point of entry with a clear message, instead of a blank name travelling through the system and surfacing days later in a report.
+>
+> **When _not_ to use it.** Do not do real work in a constructor — no network calls, no file reads, no database queries. A constructor that can hang or fail for external reasons is painful to test and surprising to use; expose an explicit factory or an `async` initialisation method instead. Constructors also cannot be `async`, which is the language telling you the same thing.
+>
+> **Best practices.** **Fail fast**: if an object cannot be valid, refuse to build it. Prefer a constructor to an object initializer whenever invariants exist, because the constructor makes the requirement impossible to skip. Assign `readonly` fields in the constructor so the compiler enforces that they never change afterwards.
+
+
 ---
 
 # 9. 🚪 Access modifiers
@@ -1815,6 +1929,19 @@ A `private` member has **none** of those problems. You can rewrite it at 3 a.m. 
 🧪 **Try it** — Take the `Thermostat` from Chapter 6. Add a `private void Recalibrate()`. Try to
 call it from `Program.cs`. Read the error. Now change it to `public`. Notice how you just made a
 promise you may not want to keep.
+
+> ### 🧭 In practice — access modifiers
+>
+> **How to use it.** `public` for the supported API, `private` for everything else by default, `protected` for members subclasses genuinely need, `internal` for things visible within the assembly but not outside it. **Expected result:** the compiler enforces the boundary — unlike Python, this is a real wall, not a convention.
+>
+> **When to use it.** On every member you declare. The default should be `private`, and each step outward should be a decision you can justify.
+>
+> **Where to use it.** Most valuable on assembly boundaries and library code. **Scenario:** `internal` lets a class be used freely across your own project while staying invisible to consumers of the compiled library — so you can rename or delete it later without breaking anyone.
+>
+> **When _not_ to use it.** `protected` is easy to over-use: it makes a member part of your contract with every current and future subclass, which is nearly as constraining as `public` and much easier to forget. Note also that access modifiers are a **design** boundary, not a security one — reflection can reach private members, so never rely on `private` to protect secrets.
+>
+> **Best practices.** Start everything `private` and widen only when something concrete needs it; widening later is easy, narrowing later breaks callers. Keep the public surface small — it is the part you must keep working forever. Use `internal` plus `InternalsVisibleTo` for test access rather than making members public just to test them.
+
 
 ---
 
@@ -1978,6 +2105,19 @@ That is a whole chapter: [Chapter 24](#24--equality-comparison-sorting-and-copyi
 5. Now put both books in a `List<object>` alongside an `int`, a `string`, and a `DateTime`.
    Loop over the list and print `item.GetType().Name` for each.
    This proves the chapter's main claim: **everything descends from `object`.**
+
+> ### 🧭 In practice — `object`, the universal base type
+>
+> **How to use it.** Every type in .NET ultimately derives from `object`, which supplies `ToString()`, `Equals()`, `GetHashCode()`, and `GetType()`. Override `ToString()` on your own types so debugging and logging show something meaningful. **Expected result:** your class prints its contents instead of its namespace-qualified type name.
+>
+> **When to use it.** Override `ToString()` on almost every domain type — it costs one line and improves every log entry, watch window, and error message for the life of the class. Override `Equals`/`GetHashCode` when the type is a *value* ([Chapter 24](#24--equality-comparison-sorting-and-copying)).
+>
+> **Where to use it.** Logging, debugging, and any collection-based code. **Scenario:** an exception message interpolates an order object. Without `ToString()` the log reads `MyApp.Domain.Order`, which tells the person reading it nothing at all.
+>
+> **When _not_ to use it.** Do not use `object` as a parameter or variable type to make code “flexible” — you lose all compile-time checking and reintroduce the casting and boxing that generics exist to remove. If you need “any type”, that is what a generic type parameter is for.
+>
+> **Best practices.** Override `Equals` and `GetHashCode` **together, or neither** — overriding one alone silently breaks dictionaries and sets. Keep `ToString()` cheap and exception-free, because it runs in debuggers and log paths where a throw is especially unhelpful.
+
 
 ---
 
@@ -2160,6 +2300,19 @@ for (int i = 0; i < 1_000_000; i++)
    `struct PointS { public int X; public int Y; }`.
 2. For each: create one, assign it to a second variable, modify the second, print the first.
 3. Explain out loud why the results differ. If you can do that, you own this chapter.
+
+> ### 🧭 In practice — value types versus reference types
+>
+> **How to use it.** A `struct` is a **value type**: assigning it copies the data. A `class` is a **reference type**: assigning it copies the reference, so both variables point at one object. **Expected result:** you can predict whether modifying `b` changes `a` — which is the source of a large share of all surprising C# bugs.
+>
+> **When to use it.** Every time you choose between `class` and `struct`, and every time you pass an object into a method and wonder whether the caller sees the change.
+>
+> **Where to use it.** Performance-sensitive code and domain modelling alike. **Scenario:** a `Point` struct passed to a method that sets `p.X = 5` leaves the caller's point unchanged, because the method received a copy. The same code with a `class` changes the caller's object. Nothing in the call site shows which is which — only the type declaration does.
+>
+> **When _not_ to use it.** Do not reach for `struct` to “avoid allocation” without measuring. A large struct is copied on every assignment, every method call, and every collection operation, which is frequently **slower** than one heap allocation. And avoid **mutable** structs entirely — they produce bugs where a modification silently applies to a copy.
+>
+> **Best practices.** Use a `struct` only when the type is small, logically a single value, immutable, and short-lived. Otherwise use a `class` or a `record`. Be aware of **boxing**: putting a value type into an `object` or a non-generic collection allocates, and doing it in a loop is a classic hidden cost.
+
 
 ---
 
@@ -2454,7 +2607,72 @@ Write a `TemporaryFile : IDisposable` class that:
 Then use it inside a `using` block, throw an exception in the middle, and verify the file was
 still deleted.
 
+> ### 🧭 In practice — object lifecycle and `IDisposable`
+>
+> **How to use it.** Memory is reclaimed automatically by the garbage collector. **Unmanaged resources** — file handles, sockets, database connections, locks — are not, so wrap anything implementing `IDisposable` in a `using` statement or declaration. **Expected result:** `Dispose()` is called when the scope ends, including when an exception is thrown.
+>
+> **When to use it.** Whenever a type implements `IDisposable`, and whenever your own type holds something that does.
+>
+> **Where to use it.** Any code touching files, networks, or databases. **Scenario:** a job opens a connection per customer without `using`. An exception on customer 300 skips the close, and by customer 900 the connection pool is exhausted — an error that points nowhere near the real cause.
+>
+> **When _not_ to use it.** Do not write a **finalizer** (`~Type()`) unless you directly own an unmanaged handle. Finalizers run at an unpredictable time, promote the object to a later GC generation, and can be skipped at shutdown. They are a safety net, not a mechanism. Do not call `GC.Collect()` to “help” either — it almost always hurts.
+>
+> **Best practices.** Remember the layering this chapter draws: **`IDisposable` is a framework interface, not a runtime guarantee** — nothing forces anyone to call `Dispose()`, and `using` is a *language* feature that generates the call. So a type that holds a disposable must itself be disposable, and must be disposed by its owner. Implement the standard dispose pattern rather than inventing one.
 ---
+
+<div align="center">
+
+## ✅ Checkpoint — Part 1: Foundations (Chapters 3–12)
+
+</div>
+
+> [!IMPORTANT]
+> Part 1 is the vocabulary and the mechanics. If any answer below will not come, that is the chapter to re-read — everything after this builds on it.
+
+### 🗣️ Teach it back
+
+**What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
+
+- An **object**, and what makes it more than a bag of variables (Ch 3)
+- The **four pillars** (Ch 4)
+- **Field** vs **property** vs **method** (Ch 6)
+- A **constructor**, and why validation belongs there (Ch 8)
+- **Value type** vs **reference type** (Ch 11)
+- `IDisposable` and `using` (Ch 12)
+
+### 🧪 Self-check questions
+
+1. Why should a field never be `public`?
+2. You assign one object to a second variable and change the second. Does the first change? What decides the answer?
+3. When should `{ get; set; }` become `{ get; private set; }`?
+4. An object initializer runs *after* the constructor. Why does that matter for a type with rules?
+5. What does `IDisposable` actually guarantee?
+6. Name one thing `Total => Price * Qty` prevents that a stored `Total` property does not.
+
+<details>
+<summary><b>📝 Sample answers</b></summary>
+
+1. **Because it has no validation, cannot be part of an interface, and cannot later gain a rule without breaking every caller.** A property with an auto-implemented body costs nothing today and leaves the door open to add a check tomorrow *without changing a single call site* — which is the entire reason properties exist in the language.
+
+2. **It depends on whether the type is a `class` or a `struct`.** A `class` is a reference type, so both variables point at one object and the change is visible through both. A `struct` is a value type, so the assignment copied the data and the original is untouched. Nothing at the call site shows which — only the type declaration does, which is why [Chapter 11](#11--value-types-vs-reference-types) matters more than it first appears.
+
+3. **The moment the outside world may _read_ a value but only the object may _change_ it.** `Balance` is the archetype: everyone may see it, and only `Deposit` and `Withdraw` may alter it, because that is where the rules live. It is the workhorse of encapsulation.
+
+4. **Because the object exists in an invalid state in between.** The constructor finishes, then the initializer assigns properties — so nothing forces the caller to supply anything, and any invariant the constructor established can be broken immediately afterwards. For types with rules, take the values as constructor parameters instead.
+
+5. **Nothing, by itself — that is the point.** `IDisposable` is a *framework interface*, not a runtime guarantee: no mechanism forces anyone to call `Dispose()`. `using` is a *language* feature that generates the call for you, including when an exception is thrown. Keeping the language / runtime / framework layers apart is what makes this chapter's warnings make sense.
+
+6. **It prevents the stored copy from drifting out of step with its inputs.** With a stored `Total`, every place that changes `Quantity` must remember to update it; one day someone forgets and the invoice is wrong. A computed property is recalculated on every read, so it cannot be stale.
+
+</details>
+
+### 🎯 Give a simple example
+
+Describe a vending machine as an object: its data, its behaviour, its rules, and what gives it identity. Then say which of those four the `private` keyword protects.
+
+---
+
+
 <div align="center">
 
 # 🟣 PART 2 — THE FOUR PILLARS, IN DEPTH
@@ -2715,6 +2933,19 @@ Write a `ShoppingCart` class that guarantees **all** of these, from the outside:
 
 Then deliberately try to break each rule from `Program.cs`. Every attempt should either fail to
 compile or throw a clear exception.
+
+> ### 🧭 In practice — encapsulation
+>
+> **How to use it.** Make the state `private`, expose a read-only property, and provide named methods as the only routes to change it. Return collections as `IReadOnlyList<T>` or a copy rather than the backing `List<T>`. **Expected result:** invalid state cannot be reached from outside the class, by any caller, ever.
+>
+> **When to use it.** Whenever invalid data would break a rule — which is most of the time for domain types. The trigger is being able to say “this must never...”.
+>
+> **Where to use it.** The domain layer. **Scenario:** stock must never go negative. Three code paths decrement it. Encapsulating the rule in `StockItem.Remove(quantity)` protects all three, plus the fourth someone adds next year.
+>
+> **When _not_ to use it.** A pure data carrier crossing a boundary — a deserialised request, a DTO about to become JSON — has no rules to protect, and a `record` with `init` properties is the better shape. Encapsulation there is ceremony.
+>
+> **Best practices.** Exposing a collection as `IReadOnlyList<T>` is a **shallow** guard: callers cannot add or remove, but they can still mutate the objects inside it. Make the elements immutable too when that matters. And put the rule in the object rather than in the caller — validating in the UI and trusting the object is the classic failure.
+
 
 ---
 
@@ -3024,6 +3255,19 @@ Build an abstract `Vehicle` class with:
 Then implement `Motorcycle` (2 wheels), `Car` (4), and `Truck` (6), each with a different tax
 formula. Put them all in one `List<Vehicle>` and loop.
 
+> ### 🧭 In practice — abstraction
+>
+> **How to use it.** Define *what* something does without saying *how*: an `abstract` class for a family that shares code and identity, an `interface` for a capability. Mark methods `abstract` when every derived type must supply them, `virtual` when there is a sensible default they may replace. **Expected result:** calling code depends on the shape, not the implementation, so a new implementation changes zero existing lines.
+>
+> **When to use it.** When several implementations of the same idea exist or will exist — payment providers, export formats, notification channels.
+>
+> **Where to use it.** Boundaries between layers and between your code and the outside world. **Scenario:** `IPaymentMethod` with `Pay(decimal)`. `Checkout` knows nothing about cards or PayPal. Adding Apple Pay is one new class, and `Checkout` is not opened, not retested, and cannot regress.
+>
+> **When _not_ to use it.** Do not create an abstraction for a single implementation with no test substitution and no layer boundary — it is indirection with no payoff, and it freezes a design before you know what a second case would need. Do not abstract over something that will never vary.
+>
+> **Best practices.** Use the **template method** shape when several classes share a fixed sequence but differ in steps: the base class owns the order, the subclasses fill the gaps. Keep abstract types shallow, and prefer an interface when the implementations are genuinely unrelated — see [Chapter 18](#18--abstract-classes-vs-interfaces) for the decision.
+
+
 ---
 
 # 15. 🧬 Inheritance
@@ -3324,6 +3568,19 @@ something more specific — `Clone()`, `Build()`, `CreateEmpty()`, builder metho
 5. **Then**, deliberately change `override` to `new` on `SavingsAccount` and re-run.
    Observe the difference. That single experiment teaches the whole chapter.
 
+> ### 🧭 In practice — inheritance
+>
+> **How to use it.** `class Manager : Employee`. Call `: base(...)` from the derived constructor. Mark a base member `virtual` to allow replacement and `override` in the derived class to replace it; `sealed` prevents further inheritance. **Expected result:** the derived type has everything the base had, plus its own additions, and can be used wherever the base is expected.
+>
+> **When to use it.** Only when the derived type genuinely **is a** kind of the base. Say it aloud: “a `Manager` **is an** `Employee`” passes; “a `Car` **is an** `Engine`” does not.
+>
+> **Where to use it.** A single stable family of types that you own — exception hierarchies, shape types, employee categories. **Scenario:** a custom exception hierarchy lets one `catch (DomainException)` handle every business-rule failure while genuine bugs fall through to a different handler.
+>
+> **When _not_ to use it.** Do not inherit to reuse code — that is composition's job, and it is by far the most common misuse. Avoid chains more than two or three deep: they are fragile, and a change near the top silently breaks everything below. C# has no multiple class inheritance, which is a deliberate and helpful restriction.
+>
+> **Best practices.** Inheritance is the **tightest coupling C# offers**, which is why the fragile base class problem is real. Prefer composition when inheritance feels forced. Never let a subclass break a promise the base made — a subclass that throws from an inherited method violates Liskov and breaks correct code that was never changed. Use `sealed` deliberately: it documents intent and lets the runtime devirtualise calls.
+
+
 ---
 
 # 16. 🔀 Polymorphism
@@ -3618,6 +3875,19 @@ public decimal CalculateShipping(string method, decimal weight)
 ```
 
 Then add **"drone"** shipping without editing a single existing line.
+
+> ### 🧭 In practice — polymorphism
+>
+> **How to use it.** Declare a `virtual` or `abstract` member, `override` it in derived types, then write code against the base type or interface and let the runtime pick the implementation. **Expected result:** one call site, many behaviours — and adding a behaviour requires no change to the call site.
+>
+> **When to use it.** When you see a `switch` or `if` chain testing *which type* something is. Each branch is a class waiting to be extracted.
+>
+> **Where to use it.** Any family that grows: payment methods, notification channels, export formats, pricing rules. **Scenario:** `Checkout(IPaymentMethod method, decimal total)` calls `method.Pay(total)`. Card, PayPal, and a business card all work, and the method has no idea which it holds.
+>
+> **When _not_ to use it.** Do not replace a small, stable conditional with a class hierarchy — three fixed values that change once a year are clearer as a `switch`. The honest signal is that the same conditional appears in **more than one place**, or that branches are accumulating their own data.
+>
+> **Best practices.** Understand the difference between `override` and `new`: `override` genuinely replaces the behaviour for all callers, while `new` merely hides the member, so which version runs depends on the *declared* type of the variable. That is almost never what anyone wants, and the compiler warning that suggests `new` is usually telling you that you meant `override`.
+
 
 ---
 
@@ -4044,6 +4314,19 @@ Design a small notification system:
 3. A `NotificationService` that takes `IEnumerable<INotificationSender>` and sends via all of them
 4. A `FakeSender` that records messages, and a test proving all three senders were called
 
+> ### 🧭 In practice — interfaces
+>
+> **How to use it.** `interface IEmailSender { void Send(string to, string body); }`, implemented with `class SmtpSender : IEmailSender`. A class may implement many interfaces. Default interface methods exist (C# 8+) but are a compatibility tool, not a design default. **Expected result:** any class with the right shape can be substituted, with no shared base class and no inheritance relationship.
+>
+> **When to use it.** For capabilities, for dependency injection, and for anything that needs a test double. An interface is what lets a fake and the real implementation be interchangeable.
+>
+> **Where to use it.** Between layers. **Scenario:** `OrderService` depends on `IEmailSender`. Production registers the SMTP implementation; tests pass a fake that records messages in a list. The same service class, unmodified, runs in both — which is the entire point.
+>
+> **When _not_ to use it.** Do not create an interface for every class. `IFoo`/`Foo` pairs with one implementation and no test double are pure indirection: two files to read instead of one, and “go to definition” landing on a declaration. Create it when the second implementation, the test substitution, or the boundary actually arrives.
+>
+> **Best practices.** Keep interfaces **small and focused** — that is Interface Segregation, and it is the difference between an interface that is easy to implement and one whose implementers throw `NotImplementedException` for half its members. The `I` prefix is genuine C# convention here (unlike Python), so follow it. Depend on the narrowest interface that does the job.
+
+
 ---
 
 # 18. ⚖️ Abstract classes vs interfaces
@@ -4285,7 +4568,72 @@ justification for each.
 5. `PaymentMethod` with `Card`, `Cash`, `Crypto`
 6. Something that can be undone (an editor command)
 
+> ### 🧭 In practice — choosing between an abstract class and an interface
+>
+> **How to use it.** Ask what the relationship is. **Shared code, shared state, real `is-a` identity, a protected surface for subclasses** → abstract class. **A capability across unrelated types, multiple inheritance of behaviour, a test seam** → interface. A class can implement many interfaces but inherit only one base. **Expected result:** a decision you can defend in one sentence rather than a habit.
+>
+> **When to use it.** Every time you are about to introduce an abstraction — and the more useful half of this chapter is the reminder to check whether you need one at all.
+>
+> **Where to use it.** Design and code review. **Scenario:** `PaymentMethod` shares validation and logging across all providers, so it is an abstract class. `IAuditable` is implemented by payments, orders, and users — unrelated types with one capability in common — so it is an interface. Both can apply to the same class.
+>
+> **When _not_ to use it.** Do not use an abstract class purely to share two helper methods — that is composition wearing a costume, and it consumes the single inheritance slot for the life of the type. Do not use default interface methods to smuggle a base class in; they exist so a library can add a member without breaking implementers.
+>
+> **Best practices.** The reliable division is **abstract classes model identity, interfaces model capability**. Prefer interfaces at boundaries, because they impose no inheritance relationship and are trivially mockable. When both would work, the interface is usually the more flexible choice — and you can always add an abstract base class implementing it later.
 ---
+
+<div align="center">
+
+## ✅ Checkpoint — Part 2: The four pillars in depth (Chapters 13–18)
+
+</div>
+
+> [!IMPORTANT]
+> This is where most people believe they understand OOP and then design something rigid. The questions below are chosen to find that out.
+
+### 🗣️ Teach it back
+
+**What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
+
+- **Encapsulation** and the word *invariant* (Ch 13)
+- **Abstraction**, `abstract`, and `virtual` (Ch 14)
+- **Inheritance** and the `is-a` test (Ch 15)
+- **Polymorphism**, and `override` versus `new` (Ch 16)
+- **Interfaces** (Ch 17)
+- Choosing between an abstract class and an interface (Ch 18)
+
+### 🧪 Self-check questions
+
+1. What is an invariant, and why is “protect it inside the object” better than “check it everywhere”?
+2. `Car : Engine` or a `Car` holding an `IEngine`? What is the one-sentence test?
+3. What is the difference between `override` and `new`, and why is `new` almost never what you want?
+4. When does an abstract class beat an interface?
+5. You expose a collection as `IReadOnlyList<T>`. What have you *not* protected?
+6. A subclass throws `NotSupportedException` from an inherited method. Which principle does that break, and what is the symptom?
+
+<details>
+<summary><b>📝 Sample answers</b></summary>
+
+1. **An invariant is a rule that must be true of the object at all times** — a balance never below its minimum, an order never shipped twice. Keeping it inside the object means there is exactly **one** place it lives, so it cannot be skipped. Scatter the checks and you have as many chances to forget as you have call sites, and no way to prove the rule holds.
+
+2. **Composition: a car _has_ an engine.** Say “a Car **is an** Engine” out loud and it is obviously false. Inheritance is for genuine specialisation; everything else is a part, and parts are held, not inherited. The payoff is that you can swap the engine without rebuilding the car.
+
+3. **`override` genuinely replaces the behaviour for every caller; `new` merely hides the member**, so which version runs depends on the *declared type of the variable* rather than the actual object. The same object then behaves differently through a base-typed reference than through a derived-typed one, which is almost never intended. When the compiler suggests `new`, it is usually telling you that you meant `override`.
+
+4. **When you need shared implementation, shared state, a real `is-a` identity, or a protected surface for subclasses.** An interface gives none of those. The reliable division is *abstract classes model identity, interfaces model capability* — and a class can implement many interfaces but inherit only one base, so spend that slot carefully.
+
+5. **The objects inside it.** The wrapper stops `Add` and `Remove`, but callers can still mutate each element — `list[0].Quantity = -99` still compiles and runs. It is a shallow guard; if the elements need protecting, make them immutable too.
+
+6. **Liskov substitution.** The symptom is the nasty part: the failure appears in *correct code that nobody changed*, because that code was written against the base type's promise. No compiler warns you — the signature is right, the behaviour is not. The fix is to move the member out of the base into a separate contract that only the types which can honour it implement.
+
+</details>
+
+### 🎯 Give a simple example
+
+Model a coffee machine twice — once with inheritance (`EspressoMachine : CoffeeMachine`) and once with composition (a machine holding an `IBrewingStrategy`). Say in one sentence which you would ship, and why.
+
+---
+
+
 <div align="center">
 
 # 🟠 PART 3 — BUILDING REAL TYPES
@@ -4673,6 +5021,19 @@ Model a **pizza ordering system** and label each relationship:
 
 Then implement it, and make it **impossible** to create a `Topping` that isn't attached to a pizza.
 
+> ### 🧭 In practice — composition and object relationships
+>
+> **How to use it.** Instead of inheriting, take the collaborator as a constructor parameter, store it in a `private readonly` field, and delegate to it. **Expected result:** you can hand the object a different collaborator — or a fake one in a test — without touching the class.
+>
+> **When to use it.** Whenever the relationship is “has-a” rather than “is-a”, which is most relationships. Also whenever inheritance feels forced, or you are inheriting purely to reuse a method.
+>
+> **Where to use it.** Throughout the domain layer and at every layer boundary — it is the mechanism underneath dependency injection, Strategy, and testable design generally. **Scenario:** a `Car` holds an `IEngine`. Swapping to an electric engine changes one line at startup; the `Car` class is untouched. Had `Car` inherited from `PetrolEngine`, the same change would be a rewrite.
+>
+> **When _not_ to use it.** When the relationship is genuine specialisation, composition produces tedious delegation — a dozen methods that do nothing but forward the call. That forwarding is the honest cost, and it is the one thing inheritance does better.
+>
+> **Best practices.** Learn the distinctions, because they decide deletion and lifetime: **aggregation** is weak (employees outlive a closed department), **composition** is strong (order lines do not outlive a deleted order). Depend on the narrowest type that works — an interface parameter rather than a concrete class — so the collaborator stays swappable. When in doubt, composition is the safer default.
+
+
 ---
 
 # 20. 🎚️ Enums and type-safe choices
@@ -4978,6 +5339,19 @@ public class EnterpriseTier : ISubscriptionTier
 3. Any other transition throws with a clear message.
 4. Add a `[Flags] enum VehiclePermission { None, Cars, Trucks, Bicycles, Pedestrians }` and
    report which are allowed at each light.
+
+> ### 🧭 In practice — enums
+>
+> **How to use it.** `enum OrderStatus { Draft, Paid, Shipped }` replaces magic strings and integers with named, compile-checked values. Add `[Flags]` with power-of-two values when a variable holds a *combination*. **Expected result:** the compiler rejects a misspelled status, and IntelliSense lists the legal values.
+>
+> **When to use it.** Whenever a variable can hold one of a small, fixed set of values — status, priority, day of week, permission level. Also as the fix for a method with two or three `bool` parameters, where `Send(true, false)` tells a reader nothing.
+>
+> **Where to use it.** Domain models and public APIs. **Scenario:** `if (status == "shipped")` compiles happily with `"Shipped"`, `"shiped"`, or `"SHIPPED"` and fails silently at run time. `if (status == OrderStatus.Shipped)` cannot be misspelled.
+>
+> **When _not_ to use it.** Do not use an enum for a set that changes often or is configured by users — adding a value means a recompile and redeploy, so a lookup table in the database is better. Be careful persisting enums as integers: reordering the members silently changes the meaning of stored data. And an enum variable is **not** guaranteed to hold a declared value — `(OrderStatus)99` is legal C#.
+>
+> **Best practices.** Give the default member value `0` a sensible meaning (`None`, `Unknown`), because a default-constructed struct or a missing value lands there. Validate enum inputs at public boundaries with `Enum.IsDefined` or a `switch` with a default case that throws. When an enum starts acquiring behaviour per value, that is the signal to move to polymorphism instead.
+
 
 ---
 
@@ -5417,6 +5791,19 @@ Build a reusable, generic, in-memory repository:
 4. Use the **same** repository class for both `Product` and `Customer`
 5. **Bonus:** add `where T : Entity, new()` and a `CreateAndAdd()` method
 
+> ### 🧭 In practice — generics
+>
+> **How to use it.** `class Repository<T> where T : Entity`. The constraint is what lets you use `T`'s members. Use generic methods when only one method varies. **Expected result:** one implementation serving many types, with full compile-time type checking and no casting or boxing.
+>
+> **When to use it.** When the same logic applies to many types — a repository, a cache, a result wrapper, a typed event. Reach for generics when you are about to copy a class and change one type name.
+>
+> **Where to use it.** Infrastructure and shared library code more than individual domain classes. **Scenario:** one `InMemoryRepository<T>` serves `Product`, `Customer`, and `Order`. Without generics you maintain three near-identical classes, or one that takes `object` and forces every caller to cast.
+>
+> **When _not_ to use it.** Do not make a type generic when it is used with exactly one type argument — the angle brackets cost readability and buy nothing. Do not over-constrain either: a constraint you added “just in case” is a restriction on every future caller.
+>
+> **Best practices.** Unlike Python and unlike Java, .NET generics are **reified** — the type argument survives to run time, so `typeof(List<int>)` is genuinely distinct from `typeof(List<string>)` and there is no erasure and no boxing. Use `where T : notnull` and nullable annotations together so the generic participates in null-safety. Understand variance (`in`/`out`) before you need it, because the error messages are otherwise baffling.
+
+
 ---
 
 # 22. 📚 Collections and LINQ with objects
@@ -5671,6 +6058,19 @@ Given a `List<Order>` where each `Order` has a `CustomerName`, `PlacedOn`, and
 
 Do all five with LINQ. Then rewrite #1 with a plain `foreach` and compare readability.
 
+> ### 🧭 In practice — collections and LINQ
+>
+> **How to use it.** Choose the collection by the question you ask: `List<T>` for order, `Dictionary<K,V>` for lookup by key, `HashSet<T>` for uniqueness, `Queue`/`Stack` for order of processing. Query them with LINQ — `Where`, `Select`, `OrderBy`, `GroupBy`, `Any`, `All`, `Sum`, `FirstOrDefault`. **Expected result:** readable, composable queries over objects in memory.
+>
+> **When to use it.** As soon as you have more than one object. Use a `Dictionary` the moment you look items up by an ID — a dictionary lookup costs roughly the same with ten items or ten million, while scanning a list gets slower in proportion.
+>
+> **Where to use it.** Application and domain code. **Scenario:** an invoice screen needs a subtotal, the most expensive line, and lines grouped by tax band. Three LINQ expressions produce all three from one list, with no database round trip.
+>
+> **When _not_ to use it.** Be careful with **deferred execution**: a LINQ query is a *description*, not a result, and it re-runs every time you enumerate it. Iterating the same query three times hits the source three times, and if the source is a database that is three round trips. Materialise with `ToList()` when you will use it more than once — but not reflexively, because that pulls everything into memory.
+>
+> **Best practices.** Know which methods throw and which do not: `First()` throws on an empty sequence, `FirstOrDefault()` returns `null` or the default. `Single()` throws if there is more than one — which is exactly what you want when “more than one” means the data is broken. Return `IReadOnlyList<T>` or `IEnumerable<T>` from public members rather than `List<T>`, so callers cannot mutate your internals.
+
+
 ---
 
 # 23. 🔁 Iterators and `yield`
@@ -5921,6 +6321,19 @@ await foreach (Order order in StreamOrdersAsync())
    (hint: `using var reader = new StreamReader(path);`).
 3. Make a `Deck` class of 52 `Card`s that implements `IEnumerable<Card>`, and use LINQ to find
    all the hearts.
+
+> ### 🧭 In practice — iterators and `yield`
+>
+> **How to use it.** Write a method returning `IEnumerable<T>` and `yield return` each item. The compiler builds a state machine that produces items **on demand**, one at a time, resuming where it left off. **Expected result:** a sequence you can `foreach` over that never materialises the whole collection.
+>
+> **When to use it.** For large or streaming data, for infinite or generated sequences, and when the caller may stop early — a `Take(10)` over a `yield` method stops the producer after ten items.
+>
+> **Where to use it.** File and stream processing, and custom collection types. **Scenario:** reading a 2 GB log file line by line with `yield return` uses a few kilobytes of memory; returning a `List<string>` of every line uses 2 GB and may not complete at all.
+>
+> **When _not_ to use it.** Do not use `yield` when the caller needs the count, random access, or multiple passes — those force full enumeration anyway, so return a list and be honest about it. Avoid it for very small sequences where the state-machine overhead outweighs the benefit. And be careful combining `yield` with `using` or locks: the resource stays open for as long as the consumer takes.
+>
+> **Best practices.** Remember that an iterator method's body **does not run** until the sequence is enumerated — so argument validation placed inside it is not performed at the call site, which surprises callers. The standard fix is a small non-iterator wrapper method that validates and then returns the private iterator. Never return `null` from a method returning `IEnumerable<T>`; return an empty sequence.
+
 
 ---
 
@@ -6265,6 +6678,19 @@ public class Person
 3. Now delete the whole class and replace it with
    `public readonly record struct Money(decimal Amount, string Currency);`
    Verify the tests still pass. Count the lines you saved.
+
+> ### 🧭 In practice — equality, comparison, sorting, and copying
+>
+> **How to use it.** Decide whether your type has **identity** (an entity — compare IDs) or is a **value** (compare contents). For value semantics, override `Equals` and `GetHashCode` together over the same fields, or simply use a `record`, which generates both. Implement `IComparable<T>` for a natural order, or pass an `IComparer<T>` for a situational one. **Expected result:** two equal objects are found interchangeably in a `Dictionary` or `HashSet`.
+>
+> **When to use it.** For money, dates, coordinates, identifiers — anything that *is* its values. Also whenever objects go into a set or act as dictionary keys, or are compared in test assertions.
+>
+> **Where to use it.** Value objects and any collection-based code. **Scenario:** deduplicating `EmailAddress` objects in a `HashSet`. Without value equality, two objects holding the same address count as two different people and the mailing goes out twice.
+>
+> **When _not_ to use it.** Do not give value equality to a **mutable** type that will be used as a dictionary key. A `HashSet` files objects by hash; change a field the hash depends on and the object is in the wrong bucket, so `Contains` returns `false` for an object that is physically inside the set. Do not implement `IComparable` unless there is a genuine natural order — “whatever field is first” is not one.
+>
+> **Best practices.** Override `Equals` and `GetHashCode` **together, or neither** — one without the other silently breaks every hash-based collection. Prefer a `record` for value types and let the compiler generate correct implementations. Understand the difference between a **shallow** and a **deep** copy: a shallow copy shares the nested objects, which is usually not what “copy” meant to the person asking.
+
 
 ---
 
@@ -6801,6 +7227,19 @@ public class Booking
 Requirements: `CheckOut` must be after `CheckIn`, `Status` must be an enum, and it must be
 impossible to create an invalid booking.
 
+> ### 🧭 In practice — classes, structs, records, and immutability
+>
+> **How to use it.** `class` for things with identity and behaviour; `record` for data with value equality (it generates `Equals`, `GetHashCode`, `ToString`, and `with`); `struct` for small immutable values; `readonly record struct` for both. Make a copy with changes using `with { Price = 10 }`. **Expected result:** the least code that still expresses the semantics you meant.
+>
+> **When to use it.** Reach for a `record` whenever the type is *data*: DTOs, API responses, events, value objects. It removes a large amount of hand-written boilerplate that is easy to get subtly wrong.
+>
+> **Where to use it.** Boundaries and domain values. **Scenario:** an API request deserialised into a `record` gets correct value equality and a readable `ToString()` for free, so a failing test prints the actual contents instead of a type name.
+>
+> **When _not_ to use it.** Do not use a `record` for an entity with identity — value equality is wrong for something whose data changes while remaining the same thing, and it will produce surprising results in collections. Do not make a large `struct`: it is copied on every assignment and every call, which is often slower than one heap allocation.
+>
+> **Best practices.** Prefer immutability for anything that represents a fact rather than a thing that changes — it is easier to reason about, safe to share between threads, and cannot be corrupted at a distance. Note that `with` performs a **shallow** copy, so a record holding a mutable `List<T>` still shares that list with its copy. For serialization, be aware that `System.Text.Json` needs a parameterless constructor or matching constructor parameters.
+
+
 ---
 
 # 26. 🔍 Casting, conversion, and pattern matching
@@ -7144,6 +7583,19 @@ Write a `TransactionDescriber` that takes an `object` and returns a description,
 - `string` that parses as a decimal → recurse into the above
 - `null` → "No transaction"
 - anything else → "Unknown"
+
+> ### 🧭 In practice — casting, conversion, and pattern matching
+>
+> **How to use it.** Use `is` with a pattern to test and bind in one step (`if (shape is Circle c)`), `as` for a cast that yields `null` rather than throwing, and a direct cast only when a failure genuinely is a bug. Use `switch` expressions with patterns for multi-way dispatch on shape. **Expected result:** type tests that cannot throw `InvalidCastException`, and exhaustiveness the compiler helps you check.
+>
+> **When to use it.** When handling a closed set of shapes — parsed results, message types, a sealed hierarchy — and when interoperating with APIs that hand you `object`.
+>
+> **Where to use it.** Parsers, message handlers, and the edges of a system. **Scenario:** a `switch` expression over a sealed record hierarchy handles each message type, and adding a new type produces a compiler warning at every switch that no longer covers every case — which is the whole reason to seal the hierarchy.
+>
+> **When _not_ to use it.** Frequent type-testing in your *own* domain code is usually a design smell: if you are asking “what type is this?”, a `virtual` method on the type itself is normally the better answer ([Chapter 16](#16--polymorphism)). Pattern matching is for data you *receive*, polymorphism is for behaviour you *own*.
+>
+> **Best practices.** Prefer `is` patterns to `as`-plus-null-check — they are shorter and the binding is scoped correctly. Always include a discard arm (`_ =>`) that throws in a `switch` expression over external input, so an unexpected value fails loudly rather than silently doing nothing. Remember a direct cast on a boxed value type throws on the *exact* type mismatch, even between numeric types.
+
 
 ---
 
@@ -7542,6 +7994,19 @@ public class UserProfile
 Requirements: `Name` required; `Bio` and `Address` optional; `Tags` never null (empty instead);
 `GetSummary()` must never throw, whatever is missing.
 
+> ### 🧭 In practice — nullable reference types
+>
+> **How to use it.** Enable `<Nullable>enable</Nullable>`, then annotate deliberately: `string` means “never null”, `string?` means “may be null”. Check before use and the compiler narrows the type for you. **Expected result:** warnings at compile time on the paths where a null could flow — before the program runs.
+>
+> **When to use it.** On every new project, from the first file. It is the single highest-value compiler feature in modern C# for preventing production crashes.
+>
+> **Where to use it.** Everywhere, and especially at boundaries: deserialised JSON, database reads, configuration, and any API that can legitimately return nothing. **Scenario:** a repository returns `Customer?`. The annotation forces every caller to decide what “not found” means — a 404, a default, an error — instead of discovering it as a `NullReferenceException` in a log.
+>
+> **When _not_ to use it.** This is **the single most misunderstood feature in modern C#**, so be precise about what it is not: `string?` and `string` compile to exactly the same thing. It is a *language* feature with **no runtime effect** — the compiler warns, the CLR does not check. So it cannot validate untrusted input, and data arriving from deserialization, reflection, or a non-annotated library can be null in a variable the compiler believes is not.
+>
+> **Best practices.** Treat the warnings as errors rather than suppressing them. Use the null-forgiving operator `!` sparingly and only where you can explain *why* you know better than the compiler — every `!` is an unchecked assertion. At public API boundaries, keep validating at run time with `ArgumentNullException.ThrowIfNull`, because annotations protect your callers only if they also compile with the feature on.
+
+
 ---
 
 # 28. 💥 Exceptions and error handling
@@ -7892,6 +8357,19 @@ Build an `OrderValidator` that:
    doesn't match the sum of the items
 4. Then **rewrite it** to return `Result<Order>` instead
 5. Write a short paragraph on which version you'd ship, and why
+
+> ### 🧭 In practice — exceptions
+>
+> **How to use it.** Throw when a method cannot deliver what its name promises. Catch only what you can actually handle. Re-throw with a bare `throw;` — never `throw ex;`, which resets the stack trace. Use `when` filters to catch selectively. **Expected result:** failures that carry enough information to diagnose, and a stack trace that points at the original cause.
+>
+> **When to use it.** For exceptional conditions — a violated invariant, a missing required resource, a failed external call. Create a custom exception type when callers need to react *differently* to that failure.
+>
+> **Where to use it.** Service and domain boundaries. **Scenario:** a shared `DomainException` base lets one `catch (DomainException)` turn any business-rule violation into a clean `400 Bad Request`, while a `NullReferenceException` falls through to the generic handler and is logged as a `500`. That separation — the user's fault versus ours — is the entire reason for the base type.
+>
+> **When _not_ to use it.** Do not use exceptions for normal control flow: an expected lookup miss should return `null` or a `TryGet` pattern, not throw. They are genuinely expensive when thrown, and more importantly they make normal paths unreadable. Never swallow an exception with an empty `catch` — the caller then believes the work succeeded, which is worse than failing.
+>
+> **Best practices.** Include actionable data as **properties** on a custom exception, not only in the message — `e.Shortfall` lets the caller act without parsing text. Use `finally` or `using` for cleanup rather than duplicating it in every catch. Do not catch `Exception` broadly except at a top-level handler that logs. And never put secrets or personal data in an exception message; those travel into logs with weaker access control than your database.
+
 
 ---
 
@@ -8245,6 +8723,19 @@ but the fact that a whole category of horrible bugs simply cannot happen.
 3. Count how many **duplicate** IDs you got. (There will be some.)
 4. Fix it with `Interlocked.Increment` and prove the duplicates are gone.
 5. Then fix the list too — you will find it was also unsafe.
+
+> ### 🧭 In practice — static members, constants, and thread safety
+>
+> **How to use it.** `static` members belong to the type, not to an instance. `const` is compile-time and baked into callers; `static readonly` is set once at run time. For shared mutable state, protect it with `lock`, or use a concurrent collection. **Expected result:** shared data that is genuinely shared, and shared *mutable* data that is protected.
+>
+> **When to use it.** `static` for genuinely type-level things — a factory method, a pure helper, a cached lookup. `static readonly` for values that cannot be compile-time constants.
+>
+> **Where to use it.** Utilities and caches. **Scenario:** a `static readonly HttpClient` is the documented correct usage, because creating one per request exhausts sockets. It is also shared across threads, which is precisely why it must be used in a thread-safe way.
+>
+> **When _not_ to use it.** Avoid **static mutable state**. It is global state by another name: it makes tests interfere with each other, makes behaviour depend on execution order, and is a race condition waiting to happen. Also avoid `const` in a published library for anything that might change — the value is compiled into the *caller*, so changing it has no effect until every consumer recompiles. Use `static readonly` there.
+>
+> **Best practices.** Be honest about thread safety: a type is not thread-safe because nothing has gone wrong yet. If shared state can be written by more than one thread, it needs a `lock`, an `Interlocked` operation, or a concurrent collection — and the choice should be documented on the type. Keep locks short, never call out to unknown code while holding one, and never claim thread safety you have not reasoned about.
+
 
 ---
 
@@ -8620,6 +9111,19 @@ Build a `StockMonitor`:
 3. `ThresholdCrossed` fires only when the price crosses a configured limit
 4. Make the subscribers `IDisposable` and prove that after `Dispose()` they stop receiving events
 
+> ### 🧭 In practice — delegates, lambdas, and events
+>
+> **How to use it.** A **delegate** is a type-safe reference to a method; `Func<T, TResult>` and `Action<T>` cover nearly every case. A **lambda** (`x => x * 2`) is an inline method. An **event** is a delegate the outside world may only subscribe to and unsubscribe from. **Expected result:** behaviour passed as a parameter, and a publisher that does not know who is listening.
+>
+> **When to use it.** Callbacks, strategies expressed as functions, LINQ predicates, and “when X happens, run this” notification.
+>
+> **Where to use it.** UI code, plugin points, and the seam between a domain action and its side effects. **Scenario:** an `OrderPlaced` event lets email, stock, and analytics each subscribe. Adding a loyalty-points reaction is one new subscriber and zero changes to the code that places the order.
+>
+> **When _not_ to use it.** Do not make everything event-driven. Events trade an explicit call for an invisible one: the flow stops being readable from the source, and “who handles this?” becomes a search. When exactly one thing reacts and always will, a direct method call is clearer.
+>
+> **Best practices.** **Events are a real memory-leak source in .NET**: the publisher holds a reference to every subscriber, so a subscriber that never unsubscribes is never collected — the classic cause of a slowly growing long-running process. Always unsubscribe, ideally in `Dispose`. Beware closures capturing a loop variable or a large object graph, and decide explicitly what happens when one handler throws, because by default it stops the rest.
+
+
 ---
 
 # 31. 🔧 Extension methods
@@ -8786,6 +9290,19 @@ Write a `ValidationExtensions` static class with:
 - `bool IsBetween<T>(this T value, T min, T max) where T : IComparable<T>`
 - `IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> source, int size)`
   (then discover that .NET already has `Chunk` — and note how it differs from yours)
+
+> ### 🧭 In practice — extension methods
+>
+> **How to use it.** A `public static` method in a `public static` class whose first parameter is `this SomeType value`. It then appears as an instance method on that type. **Expected result:** `"hello".ToTitleCase()` works, without modifying `string` and without inheriting from it.
+>
+> **When to use it.** To add convenience behaviour to a type you do not own — a BCL type, a third-party class, an interface you want to give helper methods to. LINQ itself is built entirely from extension methods on `IEnumerable<T>`.
+>
+> **Where to use it.** Utility layers and fluent APIs. **Scenario:** `IEnumerable<Order>.TotalRevenue()` reads naturally at every call site and lives in one place, without a base class or a wrapper.
+>
+> **When _not_ to use it.** Do not use extension methods to fake membership of a type you *do* own — add the method to the class. Do not use them for anything with real behaviour or dependencies; they are static, so they are harder to substitute in tests. And avoid putting them in a namespace people import broadly, because they appear on IntelliSense for every matching type and can surprise readers.
+>
+> **Best practices.** Remember they are **compile-time sugar**: resolution is by the *declared* type of the variable, and an instance method always wins over an extension method with the same signature. That means adding an instance method to a class can silently change which code runs at existing call sites. Keep them small, pure, and discoverable by putting them in an obvious namespace.
+
 
 ---
 
@@ -9288,6 +9805,19 @@ Build a `Matrix` class with:
 - A **local function** inside `ToString()` that formats one row
 - `nameof` in every exception message
 
+> ### 🧭 In practice — indexers, operators, and tuples
+>
+> **How to use it.** An **indexer** (`public T this[int i]`) makes `obj[key]` work. **Operator overloading** (`public static Money operator +(Money a, Money b)`) gives your type natural arithmetic. **Tuples** (`(string Name, int Count)`) return several values without a class. **Expected result:** types that read like built-ins where that is genuinely appropriate.
+>
+> **When to use it.** Indexers on collection-like types; operators on value types where the arithmetic is obvious (money, vectors, dates); tuples for a private, local multi-value return.
+>
+> **Where to use it.** Value objects and internal helpers. **Scenario:** `Money + Money` that refuses to add different currencies expresses a business rule in the operator itself, so a mismatched addition cannot silently produce a wrong total.
+>
+> **When _not_ to use it.** Do not overload an operator to mean something surprising — `+` that sends an email or `-` meaning “remove from list” makes code shorter and comprehension much worse. Do not use tuples in a **public API**: `(string, int)` tells a caller nothing, and the names are not enforced across assembly boundaries. Define a `record` instead.
+>
+> **Best practices.** If you overload `==`, also override `Equals` and `GetHashCode`, or the two comparison routes disagree — a genuinely confusing bug. Keep operators pure and side-effect free, because readers assume arithmetic does not do work. Tuples are excellent inside a method and poor across a boundary; the rule of thumb is that anything another team consumes deserves a named type.
+
+
 ---
 
 # 33. ⏳ Async, await, and OOP
@@ -9459,6 +9989,8 @@ Async doesn't change OOP — it changes method signatures.
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
 ```csharp
+using System.Net.Http.Json;   // needed for PostAsJsonAsync - NOT in ImplicitUsings
+
 // 🎭 ABSTRACTION: the contract is async
 public interface INotificationSender
 {
@@ -9581,6 +10113,19 @@ Build an async `WeatherService`:
 3. A `WeatherAggregator` that queries **three** cities **in parallel** with `Task.WhenAll`
 4. Correct handling of cancellation and per-provider failures
 5. A unit test using the fake — with no network access
+
+> ### 🧭 In practice — async and await
+>
+> **How to use it.** Mark a method `async` and `await` the operations it calls; return `Task` or `Task<T>`. Async is about **not blocking a thread while waiting for I/O** — a network call, a disk read, a database query. **Expected result:** the thread is released while waiting, so a server handles far more concurrent requests with the same resources.
+>
+> **When to use it.** For I/O-bound work: HTTP, files, databases, message queues. If a method calls something that goes off the machine, it should almost certainly be async.
+>
+> **Where to use it.** Web applications and any UI. **Scenario:** an API endpoint awaiting a database query releases its thread while the database works. With synchronous calls, a few hundred slow queries exhaust the thread pool and the whole service stops responding — including to requests that would have been fast.
+>
+> **When _not_ to use it.** Async is **not** a way to make CPU-bound work faster — wrapping a tight computation in `Task.Run` just moves it to another thread and adds overhead. Never use `.Result` or `.Wait()` on a task in application code: it blocks the thread you were trying to free and can deadlock outright in contexts with a synchronization context. And avoid `async void` except for event handlers, because exceptions in it cannot be caught by the caller and will crash the process.
+>
+> **Best practices.** **Async is contagious, and that is correct** — let it flow all the way to the entry point rather than blocking somewhere in the middle. Accept a `CancellationToken` in any long-running async method and honour it. Use `ConfigureAwait(false)` in library code. And remember an `async` method returning `Task` that throws *before* the first `await` still returns a faulted task rather than throwing synchronously — which surprises validation code.
+
 
 ---
 
@@ -9818,7 +10363,73 @@ Build a tiny validation framework:
 4. Then write the **same** validation by hand, as ordinary code, and compare: which is clearer?
    Which is faster? When would you use each?
 
+> ### 🧭 In practice — attributes and reflection
+>
+> **How to use it.** An **attribute** attaches declarative metadata to a type or member (`[Obsolete]`, `[JsonPropertyName]`, your own). **Reflection** reads that metadata and inspects types at run time. **Expected result:** frameworks that can discover and drive your code without you wiring anything up by hand.
+>
+> **When to use it.** Attributes constantly, as a consumer — serialization, validation, testing, dependency injection all read them. Reflection rarely, and mostly when you are the one writing the framework.
+>
+> **Where to use it.** Framework and infrastructure code. **Scenario:** a test runner finds every method marked `[Fact]`; a serializer reads `[JsonPropertyName]` to map a C# property to a JSON field. Both work on code that knows nothing about them.
+>
+> **When _not_ to use it.** Avoid reflection in ordinary application code and especially in hot paths: it is slow, it bypasses compile-time checking, and it breaks silently when someone renames a member because the compiler cannot see the dependency. It also defeats trimming and ahead-of-time compilation, which matters for container and mobile deployments.
+>
+> **Best practices.** Prefer source generators, compiled expressions, or plain interfaces to run-time reflection where you have the choice — you keep the flexibility and lose the cost. Cache reflection results (`MethodInfo`, `PropertyInfo`) rather than re-resolving them per call. And remember reflection can reach `private` members, which is the clearest proof that access modifiers are a **design** boundary and not a security one.
 ---
+
+<div align="center">
+
+## ✅ Checkpoint — Part 3: Building real types (Chapters 19–34)
+
+</div>
+
+> [!IMPORTANT]
+> Part 3 is the longest stretch of the guide, and much of it turns on distinctions the compiler enforces but the runtime does not — or the other way round. Most questions below sit on that line.
+
+### 🗣️ Teach it back
+
+**What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
+
+- **Composition** and the aggregation/composition distinction (Ch 19)
+- **Generics** and constraints (Ch 21)
+- **Deferred execution** in LINQ (Ch 22)
+- `yield` and lazy sequences (Ch 23)
+- `Equals`/`GetHashCode`, and `record` (Ch 24–25)
+- **Nullable reference types** (Ch 27)
+- `async`/`await` (Ch 33)
+
+### 🧪 Self-check questions
+
+1. What does `string?` actually do at run time?
+2. You enumerate the same LINQ query three times against a database. What happens?
+3. You override `Equals` on a mutable class and put instances in a `HashSet`. What goes wrong?
+4. Why does argument validation inside a `yield return` method not run when the method is called?
+5. Why is `.Result` on a `Task` dangerous?
+6. When is a `struct` the wrong choice despite “avoiding an allocation”?
+
+<details>
+<summary><b>📝 Sample answers</b></summary>
+
+1. **Nothing.** `string?` and `string` compile to exactly the same IL; the annotation is a *language* feature that drives compiler warnings, and the CLR performs no check. That is why it cannot validate untrusted input, and why a value arriving from deserialization or a non-annotated library can be null in a variable the compiler believes is not. It is the most misunderstood feature in modern C#.
+
+2. **The query runs three times — three round trips.** A LINQ query is a *description*, not a result. Materialise it with `ToList()` when you will use it more than once. Do not do that reflexively, though, because it also pulls the whole result into memory.
+
+3. **The object gets lost inside its own set.** A hash-based collection files the object by its hash. Change a field the hash depends on and it is now in the wrong bucket, so `Contains` returns `false` for an object that is physically in the collection. This is why value equality belongs on immutable types — and why `record` plus `init` is such a good default.
+
+4. **Because an iterator method's body does not execute until the sequence is enumerated.** The call returns a state machine immediately; the first line of your code runs on the first `MoveNext`. So the caller gets the exception at the `foreach`, far from the call that was actually wrong. The standard fix is a small non-iterator wrapper that validates and then returns the private iterator.
+
+5. **It blocks the thread you were trying to free, and in some contexts deadlocks outright.** The whole purpose of `await` is to release the thread while waiting for I/O; `.Result` holds it and waits. In a context with a synchronization context, the continuation needs that same thread to finish — and it is blocked waiting for the continuation. Let async flow to the entry point instead.
+
+6. **When it is large.** A struct is copied on every assignment, every method call, and every collection operation, so a big one costs far more in copying than a single heap allocation would have cost. Mutable structs are worse still, because a modification can silently apply to a copy. Use a struct only when the type is small, immutable, logically one value, and short-lived.
+
+</details>
+
+### 🎯 Give a simple example
+
+Describe a `Money` type you would ship: which of `class`, `struct`, or `record`, whether it is immutable, how equality works, and what happens when someone adds two different currencies.
+
+---
+
+
 <div align="center">
 
 # 🔴 PART 4 — PROFESSIONAL DESIGN
@@ -10002,7 +10613,8 @@ graph RL
 <!-- Directory.Build.props at the solution root — applies to EVERY project -->
 <Project>
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <!-- Match this to your installed SDK. This guide was validated on net10.0. -->
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
@@ -10024,6 +10636,19 @@ Letting your test project see `internal` members:
 Create the full five-project solution above from scratch with the CLI.
 Then **deliberately try** to add a reference from `MyApp.Domain` to `MyApp.Infrastructure`.
 Read the error. That error is your architecture defending itself.
+
+> ### 🧭 In practice — namespaces, projects, and solutions
+>
+> **How to use it.** One class per file, named after the class. Group files into folders that match the namespace. Split into separate **projects** only when you need a real boundary — a reusable library, a separately deployed app, or a dependency rule you want the compiler to enforce. Share settings with `Directory.Build.props`. **Expected result:** a solution whose structure tells a newcomer where things live.
+>
+> **When to use it.** Project separation when you want the **compiler** to enforce a layering rule — if `Domain` does not reference `Infrastructure`, nobody can accidentally call a database from a domain class.
+>
+> **Where to use it.** Any application beyond a single console file. **Scenario:** `Shop.Domain`, `Shop.Application`, `Shop.Infrastructure`, `Shop.Api`. The domain project references nothing, so a developer physically cannot add `using Microsoft.EntityFrameworkCore` to an entity — the dependency rule stops being a convention and becomes a build error.
+>
+> **When _not_ to use it.** Do not split into many small projects for tidiness. Every project adds build time, a `.csproj` to maintain, and a reference graph to reason about; folders inside one project give you the same organisation for free. Start with one project and split when a rule needs enforcing.
+>
+> **Best practices.** Let dependencies point **inward**: infrastructure may reference the domain, never the reverse. Keep namespaces matching folders so navigation is predictable. Use `Directory.Build.props` for settings every project shares (`Nullable`, `LangVersion`, analyzers) so they cannot drift apart.
+
 
 ---
 
@@ -10248,6 +10873,19 @@ public class DataManager
 Then answer:
 - Which name was hardest to fix, and what does that tell you about the class?
 - Did any name turn out to describe **two** things? (That is a [Single Responsibility](#37--solid-principles) problem hiding inside a naming problem.)
+
+> ### 🧭 In practice — naming and coding conventions
+>
+> **How to use it.** `PascalCase` for types, methods, properties, and constants; `camelCase` for locals and parameters; `_camelCase` for private fields; `I` prefix for interfaces. Name methods with verbs, booleans with `Is`/`Has`/`Can`. Enforce it with an `.editorconfig` checked into the repository. **Expected result:** code that looks as if one person wrote it, whoever actually did.
+>
+> **When to use it.** From the first file. Conventions are cheap to adopt and expensive to retrofit, because reformatting a large codebase destroys `git blame` and produces reviews nobody can read.
+>
+> **Where to use it.** Every team codebase. **Scenario:** an `.editorconfig` plus `dotnet format` in CI means style stops being a review topic entirely — reviewers discuss whether the code is *correct*, which is the only thing a human is better at than a tool.
+>
+> **When _not_ to use it.** Do not invent house conventions that fight the .NET ecosystem. Hungarian notation, `m_` prefixes, and lowercase method names make your code look foreign to every C# developer who joins, and to every code sample they will search for. The value of a convention is almost entirely that it is *shared*.
+>
+> **Best practices.** Name things after **what they mean in the domain**, not after their implementation: `OverdueInvoices`, not `FilteredList2`. Avoid abbreviations that are not universal. Let the tooling enforce formatting so humans review behaviour. And when you join an existing codebase, follow its conventions even where you disagree — consistency beats correctness in style.
+
 
 ---
 
@@ -10759,6 +11397,19 @@ public class ReportManager
 }
 ```
 
+> ### 🧭 In practice — SOLID
+>
+> **How to use it.** Use the five as **review questions** on code you already have. *Does this class have one reason to change? Can I add a case without editing this file? Does every subclass honour what the base promised? Is any implementer forced to write a member it cannot support? Does my business logic name a concrete database class?* **Expected result:** each “no” points at a specific refactoring rather than a vague unease.
+>
+> **When to use it.** In code review, and whenever a change turned out to be harder than it should have been. SOLID is diagnostic: its value is explaining *why* something was painful so the next change is not.
+>
+> **Where to use it.** Long-lived application and domain code. **Scenario:** adding a third payment provider requires edits in four files. Open/Closed names the cause — a `switch` on provider type in each of them — and points at the fix.
+>
+> **When _not_ to use it.** Do not apply all five to a prototype, a script, or code you will delete next month; the cost is real and the payoff is measured in years. Interface Segregation and Dependency Inversion in particular can produce a swarm of one-method interfaces that make a small program harder to read than the problem it solves.
+>
+> **Best practices.** Treat them as **forces to balance**, not boxes to tick. Single Responsibility taken literally produces classes so small that following one request means opening nine files. The honest test for all five is the same question: **when the next change arrives, how many files must I open, and how many working ones do I risk breaking?**
+
+
 ---
 
 # 38. 🧭 Other principles every professional uses
@@ -11004,6 +11655,19 @@ public void Process(Order order)
 
 **Answers to check yourself against:**
 A = Tell, Don't Ask · B = Law of Demeter · C = DRY · D = YAGNI + KISS · E = Fail Fast
+
+> ### 🧭 In practice — the other principles
+>
+> **How to use it.** **DRY** — do not duplicate *knowledge*. **KISS** — prefer the simplest thing that works. **YAGNI** — do not build for a requirement you do not have. **Composition over inheritance.** **Tell, don't ask** — tell an object to do something rather than pulling its data out and deciding for it. **Expected result:** designs that are smaller than your first instinct.
+>
+> **When to use it.** Continuously, and especially as a counterweight to SOLID. Most over-engineering happens when someone applies a design principle without applying YAGNI to it first.
+>
+> **Where to use it.** Everyday coding decisions. **Scenario:** you are about to add an `IStrategy` interface for a rule that has exactly one implementation and no test double. YAGNI says write the method; add the interface when the second case arrives — which is cheap, because the refactoring tooling does it for you.
+>
+> **When _not_ to use it.** DRY is the most over-applied principle in the list. Two pieces of code that *look* the same but change for different reasons are not duplication, and merging them couples two things that should move independently. Duplication is cheaper than the wrong abstraction — wait until you see the pattern three times.
+>
+> **Best practices.** Apply **Tell, don't ask** to find misplaced logic: a long chain of `order.Customer.Address.Country` (a Law of Demeter violation) usually means the decision belongs on `Order`. Prefer deleting code to adding it. And be suspicious of any principle applied without a stated cost — every one of these has a situation where following it makes the design worse.
+
 
 ---
 
@@ -11360,6 +12024,19 @@ Build a console app with a DI container:
 3. `IMessageLog` → `ConsoleLog` (scoped) which records the time from `IClock`
 4. A `GreetingApp` that takes all three via constructor injection
 5. Write one test that uses `FixedClock` and asserts on the exact timestamp
+
+> ### 🧭 In practice — dependency injection
+>
+> **How to use it.** Accept dependencies as constructor parameters typed with interfaces, store them in `private readonly` fields, and register the concrete types once at startup with `services.AddScoped<IEmailSender, SmtpSender>()`. The container then builds the graph. **Expected result:** the class can be constructed in a test with a fake in one line, and no test sends a real email or charges a real card.
+>
+> **When to use it.** Whenever a class needs something slow, external, or non-deterministic — a database, an HTTP client, a clock, a random source. The symptom is a test you cannot write without a network connection.
+>
+> **Where to use it.** The whole application, wired at the composition root. **Scenario:** `OrderService` depends on `IPaymentGateway`. Production registers Stripe; the test passes a fake that records the amount. The same class, unmodified, runs in both.
+>
+> **When _not_ to use it.** Do not inject things that never vary and have no external cost — a tax rate or a string format does not need an interface. Do not use **service location** (`provider.GetService<T>()` inside a class): it hides dependencies, so the constructor no longer tells you what the class needs, and a missing registration fails at run time instead of at startup. Note also that a **container is optional** — plain constructor injection with one wiring function works fine in a small app.
+>
+> **Best practices.** Get **lifetimes** right, because this is where DI bugs actually come from: a singleton that captures a scoped dependency (a `DbContext`, say) keeps it alive forever, across requests, and produces corrupted or stale state. That is the *captive dependency* problem. Register at the right scope, validate scopes in development, and keep the composition root the only place that mentions concrete infrastructure types.
+
 
 ---
 
@@ -12300,6 +12977,19 @@ of them.
 Then answer the hardest question: **for which of these ten would you NOT use a pattern**,
 and just write the simple code instead? Justify your answer.
 
+> ### 🧭 In practice — design patterns
+>
+> **How to use it.** Learn the **problem** each pattern solves, then use the simplest C# feature that solves it. Strategy is often a `Func<>` or an interface parameter; Factory is often a dictionary or a DI registration; Observer is `event`; Decorator is a class implementing the same interface and wrapping another. **Expected result:** less code than the textbook version, doing the same job.
+>
+> **When to use it.** When you recognise the problem, not the name. Strategy when behaviour must be swappable; Repository when business code should not know where data lives; Adapter when two interfaces do not match; Decorator when you want to add behaviour around an object without changing it.
+>
+> **Where to use it.** Seams — between your code and a library (Adapter), between domain and storage (Repository), between a use case and its varying rules (Strategy). **Scenario:** a `LoggingPaymentGateway` implementing `IPaymentGateway` and wrapping the real one adds logging to every call without touching the real implementation or any caller.
+>
+> **When _not_ to use it.** Do not apply patterns because a list calls them good practice. Several classic patterns exist to work around limitations C# does not have: delegates make Strategy and Command collapse to a function, `event` gives you Observer, and DI containers replace most Factory and Singleton code. A pattern applied to a problem you do not have is pure cost.
+>
+> **Best practices.** Be honest about **Singleton**: it is global state, it makes tests interfere, and a DI-registered singleton instance gives you the sharing without the static coupling. Do not confuse the **Decorator pattern** with the C# attribute syntax. Use a pattern's name when it helps a reader recognise the shape — and the plain solution when the name would only impress.
+
+
 ---
 
 # 41. 🏛️ Domain modeling and architecture
@@ -12784,6 +13474,19 @@ Model a **hotel booking** domain:
 Write tests for the domain **with no database and no mocking framework**. If that is easy,
 your model is right.
 
+> ### 🧭 In practice — domain modelling and architecture
+>
+> **How to use it.** Separate **entities** (identity that survives change — `Order`, `Customer`) from **value objects** (defined entirely by their values — `Money`, `EmailAddress`; make these `record`s). One entity guards a cluster as an **aggregate**; logic belonging to no single object is a **domain service**; orchestration is an **application service**. **Expected result:** business rules live in one layer that references nothing technical.
+>
+> **When to use it.** When a system grows past a few screens and the same business check starts appearing in a controller, a background job, and an import script.
+>
+> **Where to use it.** The core of anything with real rules — finance, logistics, booking, healthcare. **Scenario:** `Order.AddLine()` is the only way to add a line, so “you cannot change a shipped order” holds for every entry point automatically, including the one added next year.
+>
+> **When _not_ to use it.** For a CRUD screen over a single table, this layering is overhead with no return. Most applications contain both kinds of feature: apply the structure where the rules are genuinely complex and keep the simple parts simple. Do not adopt full DDD tactical patterns for a form that saves a row.
+>
+> **Best practices.** Keep the dependency direction pointing **inward** — that single rule is what lets you test business logic without a database and swap infrastructure without touching rules. Enforce it with project references, not discipline. Guard aggregates through their root: if outside code can reach the parts directly, the boundary is decorative.
+
+
 ---
 
 # 42. 🧪 Unit testing OOP code
@@ -13125,6 +13828,19 @@ For the `Order` aggregate from [Chapter 41](#41--domain-modeling-and-architectur
 
 Then **change the internal implementation** of `Order` (use a `Dictionary` instead of a `List`).
 If your tests still pass unchanged, you tested behaviour. If they broke, you tested implementation.
+
+> ### 🧭 In practice — unit testing
+>
+> **How to use it.** Create an xUnit project, write `[Fact]` methods named `Method_Scenario_ExpectedResult`, and follow **Arrange, Act, Assert**. Use `Assert.Throws<T>` for expected failures and a hand-written fake for external dependencies. Run `dotnet test`. **Expected result:** a failing test names the behaviour that broke, so you know what changed without reading a stack trace.
+>
+> **When to use it.** Before every refactoring — tests are what make changing code safe rather than brave — and around every business rule you cannot afford to get wrong.
+>
+> **Where to use it.** The domain layer first, where tests are fast and need nothing external. **Scenario:** `Withdraw_WhenAmountExceedsBalance_Throws` constructs an account, attempts an over-withdrawal, and asserts. It runs in milliseconds and will still be protecting that rule in five years.
+>
+> **When _not_ to use it.** Do not test private methods or assert on implementation details — both produce brittle tests that break when you improve a design without changing behaviour. Do not mock types you own; mocking your own domain tests your mocks. And do not chase a coverage percentage: a test that asserts nothing still counts as coverage.
+>
+> **Best practices.** Test **behaviour**, not implementation: assert what happened, not which internal method was called. Prefer a hand-written fake to a mock where you can — `Verify(x => x.Send(...))` couples the test to today's design, while a fake that records messages lets you assert the outcome. This is where [dependency injection](#39--dependency-injection) pays for itself.
+
 
 ---
 
@@ -13469,6 +14185,19 @@ public class ReportService
 }
 ```
 
+> ### 🧭 In practice — refactoring
+>
+> **How to use it.** Work in a tight loop: ensure tests cover current behaviour, make **one** small change, run the tests, rename anything now misleading, repeat. Let the IDE do the mechanical parts — rename, extract method, extract interface — because it cannot typo. **Expected result:** behaviour is identical and the structure is better. If behaviour changed, it was not a refactoring.
+>
+> **When to use it.** When the design resists a change you need to make. That resistance is a better signal than any code-smell checklist.
+>
+> **Where to use it.** Immediately before adding a feature to code that makes the feature awkward. **Scenario:** you need a fourth shipping method and find the same `switch` in three files. Extract the shipping classes first, confirm the tests pass, then add the new method as a new class — touching none of the working logic.
+>
+> **When _not_ to use it.** **Never refactor without tests.** Without them you are rewriting and hoping, and the bug you introduce will be found by a user. Do not mix a refactoring with a behaviour change in one commit — when something breaks you will not know which half did it. And do not refactor code you are about to delete.
+>
+> **Best practices.** Keep the build green between steps; a large refactoring is many small ones, not one leap. Commit after each. Remember a refactoring is not automatically an improvement — replacing six obvious lines with four classes is a net loss unless the cases are genuinely growing.
+
+
 ---
 
 # 44. 🚨 Common OOP mistakes
@@ -13788,7 +14517,72 @@ behaviour, then refactor it.
 
 That exercise teaches more than any tutorial.
 
+> ### 🧭 In practice — recognising common mistakes
+>
+> **How to use it.** Read this chapter as a **symptom list** and check your current project: a class that does everything, classes with data but no behaviour, deep inheritance, public mutable collections, `string` and `int` where a meaningful type belongs, classes constructing their own dependencies, and `catch (Exception) { }`. **Expected result:** a short list of specific things to fix, each with a named remedy elsewhere in the guide.
+>
+> **When to use it.** Periodically, and especially before a codebase grows past the point where fixing it is cheap. Most of these are far easier to correct in the week they appear than in the year after.
+>
+> **Where to use it.** Inherited code more than new code — these are patterns you receive rather than choose. **Scenario:** a `ReportService` at 900 lines with fourteen dependencies. Naming the God-class symptom turns “this file is horrible” into a plan: split by responsibility, one at a time, with tests at each step.
+>
+> **When _not_ to use it.** Do not apply the list mechanically. A 60-line class with three responsibilities in a small tool is fine. An anemic data class is exactly right for a DTO crossing a boundary. These are mistakes **in context** — when the rules matter and the code is long-lived.
+>
+> **Best practices.** The most damaging one on the list is the **empty catch block**: it converts a loud failure into silent wrong behaviour, and the resulting bug report arrives months later with no stack trace. If you cannot handle an exception, let it propagate. Second most damaging is static mutable state, because it makes tests interfere and failures depend on ordering.
 ---
+
+<div align="center">
+
+## ✅ Checkpoint — Part 4: Professional design (Chapters 35–44)
+
+</div>
+
+> [!IMPORTANT]
+> Part 4 is where advice becomes *conditional*. Every principle here has a cost, and being able to name that cost is the difference between using a principle and repeating it.
+
+### 🗣️ Teach it back
+
+**What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
+
+- Project structure and the dependency rule (Ch 35)
+- Each letter of **SOLID** (Ch 37)
+- **DRY, KISS, YAGNI** (Ch 38)
+- **Dependency injection** and lifetimes (Ch 39)
+- **Entity** vs **value object** vs **aggregate** (Ch 41)
+- Testing behaviour rather than implementation (Ch 42)
+
+### 🧪 Self-check questions
+
+1. Explain dependency injection to a non-technical person in one sentence, using no software words.
+2. What does Open/Closed actually ask you to *do* on Monday morning?
+3. A singleton service takes a scoped `DbContext` in its constructor. What have you just built?
+4. When is duplication better than an abstraction?
+5. What is the difference between an entity and a value object, and which should be a `record`?
+6. Your test asserts that `OrderService` called `_emailSender.Send(...)`. Is that a good test?
+
+<details>
+<summary><b>📝 Sample answers</b></summary>
+
+1. **A chef who is handed the ingredients can cook whatever you bring; a chef who insists on growing their own vegetables can only ever make one dish.** Handing things in from outside is what makes the chef reusable — and what lets you hand them plastic vegetables to rehearse with.
+
+2. **Design so that adding a new case means adding a new file, not editing an old one.** When a new payment method or shipping option arrives, you should be writing a class and registering it — not opening a working `switch` and risking what already ships. It is not “never edit code”; it is “do not edit *correct* code to add something unrelated to it.”
+
+3. **A captive dependency.** The singleton outlives every scope, so it pins that one `DbContext` alive forever and reuses it across requests — producing stale data, cross-request contamination, and threading errors. Validate scopes in development; the container can detect this for you.
+
+4. **When the two pieces of code look alike but change for different reasons.** Merging them couples two things that should move independently, and the resulting abstraction has to grow a parameter every time either one changes. Duplication is cheaper than the wrong abstraction — wait until you have seen the pattern three times.
+
+5. **An entity has identity that survives its data changing** — you are still you after changing your name. **A value object is entirely its values** — any ten-pound note is as good as any other. Value objects should be `record`s: immutable, with value equality. Do **not** make an entity a `record`, because value equality is wrong for something whose data changes while it remains the same thing.
+
+6. **It is a weak test and often a bad one.** It asserts *how* the service did its job rather than *what* happened, so it breaks when you refactor something that still works correctly. Prefer a fake that records what was sent, then assert on the observable outcome. Mock external systems; do not mock your own domain.
+
+</details>
+
+### 🎯 Give a simple example
+
+Take a class from your own code that constructs its own database or HTTP client. Describe what changes in the test when that dependency is injected — and name one thing dependency injection made *worse*.
+
+---
+
+
 <div align="center">
 
 # 🟡 PART 5 — PRACTICE AND REFERENCE
@@ -13907,6 +14701,19 @@ DAY 7  ── Write a README explaining your design decisions — and the ones y
 ```
 
 That last step is the one people skip, and it's the one that turns knowledge into understanding.
+
+> ### 🧭 In practice — the practice projects
+>
+> **How to use it.** Pick one project at your level and build it end to end, using [Chapter 47](#47--professional-checklist) as your acceptance criteria. Start with domain classes and their rules, add tests as you go, and write the console interface last. **Expected result:** a small program you can run, explain, and show someone — with rules enforced inside the objects rather than in the input handling.
+>
+> **When to use it.** After finishing a part, not after finishing the whole guide. The material stops being theory the first time you design classes for a problem nobody has designed for you.
+>
+> **Where to use it.** Your own machine, as portfolio work. **Scenario:** a Hotel Booking system forces decisions this guide only describes — is a `Room` an entity or a value object? Where does “no double booking” live? Answering those yourself converts recognition into understanding.
+>
+> **When _not_ to use it.** Do not start with a web framework, a database, or an ORM. The point is object design, and adding infrastructure early means spending your time on the infrastructure. Do not start on the advanced list while the beginner one still feels uncertain.
+>
+> **Best practices.** Build the domain first and the interface last — if your rules only work when driven through your menu code, they are in the wrong place. Write some tests as you go rather than at the end. Keep it small enough to finish: a completed small project teaches more than an abandoned large one.
+
 
 ---
 
@@ -14610,9 +15417,70 @@ That is the reward for a clean domain model.
 > 💡 **The real test of your design:** build the ASP.NET Core API version. If you can do it
 > **without changing a single line** in `LibraryManagement.Domain`, your architecture is correct.
 
+> ### 🧭 In practice — the capstone project
+>
+> **How to use it.** Build the solution project by project in the order given, letting each layer reference only the ones beneath it. Run it, then run the tests. **Prerequisite:** most of the guide — this deliberately combines it. **Expected result:** a working multi-project application whose borrowing rules are enforced by the domain and covered by tests.
+>
+> **When to use it.** As the final exercise, when you want to see how the separate techniques interlock. Reading about entities, interfaces, generics, and DI separately is very different from watching them fit together in one solution.
+>
+> **Where to use it.** A multi-project solution — itself part of the lesson, since every real system is one. **Scenario:** `LibraryService` receives its repositories rather than creating them, so the same class runs against in-memory storage in tests and could run against a database in production with no change to its code.
+>
+> **When _not_ to use it.** Do not paste the whole thing in and run it. The value is in building it project by project and noticing why each references only the layer beneath. If you want to skip something, skip the console layer, never the domain layer.
+>
+> **Best practices.** Notice where the concepts converge — an abstract base supplying shared behaviour, an interface enabling substitution, encapsulation behind a read-only collection, and a rule enforced in one method. That convergence is what professional design looks like. When it runs, extend it: adding a notification interface will teach you more than re-reading the chapter.
 ---
 
+<div align="center">
+
+## ✅ Checkpoint — Part 5: Practice and reference (Chapters 45–50)
+
+</div>
+
+> [!IMPORTANT]
+> The last part is the one that decides whether any of this became a skill. Reading about design is not the same as making design decisions nobody has made for you.
+
+### 🗣️ Teach it back
+
+**What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
+
+- What a finished small project should demonstrate (Ch 45, 47)
+- The capstone's layering, and why each project references only the one beneath (Ch 46)
+- How to grade an open-ended design exercise (Ch 47, 49)
+
+### 🧪 Self-check questions
+
+1. You have built the capstone. What is the single test of whether your layering is real?
+2. Why does the guide give worked solutions for some exercises and not others?
+3. Someone says their design is “SOLID”. What would you ask to check?
+4. What is the one habit from this guide most worth keeping?
+
+<details>
+<summary><b>📝 Sample answers</b></summary>
+
+1. **Try to add a new storage mechanism — a file, a database, a fake — and count the lines you change in the domain project.** If the answer is zero, the dependency rule is real and enforced by project references. If it is more than zero, the layering exists in the folder names only.
+
+2. **Because the two kinds of exercise need different feedback.** An exercise with a single defensible answer is worth checking yourself against, so it has a solution. A *design* exercise has several equally good answers, and the useful feedback is not “did you match mine” but **“does your design survive a change?”** — which is what the checklist in [Chapter 47](#47--professional-checklist) is for.
+
+3. **“Show me the last change you made, and how many existing files you had to open.”** SOLID is not a property you can see in a class diagram; it is a prediction about the cost of the *next* change. If a new payment provider took one new file, the design is doing its job, whatever the class count.
+
+4. **Adding a new requirement and counting the existing lines you had to edit.** Every principle in this guide — encapsulation, polymorphism, SOLID, DI, composition — exists to make that number small. It is the one measurement that does not care what the code looks like.
+
+</details>
+
+### 🎯 Give a simple example
+
+Close the guide. In your own words, and without using the words *encapsulation*, *inheritance*, *polymorphism*, or *abstraction*, explain to a colleague why object-oriented design makes software cheaper to change.
+
+---
+
+
 # 47. ✅ Professional checklist
+
+> [!NOTE]
+> **No 🧭 In practice block from here on, and that is deliberate.** Chapters 1–46 each teach a
+> technique, so “how / when / where / when not / best practices” applies to each of them. Chapters
+> 47–50 are reference material — a checklist, a schedule, an answer key, and a dictionary. There is
+> no technique here to apply in the wrong situation. Use them the way you use an index.
 
 Use this to audit yourself. You are ready for professional C# OOP work when you can **explain and
 implement** every item.
@@ -14794,12 +15662,20 @@ fully tested.
 
 **Level: ⭐ Beginner → ⭐⭐ Intermediate**
 
-This chapter answers the exercises from **Part 0 and Part 1** — the ones whose answers you most need
-to check while the ideas are still new. Later chapters' exercises are deliberately open-ended design
+This chapter answers a selection of the earlier exercises — the ones whose answers you most need to
+check while the ideas are still new. Later chapters' exercises are deliberately open-ended design
 problems with many valid answers; for those, the checklist in
 [Chapter 47](#47--professional-checklist) is the right way to grade your own work.
 
-**Covered here:** §4.1, §5.6, §6.7, §7.5, §8.10, §12.8, §27.8.
+**Worked solutions below:** §4.1, §5.6, §6.7, §7.5, §8.10, §12.8, §27.8.
+
+> [!NOTE]
+> **Not every exercise has a written solution here, and that is deliberate rather than an oversight.**
+> The ones above have a single defensible answer worth checking yourself against. The others —
+> §10.6, §11.7, and the exercises from Chapter 13 onwards — ask you to *design* something, where
+> several answers are equally good and the useful feedback is whether your design survives a change.
+> Grade those with [Chapter 47](#47--professional-checklist), and with the one test that matters:
+> **add a new requirement and count how many existing lines you had to edit.**
 
 > ⚠️ **Try the exercise before reading the answer.** Reading a solution creates a feeling of
 > understanding that typing one creates the real thing. If you are stuck, read only the
@@ -15406,7 +16282,7 @@ leave `Name` null despite `required`. Validate after deserialising; the annotati
 
 # 50. 📖 Glossary and reference links
 
-## 49.1 Glossary
+## 50.1 Glossary
 
 | Term | Meaning |
 |---|---|
@@ -15467,7 +16343,7 @@ leave `Name` null despite `required`. Validate after deserialising; the annotati
 | **Variance** | Whether generic types can substitute up or down a hierarchy |
 | **Virtual member** | A member a subclass is allowed to override |
 
-## 49.2 Official Microsoft documentation
+## 50.2 Official Microsoft documentation
 
 **Fundamentals**
 - Object-oriented programming in C#: https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/oop
@@ -15503,7 +16379,7 @@ leave `Name` null despite `required`. Validate after deserialising; the annotati
 - C# coding conventions: https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions
 - Framework design guidelines: https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/
 
-## 49.3 Recommended books
+## 50.3 Recommended books
 
 | Book | Author | Read it when |
 |---|---|---|
