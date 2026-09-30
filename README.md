@@ -2,7 +2,7 @@
 
 # 📚 Knowledge Base
 
-### *Four long-form, beginner-first guides to programming and databases*
+### *Six practical, long-form engineering guides — from programming fundamentals to cloud and modern AI engineering*
 
 **_By Gehan Fernando_**
 
@@ -11,141 +11,261 @@
 ---
 
 > [!NOTE]
-> **👥 Who this is for:** anyone starting from zero, plus students, junior developers, and professionals who want a single reliable reference.
-> **🎯 The promise:** every guide explains each idea in plain English *before* showing code, and every idea comes with a runnable example.
-> **📏 How to use it:** these are lab manuals, not novels. Read a section, type the example, run it, break it, fix it.
+> **👥 Who this is for:** self-learners, students, software engineers, senior developers, cloud/platform engineers, and anyone who wants practical references they can keep returning to.
+> **🎯 The promise:** concepts are explained in plain language first, then connected to runnable code, hands-on labs, engineering trade-offs, troubleshooting, or authoritative documentation.
+> **📏 How to use it:** treat these as **lab manuals and engineering references, not novels**. Read enough to understand the idea, then type, run, build, break, verify, and apply it.
 
 ---
 
 ## 📖 What is in this collection
 
-| Guide | Subject | Size | Start here if… |
+| Guide | What it teaches | Scope | Start here if… |
 |---|---|:---:|---|
-| **[The Complete SQL Guide — MSSQL & MySQL](sql_complete_guide.md)** | Databases and SQL, taught twice: once for SQL Server, once for MySQL | 66 chapters | You want to store, find, and protect data |
-| **[Complete OOP with Python](python_oop_guide.md)** | Object-oriented programming using modern Python | 39 sections | You want to learn software design, and prefer Python |
-| **[Complete OOP with C# and .NET](csharp_dotnet_oop_guide.md)** | The same design ideas in C#, plus the .NET type system | 50 chapters | You want to learn software design, and prefer C# |
-| **[The Complete Bible of Python Dunder Methods](python_dunder.md)** | Python's special methods — how `+`, `len()`, `with`, and `for` actually work on your own objects | 145 entries | You already write Python classes and want to go deeper |
+| **[🌈 AI Journey](ai_journey.md)** | Practical AI engineering for .NET/C# + Python developers: LLM basics, prompting, tool calling, MCP, agents, RAG, evals, observability, security, and production engineering | 19 modules | You are already a developer but are new to modern AI and want a structured path from zero to real AI engineering |
+| **[☁️ Azure Complete Engineering Cheatsheet](azure_cheatsheet.md)** | Azure architecture, identity, networking, compute, data, integration, AI, security, observability, IaC, DevOps, governance, cost, resilience, and production operations | 49 numbered sections + overview | You need one broad Azure engineering reference for design, development, operations, or architecture |
+| **[🏛️ Complete OOP with C# and .NET](csharp_dotnet_oop_guide.md)** | Object-oriented programming from first principles through modern C#, SOLID, DI, testing, design patterns, and professional design | 50 chapters | You work with C#/.NET or want a rigorous OOP path in the .NET ecosystem |
+| **[🐍 Complete OOP with Python](python_oop_guide.md)** | Python OOP from first class/object concepts through protocols, typing, SOLID, DI, testing, packaging, and professional design | 39 sections | You want to learn software design with Python or translate OOP knowledge into Pythonic practice |
+| **[📖 The Complete Bible of Python Dunder Methods](python_dunder.md)** | Python special methods and attributes: object creation, operators, iteration, context managers, descriptors, async, metaclasses, introspection, and more | 145 entries | You already understand Python classes and want to know how Python's object model really works |
+| **[🗄️ The Complete SQL Guide — MSSQL & MySQL](sql_complete_guide.md)** | SQL and relational databases from zero through querying, transactions, performance, design, security, administration, and application integration | 66 chapters | You want to learn databases from scratch or deepen production SQL knowledge in SQL Server and MySQL |
 
 ---
 
-## 🧭 Which one should I read first?
+## 🧭 Which guide should I read first?
 
-**You have never programmed before.**
-Start with **[Complete OOP with Python](python_oop_guide.md)**. Python puts the least syntax between you and the idea. Read Sections 1–12 and stop; that is a complete, useful skill on its own.
+### I am a professional developer and want to learn modern AI
+Start with **[AI Journey](ai_journey.md)**.
 
-**You have never used a database, but you can already program a little.**
-Start with **[The Complete SQL Guide](sql_complete_guide.md)**. It assumes nothing — Chapter 1 begins with a spreadsheet. Chapters 1–5 take about an hour and give you the vocabulary everything else uses.
+It is designed specifically for developers who already know software engineering but are beginners in modern AI. The path moves from AI/LLM basics into prompting, C# and Python LLM applications, structured output, tool calling, MCP, agents, RAG, security, evaluation, observability, and production engineering.
 
-**You work on a .NET team, or you are studying C#.**
-Start with **[Complete OOP with C# and .NET](csharp_dotnet_oop_guide.md)**. It teaches OOP and C# together, so you do not need the Python guide first.
+### I need Azure for real engineering work
+Use **[Azure Complete Engineering Cheatsheet](azure_cheatsheet.md)**.
 
-**You already write Python classes comfortably.**
-Go to **[The Complete Bible of Python Dunder Methods](python_dunder.md)**. Its intended prerequisite is Sections 1–6 of the Python OOP guide.
+It is less like a beginner programming course and more like an engineering map of Azure: what the major services are, how they fit together, how to choose between them, what production concerns matter, and where to verify changing platform details.
+
+### I work mainly with C#/.NET
+Start with **[Complete OOP with C# and .NET](csharp_dotnet_oop_guide.md)**.
+
+It teaches OOP and modern C# together, then moves into professional design, SOLID, dependency injection, testing, patterns, and refactoring.
+
+### I want to learn programming/OOP through Python
+Start with **[Complete OOP with Python](python_oop_guide.md)**.
+
+If you have never programmed before, begin with Sections 1–12. They give you a useful foundation without requiring you to finish the entire guide first.
+
+### I already understand Python classes and want to go deeper
+Read **[The Complete Bible of Python Dunder Methods](python_dunder.md)** after the early Python OOP material.
+
+Its intended prerequisite is roughly Sections 1–6 of the Python OOP guide. From there it explains how Python connects your objects to syntax such as `+`, `len()`, `for`, `with`, comparisons, attribute access, async operations, and introspection.
+
+### I want to learn databases or improve SQL
+Use **[The Complete SQL Guide](sql_complete_guide.md)**.
+
+It starts from first principles and does not require a programming background. You can learn with either SQL Server or MySQL; every major topic is shown for both engines.
+
+---
+
+## 🗺️ Suggested learning paths
+
+### .NET engineer → AI / cloud engineer
 
 ```text
-      ┌──────────────────────────┐
-      │   New to programming?    │
-      └────────────┬─────────────┘
-                   │
-      ┌────────────┴─────────────┐
-      │                          │
-  Python path                 C# path
-      │                          │
-  python_oop_guide.md    csharp_dotnet_oop_guide.md
-      │                          │
-      │   (both lead to)         │
-      └────────────┬─────────────┘
-                   │
-         sql_complete_guide.md   ← every real application stores data
-                   │
-         python_dunder.md        ← Python only, and only after OOP
+C# / .NET OOP
+      │
+      ├──────────────► SQL
+      │                 │
+      ├──────────────► Azure
+      │                 │
+      └──────────────► AI Journey
+                        │
+                        ├─ LLM apps
+                        ├─ tool calling
+                        ├─ MCP
+                        ├─ agents
+                        ├─ RAG
+                        └─ production AI
+```
+
+A practical order is:
+
+1. **[C# / .NET OOP](csharp_dotnet_oop_guide.md)** — strengthen language and design fundamentals if needed.
+2. **[SQL](sql_complete_guide.md)** — understand persistent data, transactions, indexing, and application/database boundaries.
+3. **[Azure](azure_cheatsheet.md)** — learn the cloud platform, identity, networking, deployment, observability, security, and operations.
+4. **[AI Journey](ai_journey.md)** — build modern AI engineering skills on top of your existing software background.
+
+You do **not** need to finish the first three before starting AI Journey. If your software fundamentals are already strong, go directly to the AI guide and use the others as references.
+
+### Python engineering path
+
+```text
+Python OOP
+    │
+    ├──────────► Python Dunder Methods
+    │
+    ├──────────► SQL
+    │
+    └──────────► AI Journey
+```
+
+### Database-first path
+
+```text
+SQL fundamentals
+      │
+      ├─ application integration
+      ├─ performance and indexing
+      ├─ transactions and concurrency
+      └─ cloud data services in Azure
 ```
 
 ---
 
 ## 🔗 How the guides relate to each other
 
-- **The two OOP guides teach the same ideas in two languages.** Encapsulation, inheritance, polymorphism, SOLID, dependency injection, and domain modelling appear in both. If you know one, the other is largely a translation exercise — and reading the second one is a good way to check that you understood the *idea* rather than the *syntax*.
+- **The C# and Python OOP guides teach many of the same design ideas in different languages.** Encapsulation, inheritance, polymorphism, abstraction, interfaces/protocols, SOLID, dependency injection, testing, patterns, and domain modelling appear in both.
+- **The Python dunder guide is the deep companion to Python OOP.** The OOP guide introduces special methods as part of normal Python design; the dunder guide explores the object model and Python's protocol hooks in depth.
+- **The SQL guide is language-independent.** It connects back to application design through repositories, Unit of Work, transactions, migrations, concurrency, and calling SQL from application code.
+- **The Azure guide provides the platform layer.** Its compute, networking, identity, data, messaging, observability, security, IaC, and deployment sections connect directly to real .NET/Python application architecture.
+- **AI Journey sits on top of normal software engineering rather than replacing it.** It assumes you are a developer and focuses on using LLMs, tool calling, MCP, agents, RAG, evaluation, safety, observability, and production practices.
+- **Azure and AI Journey overlap intentionally around enterprise AI.** Azure covers the platform/service-selection view; AI Journey covers the developer learning path and hands-on AI engineering workflow.
 
-- **The dunder guide is the deep companion to the Python OOP guide.** Where the Python OOP guide says "Python has special methods that hook into built-in syntax" ([Section 25](python_oop_guide.md#25-special-methods-operators-nested-classes-and-code-organization)), the dunder guide covers every one of them in detail.
+### Where important ideas cross between guides
 
-- **The SQL guide is independent of the other three.** It needs no programming background at all. It connects back to them in [Chapter 65](sql_complete_guide.md#65-sql-from-the-application-layer), which covers calling SQL from application code — including the Repository and Unit of Work patterns the OOP guides describe.
-
-**Where the same idea appears twice:**
-
-| Idea | Python OOP | C# / .NET | SQL |
-|---|---|---|---|
-| The four pillars of OOP | [§3](python_oop_guide.md#3-the-four-pillars-of-oop) | [Ch 4](csharp_dotnet_oop_guide.md#4--the-four-pillars-of-oop) | — |
-| Interfaces / contracts | [§13 Protocols](python_oop_guide.md#13-protocols-and-interfaces) | [Ch 17 Interfaces](csharp_dotnet_oop_guide.md#17--interfaces) | — |
-| SOLID principles | [§27](python_oop_guide.md#27-solid-principles) | [Ch 37](csharp_dotnet_oop_guide.md#37--solid-principles) | — |
-| Dependency injection | [§28](python_oop_guide.md#28-dependency-injection) | [Ch 39](csharp_dotnet_oop_guide.md#39--dependency-injection) | — |
-| Repository pattern | [§29.3](python_oop_guide.md#293--repository) | [Ch 40](csharp_dotnet_oop_guide.md#40--design-patterns-for-c-oop) | [Ch 65](sql_complete_guide.md#65-sql-from-the-application-layer) |
-| Transactions / all-or-nothing | [§29.4 Unit of Work](python_oop_guide.md#294--unit-of-work) | [Ch 40](csharp_dotnet_oop_guide.md#40--design-patterns-for-c-oop) | [Ch 42 ACID](sql_complete_guide.md#42-transactions-and-acid) |
-| Special methods / operators | [§25](python_oop_guide.md#25-special-methods-operators-nested-classes-and-code-organization) + [all of the dunder guide](python_dunder.md) | [Ch 32](csharp_dotnet_oop_guide.md#32--indexers-operators-tuples-and-everyday-essentials) | — |
+| Idea | Python OOP | C# / .NET | SQL | Azure | AI Journey |
+|---|---|---|---|---|---|
+| Encapsulation / abstraction | [§3](python_oop_guide.md#3-the-four-pillars-of-oop) | [Ch 4](csharp_dotnet_oop_guide.md#4--the-four-pillars-of-oop) | — | Service boundaries and platform abstractions | Agent/tool boundaries and structured contracts |
+| Interfaces / contracts | [§13](python_oop_guide.md#13-protocols-and-interfaces) | [Ch 17](csharp_dotnet_oop_guide.md#17--interfaces) | Schema/contracts | APIs, messaging, identity contracts | Structured output, tools, MCP |
+| Dependency injection | [§28](python_oop_guide.md#28-dependency-injection) | [Ch 39](csharp_dotnet_oop_guide.md#39--dependency-injection) | — | .NET/Azure application patterns | Provider-neutral abstractions and AI application composition |
+| Repository / data access | [§29.3](python_oop_guide.md#293--repository) | [Ch 40](csharp_dotnet_oop_guide.md#40--design-patterns-for-c-oop) | [Ch 65](sql_complete_guide.md#65-sql-from-the-application-layer) | Azure data services | RAG data/retrieval pipelines |
+| Transactions / concurrency | [§29.4](python_oop_guide.md#294--unit-of-work) | [Ch 40](csharp_dotnet_oop_guide.md#40--design-patterns-for-c-oop) | [Ch 42](sql_complete_guide.md#42-transactions-and-acid) | Resilience and distributed systems | Reliable tool/workflow execution |
+| Special methods / operators | [§25](python_oop_guide.md#25-special-methods-operators-nested-classes-and-code-organization) | [Ch 32](csharp_dotnet_oop_guide.md#32--indexers-operators-tuples-and-everyday-essentials) | — | — | — |
+| Security | Validation and safe object design | Type safety, validation, secure design | Permissions, injection, backup | Identity, RBAC, network/security services | Prompt injection, approvals, tool security, supply chain |
+| Observability | Testing/logging concepts | Testing and .NET practices | Monitoring and performance | Azure Monitor, App Insights, Log Analytics | Evals, traces, telemetry, AI observability |
+| Production engineering | Project structure/testing | Design, testing, refactoring | Performance/admin/CI | Architecture, deployment, governance, resilience | Reliability, cost, rate limits, deployment, long-running work |
 
 ---
 
 ## 🧰 What you need installed
 
-Each guide has its own setup chapter; nothing here is required before you start reading.
+Each guide contains its own setup or prerequisite section. You do not need every tool below to use the repository.
 
-| Guide | You will install | Setup chapter |
-|---|---|---|
-| Python OOP | Python 3.11+, and optionally `pytest`, `mypy`, `ruff` | [Section 1](python_oop_guide.md#1-prerequisites-and-setup) |
-| Python dunder | Python 3.12+ (a few entries need 3.12 features) | [How These Examples Were Checked](python_dunder.md#-how-these-examples-were-checked) |
-| C# / .NET | The .NET SDK (10 or later), plus an editor | [Chapter 2](csharp_dotnet_oop_guide.md#2--prerequisites-and-setup) |
-| SQL | SQL Server 2019+ **or** MySQL 8.4 LTS — you only need one to begin | [Chapter 3](sql_complete_guide.md#3-installing-and-connecting) |
-
----
-
-## 💻 How to run the code in these guides
-
-All example code lives **inside** the Markdown files. There are no separate source files to download. Each guide marks its code blocks so you can tell at a glance what you are looking at:
-
-| Marker | What it means | What to do |
-|---|---|---|
-| *(no marker)* | A complete program | Copy it into one file and run it |
-| **▶️ Continues from §X** | Needs code from an earlier block | Paste it below that earlier block, in the same file |
-| **📄 Fragment** | One file of a multi-file project, or a method shown without its class | Read it in place — it is not meant to run alone |
-| **❌ Fails on purpose** | Deliberately broken, to show you the error | Read the error shown beside it |
-
-Where output matters, an **Expected output** block follows the code.
-
----
-
-## ✅ About the verification records
-
-Each guide contains a section stating **what was verified and what was not**. This is deliberate, and it is worth understanding before you trust any technical document:
-
-- A guide that says *"all code tested"* without saying **how**, **on what version**, and **which blocks** is asking for trust it has not earned.
-- Each guide here states plainly which material was only reviewed by reading rather than executed — including administrative scripts, anything needing a paid edition, and every performance claim.
-
-Find them here: [Python OOP](python_oop_guide.md#-how-to-run-the-examples-and-how-they-were-checked) · [Python dunder](python_dunder.md#-how-these-examples-were-checked) · [C#](csharp_dotnet_oop_guide.md#-what-was-actually-verified-and-how) · [SQL](sql_complete_guide.md#-what-was-verified-and-what-was-not).
-
-> [!IMPORTANT]
-> Passing examples prove the code runs and prints what is claimed **on one machine, on one version**. They do not prove the surrounding explanation is complete, nor that the design advice fits your situation. Run things yourself.
-
----
-
-## 🎓 How to use the exercises, checkpoints, and quizzes
-
-Every guide uses the same three devices, and they do different jobs:
-
-| Device | Looks like | What it is for |
-|---|---|---|
-| **Hands-on exercises** | 🧪 *Try it yourself* / *Hands-on exercise* | Building the skill. Do these with your fingers, not your eyes. |
-| **Checkpoints** | ✅ *Checkpoint* at the end of each part | Checking you can **explain** what you just read, not just recognise it |
-| **Question banks and practice sets** | Interview questions, numbered exercise sets | Rehearsing recall under pressure |
+| Guide | Typical requirements |
+|---|---|
+| **AI Journey** | .NET, Python, Git, VS Code and/or Visual Studio; provider/API access is introduced where needed |
+| **Azure** | No single mandatory local setup for reading; Azure CLI/PowerShell, Bicep/Terraform, SDKs, and cloud access are used in relevant sections |
+| **C# / .NET OOP** | .NET SDK and an editor/IDE |
+| **Python OOP** | Python 3.11+; optional `pytest`, `mypy`/`pyright`, `ruff`, environments/tooling as introduced |
+| **Python dunder** | Python 3.12+ for the full set of examples and version-specific entries |
+| **SQL** | SQL Server 2019+ **or** MySQL 8.4 LTS; one engine is enough to begin |
 
 > [!TIP]
-> **The checkpoint is the honest test.** If you can answer *"What is this? Why does it matter? How does it work? Can I give an example?"* in your own words — not the guide's words — you have learned it. If you cannot, re-read that part. Recognising a good explanation is not the same as being able to produce one.
+> Install only what the guide section you are currently working through requires. A smaller learning environment is easier to troubleshoot.
 
-Answers sit in collapsible `<details>` blocks. Attempt first: the feeling of understanding you get from reading a solution is not the understanding you get from producing one.
+---
+
+## 🧪 How the repository teaches
+
+Although the guides cover different subjects, they share the same practical philosophy:
+
+```text
+Understand the idea
+      ↓
+See a concrete example
+      ↓
+Run / build it yourself
+      ↓
+Break or vary it
+      ↓
+Verify what happened
+      ↓
+Explain when to use it — and when not to
+```
+
+The **AI Journey** expresses this explicitly as:
+
+```text
+Understand → Open the official docs → Watch → Build → Verify → Troubleshoot
+```
+
+The OOP and SQL guides use exercises, checkpoints, examples, deliberate failures, expected output, and larger practical blocks. The Azure guide is more reference-oriented and adds service-selection guidance, architecture patterns, operational checklists, troubleshooting, and links to Microsoft documentation.
+
+---
+
+## 💻 How to use the code examples
+
+Most examples are embedded directly in the Markdown files.
+
+Common conventions in the programming/database guides include:
+
+| Marker | Meaning | What to do |
+|---|---|---|
+| *(no marker)* | Complete/self-contained example | Put it in the appropriate file or tool and run it |
+| **▶️ Continues…** | Depends on an earlier example | Keep the referenced earlier code with it |
+| **📄 Fragment** | Part of a larger/multi-file example | Read it in context; it is not intended to run alone |
+| **❌ Fails on purpose** | Deliberately invalid example | Study the shown failure and why it happens |
+
+Where output matters, the guides show expected output or describe the expected result.
+
+---
+
+## ✅ Verification and freshness
+
+These documents try to distinguish **tested facts**, **reviewed material**, and **version-sensitive platform information** instead of treating every statement as equally permanent.
+
+- **[C# / .NET OOP](csharp_dotnet_oop_guide.md#-what-was-actually-verified-and-how)** documents the compiler/runtime environment used to check code blocks and explains which fragments were not executed.
+- **[Python OOP](python_oop_guide.md#-how-to-run-the-examples-and-how-they-were-checked)** records the Python environment, code execution checks, type-checking scope, and version-dependent features.
+- **[Python dunder](python_dunder.md#-how-these-examples-were-checked)** records the CPython version and how runnable examples were executed and compared with expected output.
+- **[SQL](sql_complete_guide.md#-what-was-verified-and-what-was-not)** separates executed examples from material that requires environment-specific or administrative validation.
+- **[AI Journey](ai_journey.md#-validation-status--30-september-2026)** records a multi-pass review covering beginner usability, .NET/Python engineering, agents/MCP, RAG/production, and current official documentation.
+- **[Azure](azure_cheatsheet.md)** is intentionally explicit that production-critical limits, quotas, pricing, SLA details, regional availability, API versions, preview status, and compliance requirements must be rechecked against current Microsoft documentation.
+
+> [!IMPORTANT]
+> A successful example proves only what was actually tested in the stated environment. Cloud services, SDKs, AI products, model names, previews, quotas, pricing, platform limits, and documentation can change. For production decisions, verify current authoritative documentation.
+
+---
+
+## 🎓 Exercises, checkpoints, labs, and learning plans
+
+Different guides use different mechanisms depending on the subject:
+
+| Device | Where you will see it | Purpose |
+|---|---|---|
+| **🧪 Hands-on exercises / labs** | OOP, SQL, AI | Build the skill instead of only reading about it |
+| **✅ Checkpoints / teach-back questions** | OOP, AI, SQL | Confirm you can explain the concept in your own words |
+| **Expected result / output** | Programming, SQL, AI labs | Give you something concrete to verify |
+| **Troubleshooting sections** | AI, Azure, programming guides | Teach how to recover when the happy path fails |
+| **Learning plans** | AI, Azure, C#, Python, SQL | Turn a large reference into a manageable sequence |
+| **Official documentation links** | Especially AI and Azure | Keep fast-changing platform details anchored to authoritative sources |
+
+Useful built-in paths include:
+
+- **AI Journey:** a complete **12-week execution plan**.
+- **Azure:** a dedicated **learning roadmap**, troubleshooting playbook, production-readiness checklist, and official documentation directory.
+- **C# / .NET OOP:** a **30-day learning plan**.
+- **SQL:** a roughly **35-day learning plan**.
+- **Python OOP:** a staged five-part path from foundations to professional design and practice.
+- **Python dunder:** a course path for the core parts plus a reference structure for later lookup.
+
+---
+
+## 📌 A simple rule for using this repository
+
+Do not try to memorize everything.
+
+Use each guide to answer four questions:
+
+```text
+1. What problem does this solve?
+2. Can I explain it simply?
+3. Can I build or use a small example myself?
+4. Do I know when NOT to use it?
+```
+
+If you can answer those, move forward. If not, run another example, break something deliberately, or revisit the relevant section.
 
 ---
 
 <div align="center">
 
-*Read them once. Use them forever. Break things on purpose.*
+**Learn the fundamentals. Build real things. Verify your assumptions. Keep the references.**
 
 </div>
