@@ -1,0 +1,21 @@
+// User settings belong in settings.json.
+// This file is managed automatically.
+{
+  "firstLaunchAt": "2026-08-14T06:54:07.744Z",
+  "appTipShown": true,
+  "askedSetupTerminals": [
+    "windows-terminal"
+  ],
+  "lastLoggedInUser": {
+    "host": "https://github.com",
+    "login": "gehan-fernando_volvo"
+  },
+  "loggedInUsers": [
+    {
+      "host": "https://github.com",
+      "login": "gehan-fernando_volvo",
+      "kind": "githubDotCom"
+    }
+  ],
+  "reasoningSummariesCleanupDone": true
+}

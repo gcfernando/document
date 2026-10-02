@@ -1,0 +1,74 @@
+{
+  "locations": {
+    "C:\\Users\\A534313": {
+      "tool_approvals": [
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "Write-Output"
+          ]
+        },
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "Remove-Item"
+          ]
+        }
+      ]
+    },
+    "C:\\Gehan\\Projects\\Spectrum": {
+      "tool_approvals": [
+        {
+          "kind": "write"
+        },
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "dotnet --version",
+            "dotnet build"
+          ]
+        },
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "dotnet test"
+          ]
+        },
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "msbuild"
+          ]
+        },
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "Add-Type",
+            "Write-Output"
+          ]
+        }
+      ]
+    },
+    "C:\\Gehan\\engineering-instructions-final": {
+      "tool_approvals": [
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "Remove-Item",
+            "Write-Output"
+          ]
+        },
+        {
+          "kind": "write"
+        },
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "fsutil",
+            "Write-Host"
+          ]
+        }
+      ]
+    }
+  }
+}

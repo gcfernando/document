@@ -1,9 +1,10 @@
 # ☁️ Azure Complete Engineering Cheatsheet
 ### Architecture • Development • Operations • Security • Networking • Data • AI • DevOps • Governance
 
-> **Edition:** 2026-09-30  
+> **Edition:** 2026-10-02  
 > **Audience:** Software engineers, cloud engineers, platform engineers, DevOps/SRE engineers, solution architects, technical leads, and Azure learners.  
-> **Goal:** one practical Markdown reference that explains **what Azure pieces exist, when to use them, how they fit together, what to avoid, and where to learn the authoritative details**.
+> **Goal:** one practical Markdown reference that explains **what Azure pieces exist, when to use them, how they fit together, what to avoid, and where to learn the authoritative details**.  
+> **Companion document:** see [`azure_resources_cheatsheet.md`](./azure_resources_cheatsheet.md) for a deep, resource-by-resource reference (every major Azure service explained individually with concepts, networking, security, scaling, HA/DR, cost, CLI, Bicep, C# examples, and comparisons). This document stays focused on the Azure mental model and how things fit together; the companion document goes deep on each resource.
 
 ---
 
@@ -981,6 +982,9 @@ Use for:
 - VM/VMSS load balancing
 - low-level network traffic
 
+> [!WARNING]
+> **Basic Load Balancer and Basic Public IP were retired on September 30, 2025.** Always deploy **Standard SKU** Load Balancer and Public IP. Standard SKU is secure-by-default (explicit NSG required to allow traffic) and zone-redundant by configuration; Basic was not. If you inherit an old design referencing Basic SKU, treat it as a required migration, not an option.
+
 ## Application Gateway
 
 Use for:
@@ -1158,6 +1162,18 @@ az webapp log tail   --resource-group <rg>   --name <app>
 
 Serverless event-driven compute.
 
+## Hosting plans
+
+| Plan | Scaling | Cold start | VNet integration | Best for |
+|---|---|---|---|---|
+| **Consumption** | Event-driven, per-execution billing | Yes | Limited | Spiky/low-volume workloads, lowest cost at low scale |
+| **Flex Consumption** | Fast event-driven scaling, per-instance concurrency control | Reduced (always-ready instances optional) | Yes (VNet integration built in) | Modern default for most new serverless apps needing VNet + fast scale-out |
+| **Premium** | Pre-warmed + elastic scale | Minimal | Yes | Steady workloads needing VNet, no cold start, longer execution |
+| **Dedicated (App Service plan)** | Manual/autoscale like App Service | No (always on) | Yes | Predictable load, sharing a plan with other apps |
+| **Container Apps-hosted Functions** | KEDA-based | Varies | Yes | Functions packaged as containers inside Container Apps |
+
+> Flex Consumption is the newer, generally recommended consumption-style plan for new designs that need per-instance concurrency, private networking, and faster scale-out than classic Consumption. Verify current regional availability before committing.
+
 ## Common triggers
 
 - HTTP
@@ -1277,6 +1293,17 @@ Key features:
 # 17. ☸️ AKS and Kubernetes
 
 Azure Kubernetes Service is managed Kubernetes.
+
+## AKS Automatic vs AKS Standard
+
+| | **AKS Automatic** | **AKS Standard (Base)** |
+|---|---|---|
+| Node management | Microsoft-managed node pools, auto-provisioned | You choose/manage node pools and VM sizes |
+| Cluster configuration | Secure, opinionated defaults (networking, security, scaling) baked in | Full control over every setting |
+| Best for | Teams that want Kubernetes without owning cluster-ops decisions | Teams needing custom networking, node SKUs, or add-ons AKS Automatic doesn't expose |
+| Control trade-off | Less day-2 operational burden | More flexibility, more operational responsibility |
+
+Start with **AKS Automatic** unless you have a concrete reason to need the extra control of Standard AKS.
 
 ## Use AKS when you genuinely need
 
@@ -1500,7 +1527,7 @@ Best for:
 
 ## Azure Database for PostgreSQL
 
-Managed PostgreSQL.
+Managed PostgreSQL, deployed as **Flexible Server** (the only current deployment option — **Single Server retired September 2025**; **Hyperscale (Citus)** is now offered as the Elastic Clusters feature of Flexible Server).
 
 Use when:
 - PostgreSQL is the application/database standard
@@ -1508,7 +1535,7 @@ Use when:
 
 ## Azure Database for MySQL
 
-Managed MySQL for MySQL-based workloads.
+Managed MySQL, deployed as **Flexible Server** (the only current deployment option — **Single Server reached end of life September 16, 2024** and no longer accepts new deployments or exists in most regions).
 
 ## Cosmos DB
 
@@ -3456,6 +3483,9 @@ Azure evolves. Never design from an old certification book alone.
 | Azure Spring Apps | Retires March 31, 2028; Microsoft recommends Container Apps or AKS |
 | Azure Lab Services | Retires June 28, 2027 |
 | Azure Virtual Desktop classic | Retirement date September 30, 2026; use ARM-based AVD |
+| Basic Load Balancer / Basic Public IP | **Already retired September 30, 2025**; use Standard SKU |
+| Azure Database for MySQL — Single Server | **Already retired September 16, 2024**; use Flexible Server |
+| Azure Database for PostgreSQL — Single Server | **Already retired March 28, 2025**; use Flexible Server |
 
 ## Before choosing any service
 

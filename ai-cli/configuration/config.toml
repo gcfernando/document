@@ -1,0 +1,136 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+# =============================================================================
+# GLOBAL CODEX CONFIGURATION — ENGINEERING
+# =============================================================================
+
+# Main model for Codex CLI.
+model = "gpt-6.1-sol"
+
+# Strong default for implementation, debugging, architecture, and review.
+model_reasoning_effort = "high"
+
+# Use high reasoning in Plan mode as well.
+plan_mode_reasoning_effort = "high"
+
+# Let Codex choose an appropriate reasoning-summary format.
+model_reasoning_summary = "auto"
+
+# Keep normal responses useful without unnecessary verbosity.
+model_verbosity = "medium"
+
+# NOTE (verified against the current Codex config schema): the `personality`
+# field is now deprecated — "friendly" and "pragmatic" no longer select a
+# communication style. This line is harmless (still schema-valid) but has
+# no effect. Engineering-oriented tone is instead enforced via AGENTS.md
+# prose (see ~/.codex/AGENTS.md). Safe to remove; kept here only as a
+# no-op placeholder in case the field is reactivated in a future release.
+personality = "pragmatic"
+
+
+# =============================================================================
+# APPROVALS AND SAFETY
+# =============================================================================
+
+# Codex works normally in the sandbox and asks when broader permission
+# is needed.
+approval_policy = "on-request"
+
+# Keep approval decisions with you.
+approvals_reviewer = "user"
+
+# Allow Codex to read/write inside the current workspace/repository.
+sandbox_mode = "workspace-write"
+
+
+# =============================================================================
+# WEB / CURRENT DOCUMENTATION
+# =============================================================================
+
+# Use live search when Codex needs current external documentation or facts.
+web_search = "live"
+
+
+# =============================================================================
+# CLI / UPDATE BEHAVIOR
+# =============================================================================
+
+# Check for Codex CLI updates when it starts.
+check_for_update_on_startup = true
+
+# Prefer the operating-system credential store, while retaining a fallback
+# if it is unavailable.
+cli_auth_credentials_store = "auto"
+
+
+# =============================================================================
+# WORKSPACE SANDBOX
+# =============================================================================
+
+[sandbox_workspace_write]
+
+# Allow commands inside the workspace sandbox to access the network.
+# Useful for dotnet restore, NuGet, npm/pnpm/yarn, pip/uv,
+# Maven/Gradle, Git remotes, package feeds, etc.
+network_access = true
+
+
+# =============================================================================
+# MULTI-AGENT
+# =============================================================================
+
+[agents]
+
+# Enable Codex subagents.
+enabled = true
+
+# Use the same capable model for delegated engineering work unless Codex
+# explicitly chooses another model for a spawned agent.
+default_subagent_model = "gpt-6.1-sol"
+
+# Give delegated engineering work strong reasoning by default.
+default_subagent_reasoning_effort = "high"
+
+# Preserve a model-visible record when an agent turn is interrupted.
+interrupt_message = true
+
+# Intentionally DO NOT set:
+# max_concurrent_threads_per_session
+#
+# When it is unset, Codex chooses its own concurrency. This avoids imposing
+# an artificial fixed limit such as 4 or 5 subagents.
+
+
+# =============================================================================
+# STABLE FEATURES
+# =============================================================================
+
+[features]
+
+# Subagent collaboration/orchestration.
+multi_agent = true
+
+# Persistent goals and automatic continuation support.
+goals = true
+
+# Lifecycle hooks support.
+hooks = true
+
+# Faster repeated command execution by snapshotting the shell environment.
+shell_snapshot = true
+
+# Standard shell execution tool.
+shell_tool = true
+
+# Personality selection support.
+personality = true
+
+
+# =============================================================================
+# WINDOWS
+# =============================================================================
+
+[windows]
+
+# Native Windows sandbox implementation.
+sandbox = "elevated"

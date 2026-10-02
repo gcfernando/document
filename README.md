@@ -2,7 +2,7 @@
 
 # 📚 Knowledge Base
 
-### *Six practical, long-form engineering guides — from programming fundamentals to cloud and modern AI engineering*
+### *Eight practical, long-form engineering guides — from programming fundamentals to cloud infrastructure and modern AI engineering, plus a worked AI-CLI example*
 
 **_By Gehan Fernando_**
 
@@ -22,11 +22,16 @@
 | Guide | What it teaches | Scope | Start here if… |
 |---|---|:---:|---|
 | **[🌈 AI Journey](ai_journey.md)** | Practical AI engineering for .NET/C# + Python developers: LLM basics, prompting, tool calling, MCP, agents, RAG, evals, observability, security, and production engineering | 19 modules | You are already a developer but are new to modern AI and want a structured path from zero to real AI engineering |
-| **[☁️ Azure Complete Engineering Cheatsheet](azure_cheatsheet.md)** | Azure architecture, identity, networking, compute, data, integration, AI, security, observability, IaC, DevOps, governance, cost, resilience, and production operations | 49 numbered sections + overview | You need one broad Azure engineering reference for design, development, operations, or architecture |
+| **[🤖 AI CLI Operating Handbook](deep-research-report.md)** | How to actually run Claude Code, OpenAI Codex, and GitHub Copilot CLI day to day: global/project instructions, task briefs, skills, custom agents/subagents, MCP, parallel agents, VS Code workflows, and troubleshooting | 15 parts (0–XV), beginner → expert | You want to use AI coding agents productively as daily tools, not just understand AI concepts |
+| **[☁️ Azure Complete Engineering Cheatsheet](azure_cheatsheet.md)** | Azure architecture, identity, networking, compute, data, integration, AI, security, observability, IaC, DevOps, governance, cost, resilience, and production operations | 49 numbered sections + overview | You need the big-picture Azure engineering map: what exists, how it fits together, and how to choose between services |
+| **[📦 Azure Resources Cheatsheet](azure_resources_cheatsheet.md)** | Resource-by-resource deep dive: Compute, networking, storage, databases, messaging, identity, monitoring, DevOps, AI — each with CLI, Bicep, and C# examples, comparison tables, and end-to-end deployment scenarios | 14 sections + resource catalog | You already know the Azure big picture and need to create, configure, secure, or troubleshoot one specific resource |
 | **[🏛️ Complete OOP with C# and .NET](csharp_dotnet_oop_guide.md)** | Object-oriented programming from first principles through modern C#, SOLID, DI, testing, design patterns, and professional design | 50 chapters | You work with C#/.NET or want a rigorous OOP path in the .NET ecosystem |
 | **[🐍 Complete OOP with Python](python_oop_guide.md)** | Python OOP from first class/object concepts through protocols, typing, SOLID, DI, testing, packaging, and professional design | 39 sections | You want to learn software design with Python or translate OOP knowledge into Pythonic practice |
 | **[📖 The Complete Bible of Python Dunder Methods](python_dunder.md)** | Python special methods and attributes: object creation, operators, iteration, context managers, descriptors, async, metaclasses, introspection, and more | 145 entries | You already understand Python classes and want to know how Python's object model really works |
 | **[🗄️ The Complete SQL Guide — MSSQL & MySQL](sql_complete_guide.md)** | SQL and relational databases from zero through querying, transactions, performance, design, security, administration, and application integration | 66 chapters | You want to learn databases from scratch or deepen production SQL knowledge in SQL Server and MySQL |
+
+> [!TIP]
+> **Worked example, not a standalone guide:** **[🧪 End-to-End AI Agent GraphQL Workflow](end_to_end_ai_agent_graphql_workflow.md)** takes one realistic bug ticket and solves it three times — once each with Codex, Claude Code, and Copilot CLI — with copy-paste prompts for every step, plus a condensed cheat sheet and reference appendix. Read it right after the **AI CLI Operating Handbook** to see the handbook's workflow applied to a single concrete scenario. The **[`ai-cli/`](ai-cli/)** folder holds the actual short, machine-loaded instruction files (`ENGINEERING.md`, `CLAUDE.md`, `AGENTS.md`, `copilot-instructions.md`) and sample `configuration/` files the handbook describes — use them as copy-paste starting points for your own projects.
 
 ---
 
@@ -37,10 +42,15 @@ Start with **[AI Journey](ai_journey.md)**.
 
 It is designed specifically for developers who already know software engineering but are beginners in modern AI. The path moves from AI/LLM basics into prompting, C# and Python LLM applications, structured output, tool calling, MCP, agents, RAG, security, evaluation, observability, and production engineering.
 
-### I need Azure for real engineering work
-Use **[Azure Complete Engineering Cheatsheet](azure_cheatsheet.md)**.
+### I want to use Claude Code, Codex, or Copilot CLI as a daily tool
+Start with the **[AI CLI Operating Handbook](deep-research-report.md)**, then read **[End-to-End AI Agent GraphQL Workflow](end_to_end_ai_agent_graphql_workflow.md)**.
 
-It is less like a beginner programming course and more like an engineering map of Azure: what the major services are, how they fit together, how to choose between them, what production concerns matter, and where to verify changing platform details.
+The handbook covers setup, global/project instructions, task briefs, skills, custom agents/subagents, MCP, and parallel-agent patterns for all three tools. The walkthrough then shows the same process applied, prompt by prompt, to one real bug ticket — useful if you only want to copy working prompts without reading the theory first.
+
+### I need Azure for real engineering work
+Use **[Azure Complete Engineering Cheatsheet](azure_cheatsheet.md)** first, then **[Azure Resources Cheatsheet](azure_resources_cheatsheet.md)**.
+
+The first is less like a beginner programming course and more like an engineering map of Azure: what the major services are, how they fit together, how to choose between them, what production concerns matter, and where to verify changing platform details. The second goes one level deeper — once you know *which* resource you need, it shows how to actually create, configure, secure, and script that resource with the CLI, Bicep, and C#.
 
 ### I work mainly with C#/.NET
 Start with **[Complete OOP with C# and .NET](csharp_dotnet_oop_guide.md)**.
@@ -125,8 +135,11 @@ SQL fundamentals
 - **The Python dunder guide is the deep companion to Python OOP.** The OOP guide introduces special methods as part of normal Python design; the dunder guide explores the object model and Python's protocol hooks in depth.
 - **The SQL guide is language-independent.** It connects back to application design through repositories, Unit of Work, transactions, migrations, concurrency, and calling SQL from application code.
 - **The Azure guide provides the platform layer.** Its compute, networking, identity, data, messaging, observability, security, IaC, and deployment sections connect directly to real .NET/Python application architecture.
+- **The Azure Resources Cheatsheet is the deep companion to the Azure guide.** The Azure guide gives the architecture-level map and decision criteria; the Resources cheatsheet gives the per-resource CLI/Bicep/C# mechanics once you have already decided what to build.
 - **AI Journey sits on top of normal software engineering rather than replacing it.** It assumes you are a developer and focuses on using LLMs, tool calling, MCP, agents, RAG, evaluation, safety, observability, and production practices.
 - **Azure and AI Journey overlap intentionally around enterprise AI.** Azure covers the platform/service-selection view; AI Journey covers the developer learning path and hands-on AI engineering workflow.
+- **The AI CLI Operating Handbook is a different kind of "AI" topic from AI Journey.** AI Journey teaches you to *build* LLM-powered applications and agents; the handbook teaches you to *use* Claude Code, Codex, and Copilot CLI as everyday engineering tools (instructions, skills, subagents, MCP clients) — the two are complementary, not overlapping.
+- **The End-to-End AI Agent GraphQL Workflow is the worked example for the handbook.** It takes the handbook's concepts (instructions, context, review) and runs them, prompt by prompt, through one realistic ticket in all three tools.
 
 ### Where important ideas cross between guides
 
@@ -151,14 +164,15 @@ Each guide contains its own setup or prerequisite section. You do not need every
 | Guide | Typical requirements |
 |---|---|
 | **AI Journey** | .NET, Python, Git, VS Code and/or Visual Studio; provider/API access is introduced where needed |
-| **Azure** | No single mandatory local setup for reading; Azure CLI/PowerShell, Bicep/Terraform, SDKs, and cloud access are used in relevant sections |
+| **AI CLI Operating Handbook** | Node.js (for `npm install`-based CLIs), Git, a terminal; the `claude`, `codex`, and `copilot` binaries/extensions as you install them per the handbook's Part XIV; API keys/subscriptions for whichever provider(s) you use |
+| **Azure** / **Azure Resources Cheatsheet** | No single mandatory local setup for reading; Azure CLI/PowerShell, Bicep/Terraform, SDKs, and cloud access are used in relevant sections |
 | **C# / .NET OOP** | .NET SDK and an editor/IDE |
 | **Python OOP** | Python 3.11+; optional `pytest`, `mypy`/`pyright`, `ruff`, environments/tooling as introduced |
 | **Python dunder** | Python 3.12+ for the full set of examples and version-specific entries |
 | **SQL** | SQL Server 2019+ **or** MySQL 8.4 LTS; one engine is enough to begin |
 
 > [!TIP]
-> Install only what the guide section you are currently working through requires. A smaller learning environment is easier to troubleshoot.
+> Install only what the guide section you are currently working through requires. A smaller learning environment is easier to troubleshoot. The **End-to-End AI Agent GraphQL Workflow** walkthrough needs no installation at all — every command/prompt is copy-pasteable and all shown output is explicitly labeled as simulated.
 
 ---
 
@@ -216,7 +230,8 @@ These documents try to distinguish **tested facts**, **reviewed material**, and 
 - **[Python dunder](python_dunder.md#-how-these-examples-were-checked)** records the CPython version and how runnable examples were executed and compared with expected output.
 - **[SQL](sql_complete_guide.md#-what-was-verified-and-what-was-not)** separates executed examples from material that requires environment-specific or administrative validation.
 - **[AI Journey](ai_journey.md#-validation-status--30-september-2026)** records a multi-pass review covering beginner usability, .NET/Python engineering, agents/MCP, RAG/production, and current official documentation.
-- **[Azure](azure_cheatsheet.md)** is intentionally explicit that production-critical limits, quotas, pricing, SLA details, regional availability, API versions, preview status, and compliance requirements must be rechecked against current Microsoft documentation.
+- **[AI CLI Operating Handbook](deep-research-report.md)** labels every command with one of three markers — ✅ Executed, 📚 Official-doc verified, or 🖥️ Platform syntax reviewed — because the `claude`/`codex`/`copilot` binaries were not all separately installable in the validating environment; check the legend near the top of the file before trusting any single command as run-tested.
+- **[Azure](azure_cheatsheet.md)** and **[Azure Resources Cheatsheet](azure_resources_cheatsheet.md)** are intentionally explicit that production-critical limits, quotas, pricing, SLA details, regional availability, API versions, preview status, and compliance requirements must be rechecked against current Microsoft documentation.
 
 > [!IMPORTANT]
 > A successful example proves only what was actually tested in the stated environment. Cloud services, SDKs, AI products, model names, previews, quotas, pricing, platform limits, and documentation can change. For production decisions, verify current authoritative documentation.
@@ -239,7 +254,9 @@ Different guides use different mechanisms depending on the subject:
 Useful built-in paths include:
 
 - **AI Journey:** a complete **12-week execution plan**.
+- **AI CLI Operating Handbook:** Parts 0–XV, from absolute-zero installation through parallel-agent patterns and an expert quick-reference appendix.
 - **Azure:** a dedicated **learning roadmap**, troubleshooting playbook, production-readiness checklist, and official documentation directory.
+- **Azure Resources Cheatsheet:** a resource-by-resource catalog plus end-to-end deployment scenarios (Docker → ACR → ACI/Container Apps/AKS, lift-and-shift, PaaS web app, serverless, RAG/AI app).
 - **C# / .NET OOP:** a **30-day learning plan**.
 - **SQL:** a roughly **35-day learning plan**.
 - **Python OOP:** a staged five-part path from foundations to professional design and practice.
