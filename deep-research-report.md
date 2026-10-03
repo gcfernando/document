@@ -1,2479 +1,1236 @@
-﻿# 🌈 The Universal AI CLI Operating Handbook
+# 📙 AI Coding-Agent Configuration Handbook
 
-> **VS Code update (2026-10-02):** Part VI now includes exact file paths, Explorer setup steps, copyable templates, extension-specific behavior, troubleshooting, and official sources. Codex skills and Claude AGENTS loading claims were corrected. Historical CLI examples outside this scope retain their original validation status.
-
-
-> **Claude Code · OpenAI Codex · GitHub Copilot CLI**
-> Global instructions · Project instructions · Task briefs · Skills · Agents · MCP · Daily workflows · Parallel agents · Troubleshooting
+> **The operational manual:** choose the harness, create the exact artifact, discover it, invoke it, inspect what happened, break it, and repair it.
 >
-> **Release:** 8.1 · **Validated:** 2026-10-02 · **Audience:** complete beginners → professional engineers
+> This is not a universal configuration guide. VS Code is an editor and can host different harnesses. **The selected product/harness owns the schema and runtime.** Copy only the block for the tool you actually use.
 
----
+**Checked against official vendor documentation:** 2026-10-03.
+**Execution status:** commands and config examples below are documentation-checked teaching examples; they were not run against your machine or account. Test non-destructive examples in a disposable repository first.
 
-## 🟢 How to read this handbook
+## 🧭 Start here: identify your actual harness
 
-This file is the **primary human-facing handbook**. The four sibling files (`ENGINEERING.md`, `CLAUDE.md`, `AGENTS.md`, `copilot-instructions.md`) are **machine-loaded instruction files** kept short on purpose. Everything long — tutorials, decision trees, labs, troubleshooting, templates — lives here.
-
-**Legend used throughout:**
-
-| Symbol | Meaning |
-|---|---|
-| 🟣 | Claude Code specific |
-| 🔵 | OpenAI Codex specific |
-| 🟢 | GitHub Copilot CLI specific |
-| 🟠 | Shared / universal concept |
-| 🌍 | Global instructions | 📁 | Project instructions | 📝 | Task brief / user story |
-| 🧠 | Skills | 🤖 | Agents / subagents | ⚡ | Parallel agents |
-| 🔌 | MCP | 🛡️ | Security / authorization | 🧪 | Testing / verification |
-| 🧭 | Decision guide | ▶️ | Commands / daily use | 🛠️ | Troubleshooting |
-| ⚠️ | Warning | 💡 | Tip | ✅ | Executed/verified | 📚 | Official-doc verified only |
-
-**Validation legend for every command shown:**
-
-- **✅ Executed** — actually run in this session's environment.
-- **📚 Official-doc verified** — confirmed against current vendor documentation fetched during this validation pass; the vendor binary was not installed locally, so it was not executed.
-- **🖥️ Platform syntax reviewed** — standard shell/PowerShell form, not independently executed here.
-
-> [!IMPORTANT]
-> This environment does not have the `claude`, `codex`, or `copilot` binaries installed as separate executables (you are reading this inside a Copilot CLI session itself). Every product-CLI command below is therefore labeled **📚 Official-doc verified**, not ✅ Executed, unless it is a plain filesystem/PowerShell operation that genuinely ran.
-
----
-
-## 📑 Table of Contents
+Before writing a file, write down:
 
 ```text
-Part 0  — Mental model, terminology, product comparison
-Part I  — Setup & architecture (ENGINEERING.md → CLAUDE.md/AGENTS.md/copilot-instructions.md)
-Part II — "I set it up — now what?" + daily command cheat sheets
-Part III— The decision engine (instruction vs skill vs agent vs task brief vs doc)
-Part IV — Task briefs & the user-story workflow (all three tools, worked example)
-Part V  — Skills, custom agents/subagents, and MCP (per product)
-Part VI — VS Code file creation, skills, named agents, tools, and verification
-Part VII— Project-type playbooks (maintenance, bugs, new project, DevOps, security,
-           data, design, music, docs/research) — each with a parallel-agent subsection
-Part VIII — Parallel agents deep dive (framework, patterns, labs, contracts, hazards)
-Part IX — Writing & maintaining instructions (hygiene, context cost, precedence, security)
-Part X  — Troubleshooting matrix, FAQ, quick-decision tables
-Part XI — Copy/paste templates
-Part XII— Expert quick-reference appendix
-Part XIII — Official sources & validation notes
-Part XIV — Installation from absolute zero (all three tools, Windows-first)
-Part XV — Zero-knowledge acceptance tests (answered directly)
+Editor: VS Code / Visual Studio / other
+Harness: Copilot (Local or Agent Host) / Codex / Claude Code / CLI / other
+Version:
+Workspace or user customization:
+Does this harness support the feature and file format?
 ```
 
----
+**Selecting a Claude model in Copilot does not make the session Claude Code.** Likewise, opening a Codex CLI in VS Code’s terminal remains a Codex CLI session. Select the session target/harness and verify it before creating configuration.
 
-# Part 0 — Mental Model, Terminology, Comparison
+### ⛔ Universal security rule
 
-## 🚀 0.0 Absolute-beginner glossary — read this first if any of this is new
-
-> [!NOTE]
-> Skip this section if you already know what a terminal, Git, and an AI agent are. If any single term below is unfamiliar, **read it before continuing** — nothing later assumes you already know it.
-
-| Term | Plain-English meaning |
-|---|---|
-| **AI model** | The underlying "brain" (e.g., Claude, GPT) that reads text and produces answers. You don't install it — you install a *program* that talks to it. |
-| **AI agent** | An AI model wired up to also read/write files, run commands, and take multi-step action — not just chat. Claude Code, Codex, and Copilot CLI are all AI agents. |
-| **CLI (command-line interface)** | A program you control entirely by typing text commands, instead of clicking buttons. |
-| **Terminal** | The black/dark window where you type text commands and see text output. On Windows: PowerShell or Command Prompt. On macOS: Terminal.app. On Linux: your distro's terminal app. |
-| **Shell** | The program *inside* the terminal that actually reads and runs your commands (PowerShell, bash, zsh). "Terminal" and "shell" are often used loosely to mean the same thing. |
-| **Command** | A single line of text you type and press Enter to run, e.g. `claude --version`. |
-| **Working directory** | The folder your shell is "standing in" right now. Commands like "create a file here" mean *here, in the working directory*. Change it with `cd <folder>`. |
-| **Project / repository ("repo")** | A folder containing one piece of software (or one body of work) — code, docs, assets. A repository is a project folder that is also tracked by Git. |
-| **Git** | A version-control program that records the history of changes to files in a project. Not required for every project, but extremely common. |
-| **Markdown (`.md`)** | A plain-text format for writing documents with simple symbols for headings/lists/bold (like this handbook). All five files in this project are Markdown. |
-| **Global instruction** | A Markdown file in *your user profile* (not inside any one project) that an AI tool reads every time, for every project, automatically. |
-| **Project instruction** | A Markdown file *inside one project folder* that an AI tool reads automatically only while you work in that project. |
-| **Local / private instruction** | Like a project instruction, but meant only for you (not committed/shared with teammates). |
-| **Path-specific instruction** | An instruction that only applies to files under one subfolder (e.g., only `src/api/**`). |
-| **Context / context window** | Everything the AI can "see" at once in a conversation: your instructions, the chat so far, and any files it has read. It is limited in size. |
-| **Prompt** | The message you type to the AI. |
-| **Task brief** | An ordinary text/Markdown document describing one specific task (like a user story) — the AI does **not** read it automatically; you must tell it to. |
-| **Skill** | A saved, reusable set of instructions for a repeatable procedure, which the AI can load only when relevant — supported by some, not all, of these tools. |
-| **Custom agent / subagent** | A specialized "mode" of the AI with its own narrower instructions and tools, used for one kind of job (e.g., "security reviewer"). |
-| **Parallel agent** | Running more than one AI session/worker at the same time on different parts of a task. |
-| **MCP (Model Context Protocol)** | A standard way to plug external tools/services (e.g., a database, a search engine) into an AI agent so it can use them. |
-| **MCP server** | One such external tool/service, made available over MCP. |
-| **Tool (in an agent)** | One capability the AI can invoke, e.g. "read a file," "run a shell command," "search the web." |
-| **Resource (in MCP)** | A piece of external data an MCP server can hand to the AI (e.g., a document, a database row). |
-| **Hook** | A small script that automatically runs at a specific moment (e.g., right before the AI uses a tool). |
-| **Permission** | A rule about what the AI is allowed to do without asking you first. |
-| **Sandbox** | A restricted environment where the AI's actions (file/network access) are technically limited, regardless of what any instruction file says. |
-| **Approval (mode)** | A setting controlling whether the AI must ask you before taking an action. |
-| **Environment variable** | A named value set in your shell/operating system (e.g., `CODEX_HOME`) that programs can read to change their behavior. |
-| **Configuration directory / "home"** | The folder where a program keeps its settings — usually hidden, usually under your user profile. |
-| **Session** | One continuous conversation with the AI agent, from when you start it to when you close it. |
-| **Git branch** | A named, independent line of changes within a Git repository, so multiple changes can exist without colliding. |
-| **Git worktree** | A second, separate folder checked out from the *same* Git repository on a different branch, so two branches can be worked on at once without interfering. |
-| **`~` (tilde)** | Shorthand for *your user profile/home folder*. On Windows that's `C:\Users\<YourName>`; on macOS/Linux it's `/Users/<you>` or `/home/<you>`. Your shell expands `~` automatically. |
-| **Hidden file/folder (dotfile)** | A file or folder whose name starts with `.` (e.g., `.claude`), hidden from normal folder views by default on most systems. You can still create/open it directly by typing its full name. |
-
-## 🧠 0.1 The five-minute mental model
-
-```text
-GLOBAL DEFAULTS            → stable personal principles, used across every project
-PROJECT INSTRUCTIONS       → stable rules for one project, shared with the team
-LOCAL / PRIVATE INSTR.     → stable personal preferences for one project, not shared
-PATH-SPECIFIC INSTR.       → stable rules that apply only to part of a project
-TASK BRIEF / USER STORY    → temporary context for the current task only
-SKILL                      → a reusable, repeatable procedure
-CUSTOM AGENT / SUBAGENT    → a specialized delegated worker
-MCP                        → external tools/data/services exposed to the agent
-ORDINARY PROJECT DOCS      → architecture, ADRs, API docs, runbooks, user stories
-PERMISSIONS / SANDBOX      → actual technical enforcement, not Markdown
-```
-
-> [!TIP]
-> If you remember only one rule from this whole handbook: **Markdown instructions are behavioral guidance. Permissions, sandboxes, CI, IAM, and branch protection are enforcement.** Never substitute one for the other.
-
-## 📖 0.2 Terminology, explained once
-
-| Term | What it is | Why it matters |
+| Mechanism | What it does | What it does **not** do |
 |---|---|---|
-| **CLI** | Command-line interface — a program you operate by typing text commands in a terminal | Claude Code, Codex, and Copilot CLI are all CLIs |
-| **Terminal / shell** | The program that accepts your typed commands (PowerShell, bash, zsh) | Where you launch the agent |
-| **Working directory** | The folder your terminal is "in" right now | Determines what the agent can see first and which project instructions are discovered |
-| **Repository / project root** | The top folder of a project, often containing `.git` | Where project-level instruction files usually live |
-| **Context / context window** | Everything the model can "see" in one turn: instructions, conversation, file contents | A finite resource — bloated instructions crowd out real work |
-| **Instruction file** | A Markdown file the tool loads automatically to shape behavior | `CLAUDE.md`, `AGENTS.md`, `copilot-instructions.md`, `.github/copilot-instructions.md`, etc. |
-| **Global instruction** | An instruction file in your user/home directory, applied to every project | `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.copilot/copilot-instructions.md` |
-| **Project instruction** | An instruction file checked into (or local to) one repository | Repo-root `CLAUDE.md`/`AGENTS.md`, `.github/copilot-instructions.md` |
-| **Task brief** | An ordinary Markdown document describing one task/story — not auto-loaded | `docs/tasks/ABC-123.md` |
-| **Skill** | A packaged, reusable procedure the agent can invoke or be given | `SKILL.md` files |
-| **Agent / subagent** | A specialized worker with its own context, tools, and permissions | Built-in or custom-defined |
-| **MCP (Model Context Protocol)** | An open protocol for exposing external tools/resources to an agent | `codex mcp add`, GitHub MCP server, etc. |
-| **Hook** | A script triggered at a defined lifecycle point (e.g., before a commit) | Automates enforcement/validation |
-| **Sandbox** | A technical restriction on filesystem/network/process access | Real enforcement, not a suggestion |
-| **Approval / permission mode** | A configured policy for which actions require human confirmation | Controls blast radius |
-| **Session** | One running conversation with the agent, from launch to exit | Instruction reloading is usually session-scoped |
+| Instructions / prompt / skill | Guides model behavior | Enforce a permission boundary |
+| Agent tool list | Limits available capabilities when honored by that harness | Replace OS sandbox/IAM |
+| Hook | Deterministic automation at a supported lifecycle event | Guarantee organization-wide release policy |
+| Sandbox | Restricts process/filesystem/network capabilities where configured | Authorize access in a remote business system |
+| IAM / service authorization | Decides external system access | Prove an AI answer is correct |
+| CI / branch protection | Enforces shared build/review/merge checks | Protect local credentials from a compromised process |
 
-## 🆚 0.3 Product comparison card
-
-| Capability | 🟣 Claude Code | 🔵 Codex | 🟢 Copilot CLI |
-|---|---|---|---|
-| Global instruction file | `~/.claude/CLAUDE.md` | `~/.codex/AGENTS.md` | `~/.copilot/copilot-instructions.md` |
-| Project instruction file | `CLAUDE.md`; `AGENTS.md` support depends on version/settings or explicit import | `AGENTS.md` (root → cwd walk) | `.github/copilot-instructions.md`, `AGENTS.md`, `CLAUDE.md` |
-| Local/private instructions | `CLAUDE.local.md` | Not documented as a distinct mechanism | Personal dirs via `COPILOT_HOME`/`COPILOT_CUSTOM_INSTRUCTIONS_DIRS` |
-| Self-written persistent memory | ✅ **Auto memory** — Claude's own notes, per-repo, every session, 200-line/25KB cap | Not documented | Not documented |
-| Path-specific instructions | `.claude/rules/**/*.md` | One file per directory on the root→cwd walk | `.github/instructions/**/*.instructions.md` with `applyTo` |
-| Inspect loaded instructions | `/context`, `/memory`, `/doctor prompt-audit` | Ask the agent; no dedicated inspector command documented | `/instructions`, `copilot instruction list` |
-| Reload behavior | New/continued session picks up edits; imports re-resolved per session | New run/session required | New/resumed session required |
-| Skills | `SKILL.md` under `.claude/skills/**`, Agent Skills open standard | Native skills: `.agents/skills/<name>/SKILL.md` | `skill` tool / `.copilot` skills surfaced to session + `general-purpose` subagent |
-| Custom agents / subagents | Built-in (Explore, Plan, General-purpose) + user/project-defined subagents | ✅ Native subagent workflows (`[agents]` in `config.toml`, triggered by request or via `AGENTS.md`/skill instructions, inspect with `/agent`) | Built-in (`explore`, `task`, `general-purpose`, `code-review`, `security-review`, `research`, `rubber-duck`) + custom subagents |
-| Background / parallel sessions | `claude agents` (agent view), agent teams (experimental), Projects (cloud) | Native subagent threads (`/agent`); also multiple independent CLI invocations; cloud tasks in ChatGPT/Codex cloud | `task` tool background mode, `write_agent`/`read_agent` multi-turn agents |
-| MCP support | ✅ documented | ✅ documented (`codex mcp add`, `config.toml`) | ✅ documented (MCP servers configured per session/project) |
-| Worktree integration | Native awareness (`/docs/en/worktrees`), agent view auto-isolates | Manual Git workflow | Manual Git workflow |
-| Context/size limits | ~200 lines recommended per `CLAUDE.md`; subagent descriptions capped at 15,000 tokens combined | `project_doc_max_bytes` defaults to 32 KiB | Not documented as a hard byte limit; practical context budget still applies |
+> [!CAUTION]
+> Never put API keys, PATs, passwords, customer records, or production credentials in Markdown, a checked-in config file, a prompt, a skill, or a hook log. Use a secret manager or approved environment/identity mechanism. Review third-party skills, MCP servers, hooks, scripts, and plugins as executable dependencies.
 
 ---
 
-# Part I — Setup & Architecture
+# 1. 🧭 Choose the right artifact before making a file
 
-## 🧩 I.1 The architecture in one picture
-
-```text
-                         CANONICAL SOURCE
-                     ~/.ai/ENGINEERING.md
-                              │
-          ┌───────────────────┼───────────────────┐
-          │                   │                   │
-          ▼                   ▼                   ▼
-       🟣 CLAUDE            🔵 CODEX            🟢 COPILOT
-   ~/.claude/CLAUDE.md   ~/.codex/AGENTS.md   ~/.copilot/
-                                              copilot-instructions.md
-```
-
-| File | Job |
-|---|---|
-| `ENGINEERING.md` | Universal, vendor-neutral engineering behavior |
-| `CLAUDE.md` | Claude Code adapter — imports the universal file |
-| `AGENTS.md` | Codex's **effective** global file = `ENGINEERING.md` content + Codex-specific footer |
-| `copilot-instructions.md` | Copilot adapter — imports a locally deployed copy of the universal file |
-
-> [!NOTE]
-> Claude, Codex, and Copilot do **not** share one `@import` syntax. Each tool's delivery mechanism below is chosen to match its own documented behavior — do not assume symmetry.
-
-## 🧭 I.2 Which `@` form is correct, per tool
-
-**🟣 Claude Code** — officially supports relative and absolute imports, including a home-directory import:
-
-```markdown
-@~/.ai/ENGINEERING.md
-```
-
-```text
-~/.claude/CLAUDE.md ──@~/.ai/ENGINEERING.md──▶ ~/.ai/ENGINEERING.md
-```
-
-> [!WARNING]
-> Claude Code desktop **Cowork** sessions apply stricter rules to external/home-directory imports. If Cowork compatibility matters, deploy an in-scope copy instead of relying on the external import.
-
-> [!NOTE]
-> 🟣 Claude Code also has a **second, separate** memory mechanism: **auto memory** — notes Claude writes itself from your corrections/preferences, stored per-repository and shared across worktrees, loaded every session (capped at the first 200 lines / 25 KB). `CLAUDE.md` is *you* writing instructions; auto memory is *Claude* writing its own learnings. Both are context, not enforcement — use a `PreToolUse` hook if an action must be technically blocked regardless of what Claude decides. 📚
-
-**🟢 Copilot CLI** — GitHub's custom-instructions documentation requires local `@path` references to stay **inside** the custom-instructions directory; absolute or `~/`-rooted paths are not loaded. Use:
-
-```markdown
-@ENGINEERING.md
-```
-
-```text
-~/.copilot/
-├── copilot-instructions.md   (contains: @ENGINEERING.md)
-└── ENGINEERING.md            (synced copy of the canonical file)
-```
-
-**🔵 Codex** — does **not** document a Claude-style `@file` import for its global instruction mechanism. Its documented mechanism is `AGENTS.md` discovery. The architecture therefore **generates** the effective file:
-
-```text
-ENGINEERING.md + Codex-specific footer  →  ~/.codex/AGENTS.md
-```
-
-## 🏆 I.3 Recommended setup — one choice per tool
-
-| Tool | Method | Why |
+| Real need | First choice | Does it load automatically? |
 |---|---|---|
-| 🟣 Claude Code | `@~/.ai/ENGINEERING.md` inside `~/.claude/CLAUDE.md` | Directly documented user-scope import |
-| 🔵 Codex | Generate `~/.codex/AGENTS.md` = canonical file + Codex footer | Matches documented Codex discovery; no import mechanism to rely on |
-| 🟢 Copilot CLI | Sync canonical file to `~/.copilot/ENGINEERING.md`, import with `@ENGINEERING.md` | Matches the only documented safe local-reference pattern |
+| One ticket, one bug, one request | Normal prompt or task brief | A task brief does **not**; reference/attach it |
+| Stable repository facts/rules | Project instructions | Product-specific discovery |
+| Rule for a file type/subtree | Scoped instruction/rule | Only when matching/supported |
+| Repeated multi-step procedure | Skill | Discovered, then explicit/relevance invocation |
+| Recurring specialist with a distinct tool policy | Custom agent/subagent | Definition discovered; invoke/delegate |
+| External API/data/tool | MCP or native integration | Configure server; host discovers tools |
+| Predictable lifecycle action | Hook | Runs only on supported event/config |
+| Shared pass/fail gate | CI, branch protection, IAM | Not an AI customization |
 
-> [!TIP]
-> Hard links (`ln`) can replace copy/sync on Unix-like systems if you understand filesystem semantics (same inode, same filesystem, some editors break the link on save). This is a **filesystem feature**, not a vendor feature — treat it as an advanced option, not the default.
+### ❌ Do not
 
-## 📁 I.4 Final folder layout
+Put a ticket’s acceptance criteria in global instructions, create a role just to avoid one prompt, add MCP when a built-in tool already solves it, or add a hook because a reminder was forgotten once.
 
-**Windows**
+### ✅ Do
 
-```text
-C:\Users\<YOU>\
-├── .ai\ENGINEERING.md
-├── .claude\CLAUDE.md
-├── .codex\AGENTS.md
-└── .copilot\
-    ├── ENGINEERING.md
-    └── copilot-instructions.md
-```
-
-**macOS / Linux**
-
-```text
-~/.ai/ENGINEERING.md
-~/.claude/CLAUDE.md
-~/.codex/AGENTS.md
-~/.copilot/ENGINEERING.md
-~/.copilot/copilot-instructions.md
-```
-
-## 🧱 I.5 Install step-by-step
-
-> [!NOTE]
-> "Place the file there" is not a real instruction — below is the exact command that both **creates the folder** and **writes real file content** (not just an empty file), plus how to open it in a text editor instead if you prefer typing/pasting by hand. Every step also shows how to confirm the content is actually what you expect, not just that the file exists.
-
-### Step 1 — canonical file
-
-```bash
-mkdir -p ~/.ai                 # macOS/Linux — 🖥️ platform syntax reviewed
-```
-```powershell
-New-Item -ItemType Directory -Force "$HOME\.ai" | Out-Null   # 🪟 Windows — creates the hidden folder; -Force means "don't error if it already exists"
-```
-Now create the file **with content** — pick whichever is easiest:
-
-- **Option A — open it in a text editor and paste/save** (easiest for a first attempt):
-  ```powershell
-  notepad "$HOME\.ai\ENGINEERING.md"       # 🪟 Windows Notepad opens (and offers to create) the file
-  ```
-  ```powershell
-  code "$HOME\.ai\ENGINEERING.md"          # 🖥️ if VS Code's `code` command is installed/on PATH
-  ```
-  Paste the full released `ENGINEERING.md` content, then **save** (Ctrl+S) and close.
-- **Option B — copy an existing file you already have** (e.g., downloaded alongside this handbook):
-  ```powershell
-  Copy-Item "C:\path\to\downloaded\ENGINEERING.md" "$HOME\.ai\ENGINEERING.md"
-  ```
-
-Verify the **file exists**:
-```bash
-test -f ~/.ai/ENGINEERING.md && echo "found"
-```
-```powershell
-Test-Path "$HOME\.ai\ENGINEERING.md"              # returns True/False
-```
-Verify the **content is correct** (prints the first lines back to you — confirm it isn't empty and starts with the expected heading):
-```powershell
-Get-Content "$HOME\.ai\ENGINEERING.md" -TotalCount 5
-```
-
-### Step 2 — 🟣 Claude Code
-
-```bash
-mkdir -p ~/.claude
-```
-```powershell
-New-Item -ItemType Directory -Force "$HOME\.claude" | Out-Null   # 🪟 Windows
-```
-Create `CLAUDE.md` inside it, containing the single import line, using the same editor-or-copy choice as Step 1:
-```powershell
-notepad "$HOME\.claude\CLAUDE.md"          # 🪟 type/paste: @~/.ai/ENGINEERING.md  (plus the Claude-specific bullets from the released file)
-```
-Verify it exists and has the right first line:
-```powershell
-Get-Content "$HOME\.claude\CLAUDE.md" -TotalCount 1   # expect: @~/.ai/ENGINEERING.md
-```
-Verify inside Claude (📚 official-doc verified):
-```text
-/context
-/memory
-/doctor prompt-audit     # Claude Code v2.1.283+
-```
-Expected: the user-level `CLAUDE.md` appears among loaded memory/instruction files.
-
-### Step 3 — 🔵 Codex
-
-```bash
-mkdir -p ~/.codex
-```
-```powershell
-New-Item -ItemType Directory -Force "$HOME\.codex" | Out-Null   # 🪟 Windows
-```
-Codex has no `@import`, so `AGENTS.md` must contain the **full combined text** (canonical file + Codex footer), not a one-line pointer. Easiest zero-knowledge approach: open an editor and paste the complete released `AGENTS.md` content directly:
-```powershell
-notepad "$HOME\.codex\AGENTS.md"           # 🪟 paste the full released AGENTS.md content, then save
-```
-Or, if you already have both pieces as separate files on macOS/Linux, concatenate them:
-```bash
-cat ~/.ai/ENGINEERING.md > ~/.codex/AGENTS.md
-cat codex-footer.md >> ~/.codex/AGENTS.md
-```
-Verify the file is non-empty:
-```bash
-test -s ~/.codex/AGENTS.md && echo "generated"
-```
-```powershell
-(Get-Item "$HOME\.codex\AGENTS.md").Length   # expect a non-zero byte count
-```
-Verify inside Codex (📚 official-doc verified — no dedicated "show instructions" command is documented):
-```bash
-codex --ask-for-approval never "Summarize the current instructions."
-```
-
-### Step 4 — 🟢 Copilot CLI
-
-```bash
-mkdir -p ~/.copilot
-cp ~/.ai/ENGINEERING.md ~/.copilot/ENGINEERING.md
-```
-```powershell
-New-Item -ItemType Directory -Force "$HOME\.copilot" | Out-Null   # 🪟 Windows
-Copy-Item "$HOME\.ai\ENGINEERING.md" "$HOME\.copilot\ENGINEERING.md"
-```
-Create `copilot-instructions.md` inside `~/.copilot/` containing `@ENGINEERING.md` plus the Copilot-specific bullets:
-```powershell
-notepad "$HOME\.copilot\copilot-instructions.md"   # 🪟 paste/save the released file's content
-```
-Verify it exists:
-```powershell
-Test-Path "$HOME\.copilot\copilot-instructions.md"
-```
-Verify inside Copilot CLI (📚 official-doc verified):
-```text
-/instructions
-```
-```bash
-copilot instruction list
-```
-
-## 🔄 I.6 After you edit `ENGINEERING.md`
-
-| Tool | What to do |
-|---|---|
-| 🟣 Claude | No copy needed — it imports live. Start a new/resumed session to pick up the change. |
-| 🔵 Codex | **Regenerate** `~/.codex/AGENTS.md` (copy + footer), then start a new run/session. |
-| 🟢 Copilot | **Re-sync** `~/.ai/ENGINEERING.md` → `~/.copilot/ENGINEERING.md`, then start/resume a session. |
-
-## ⚠️ I.7 Gotchas — one per tool family
-
-**🔵 Codex**
-1. `ENGINEERING.md` and `AGENTS.md` in the same folder are **not** auto-combined; `AGENTS.md` is the only file Codex loads unless you configure `project_doc_fallback_filenames`.
-2. `AGENTS.override.md` silently replaces `AGENTS.md` at a given scope — check for it before assuming your edits are ignored.
-3. The instruction chain is built **once per run/session** — edits mid-session do not retroactively apply.
-4. Only **one** applicable instruction file per directory is used on the root→cwd walk.
-5. Deeper/later directories are treated as **more specific**, not "overriding" in a strict sense.
-6. Combined project-doc content is capped at `project_doc_max_bytes` (**default 32 KiB**) — oversized docs get truncated/dropped.
-
-**🟢 Copilot CLI**
-1. Copilot can combine **many** instruction sources at once (`copilot-instructions.md`, `instructions/**/*.instructions.md`, `.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md`, `AGENTS.md`, `CLAUDE.md`) — there is **no general precedence order**, so avoid writing contradictory rules across files.
-2. `@path` imports are supported in `.github/copilot-instructions.md`, `AGENTS.md`, `CLAUDE.md` — **not** in `GEMINI.md` or `*.instructions.md`.
-3. Local imports must stay inside the custom-instructions directory — use `@ENGINEERING.md`, never `@~/.ai/ENGINEERING.md`.
-4. Path-specific instruction files are conditional on `applyTo` frontmatter matching the files in play.
-5. Edits to instruction files are **not** hot-reloaded into an already-running session — start a new/resumed session.
-6. Subagent instruction inheritance differs by agent type (see Part V.2) — never assume parity with the main session.
-7. `--no-custom-instructions` disables repository custom instructions for **all** agents, overriding any subagent's `include-custom-instructions: true`.
-8. `COPILOT_HOME` relocates the entire personal configuration directory — check it first when instructions seem "missing."
-
-**🟣 Claude**
-1. Imports organize instructions; they do **not** make the content context-free. Big imports still cost tokens.
-2. Applicable `CLAUDE.md` files are **concatenated**, not stacked as strict overrides — keep them consistent rather than relying on one "winning."
-3. Claude Code also reads repository `AGENTS.md` files — keep overlapping guidance consistent across both.
-4. Built-in **Explore** and **Plan** subagents deliberately **skip** `CLAUDE.md` and git-status to stay fast/cheap; every other subagent loads it unless `omitClaudeMd` is set.
-
-## ✅ I.8 Internal consistency checklist
-
-```text
-🟣 Claude:  @~/.ai/ENGINEERING.md                       (direct import)
-🔵 Codex:   generated AGENTS.md (no import mechanism)
-🟢 Copilot: @ENGINEERING.md + locally synced copy       (relative import only)
-```
-These forms are **not interchangeable** — do not copy one tool's pattern into another.
+Observe the same problem repeatedly → choose the smallest mechanism → create one artifact → test on a safe representative task → keep or delete based on evidence.
 
 ---
 
-# Part II — "I Set It Up. How Do I Actually Use It?" ▶️
+# 2. 📁 Instructions, task briefs, prompts, and skills
 
-> **User:** "Okay, I configured everything. What do I actually type?"
+## 2.1 Task brief: one engineering task
 
-## 🙋 II.0 "I just created these files — now what? Do I have to load them myself?"
+**Why:** long acceptance criteria should persist in an ordinary project file without becoming always-on rules.
 
-Answering the exact questions people ask right after Part I, before touching a tool:
-
-**Q: I created `CLAUDE.md` in my project. Do I need to tell Claude to read it, or open it myself?**
-A: No. Claude Code **automatically** reads project `CLAUDE.md` (and the user-level one in `~/.claude/`) the moment you start a session in that folder. You never open or load it manually — just run `claude` from inside the project.
-
-**Q: Same question for `AGENTS.md` with Codex, and `copilot-instructions.md` with Copilot CLI?**
-A: Same answer — both are **auto-discovered**. Codex reads every `AGENTS.md` from your project root down to your current folder, plus `~/.codex/AGENTS.md`. Copilot reads `copilot-instructions.md` (project and `~/.copilot/`) plus `.github/copilot-instructions.md`. You just launch `codex` / `copilot` from the project folder — nothing to open or run.
-
-**Q: Then what does "automatically loaded" actually mean — do I have to run a command?**
-A: It means the CLI reads the file's **content** into the session's context **when the session starts**, with zero action from you beyond being in the right folder. It is not a command you run; it is not a plugin you enable. If the file exists in the right location, it is read.
-
-**Q: I also have `ENGINEERING.md` (my canonical custom-instruction file, shared across all three tools, per Part I). Is that auto-loaded too?**
-A: **Not directly, and this is the part people miss.** None of the three tools auto-discover a file literally named `ENGINEERING.md`. Instead, Part I's setup made each tool's *own* auto-discovered file **pull it in**:
-- 🟣 Claude: `~/.claude/CLAUDE.md` contains the line `@~/.ai/ENGINEERING.md` — Claude auto-loads `CLAUDE.md`, sees that `@` import line, and **then** also loads `ENGINEERING.md`'s content. Two files, one load, no extra step from you.
-- 🔵 Codex: there is **no import syntax** at all — so Part I's setup **copies** `ENGINEERING.md`'s content directly into `~/.codex/AGENTS.md` (plus a Codex-specific footer) at setup time. Codex auto-loads `AGENTS.md`, which already *contains* the ENGINEERING.md content verbatim — there is no live "import" happening, just a one-time copy you must redo after every edit (Part I.6).
-- 🟢 Copilot: `copilot-instructions.md` contains `@ENGINEERING.md`, and a synced copy of `ENGINEERING.md` sits next to it in `~/.copilot/`. Copilot auto-loads `copilot-instructions.md`, resolves the `@` import against that local copy.
-
-**Q: So if I edit `ENGINEERING.md`, does every tool pick up the change immediately?**
-A: No for all three — each needs the step in Part I.6 (Claude: nothing extra, the import re-resolves next session; Codex: re-copy into `AGENTS.md`; Copilot: re-sync the copy) **and** a fresh/new session, because instructions are read once at session start, not watched live.
-
-**Q: How do I actually prove any of this worked, in plain terms?**
-A: Start the tool in the project folder, then ask it directly — these are real, typeable prompts:
-```text
-🟣 claude  →  /context                         (lists every file it loaded)
-🔵 codex   →  "List the exact instruction files you were given, in order."
-🟢 copilot →  /instructions                    (lists every file it loaded)
-```
-If your `ENGINEERING.md` content (or its Codex-footer/Copilot-synced form) does **not** appear in that output, something in Part I.5 wasn't completed — redo the relevant step before continuing.
-
-**Q: I wrote my own custom instruction file with my own name (not `CLAUDE.md`/`AGENTS.md`/`copilot-instructions.md`) — how do I actually get each tool to use it?**
-A: None of the three tools auto-discover an arbitrarily-named file. You have exactly two options, per tool:
-
-| Tool | Option A — rename/move it to an auto-discovered name | Option B — keep your name, pull it in explicitly |
-|---|---|---|
-| 🟣 Claude | Save/move it to `CLAUDE.md` (project root) or `~/.claude/CLAUDE.md` (global) | Add one line inside an auto-discovered `CLAUDE.md`: `@my-custom-name.md` (relative) |
-| 🔵 Codex | Save/move it to `AGENTS.md` at the relevant directory, or `~/.codex/AGENTS.md` (global) | **Not supported** — Codex has no import syntax; either copy its content into `AGENTS.md`, or tell Codex each session: `"Read my-custom-name.md and follow it for this session."` (session-only, not persistent) |
-| 🟢 Copilot | Save/move it to `copilot-instructions.md` (project or `~/.copilot/`) or `.github/copilot-instructions.md` | Add one line inside an auto-discovered file: `@my-custom-name.md` (must stay inside the custom-instructions directory) |
-
-In short: **Option A (use the exact expected filename) is the only guaranteed-working approach for all three tools.** Option B (`@import`) only exists for Claude and Copilot, never Codex.
-
-**Q: I wrote a `SKILL.md` — how do I actually get Claude/Codex/Copilot to use it?**
-A: A skill is **never** auto-loaded into every session the way `CLAUDE.md`/`AGENTS.md` are — its content loads only when the tool decides it's relevant, or when you invoke it by name. Steps, per tool:
-
-- 🟣 **Claude Code:** file must be at `.claude/skills/<name>/SKILL.md` (project) or the equivalent user-level skills folder. Then either type `/<name>` (e.g., `/release-checklist`), or just ask naturally — Claude matches your request against the skill's `description` field and loads it only if relevant.
-- 🟢 **Copilot CLI:** file must be at `.github/skills/<name>/SKILL.md`, `.claude/skills/<name>/SKILL.md`, or `.agents/skills/<name>/SKILL.md` (project), or `~/.copilot/skills/`/`~/.agents/skills/` (personal). Invoke the same way — by relevance or by naming it explicitly in your prompt (Copilot's CLI does not document a `/<name>` slash form for skills the way Claude does — use `"Use the <name> skill..."` instead).
-- 🔵 **Codex:** native skills use `.agents/skills/<name>/SKILL.md` (project) or `~/.agents/skills/<name>/SKILL.md` (personal). Ask explicitly to use the named skill; see Part VI.
-
-> [!IMPORTANT]
-> Creating the file is never enough by itself for *any* of these mechanisms — "will this tool read it without me saying anything" depends entirely on whether it is (a) an auto-discovered filename (`CLAUDE.md`/`AGENTS.md`/`copilot-instructions.md`), (b) pulled in via `@import` from one of those, (c) a properly-located skill invoked by name/relevance, or (d) something you must explicitly tell the agent to read every time. If it's none of those four, the tool will never see it.
-
-This chapter is deliberately mechanical. For each tool: open a terminal → navigate → launch → verify → work.
-
-## ▶️ II.1 🟣 Claude Code — concrete walkthrough
-
-```text
-MyProject/
-├── CLAUDE.md            ← project instructions (optional)
-├── src/
-└── tests/
-```
-
-```bash
-cd ~/work/MyProject        # 🖥️ working directory matters: discovery starts here
-claude                      # 📚 launches an interactive session
-```
-Verify loaded context:
-```text
-/context
-/memory
-```
-Ask directly:
-```text
-"Summarize the project instructions currently active for this session.
-Do not reveal hidden system instructions; summarize only project/user
-instruction sources that the product exposes."
-```
-- **Auto-discovered:** user `~/.claude/CLAUDE.md`, project `CLAUDE.md` (root + nested), repository `AGENTS.md`, `.claude/rules/**`, `CLAUDE.local.md`.
-- **Not auto-discovered:** an arbitrary task file like `docs/tasks/ABC-123.md` — tell Claude to read it explicitly.
-- **Subfolder launch:** launching from `src/service/` still discovers CLAUDE.md files on the path up to the project root plus the user-level file; nested/path-specific rules closer to the cwd are also picked up.
-- **Fresh session needed after instruction edits:** yes — `/context` reflects what was loaded **at session start**, not live edits.
-- **Env var:** no documented Claude-specific "home" override comparable to `CODEX_HOME`/`COPILOT_HOME`; Claude uses the OS home directory for `~/.claude`.
-
-## ▶️ II.2 🔵 Codex — concrete walkthrough
-
-```bash
-cd ~/work/MyProject
-codex                        # 📚 launches interactive TUI
-```
-No dedicated "show instructions" command is documented; verify by asking:
-```text
-codex --ask-for-approval never "Summarize the current instructions you were given."
-```
-- **Auto-discovered:** `~/.codex/AGENTS.md` (or `AGENTS.override.md` if present) + one `AGENTS.md` per directory from the repository root down to the cwd.
-- **Not auto-discovered:** task briefs, issue text, anything not named per Codex's documented filename priority.
-- **Subfolder launch:** changes the starting point of the root→cwd walk; instructions from directories *above* the actual project root used by Codex's root detection may not be included if Codex does not consider that folder part of the project.
-- **Monorepo:** nested `AGENTS.md` files at each service's folder add increasingly specific guidance later in the merged prompt.
-- **Reload:** the instruction chain builds once per run — start a new run after edits.
-- **Env var:** `CODEX_HOME` relocates the whole Codex config directory, including `AGENTS.md`/`AGENTS.override.md`.
-
-## ▶️ II.3 🟢 Copilot CLI — concrete walkthrough
-
-```bash
-cd ~/work/MyProject
-copilot                      # 📚 launches interactive session; trust prompt appears first time
-```
-Verify:
-```text
-/instructions
-```
-```bash
-copilot instruction list
-```
-- **Auto-discovered:** `$HOME/.copilot/copilot-instructions.md`, `$HOME/.copilot/instructions/**/*.instructions.md`, `.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md` (conditional on `applyTo`), `AGENTS.md`, `CLAUDE.md`.
-- **Not auto-discovered:** ordinary task docs; `.instructions.md`/`GEMINI.md` files do **not** expand `@path` imports.
-- **Subfolder launch:** Copilot still discovers repository-root instruction files; working-directory changes mainly affect what gets edited/read first, not instruction discovery, which is repo-rooted.
-- **Reload:** start a new session, or use `/new`, after editing instructions.
-- **Env var:** `COPILOT_HOME` relocates personal config; `COPILOT_CUSTOM_INSTRUCTIONS_DIRS` adds extra personal instruction directories (main session only — not guaranteed for subagents).
-- **Flags:** `--no-custom-instructions` disables repo instructions for every agent in the session, including custom subagents that request `include-custom-instructions: true`.
-
-## 🧾 II.4 Daily command cheat sheet
-
-### 🟣 Claude Code
-
-| Command | What it does | Session-changing? | Interactive? |
-|---|---|---|---|
-| `claude` | Start in current project | New session | Yes |
-| `claude agents` | Open agent view (dispatch/monitor background sessions) | New view | Yes |
-| `/context` | Inspect loaded context/instruction sources | No | Yes |
-| `/memory` | Inspect memory/instruction configuration | No | Yes |
-| `/doctor prompt-audit` | Detect stale/conflicting/invalid instructions (v2.1.283+) | No | Yes |
-| `/skill-name` | Invoke a specific skill directly | No | Yes |
-| `claude mcp add/list/remove` | Manage MCP servers | No | No |
-
-### 🔵 Codex
-
-| Command | What it does | Session-changing? | Interactive? |
-|---|---|---|---|
-| `codex` | Start interactive TUI in cwd | New session | Yes |
-| `codex --ask-for-approval never "<prompt>"` | Non-interactive run with a given approval policy | New session | No |
-| `codex mcp add <name> -- <cmd>` | Add an MCP server | No | No |
-| `codex mcp list` | List configured MCP servers | No | No |
-| `codex mcp login <name>` | OAuth-login an MCP server | No | Semi |
-| `/mcp` (inside TUI) | View active MCP servers | No | Yes |
-
-### 🟢 Copilot CLI
-
-| Command | What it does | Session-changing? | Interactive? |
-|---|---|---|---|
-| `copilot` | Start interactive session | New session | Yes |
-| `copilot -p "<prompt>" --allow-tool='shell(git)'` | Programmatic one-shot run | New session | No |
-| `copilot --cloud` | Start a cloud-sandboxed session | New session | Yes |
-| `/instructions` | Inspect discovered instruction sources | No | Yes |
-| `copilot instruction list` | Same, from the shell | No | No |
-| `/sandbox enable` | Turn on local sandboxing mid-session | No | Yes |
-| `/login` | Authenticate to GitHub | No | Yes |
-| `/new` | Start a fresh session (reload instructions) | New session | Yes |
-
-## 🆚 II.5 Cross-tool "I want to…" table
-
-| I want to… | 🟣 Claude Code | 🔵 Codex | 🟢 Copilot CLI |
-|---|---|---|---|
-| Start working in this project | `cd` + `claude` | `cd` + `codex` | `cd` + `copilot` |
-| See loaded instructions | `/context`, `/memory` | Ask the agent (no dedicated command) | `/instructions` |
-| Start a fresh session | exit + relaunch, or new agent-view row | new `codex` run | `/new` or relaunch |
-| Check MCP servers | `claude mcp list` | `codex mcp list`, `/mcp` | ask agent / session config |
-| Add MCP server | `claude mcp add` | `codex mcp add` | configure in session/project MCP config |
-| Run non-interactively | scripted prompt (📚 doc-verified pattern) | `codex --ask-for-approval never "<prompt>"` | `copilot -p "<prompt>"` |
-| Run in a sandbox | N/A (use OS/CI sandboxing) | approval/sandbox policy flags | `/sandbox enable`, `copilot --cloud` |
-| Dispatch background work | `claude agents` | multiple independent runs | `task` tool background mode (session-internal) |
-| Invoke a specific skill | `/skill-name` | Ask to use the named skill | built-in `skill` invocation surfaced to session |
-
----
-
-# Part III — The Decision Engine 🧭
-
-> **User:** "I received new information. Where does it go — instruction, skill, task brief, agent, or MCP?"
-
-## 🧭 III.1 Primary decision tree
-
-```text
-I received new information.
-        │
-        ▼
-Is it only for THIS task/ticket?
-        │
-       YES → Is it already in Jira/Azure DevOps/GitHub issues?
-        │        YES → keep it there; read/reference it for the task
-        │        NO  → optionally create a TASK BRIEF (see Part IV)
-        │               do NOT make it a permanent instruction
-        │
-        NO
-        │
-        ▼
-Is it stable knowledge/rule for the WHOLE project?
-       YES → PROJECT INSTRUCTIONS or ordinary PROJECT DOCS
-        │
-        NO
-        │
-        ▼
-Does it apply only to one folder/file class?
-       YES → PATH-SPECIFIC INSTRUCTION (where supported)
-        │
-        NO
-        │
-        ▼
-Is it a REPEATABLE PROCEDURE used again and again?
-       YES → SKILL (if the tool supports it)
-        │
-        NO
-        │
-        ▼
-Does the work benefit from a SPECIALIZED DELEGATED WORKER?
-       YES → CUSTOM AGENT / SUBAGENT (if supported)
-        │
-        NO
-        │
-        ▼
-Does the agent need an EXTERNAL tool/data/service?
-       YES → MCP / native tool integration
-        │
-        NO → keep it in the task prompt or ordinary documentation
-```
-
-## 🧭 III.2 Second axis — what kind of information is it?
-
-| Kind of information | Belongs in |
-|---|---|
-| Behavior/rule ("always do X before Y") | Instruction (global/project/path-specific) |
-| Fact/architecture/requirement | Project documentation, maybe summarized by an instruction |
-| One-time task | Task prompt / task brief |
-| Repeated procedure | Skill |
-| Specialized role | Agent |
-| External capability | MCP / tool |
-| Security restriction | Real permission/policy/sandbox — **not only Markdown** |
-
-## 📊 III.3 Instruction vs. documentation
-
-| Information | Project instruction? | Ordinary project documentation? |
-|---|---:|---:|
-| "Run tests before reporting completion" | ✅ | optional |
-| "Architecture uses event sourcing" | concise reference maybe | ✅ detailed |
-| Full domain model | ❌ usually | ✅ |
-| 200-line deployment runbook | ❌ | ✅ |
-| "Use the documented deployment runbook; never deploy without approval" | ✅ | ✅ |
-| Current user story | ❌ normally | ✅ / issue tracker |
-| Permanent coding convention | ✅ | maybe |
-| API reference | ❌ | ✅ |
-| One-time investigation notes | ❌ | ✅/temporary |
-| Stable security boundary | ✅ concise | ✅ detailed + enforcement |
-
-## 📋 III.4 Quick decision table — real user sentences
-
-| User says | Likely action |
-|---|---|
-| "Implement user story ABC-123" | Task prompt/task brief, not global instruction |
-| "Every API endpoint must use our error envelope" | Project instruction + architecture docs |
-| "Whenever we release, follow this 12-step process" | Skill if supported |
-| "Only files under `frontend/` use this style" | Path-specific instruction |
-| "I personally prefer concise summaries in every project" | Global instruction |
-| "Never run production deployment without approval" | Instruction + real permission/policy enforcement |
-| "Use Jira to fetch my assigned story" | MCP/native integration |
-| "Have a separate specialist review security" | Agent/subagent if supported |
-| "This architecture diagram explains the system" | Project documentation |
-| "These acceptance criteria apply only to this ticket" | Task brief |
-| "This test command changed permanently" | Project instructions/docs update |
-| "Use this secret token" | Secret manager/environment mechanism — never Markdown |
-| "Only run this script when debugging flaky CI" | Skill or scoped doc, not global instruction |
-| "Future endpoints must emit correlation IDs" | Project instruction (stable rule) |
-| "This sprint only touches the billing service" | Task brief, not instruction |
-
-## 📎 III.5 "Do I have to load the file manually?" quick reference
-
-| File type | Auto-discovered? | Explicit invocation needed? | Session restart needed after edit? | Verify with |
-|---|---|---|---|---|
-| `ENGINEERING.md` | Only via the adapters (Claude import / generated Codex file / Copilot import) | No | Yes | per-tool inspector |
-| `CLAUDE.md` (user/project) | Yes | No | Yes | `/context`, `/memory` |
-| `AGENTS.md` (Codex/Copilot) | Yes | No | Yes | ask agent / `/instructions` |
-| `copilot-instructions.md` | Yes | No | Yes | `/instructions` |
-| `CLAUDE.local.md` | Yes (if present) | No | Yes | `/context` |
-| Path-specific rules (`.claude/rules`, `.github/instructions`) | Conditional on scope/`applyTo` | No | Yes | per-tool inspector |
-| Skills (`SKILL.md`) | Conditional — relevance-based or `/skill-name` | Sometimes (`/skill-name`) | Yes (new skills) | tool-specific skill list |
-| Task briefs | **No** | **Yes — tell the agent to read it** | N/A (just re-reference it) | n/a |
-| Ordinary docs | No | Yes | N/A | n/a |
-| MCP configs | Yes, once added | No (tool discovery is automatic once configured) | Sometimes (restart/`Restart extension`) | `/mcp`, `codex mcp list`, `copilot instruction list` |
-| Custom agents | Yes (definition discovered) | Invocation may be automatic (description-matched) or explicit | Yes for new/edited definitions | agent list commands |
-
-> [!IMPORTANT]
-> A normal task Markdown file (`docs/tasks/ABC-123.md`) is **documentation**, not an automatically loaded instruction file, in any of the three products. Tell the agent to read it, or supply it via `@file` in-prompt (Copilot), file attachment, or explicit reference.
-
-## 💬 III.6 Worked prompts for every decision-tree outcome
-
-Each row shows the **exact sentence** you'd actually type, matched to the Part III.1 branch it lands on.
-
-| Decision outcome | Example prompt you actually type |
-|---|---|
-| Task brief (one ticket) | `"Read docs/tasks/ABC-123.md. Confirm acceptance criteria, then propose the smallest complete change before implementing."` |
-| Project instruction (stable rule) | `"Add a rule to CLAUDE.md: all new API endpoints must return errors using our standard error envelope (see src/errors/envelope.ts). Keep it to two sentences."` |
-| Path-specific instruction | *(Claude)* `"Create .claude/rules/frontend.md that applies only to frontend/**: use Tailwind utility classes, never inline styles."` — *(Copilot)* `"Create .github/instructions/frontend.instructions.md with applyTo: 'frontend/**' containing: use Tailwind utility classes, never inline styles."` |
-| Skill (repeatable procedure) | *(Claude/Copilot)* `"We keep repeating a 6-step release checklist. Create a skill called release-checklist that captures it."` |
-| Custom agent (specialized role) | *(Copilot)* `"Create a custom agent called security-auditor that only reviews code for vulnerabilities and never edits files."` |
-| MCP / external tool | `"I need you to query our Postgres database directly. Is there an MCP server configured for that, or do I need to add one?"` |
-| Keep in task prompt only | `"For this session only, ignore the slow integration tests and just run unit tests."` (a one-off override — never promote this into a permanent instruction) |
-
----
-
-# Part IV — Task Briefs & the User-Story Workflow 📝
-
-## 📝 IV.1 Why task briefs exist
-
-Many users mistakenly paste a user story directly into `CLAUDE.md`, `AGENTS.md`, or global instructions. This pollutes always-loaded context with one-time information and makes stale requirements masquerade as permanent rules.
-
-> [!NOTE]
-> A task brief is an **ordinary project document**. None of the three products auto-load it. You must tell the agent to read it (or attach/reference it).
-
-## 📝 IV.2 Task brief template
-
-```markdown
-# ABC-123 — Add retry status to order processing
-
-## Goal
-## Business context
-## Acceptance criteria
-## Non-goals
-## Relevant components
-## Known constraints
-## Source links / issue references
-## Required tests
-## Risks
-## Open questions
-## Definition of done
-```
-
-Suggested (not auto-loaded) locations: `docs/tasks/ABC-123.md`, `tasks/ABC-123.md`, `.work/ABC-123.md`.
-
-To create it: `mkdir -p docs/tasks` (or `New-Item -ItemType Directory -Force docs\tasks` 🪟), then `notepad docs\tasks\ABC-123.md` (or `code docs\tasks\ABC-123.md`) and paste the template below. This is an **ordinary project file** — creating it does nothing by itself; you must tell the agent to read it (next section).
-
-## 🧭 IV.3 Three options for handling a user story
-
-| Option | Use when | Where it lives |
-|---|---|---|
-| **A — In the task prompt** | Short, one-off, already in an issue tracker | The conversation itself |
-| **B — Temporary task brief** | Long story, many acceptance criteria, multi-session work | `docs/tasks/*.md` (ordinary doc) |
-| **C — Update project instructions** | The story reveals a **stable rule** for all future work | `CLAUDE.md`/`AGENTS.md`/`copilot-instructions.md` project-level file |
-| **D — Update/create a skill** | The story reveals a **repeatable procedure** | `SKILL.md` where supported |
-| **E — Create a specialized agent** | Repeated delegated specialization is valuable (e.g., a recurring "regression-review" role) | Custom agent definition |
-
-> [!WARNING]
-> Do not create a skill or agent for a single ticket. Do not promote "ABC-123's acceptance criteria" into `AGENTS.md`. Only the **generalizable rule** behind the story (if any) belongs in permanent instructions.
-
-## 🧪 IV.4 Worked example — same story, all three tools
-
-**Story:** *"ABC-123 — When an order is cancelled, persist a cancellation reason and expose it on the order-status API."*
-
-### 🟣 Claude Code
-
-```bash
-cd ~/work/OrderService
-claude
-```
-```text
-/context                                    # confirm CLAUDE.md + project rules loaded
-"Read docs/tasks/ABC-123.md and summarize the acceptance criteria."
-"Inspect src/orders/** and tests/orders/** relevant to cancellation handling."
-"Propose the smallest complete change. Do not implement yet."
-# after reviewing the plan:
-"Implement the plan, add tests, then run the orders test suite."
-```
-Review diff with `git diff`; ask Claude to summarize what changed and run `/doctor prompt-audit` if instructions seem off afterward.
-
-### 🔵 Codex
-
-```bash
-cd ~/work/OrderService
-codex
-```
-```text
-Read docs/tasks/ABC-123.md and summarize the acceptance criteria.
-Inspect src/orders/** and tests/orders/** relevant to cancellation handling.
-Propose the smallest complete change before editing any files.
-```
-After approval, let Codex implement and run the project's test command; review `git diff` before accepting.
-
-### 🟢 Copilot CLI
-
-```bash
-cd ~/work/OrderService
-copilot
-```
-```text
-Explain @docs/tasks/ABC-123.md and summarize the acceptance criteria.
-Inspect src/orders/** and tests/orders/** relevant to cancellation handling.
-Propose the smallest complete change before editing any files.
-```
-`@docs/tasks/ABC-123.md` attaches the file's contents directly into the prompt. Approve tool use as prompted; review `git diff` at the end.
-
-### 🔄 IV.5 After the story ships
-
-```text
-Did this task reveal a stable rule useful for future tasks?
-        │
-       YES → add a concise rule to project instructions / docs, or a skill if it's a procedure
-        │
-        NO → do nothing; let the task brief be archived/deleted per team workflow
-```
-
-Do **not** automatically fold ABC-123's specifics into global/project instructions.
-
----
-
-# Part V — Skills, Custom Agents/Subagents, and MCP 🧠🤖🔌
-
-## 🧠 V.1 Skills
-
-### 🟣 Claude Code skills
-
-- A skill is a `SKILL.md` file (optionally with a supporting directory). Claude uses a skill when relevant, or you invoke it directly with `/skill-name`.
-- Claude Code skills follow the open **Agent Skills** standard (agentskills.io), with Claude-specific extensions: invocation control, subagent execution, dynamic context injection.
-- **Where personal skills live:** user-level skill directories (parallel to `.claude/skills/**` at project scope).
-- **Where project skills live:** `.claude/skills/<name>/SKILL.md`.
-- Custom commands (`.claude/commands/*.md`) have been **merged** into skills — both forms still work and create the same `/name` invocation.
-- A skill's body loads **only when used** — unlike `CLAUDE.md` content, which is always loaded. This is the key cost advantage: move long procedures out of `CLAUDE.md` into skills.
-- Bundled skills ship with Claude Code (`/doctor`, `/code-review`, `/batch`, `/debug`, `/loop`, `/verify`, `/run`, `/run-skill-generator`). Turn them off with the `disableBundledSkills` setting.
-- `/run-skill-generator` and `/verify` can **record** a per-project skill (e.g., `.claude/skills/run-<name>/`) so future sessions and other agents reuse the discovered recipe instead of rediscovering it.
-- **Create a skill when:** you keep pasting the same instructions/checklist/procedure into chat, or a section of `CLAUDE.md` has grown into a procedure rather than a fact.
-
-### 🟢 Copilot CLI skills ("agent skills")
-
-- A skill is a folder containing `SKILL.md` (YAML frontmatter: `name`, `description`, optional `license`) plus optional scripts/resources, discovered automatically alongside the skill when invoked.
-- **Project skills:** `.github/skills/`, `.claude/skills/`, or `.agents/skills/` in the repository.
-- **Personal skills:** `~/.copilot/skills/` or `~/.agents/skills/`.
-- `allowed-tools` in frontmatter pre-approves specific tools for that skill (e.g., `shell`) — only do this for scripts you trust, since pre-approving `shell`/`bash` removes the confirmation step and can enable prompt-injection attacks to run arbitrary commands.
-- Skills are selected by Copilot based on relevance to the task (`description` field), similar to custom agents.
-
-### 🔵 Codex — native skills
-
-Codex supports skills in its CLI and IDE extension. Use `.agents/skills/<name>/SKILL.md` with `name` and `description` frontmatter. Part VI includes a complete example and official sources.
-
-**🧪 Worked example — creating and using a skill (Claude Code):**
-```text
-mkdir -p .claude/skills/release-checklist
-notepad .claude/skills/release-checklist/SKILL.md
-```
-```markdown
----
-name: release-checklist
-description: Run this before any production release — version bump, changelog, tag, smoke test.
----
-1. Confirm all CI checks are green on main.
-2. Bump the version in package.json (semver).
-3. Add a CHANGELOG.md entry summarizing user-facing changes.
-4. Create and push a git tag matching the new version.
-5. Run the smoke-test suite against staging.
-6. Only after all above pass, trigger the production deploy.
-```
-Use it with `/release-checklist`, or naturally: `"Run the release checklist before we deploy."` — Claude loads the skill body only when it's actually relevant, not on every session like `CLAUDE.md`.
-
-**🧪 Worked example — creating and using a skill (Copilot CLI):**
-```text
-mkdir -p .github/skills/release-checklist
-notepad .github/skills/release-checklist/SKILL.md     :: same YAML frontmatter + steps as above
-```
-Use it: `"Use the release-checklist skill before we deploy."`
-
-### 🧠 V.2 When NOT to create a skill
-
-Skills are **not** for: one user story; one bug; one temporary requirement; project facts that belong in normal documentation; permanent global behavior; secrets; permission restrictions; a single obvious command.
-
-## 🤖 V.3 Custom agents and subagents
-
-### 🟣 Claude Code
-
-| Mechanism | What it gives you | Notes |
-|---|---|---|
-| **Subagents** | Delegated workers inside one session; own context window, own system prompt, own tool access/permissions; count toward the same usage limits as the main conversation | Built-in: Explore (read-only, fast), Plan (read-only, planning research), General-purpose (full capability) |
-| **Agent view** (`claude agents`) | One screen to dispatch/monitor independent background sessions on your machine | Research preview; each dispatched session auto-isolates into its own worktree before editing files |
-| **Agent teams** | Multiple coordinated sessions, shared task list, inter-agent messaging, managed by a lead | Experimental, disabled by default |
-| **Dynamic workflows** | A script running many subagents and cross-checking results | For work too big for one turn — codebase-wide audits, large migrations |
-| **Projects** (cloud) | One ongoing conversation; Claude starts parallel cloud "threads" | Public beta, Pro/Max plans |
-
-- Built-in Explore/Plan subagents **skip** `CLAUDE.md` and git-status for speed; every other subagent (built-in or custom) loads both unless `omitClaudeMd` is set in its definition.
-- Custom subagent descriptions are capped at a **combined 15,000 tokens** (excluding built-ins) — Claude Code warns at startup if exceeded.
-- Worktrees give each parallel session its own Git checkout so sessions don't collide on files; subagents you spawn can each get one too.
-
-### 🟢 Copilot CLI
-
-- Built-in subagents available via the `task` tool: `explore`, `task`, `general-purpose`, `rubber-duck`, `code-review`, `research`, `security-review` (exact set depends on current CLI/runtime).
-- **Custom agents** are `.agent.md` files with YAML frontmatter (name, description, instructions, optional `tools` restriction).
-  - **Project scope:** `.github/agents/`
-  - **User scope:** `~/.copilot/agents/`
-  - If a personal and a repository agent share the same **ID**, the personal one wins; agents sharing a **name** but different IDs both load.
-  - Restart the CLI after creating/editing a custom agent to load it.
-- **Invocation methods:** `/agent` slash command, explicit instruction ("Use the security-auditor agent on..."), inference from the agent's description/trigger words, or programmatically with `copilot --agent <id> --prompt "..."`.
-- **Instruction inheritance (see Part I.7):** session agent and `general-purpose` ✅; built-in `explore`/`task`/`code-review` ❌ by default; custom agents only with `include-custom-instructions: true`, and never beyond what `--no-custom-instructions` allows.
-
-**🧪 Worked example — creating and using a Copilot custom agent:**
-```text
-mkdir -p .github/agents
-notepad .github/agents/security-auditor.agent.md
-```
-```markdown
----
-name: security-auditor
-id: security-auditor
-description: Reviews code changes for vulnerabilities. Never edits files.
-tools: ["read", "grep", "glob"]
----
-You review code for security issues only: injection, auth/authz flaws,
-secrets in code, unsafe deserialization, missing input validation.
-You never modify files — you only report findings with file/line references
-and a severity rating.
-```
-Restart the CLI, then use it:
-```text
-/agent
-```
-or explicitly: `"Use the security-auditor agent to review my current changes."` Verify it loaded with `/agent` (it should appear in the list) before relying on it.
-
-### 🔵 Codex — native subagent workflows (verified current, supersedes earlier "no native subagents" guidance)
-
-- Codex CLI **does** have a documented native subagent/multi-agent feature: Codex can spawn parallel "subagents" for independent work (exploration, tests, triage, log analysis) and fold their summaries back into the main thread, keeping the main conversation free of noisy intermediate output ("context pollution"/"context rot"). Official doc: `https://developers.openai.com/codex/multi-agent`.
-- **Trigger it explicitly** — ask directly, e.g.:
-  ```text
-  Review this branch with parallel subagents. Spawn one subagent for
-  security risks, one for test gaps, and one for maintainability.
-  Wait for all three, then summarize the findings by category with
-  file references.
-  ```
-  Codex also delegates automatically when `AGENTS.md` or skill instructions request it — use `/agent` in an interactive CLI session to inspect and switch between running agent threads.
-- **Configure it in `~/.codex/config.toml` (or project `.codex/config.toml`)** under `[agents]`:
-  ```toml
-  [agents]
-  enabled = true                                # on by default
-  default_subagent_model = "gpt-6.1-sol"        # model for spawned agents (else inherits parent's)
-  default_subagent_reasoning_effort = "high"    # else inherits parent's reasoning effort
-  interrupt_message = true                      # record a model-visible note if an agent turn is interrupted
-  # max_concurrent_threads_per_session = 4       # leave unset to let Codex choose its own concurrency
-  ```
-  and ensure `[features] multi_agent = true` (the default in current Codex releases).
-- Best for **read-heavy, parallelizable** work (exploration, tests, triage, summarization); be more careful delegating **write-heavy** work since multiple agents editing code concurrently can create conflicts.
-- Each subagent does its own model/tool work, so subagent workflows consume **more tokens** than an equivalent single-agent run — don't default to parallel agents for small or tightly-coupled tasks.
-- This supersedes the previously documented position in this handbook that Codex had no native subagent concept — that was accurate for older Codex releases but is no longer current; always re-verify against `https://developers.openai.com/codex/multi-agent` since this is an actively evolving area.
-
-## 🔌 V.4 MCP — Model Context Protocol
-
-```text
-Agent
-  ├── instructions
-  ├── skills
-  ├── native tools
-  └── MCP client ──▶ MCP server ──▶ tools / resources / external systems
-```
-
-### 🟣 Claude Code
-
-- `claude mcp add` / `claude mcp list` / `claude mcp remove` manage servers (📚 doc-verified; exact flags vary by transport).
-- MCP servers can be scoped locally, per-project, or at user level.
-
-### 🔵 Codex
-
-- Config lives in `~/.codex/config.toml` (user scope) or `.codex/config.toml` (project scope, **trusted projects only**), under `[mcp_servers.<name>]`.
-- Add a server: `codex mcp add <server-name> --env VAR=VALUE -- <stdio-command>` (e.g., `codex mcp add context7 -- npx -y @upstash/context7-mcp`).
-- List: `codex mcp list`. Help: `codex mcp --help`. OAuth login: `codex mcp login <server-name>`.
-- Inside the TUI: `/mcp` shows active servers.
-- Supports **STDIO** and **Streamable HTTP** servers; HTTP servers can use OAuth (including CIMD/DCR) or ChatGPT session auth for trusted first-party servers.
-- Codex reads the MCP server's `instructions` field at initialization and uses it as server-wide guidance — server authors are told to keep the first 512 characters self-contained.
-- The ChatGPT desktop app, Codex CLI, and the IDE extension **share** this MCP configuration for the same Codex host.
-
-### 🟢 Copilot CLI
-
-- The **GitHub MCP server is built in** — no configuration needed for GitHub.com interactions.
-- Add other servers with `/mcp add` (interactive form: name, type [Local/STDIO or HTTP/SSE], command or URL, env vars/headers, tool allowlist) — saved **immediately, no restart required**.
-- Or non-interactively: `copilot mcp add SERVER-NAME -- COMMAND [ARGS...]` (stdio) or `copilot mcp add --transport http SERVER-NAME URL` (remote), with `--env`, `--header`, `--transport`, `--tools`, `--timeout` options.
-- User config file: `~/.copilot/mcp-config.json`. Per-repository MCP servers are also supported (see the "Adding per-repository MCP servers" section of GitHub's MCP doc).
-- An **experimental** registry search/install flow exists; organizations/enterprises can configure a registry URL + allowlist policy that Copilot CLI enforces.
-
-**🧪 Worked example — adding and using an MCP server (filesystem server, one per tool):**
-
-*Claude Code:*
-```text
-claude mcp add fs -- npx -y @modelcontextprotocol/server-filesystem C:\Gehan\engineering-instructions-final
-claude mcp list                              :: verify it shows "fs"
-```
-Then in a session: `"List the files under the project root using the fs MCP server."`
-
-*Codex:*
-```text
-codex mcp add fs -- npx -y @modelcontextprotocol/server-filesystem C:\Gehan\engineering-instructions-final
-codex mcp list                               :: verify it shows "fs"
-```
-Inside the TUI: `/mcp` to confirm it's active, then: `"Using the fs tool, list the project's top-level files."`
-
-*Copilot CLI:*
-```text
-copilot mcp add fs -- npx -y @modelcontextprotocol/server-filesystem C:\Gehan\engineering-instructions-final
-```
-Then: `/mcp` (confirm it's listed) and: `"List the project's files using the fs MCP server."`
-
-> [!NOTE]
-> This is a real, commonly used reference MCP server (`@modelcontextprotocol/server-filesystem`) shown for illustration; always confirm the exact package/server you add is one you trust before running it, per the warning below.
-
-### 🔌 V.5 Daily MCP use
-
-```text
-I configured an MCP server. Now what?
-    → ask the agent to use it naturally, or reference its tool by name
-How do I see its tools?
-    → Claude: claude mcp list · Codex: /mcp, codex mcp list · Copilot: /mcp, ask agent
-Do I need to explicitly mention the server?
-    → usually no; the agent selects tools based on relevance, like skills
-How do I know which server performed an action?
-    → tool-call transcripts/logs identify the server + tool name
-How do I disable it?
-    → remove/comment out its config entry; Copilot also supports per-repo allowlists
-How do I remove credentials safely?
-    → delete the env var/header entry from the config file; rotate the credential at its source, not just in the config
-```
-
-> [!WARNING]
-> Do not assume MCP servers are trustworthy by default. A malicious or compromised MCP server can see every tool call you route through it. Treat `allowed-tools`/auto-approval settings for MCP-exposed tools with the same caution as `shell`.
-
----
-
-# Part VI — Configure AI Agents in Visual Studio Code
-
-Updated 2026-10-02. The paths and capabilities below were checked against the official sources linked at the end. Templates are original examples for the fictional VehiclesApi repository; they were not executed in a customer repository or tested inside VS Code.
-
-## VI.1 Choose the agent before creating files
-
-VS Code is the editor; the selected extension or agent harness determines which configuration it reads. Copilot Chat, the OpenAI Codex extension, and the Claude Code extension are separate surfaces. Selecting a Claude model in Copilot does not turn Copilot into the Claude Code extension. Running a CLI in **Terminal → New Terminal** still uses that CLI's rules.
-
-Open **File → Open Folder** and select the repository root. Install the intended vendor extension through Extensions (`Ctrl+Shift+X`), using the installation link on its official documentation page. Sign in using your organization's approved account. Open that extension's chat panel. In newer VS Code agent interfaces, also check the selected session target/harness. Features can depend on installed version and enterprise policy. [S7–S9]
-
-## VI.2 Which file means what?
-
-| File | Purpose | Automatic behavior |
-|---|---|---|
-| `AGENTS.md` | Shared project rules | Codex discovers it; Copilot support depends on the session/settings |
-| `src/Api/AGENTS.md` | Rules for one subtree | Discovery differs by agent; see VI.4 |
-| `.github/copilot-instructions.md` | Copilot project guidance | Supported Copilot sessions load it |
-| `.github/instructions/graphql.instructions.md` | Targeted Copilot guidance | Uses `applyTo` and/or relevance |
-| `.github/agents/graphql-reviewer.agent.md` | Named Copilot role | Appears in the agent picker when discovered |
-| `<skill-folder>/SKILL.md` | Reusable procedure | Discovery makes it available; invocation loads the procedure |
-| `CLAUDE.md` | Claude project guidance | Claude's native instruction mechanism |
-| `.claude/agents/graphql-reviewer.md` | Claude subagent | Claude-specific agent definition |
-| `docs/ai/tools.md` | Human-readable tool/runbook notes | Ordinary documentation; explicitly reference or attach it |
-| `docs/ai/instructions.md` | Optional ordinary guidance document | The name alone does not register instructions |
-
-Use exact capitalization for `AGENTS.md` and `SKILL.md`. `agents.md`, `agents-review.md`, `tools.md`, and `instructions.md` are not interchangeable with the recognized formats. `AGENTS.md` does not create several workers, and writing tool names in Markdown does not install or authorize tools. [S1–S6]
-
-## VI.3 Create files through the VS Code Explorer
-
-1. Open Explorer (`Ctrl+Shift+E`). Confirm the top-level folder is the repository.
-2. Right-click that folder and choose **New Folder** to create the required directories.
-3. Right-click the destination folder, choose **New File**, and enter the exact filename from a template below.
-4. Paste the content, replace example paths and commands with repository facts, and save (`Ctrl+S`). Ensure the filename has not become `SKILL.md.txt`.
-5. Use Markdown preview (`Ctrl+Shift+V`) to check readability. Preview does not validate agent discovery.
-
-For supported Copilot/VS Code sessions, `Ctrl+Shift+P` → **Chat: Open Customizations** provides an alternative editor for Instructions, Skills, and Agents. Select the intended harness first. If this preview UI is absent in your installed version, create the files manually. [S1–S3]
-
-## VI.4 Root and nested AGENTS.md
-
-Create `AGENTS.md` at the repository root:
-
-```markdown
-# VehiclesApi working agreements
-
-- Read the relevant ticket before proposing a change.
-- Follow the existing dependency direction: API → Application → Infrastructure.
-- Preserve public GraphQL field names, argument types, and nullability unless
-  the ticket explicitly requires a contract change.
-- Establish the root cause before changing production behavior.
-- Add a meaningful regression test for each bug fix.
-- Read docs/ai/tools.md for verification commands; confirm them against CI.
-- Report commands actually executed, outcomes, and anything unverified.
-- Do not commit, push, or deploy unless the user requests that action.
-```
-
-Create `src/Api/AGENTS.md`:
-
-```markdown
-# API-layer guidance
-
-- Keep resolvers focused on translating GraphQL requests to application calls.
-- Preserve authorization checks and cancellation propagation.
-- Distinguish external business identifiers from internal database keys.
-- Check GraphQL errors as well as data when validating a response.
-```
-
-Create `tests/AGENTS.md`:
-
-```markdown
-# Test guidance
-
-- Reuse this repository's fixtures and test naming conventions.
-- Assert observable behavior, not private implementation details.
-- Keep external-ID fixtures distinct from internal numeric IDs.
-- Do not use production data or credentials in tests.
-```
-
-Codex builds its instruction chain from its global instructions and the project root down to its current working directory. It uses at most one instruction file per directory, preferring `AGENTS.override.md` over `AGENTS.md`; deeper guidance overrides earlier guidance. A root session should not be assumed to preload every descendant file. Start at the appropriate working folder or explicitly ask it to inspect applicable nested rules. [S5]
-
-VS Code Local sessions have separate `chat.useAgentsMdFile` and experimental `chat.useNestedAgentsMdFiles` settings; nested support is disabled by default. Other harnesses follow their own discovery rules. For predictable Copilot targeting, use the next template. [S1]
-
-## VI.5 Copilot project and path-specific instructions
-
-Create `.github/copilot-instructions.md`:
-
-```markdown
-# Copilot project guidance
-
-Before editing, read the shared working agreements in [AGENTS.md](../AGENTS.md).
-Read [verification notes](../docs/ai/tools.md) before running project checks.
-Keep ticket-specific acceptance criteria in docs/tasks rather than this file.
-```
-
-Create `.github/instructions/graphql.instructions.md`:
-
-```markdown
----
-description: Guidance for GraphQL resolvers and schema changes
-applyTo: "src/Api/GraphQL/**"
----
-
-- Preserve the published schema unless the ticket authorizes a change.
-- Verify ID semantics across resolver, service, and repository boundaries.
-- Check authorization, nullability, error handling, and query amplification.
-- Cover the affected query through the existing integration-test fixture.
-```
-
-The glob is relative to the workspace root. Adjust it to the real source layout. Keep shared and targeted rules consistent; do not rely on a universal precedence order across products. [S1]
-
-## VI.6 Create a reusable SKILL.md
-
-Choose a destination for the product you use:
-
-| Product | Repository destination | Personal destination |
-|---|---|---|
-| Copilot in VS Code | `.github/skills/graphql-bugfix/SKILL.md` | `~/.copilot/skills/graphql-bugfix/SKILL.md` |
-| Codex extension/CLI | `.agents/skills/graphql-bugfix/SKILL.md` | `~/.agents/skills/graphql-bugfix/SKILL.md` |
-| Claude Code | `.claude/skills/graphql-bugfix/SKILL.md` | `~/.claude/skills/graphql-bugfix/SKILL.md` |
-
-Copilot also supports `.agents/skills` and `.claude/skills`. Prefer one discovered copy per skill name for a given agent. Portable metadata does not make vendor-specific commands or permissions portable. [S2, S4, S10]
-
-Paste this into the selected `SKILL.md`:
-
-```markdown
----
-name: graphql-bugfix
-description: Investigate and fix a GraphQL behavior bug with evidence, a regression test, and contract verification. Use for incorrect data, null results, or resolver lookup failures.
----
-
-# GraphQL bug-fix procedure
-
-1. Read the supplied ticket and applicable project instructions.
-2. Confirm the working tree state; preserve unrelated local changes.
-3. Trace the query through schema, resolver, service, repository, and data source.
-4. Reproduce the reported behavior using the project's actual setup.
-5. Explain the root cause with file references and observed evidence.
-6. Propose the smallest fix and a regression test. If asked to investigate
-   only, stop here and report findings.
-7. When implementation is authorized, show the regression test failing for
-   the expected reason, implement the fix, and rerun the test.
-8. Run relevant broader checks and verify the GraphQL response directly
-   when the required local environment is available.
-9. Review the diff for contract changes, authorization, and unrelated edits.
-10. Report the cause, fix, commands, real results, and remaining uncertainty.
-
-Never invent test output or treat an unavailable environment as a passing check.
-```
-
-Keep the folder name and `name` aligned. For initial verification, explicitly ask: **“Use the graphql-bugfix skill to investigate the attached ticket; do not edit yet.”** Claude also supports `/graphql-bugfix`. Check the actual skill picker/menu supported by your client instead of assuming every extension shares slash commands. [S2, S4, S10]
-
-## VI.7 Create different named agents
-
-Different roles need separate definitions, not renamed copies of `AGENTS.md`. Suggested original roles:
-
-| Role | Assignment | Expected result |
-|---|---|---|
-| GraphQL investigator | Trace behavior without editing | Ranked hypotheses and evidence |
-| GraphQL reviewer | Inspect a supplied diff and source | Findings ordered by severity |
-| Test planner | Identify missing behavioral coverage | Test cases and fixture requirements |
-
-For Copilot, create `.github/agents/graphql-reviewer.agent.md`:
-
-```markdown
----
-name: GraphQL Reviewer
-description: Review a supplied GraphQL diff for correctness and contract risks.
-tools: ['search/codebase', 'search/usages']
----
-
-Review the supplied diff and relevant source. Do not implement changes.
-Check ID semantics, authorization, nullability, and missing regression coverage.
-For each finding, give severity, file location, triggering condition, and impact.
-Distinguish confirmed defects from questions. If source or diff context is
-insufficient, request that context instead of claiming a complete review.
-```
-
-Select **GraphQL Reviewer** from the agent dropdown. Attach the diff: this deliberately limited example has no terminal tool to obtain it. Use the editor's tool configuration to select additional tools supported by your actual harness. Copy the format to create `graphql-investigator.agent.md` and `test-planner.agent.md`, changing their names, descriptions, and assignment bodies. [S3]
-
-For Claude Code, create `.claude/agents/graphql-reviewer.md`:
-
-```markdown
----
-name: graphql-reviewer
-description: Review GraphQL changes when an independent code review is requested.
-tools: Read, Grep, Glob
----
-
-Read the supplied diff and relevant source without editing.
-Check external versus internal identifiers, authorization, nullability,
-and whether tests exercise the failing behavior.
-Return prioritized findings with file references and concrete impact.
-State what could not be verified. Request a diff if none was supplied.
-```
-
-Ask Claude to use the `graphql-reviewer` subagent. The allowlist excludes shell and editing tools; prose alone is not a sandbox. [S6]
-
-Codex has native subagents and its own custom-agent configuration. Do not put Copilot `.agent.md` files in the repository and assume Codex registers them. Use the current [Codex custom-agent documentation](https://learn.chatgpt.com/docs/agent-configuration/subagents) for its configuration format. A configuration-free starting prompt is: “Delegate a read-only review of this diff to a subagent; report correctness and authorization findings.” This is a requested role, not a persisted named-agent file. [S11]
-
-## VI.8 tools.md versus actual tool configuration
-
-Create `docs/ai/tools.md` as a runbook, for example:
-
-```markdown
-# Local verification tools
-
-## Repository checks
-- Build: dotnet build
-- Tests: dotnet test
-- Focused regression: dotnet test --filter FullyQualifiedName~Vehicle_WithExternalId_ReturnsVehicle
-- Review: git status --short and git diff
-
-Run these from the solution directory. These are starter commands: replace
-them with the exact solution/project arguments and prerequisites used in CI.
-Record required local services here, without passwords or access tokens.
-
-## Evidence
-Report the command, working directory, exit status, and relevant result.
-If a database or SDK is unavailable, report the blocked check explicitly.
-```
-
-This file explains usage; it cannot register an MCP server, enable shell access, or change approvals. For Copilot, use **MCP: Add Server** in the Command Palette. Current VS Code guidance prefers portable `.mcp.json` with a top-level `mcpServers` object for new workspace setups. Legacy `.vscode/mcp.json` uses `servers`; do not mix schemas. Use the provider's documented transport, executable/URL, and authentication. No MCP server is required for this local GraphQL exercise. [S12]
-
-## VI.9 Claude adapter and extension workflow
-
-When sharing the root agreements, create `CLAUDE.md`:
-
-```markdown
-@AGENTS.md
-
-Read docs/ai/tools.md before selecting verification commands.
-```
-
-This is Claude's documented import syntax. Current Claude AGENTS support depends on version/settings: its default can use AGENTS as a fallback when CLAUDE files are absent; it does not unconditionally load both. The explicit import is useful when retaining a Claude adapter. [S9]
-
-In the Claude Code VS Code panel, attach the ticket and use the skill prompt from VI.6. In the Codex extension, open the same repository, attach the ticket, and request its skill. Review edits through VS Code Source Control. Extension settings and permissions belong to the selected product, even when the files are edited in the same window. [S7, S8]
-
-## VI.10 Check that the setup works
-
-Use a new conversation after configuration changes and run this harmless check:
-
-```text
-Do not modify files. Identify the project instructions you can actually access.
-Read docs/ai/tools.md. State the verification commands and the rule for external
-versus internal IDs. Tell me whether graphql-bugfix is discoverable as a skill.
-Distinguish automatically supplied instructions from files you opened on request.
-```
-
-Then request investigation of ABC-123. Confirm the agent inspects code before proposing an ID lookup change. A statement that it loaded instructions is not proof of compliance: inspect file references, tool activity, and the resulting behavior. For Copilot, check discovered customizations and response References; use agent debug logs when discovery fails. [S1]
-
-| Symptom | Check |
-|---|---|
-| File is ignored | Exact name, saved content, repository root, selected extension/harness |
-| Targeted rules do not apply | Actual path versus `applyTo`; active session type |
-| Skill is absent | Supported directory, valid YAML, matching folder/name, descriptive trigger |
-| Named agent is absent | Correct vendor directory and extension; valid frontmatter |
-| Reviewer cannot inspect enough | Attach missing context or deliberately adjust its tool allowlist |
-| Local setup works but remote does not | Verify which host/container owns the workspace and user configuration |
-| Command fails | Check installed SDK, working directory, project arguments, and service prerequisites |
-
-Commit shared configuration with normal code review. Keep personal preferences in user scope, secrets out of Markdown, and task details in `docs/tasks/ABC-123.md`. Update guidance when real repository commands or architecture change.
-
-## VI.11 Official sources
-
-Retrieved 2026-10-02. These references substantiate the new VS Code section and the related corrections; the rest of the historical handbook is not newly certified by this update.
-
-- [S1 — VS Code custom instructions](https://code.visualstudio.com/docs/agent-customization/custom-instructions)
-- [S2 — VS Code agent skills](https://code.visualstudio.com/docs/agent-customization/agent-skills)
-- [S3 — VS Code custom agents](https://code.visualstudio.com/docs/agent-customization/custom-agents)
-- [S4 — OpenAI skills](https://learn.chatgpt.com/docs/build-skills)
-- [S5 — Codex AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
-- [S6 — Claude subagents](https://code.claude.com/docs/en/sub-agents)
-- [S7 — Codex IDE extension](https://learn.chatgpt.com/docs/codex/ide)
-- [S8 — Claude Code in VS Code](https://code.claude.com/docs/en/vs-code)
-- [S9 — Claude project memory and imports](https://code.claude.com/docs/en/memory)
-- [S10 — Claude skills](https://code.claude.com/docs/en/skills)
-- [S11 — Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
-- [S12 — VS Code MCP configuration](https://code.visualstudio.com/docs/agent-customization/mcp-servers)
-
----
-
-
-# Part VII — Project-Type Playbooks 🧭
-
-Every playbook below follows the same shape: **stable instructions vs. task-specific requests**, plus a **"Can parallel agents help here?"** subsection. Parallelism depends on task structure and shared mutable state — not on the project label — see Part VIII for the full framework.
-
-## 🔧 VII.1 Maintenance project
-
-**Stable project instructions might include:** test/build/lint commands, coding conventions, module ownership map, deployment boundaries.
-**Task-specific (not instructions):** the current ticket's acceptance criteria.
-
-```text
-1. Pull/sync changes          10. Make the smallest complete change
-2. Inspect repo state (git)   11. Add/update tests
-3. Read user story/issue      12. Run strongest relevant checks
-4. Identify acceptance        13. Review diff
-   criteria                   14. Review security/compatibility
-5. Start agent in correct     15. Update relevant docs
-   scope                      16. Summarize what changed
-6. Confirm instruction        17. Decide whether a stable rule
-   sources                        should update project instructions
-7. Give/read task brief       18. Do NOT auto-modify global instructions
-8. Inspect relevant evidence
-9. Confirm assumptions
-```
-
-**Can parallel agents help here?**
-- Best: read-only investigation split across implementation / tests / docs / compatibility.
-- Unsafe: several agents independently changing the same legacy component.
-- Ownership: one agent per bounded module; coordinator integrates.
-- Review agents: test-gap, security, documentation reviewers after implementation.
-
-**📝 Exactly which file do I create or edit, and what do I write in it?**
-
-| What you're capturing | Exact file (project root) | How to create/open it |
-|---|---|---|
-| Stable rule (test/build/lint commands, conventions, ownership map) | `CLAUDE.md` **and/or** `AGENTS.md` **and/or** `copilot-instructions.md` — whichever tool(s) you use, same project root as Part I.5 | `notepad CLAUDE.md` (or `code CLAUDE.md`) if the file doesn't exist yet; otherwise open and append |
-| This ticket's acceptance criteria | A **new** ordinary file, e.g. `docs/tasks/TICKET-456.md` — never inside `CLAUDE.md`/`AGENTS.md` | `mkdir -p docs/tasks` → `notepad docs\tasks\TICKET-456.md`, paste the Part IV.2 template |
-
-Minimal literal example to append to `CLAUDE.md`/`AGENTS.md` (a **stable rule**, generalizable beyond this one ticket):
-```markdown
-## Testing
-Run `npm test` before every commit. Run `npm run lint` and fix all warnings.
-
-## Module ownership
-`src/billing/**` is owned by the billing team — flag any cross-module change there for review.
-```
-Then, in the agent session, point it at the ticket (not at the instruction file — the agent already auto-loads that):
-```text
-"Read docs/tasks/TICKET-456.md. Confirm acceptance criteria, then propose
-the smallest complete change before implementing."
-```
-If, after fixing the ticket, you realize a **new rule** should apply to all future work (e.g., "always add a changelog entry"), that is when you go back and append it to `CLAUDE.md`/`AGENTS.md`/`copilot-instructions.md` — not before, and not for a one-off request.
-
-## 🐛 VII.2 Bug-fixing
-
-```text
-Bug report
-   │
-   ├── Agent A → reproduce / inspect logs
-   ├── Agent B → inspect implementation path
-   ├── Agent C → inspect tests/regressions
-   └── Agent D → alternate root-cause hypothesis
-          ↓
-   Coordinator compares evidence → identifies root cause (not by vote)
-          ↓
-   Minimal fix → implement → regression test → full verification
-```
-- If several candidate fixes are worth comparing, use **isolated branches/worktrees**, not concurrent edits to the same checkout.
-- Never ask multiple agents to "just fix the bug" in the same working tree simultaneously.
-
-**📝 Exactly which file do I create, and what do I write in it?**
-
-A bug report is **task-specific** — it never goes into `CLAUDE.md`/`AGENTS.md`/`copilot-instructions.md`. Create one ordinary file per bug:
-
-```text
-mkdir -p docs/tasks                                         # or: New-Item -ItemType Directory -Force docs\tasks  (🪟)
-notepad docs\tasks\BUG-789.md                                # or: code docs\tasks\BUG-789.md
-```
-Paste a short brief (same shape as Part IV.2, trimmed):
-```markdown
-# BUG-789 — Order totals off by $0.01 on multi-currency carts
-
-## Symptom
-Cart total shown to the customer differs from the amount actually charged
-by $0.01 when the cart contains items in two different currencies.
-
-## Steps to reproduce
-1. Add one USD item and one EUR item to the cart.
-2. View cart total vs. checkout charge.
-
-## Evidence so far
-Suspect rounding in src/pricing/convert.ts — not yet confirmed.
-
-## Definition of done
-Root cause identified, smallest complete fix, regression test added,
-existing pricing tests still pass.
-```
-Then, in a **single-agent session**, tell it to read that file (do not paste the whole bug report into every message):
-```text
-"Read docs/tasks/BUG-789.md. Reproduce the symptom by inspecting
-src/pricing/** and tests/pricing/**. Identify the root cause before
-proposing a fix."
-```
-If you deliberately want **multiple agents** exploring different hypotheses (Part VIII covers the full framework), give each one the **same brief file** but a **different, explicit instruction**, e.g.:
-```text
-# Agent A (reproduce/logs):
-"Read docs/tasks/BUG-789.md. Reproduce the bug and report exact log output. Do not modify any files."
-
-# Agent B (implementation path):
-"Read docs/tasks/BUG-789.md. Trace the code path in src/pricing/** that computes the total. Do not modify any files."
-```
-Only **you** (or a coordinator agent) merge their findings and decide the fix; only **one** agent then implements it.
-
-## 🚀 VII.3 New project
-
-```text
-parallel discovery (requirements / architecture options / security / test strategy)
-      ↓
-shared architecture decision (sync point)
-      ↓
-clear module boundaries / interfaces frozen
-      ↓
-parallel isolated implementation (one owner per module)
-      ↓
-integration
-```
-- Do not let agents independently invent incompatible architectures before the interface is settled.
-- A temporary **project brief** (not permanent instructions) is the right home for the initial goal until conventions stabilize.
-
-**📝 Exactly which file do I create first, and what do I write in it?**
-
-A brand-new project has **no instruction file yet** — you are creating one for the first time, not editing an existing one.
-
-1. Create the project folder and move into it (skip if it already exists):
-   ```text
-   mkdir MyNewApp
-   cd MyNewApp
-   git init                               # optional but recommended
-   ```
-2. Create the **temporary project brief** first (the overall goal — this is *not* a permanent instruction, it will likely be deleted once the project has real conventions):
-   ```text
-   notepad PROJECT-BRIEF.md                 # or: code PROJECT-BRIEF.md
-   ```
-   ```markdown
-   # Project brief — MyNewApp
-
-   ## Goal
-   A REST API for managing customer orders, written in Node.js + PostgreSQL.
-
-   ## Constraints
-   Must run on Azure App Service. Must use TypeScript.
-
-   ## Not yet decided
-   Final folder structure, test framework, CI pipeline — the agent should
-   propose options before implementing.
-   ```
-3. **After** the architecture decision is made (the sync point in the diagram above), create the **permanent** project instruction file — same mechanics as Part I.5 Steps 2–4, just run inside `MyNewApp` instead of the user home folder:
-   ```text
-   notepad CLAUDE.md          :: or AGENTS.md / copilot-instructions.md, matching the tool(s) you use
-   ```
-   ```markdown
-   ## Stack
-   TypeScript, Node.js 22, PostgreSQL via Prisma.
-
-   ## Structure
-   src/routes, src/services, src/db, tests/ — one folder per concern.
-
-   ## Testing
-   Run `npm test` before every commit.
-   ```
-4. In the agent session, reference the brief explicitly for the first request, then rely on auto-discovery afterward:
-   ```text
-   "Read PROJECT-BRIEF.md. Propose two or three architecture options with
-   trade-offs before writing any code."
-   ```
-
-## ☁️ VII.4 DevOps / infrastructure
-
-| Statement | Belongs in |
-|---|---|
-| "Never deploy without explicit approval" | Instruction + real CI/IAM enforcement |
-| "Production AWS account ID" | Not casually in global instructions — use config/secret management |
-| "Terraform plan must be reviewed before apply" | Stable project/organization rule |
-| "Deploy this feature to staging today" | Task-specific request |
-
-**Parallel read-only:** Terraform plan review, Kubernetes manifest review, IAM review, CI/CD analysis, observability review.
-**Parallel isolated writes:** separate modules, independent docs, separate test environments.
-**Single-owner:** `apply`/`deploy` and any external mutation.
-
-## 🛡️ VII.5 Cybersecurity (authorized/defensive work)
-
-Project instructions should capture: written scope, authorized targets, prohibited systems, data-handling requirements, evidence handling, credential restrictions, destructive-action boundaries, reporting requirements, human approval points. **Enforcement** (network segmentation, access control, IAM) is separate from Markdown guidance.
-
-**Parallel read-only specialization:** authN/authZ review, dependency/supply-chain review, input validation, secrets handling, configuration, threat-model review — each independent and non-mutating. Authorized scope must stay explicit; parallelism never broadens authorized activity.
-
-## 🗄️ VII.6 Data / database projects
-
-Cover schema changes, migrations, ETL, analytics, data quality, PII, production queries, rollback in project instructions/docs as appropriate.
-
-**Parallel read-only:** schema impact analysis, query/caller analysis, rollback design, data-volume analysis, compatibility review.
-**Avoid:** concurrent mutation of the same database; migration **execution** should have one controlled owner.
-
-## 🎨 VII.7 Graphic design
-
-```text
-BrandCampaign/
-├── assets/  ├── source/  ├── exports/  ├── references/
-└── project instructions
-```
-**Stable instructions:** brand colors, approved fonts, export dimensions, naming conventions, accessibility rules, do-not-overwrite source files, export/compression formats, approval workflow.
-**Task-specific:** one campaign request — keep as a task brief.
-
-**Parallel agents:** asset inventory, accessibility review, copy consistency, design-system compliance, export checklist, variant exploration — all read-only/independent-output. Never let agents overwrite shared source assets concurrently without isolation/versioning.
-
-## 🎵 VII.8 Music / audio
-
-```text
-AlbumProject/
-├── sessions/  ├── stems/  ├── samples/  ├── masters/
-└── project instructions
-```
-**Stable instructions:** DAW/session conventions, sample rate, bit depth, track naming, source preservation, sample licensing, export/archive formats, do-not-overwrite rules.
-**Task-specific:** "Create a radio edit of Track 4" — task brief, not instruction.
-
-**Parallel agents:** session organization review, track naming audit, metadata/license inventory, export validation, mix notes — read-only. Avoid simultaneous destructive edits to the same DAW session/source assets without proper version isolation.
-
-## 📚 VII.9 Documentation / research
-
-**Stable instructions:** source quality bar, citation rules, terminology, document structure, fact-verification process, review workflow.
-**Task-specific:** one report/article request.
-
-**Parallel agents:** excellent fit — independent source research, fact-checking, terminology review, independent section drafting. The coordinator must reconcile contradictions and normalize terminology before publishing; never resolve conflicting research by majority vote.
-
-## 📱 VII.10 Mobile app development (iOS/Android/cross-platform)
-
-**Stable project instructions might include:** target platforms/OS versions, UI framework (SwiftUI/Jetpack Compose/React Native/Flutter), app-store review guidelines to respect, offline-first rules, permission/privacy requirements, crash-reporting conventions, release/versioning scheme.
-**Task-specific (not instructions):** "add a dark-mode toggle to Settings," "fix the crash on login for Android 14."
-
-**📝 Exactly which file, and what to write:**
-```text
-notepad CLAUDE.md          :: or AGENTS.md / copilot-instructions.md, at the app repo root
-```
-```markdown
-## Platforms
-iOS 16+ (SwiftUI) and Android 13+ (Jetpack Compose). Shared logic in src/shared/.
-
-## Store compliance
-Never request a permission not justified in the App Store/Play Store listing.
-All network calls must use HTTPS; no hardcoded API keys in source.
-
-## Release process
-Version bump follows semver; changelog entry required in CHANGELOG.md.
-```
-**Parallel agents:** read-only split works well — iOS-specific review, Android-specific review, shared-logic review, accessibility (VoiceOver/TalkBack) review, store-compliance review, each independent. **Unsafe:** two agents editing the same shared module (e.g., `src/shared/networking/`) concurrently — give it one owner.
-
-## 🤖 VII.11 Machine learning / data science projects
-
-**Stable project instructions might include:** approved data sources, PII/consent handling, model evaluation metrics and thresholds, reproducibility requirements (seeds, versioned datasets), experiment-tracking tool/location, notebook-vs-production-code boundary, model card/documentation requirement before deployment.
-**Task-specific (not instructions):** "try a gradient-boosted model on the Q3 churn dataset."
-
-**📝 Exactly which file, and what to write:**
-```text
-notepad AGENTS.md          :: or CLAUDE.md / copilot-instructions.md, at the repo root
-```
-```markdown
-## Data handling
-Only use data from data/approved/. Never read from data/raw_pii/ directly —
-it must go through the anonymization pipeline in src/pipeline/anonymize.py first.
-
-## Evaluation
-Report precision/recall/F1 on the held-out test set in results/eval/.
-A model is not "done" until it beats the current baseline in results/baseline.json.
-
-## Reproducibility
-Set random_state=42 everywhere. Record dataset version + git commit in every experiment log.
-```
-**Parallel agents:** read-only hypothesis exploration (try model A vs. model B vs. feature set C) is a strong fit **if each writes to its own experiment-output folder** (e.g., `results/exp-A/`, `results/exp-B/`) — never the same output file. A coordinator then compares metrics and picks a winner; never average/vote on model choice without inspecting the actual evaluation evidence.
-
-## 🕹️ VII.12 Game development
-
-**Stable project instructions might include:** engine/version (Unity, Unreal, Godot), target frame-rate/platform budget, asset-pipeline conventions, save-file/version compatibility rules, scripting language conventions, do-not-break-multiplayer-protocol rule.
-**Task-specific (not instructions):** "add a double-jump ability to the player controller."
-
-**📝 Exactly which file, and what to write:**
-```text
-notepad CLAUDE.md
-```
-```markdown
-## Engine
-Unity 2022 LTS, C#. Target 60fps on the minimum-spec device listed in docs/min-spec.md.
-
-## Save compatibility
-Never change the shape of existing save-file fields without a migration path —
-old saves must still load after an update.
-
-## Assets
-Textures go through scripts/texture-import-preset.json; do not hand-edit import settings.
-```
-**Parallel agents:** read-only split across gameplay-code review, performance/frame-budget review, save-compatibility review, asset-pipeline audit. **Unsafe:** multiple agents editing the same scene file or prefab concurrently (binary/semi-binary formats merge poorly) — one owner per scene/prefab, or isolate in separate branches.
-
-## 📦 VII.13 Open-source library / SDK maintenance
-
-**Stable project instructions might include:** public API stability/semver policy, supported language/runtime versions, contribution/PR conventions, required changelog format, breaking-change approval process, documentation-generation tooling.
-**Task-specific (not instructions):** "add a `retry()` helper to the HTTP client."
-
-**📝 Exactly which file, and what to write:**
-```text
-notepad AGENTS.md          :: open-source repos commonly read this one; add CLAUDE.md/copilot-instructions.md too if used
-```
-```markdown
-## Public API policy
-This is a published package (semver). Do not change any exported function's
-signature without a major-version bump and a CHANGELOG.md "BREAKING" entry.
-
-## Supported versions
-Node.js 18, 20, 22. Do not use syntax newer than what Node 18 supports.
-
-## Docs
-Public API docs are generated from TSDoc comments — update the comment, not docs/api/*.md directly.
-```
-**Parallel agents:** excellent fit for read-only — API-surface diff review, changelog-completeness check, backward-compatibility review, docs-drift check, each independent. Only one agent should ever touch the actual version number / publish step.
-
-## 🏚️ VII.14 Legacy system migration / modernization
-
-**Stable project instructions might include:** which legacy behaviors must be preserved byte-for-byte vs. which are allowed to change, the target framework/language, a list of "do not touch yet" modules, feature-flag/rollout strategy, parallel-run/shadow-testing requirements.
-**Task-specific (not instructions):** "migrate the invoice-printing module to the new template engine."
-
-**📝 Exactly which file, and what to write:**
-```text
-notepad AGENTS.md
-```
-```markdown
-## Migration scope
-Target: migrate from AngularJS to React, module by module, behind feature flags.
-Do NOT touch src/legacy/payroll/** yet — it is out of scope for this phase.
-
-## Behavior preservation
-Any migrated screen must produce identical output for the existing test fixtures
-in tests/golden/** before it is considered complete.
-```
-**Parallel agents:** read-only discovery (inventory legacy modules, map dependencies, identify hidden behavior via tests/logs) is a strong early-phase fit. Once migration begins, assign **one module per agent/owner** — never two agents migrating the same legacy module at once, since shared legacy code tends to have undocumented coupling.
-
-## 🚨 VII.15 Incident response / on-call (SRE)
-
-**Stable project instructions might include:** severity definitions, who/what must be paged, read-only-until-authorized rule during live incidents, required postmortem template/location, rollback-first-investigate-after policy, audit-logging requirement for any production change.
-**Task-specific (not instructions):** "P1 — checkout service returning 500s since 09:42 UTC."
-
-**📝 Exactly which file, and what to write:**
-```text
-notepad docs/tasks/INCIDENT-2026-10-02.md     :: incident details are always task-specific, never a stable instruction
-```
-```markdown
-# INCIDENT-2026-10-02 — Checkout 500s
-
-## Timeline
-09:42 UTC — error rate spike detected
-09:45 UTC — on-call paged
-
-## Current hypothesis
-Recent deploy (commit abc1234) introduced a null-pointer on empty cart.
-
-## Constraint
-Read-only investigation only until a human approves any production change.
-
-## Definition of done
-Root cause confirmed, rollback or fix approved and applied, postmortem drafted.
-```
-Prompt example:
-```text
-"Read docs/tasks/INCIDENT-2026-10-02.md. Investigate read-only — inspect logs,
-recent commits, and the deploy diff. Propose a rollback or fix. Do NOT apply
-any change without explicit human approval."
-```
-**Parallel agents:** read-only investigation (logs, recent-deploy diff, dependency/infra health, customer-impact scope) run well in parallel **during** an incident. **The actual remediation action (rollback/deploy/config change) must have exactly one human-approved owner** — never parallelized.
-
-## ✅ VII.16 QA / test-automation project
-
-**Stable project instructions might include:** test framework/runner, flaky-test policy, required coverage areas, test-data management rules, what counts as a "real" bug vs. environment flake, CI gating rules.
-**Task-specific (not instructions):** "add regression tests for the ABC-123 cancellation-reason bug."
-
-**📝 Exactly which file, and what to write:**
-```text
-notepad copilot-instructions.md     :: or CLAUDE.md / AGENTS.md, at the repo root
-```
-```markdown
-## Test framework
-Jest for unit tests, Playwright for end-to-end. New features require both.
-
-## Flaky tests
-Never add `test.skip` to silence a flaky test — open a tracked issue and
-quarantine it in tests/quarantine/ instead.
-
-## Test data
-Use factories in tests/factories/, never hand-written fixtures with real-looking PII.
-```
-**Parallel agents:** strong fit — coverage-gap analysis, flaky-test inventory, test-data audit, and new-regression-test authoring can run independently as long as each writes to its own new test file; have one reviewer merge and dedupe overlapping test additions.
-
-## 🧩 VII.17 Any other project type
-
-```text
-1. identify independent workstreams      6. isolate write work if needed
-2. identify shared mutable state         7. define deliverables
-3. assign ownership                      8. run agents
-4. decide read-only vs write             9. reconcile evidence
-5. isolate write work if needed         10. integrate centrally, verify the whole result
-```
-
----
-
-# Part VIII — Parallel Agents Deep Dive ⚡
-
-> [!NOTE]
-> Parallelism is a property of **task structure**, not project type. Ask: *can this work be safely decomposed into independent or isolated workstreams whose results can later be reconciled?*
-
-## 🧭 VIII.1 Decision framework
-
-```text
-Can the work be split into independent questions/outputs?
-        │
-        ├── NO → prefer one agent / sequential work
-        │
-        └── YES
-              ▼
-Will agents need to modify the same files/shared state?
-        │
-        ├── YES → read-only parallel investigation first;
-        │         isolated branches/worktrees only if genuinely needed;
-        │         centralize integration
-        │
-        └── NO
-              ▼
-Can ownership be assigned clearly?
-        │
-        ├── NO → sequential coordination is safer
-        │
-        └── YES
-              ▼
-Can environments/resources be isolated?
-        │
-        ├── NO → parallel reads fine; parallel mutations risky
-        │
-        └── YES
-              ▼
-Is coordination/merge cost lower than time saved?
-        │
-        ├── NO → one agent is simpler
-        └── YES → parallel work may help
-```
-
-Evaluate: independence of subproblems, overlapping file ownership, shared mutable state, external side effects, reversibility, production exposure, security/privacy risk, merge complexity, instruction inheritance, context availability, environment isolation, tool limitations, cost/token overhead, verification requirements. **More agents ≠ a better answer.**
-
-## 🧱 VIII.2 Three patterns
-
-**Pattern A — Parallel read-only investigation** (safest default for uncertain/complex work)
-```text
-                         Coordinator
-          ┌───────────────────┼───────────────────┐
-          ▼                   ▼                   ▼
-  Implementation         Test analysis      Security/API
-   investigation         investigation       investigation
-          └───────────────────┼───────────────────┘
-                              ▼
-                     Evidence reconciliation → controlled implementation
-```
-Good for: unfamiliar repos, bug investigation, root-cause hypotheses, test-gap analysis, security review, performance investigation, dependency research, architecture discovery, documentation research.
-**Default rule:** if ownership is unclear, parallelize reading/reasoning before parallelizing writes.
-
-**Pattern B — Parallel isolated implementation** — use when workstreams are clearly separable:
-```text
-Repository
-├── Worktree A → backend branch → Agent A
-├── Worktree B → tests branch   → Agent B
-└── Worktree C → docs branch    → Agent C
-```
-Coordinator reviews and integrates afterward.
-
-**Pattern C — Parallel external/tool operations** (highest risk): multiple agents calling MCP tools, editing issues/tickets, cloud changes, DB mutations, deployments, package publishing, messaging. These require stricter coordination and often stay single-owner/sequential. Never recommend parallel execution merely because it is technically possible.
-
-## 🔬 VIII.3 Product capabilities — researched, not assumed
-
-| Capability | 🟣 Claude Code | 🔵 Codex | 🟢 Copilot CLI |
-|---|---|---|---|
-| Native subagents | ✅ documented (Explore, Plan, General-purpose, custom) | ❌ not documented | ✅ documented (`explore`, `task`, `general-purpose`, `code-review`, `security-review`, `research`, `rubber-duck`, custom `.agent.md`) |
-| Native parallel dispatch/monitoring | ✅ `claude agents` (agent view, research preview) | ❌ not documented | ✅ background `task` invocations within a session; `write_agent`/`read_agent` for follow-ups |
-| Agent-team/swarm feature | ✅ "agent teams" (experimental, disabled by default) | ❌ not documented | ❌ not documented as a named feature |
-| Background/cloud agents | ✅ "Projects" (cloud threads, public beta) | ✅ ChatGPT/Codex cloud tasks | ✅ `copilot --cloud` sandboxed sessions |
-| Multiple independent CLI sessions | ✅ (ordinary OS/terminal capability) | ✅ (ordinary OS/terminal capability) | ✅ (ordinary OS/terminal capability) |
-| Built-in Git worktree integration | ✅ documented native awareness; agent-view sessions auto-isolate into worktrees | ❌ manual Git workflow | ❌ manual Git workflow |
-| Context/instruction inheritance documented | ✅ (CLAUDE.md loaded by default except Explore/Plan, `omitClaudeMd`) | N/A (no subagents) | ✅ documented per-agent-type (see Part I.7) |
-| Maximum documented concurrency | Not a fixed number; limited practically by usage/cost | Not documented | Not documented |
-
-> [!IMPORTANT]
-> Distinguish: **(A)** a native product capability, **(B)** ordinary OS/terminal capability (e.g., "open three terminals"), **(C)** an ordinary Git branch/worktree workflow, **(D)** a recommended engineering pattern. Never blur these. If a vendor does not document a capability, say: *"Not documented / not guaranteed."*
-
-## ▶️ VIII.4 Exact commands for parallel use
-
-| Product | Command | Purpose | Creates new session? | Can mutate files? |
-|---|---|---|---|---|
-| 🟣 Claude | `claude agents` | Dispatch/monitor background sessions | Yes, per dispatched row | Yes, in its own worktree |
-| 🟣 Claude | subagent delegation via prompt / `Task`-style tool | Delegate a side task within one session | New context, same session | Depends on subagent's tool access |
-| 🔵 Codex | separate `codex` invocations (terminals/scripts) | Manual parallel sessions | Yes, each is independent | Yes — coordinate working directories yourself |
-| 🟢 Copilot | `task` tool (background mode) | Dispatch a subagent within the current session | New sub-context | Depends on agent type/tools granted |
-| 🟢 Copilot | `write_agent` / `read_agent` | Message/poll a running or idle background agent | No (same agent) | N/A |
-
-If there is no dedicated command for a pattern, the supported alternative is a manual multi-session workflow (next section).
-
-## 🧵 VIII.5 Manual multi-session workflow when native orchestration is absent/insufficient
-
-```text
-Terminal 1 → Agent/session A
-Terminal 2 → Agent/session B
-Terminal 3 → Agent/session C
-```
-
-**Same working tree:** safe mainly for read-only investigation; risky for concurrent writes.
-**Separate worktrees/isolated directories:** suitable for independent writes.
+### Create
 
 ```text
 repo/
-worktree-agent-a/
-worktree-agent-b/
-worktree-agent-c/
+└── docs/
+    └── tasks/
+        └── ABC-123.md
 ```
 
-This is **Git functionality**, not a Claude/Codex/Copilot feature (except Claude's documented worktree-aware agent view). Consider: branches, worktrees, uncommitted changes, merge/rebase, lockfiles, generated files, shared ignored files, common external resources. Do not add worktree complexity for trivial tasks.
+Windows PowerShell:
 
-## 📄 VIII.6 Parallel agent task-contract template
+```powershell
+New-Item -ItemType Directory -Force docs\tasks | Out-Null
+notepad docs\tasks\ABC-123.md
+```
+
+VS Code: open **File → Open Folder** on the repo root → Explorer (`Ctrl+Shift+E`) → New Folder `docs/tasks` → New File `ABC-123.md` → paste and save.
 
 ```markdown
-# Agent Assignment
-
-## Objective
-Investigate integration-test failures related to order cancellation.
-
-## Mode
-Read-only investigation.
-
-## Scope
-Inspect: src/orders/**, tests/integration/orders/**
-Do not inspect unrelated services unless required to explain a direct dependency.
-
-## Questions
-1. Can the failure be reproduced?
-2. What is the likely root cause?
-3. Which evidence supports the conclusion?
-4. Which regression test would detect the bug?
-
-## Allowed actions
-- read files, search history if available, run non-destructive tests if appropriate
-
-## Forbidden actions
-- no production changes, no deployment, no database mutation, no source edits, no external communication
-
-## Output
-Findings, supporting evidence, relevant files/tests, uncertainties, recommended next step.
+# ABC-123 — vehicle query returns null
+## Goal and expected behavior
+## Actual behavior and reproduction
+## Acceptance criteria
+## Non-goals and compatibility constraints
+## Evidence available
+## Required tests and definition of done
 ```
 
-Write-enabled version adds:
-```markdown
-## Ownership
-You may modify only: docs/**
-Do not modify: src/**, tests/**, package/lock files
-```
+### Invoke and verify
 
-Every worker should know: objective, scope, ownership, allowed/forbidden actions, expected output, dependencies, completion criteria.
+Tell the assistant to read/attach `docs/tasks/ABC-123.md`. Ask it to restate acceptance criteria before edits. Inspect its citations/tool activity and compare the summary to the brief.
 
-## 🧪 VIII.7 Labs
+**Break it:** use a made-up filename. Repair by checking current directory, exact spelling, file saved, and path relative to workspace. A task brief is never proof of auto-loading.
 
-**Lab 1 — Parallel bug-fixing.** Symptom: *orders occasionally transition to Paid after cancellation.*
-```text
-Agent A → state-transition implementation      Agent D → tests & reproduction
-Agent B → concurrency/race analysis            Agent E → logs/observability assumptions
-Agent C → persistence/transaction behavior
-        ↓
-Coordinator compares evidence → root cause established (not by vote)
-        ↓
-Minimal fix → one controlled implementation → regression test → full verification
-```
-Two isolated candidate fixes may be explored in separate worktrees when comparison is genuinely useful — never ask five agents to "fix the bug" in the same checkout.
+## 2.2 Project instructions
 
-**Lab 2 — Recurring workflow → skill.** Before: every maintenance ticket repeats the same long investigation prompt. After: that stable procedure becomes a 🟣/🔵/🟢 skill (including a Codex skill under `.agents/skills`) — but the ticket's specific content stays out of the skill.
+### Paths are product-specific
 
-**Lab 3 — External system → MCP.** Configure a safe, read-only documentation/search MCP server; verify with `/mcp` (Codex/Copilot) or `claude mcp list`; call it naturally in a prompt; remove/rotate credentials when done.
-
-**Lab 4 — Multi-agent review.** After implementation:
-```text
-Implementation
-     ├── Agent A → correctness review          ├── Agent D → compatibility review
-     ├── Agent B → test-gap review              └── Agent E → documentation review
-     └── Agent C → security/privacy review
-```
-Reviewers stay read-only; the coordinator examines evidence and decides which findings require action — never accept a finding merely because multiple agents repeat it.
-
-**Lab 5 — Parallel new-project lab.** Starting a new service/application:
-```text
-Phase 1 — independent read-only exploration (parallel)
-  Agent A → requirements decomposition   Agent D → test strategy
-  Agent B → architecture options         Agent E → operational concerns
-  Agent C → security/threat considerations
-        ↓
-Coordinator chooses/records the foundational decisions (one owner, not a vote)
-        ↓
-Phase 2 — define stable module boundaries/interfaces (coordinator or single agent)
-        ↓
-Phase 3 — parallel implementation only after interfaces are frozen
-  Agent A → domain module   Agent C → API layer
-  Agent B → persistence adapter   Agent D → documentation
-        ↓
-Integration checkpoints: each agent's output compiles/tests against the frozen interface;
-coordinator integrates and runs full verification.
-```
-Do not let several agents independently invent incompatible architectures — Phase 1 output is advisory input to one coordinator decision, and Phase 3 only starts once module contracts are frozen.
-
-## ⚠️ VIII.8 Shared mutable state hazards
-
-```text
-Git index / working tree      build output / artifacts      ports
-lockfiles                     temporary files                Docker containers
-package caches                local databases                migration state
-message queues                browser sessions                shared test accounts
-cloud environments            CI resources                    external APIs
-MCP servers                   issue trackers                  synced/network-storage files
-```
-
-Examples: two agents running migrations against the same local DB; two agents rewriting the same lockfile via different dependency changes; two agents binding the same port; two agents creating the same ticket via MCP.
-
-**Prevention:** read-only mode; separate worktrees; separate build dirs; unique ports; separate DBs/schemas/containers/test accounts; idempotency; single-owner external mutations; coordinator approval.
-
-## 🔌 VIII.9 Parallel agents + MCP / skills / instructions
-
-- **MCP:** parallel reads are often fine; parallel mutations (create/update/delete issues, cloud changes, deployments, financial actions) require explicit single-owner coordination. Verify whether multiple agents can call the same MCP server concurrently and whether state/credentials are shared before assuming it's safe.
-- **Skills:** a shared skill can be used by many agents concurrently, but the skill's *actions* still need concurrency-safe design — the skill itself doesn't grant safety.
-- **Instructions:** never infer inheritance from the fact that the parent has access.
-
-| Context source | Main/session agent | Built-in subagent | Custom subagent | Guaranteed/documented? |
-|---|---|---|---|---|
-| Global instructions | ✅ | varies by type | varies by config | 🟢 documented per-type; 🟣 documented (CLAUDE.md loaded unless `omitClaudeMd`); 🔵 N/A |
-| Project instructions | ✅ | varies | varies | same as above |
-| Skills | ✅ | varies | varies | 🟣 documented; 🟢 documented; 🔵 N/A |
-| MCP/tools | ✅ | varies | varies | check per-agent tool grants |
-| Permissions/sandbox | ✅ | inherited, often restricted | configurable | 🟣 "inherits parent's permission rules, most run with restricted tool set" |
-
-If inheritance is not guaranteed, include essential constraints explicitly in the delegated task (see VIII.6 template).
-
-## 🧑‍✈️ VIII.10 Coordinator responsibilities & synchronization points
-
-The coordinator: understands the task, chooses whether parallelism helps, decomposes work, defines scope, prevents overlapping ownership, passes necessary context, sets safety boundaries, tracks dependencies, collects results, compares evidence, resolves contradictions, integrates changes, reviews the final diff, runs final verification, reports actual results. The coordinator must **not**: blindly trust a subagent summary, merge everything automatically, decide by majority vote, assume full instruction inheritance, allow parallel destructive actions without coordination, or declare completion before integrated verification.
-
-```text
-Phase 1 — parallel investigation
-        ↓ SYNC POINT — reconcile facts
-Phase 2 — architecture/plan decision
-        ↓ SYNC POINT — freeze interfaces/ownership
-Phase 3 — isolated implementation
-        ↓ SYNC POINT — integrate branches/results
-Phase 4 — parallel read-only review
-        ↓ SYNC POINT — fix findings
-Final verification
-```
-
-## ❌ VIII.11 When parallel agents are a bad idea
-
-Tiny one-line fix; single tightly coupled function; one config file; single migration execution; production deployment; credential rotation; destructive data repair; single lockfile update; unpartitioned refactor; unclear requirements; tasks where every worker needs every other worker's intermediate result. **One capable agent is often faster and safer for small/tightly coupled work.**
-
-## 💰 VIII.12 Cost, context, and quality trade-offs
-
-More agents can mean more token/compute usage, duplicated repository reading, duplicated web research, more merge work, more inconsistencies, more context transfer, higher tool/API load. Parallelism should optimize the overall task outcome, not maximize agent count. Cite official usage/limit documentation when available (e.g., Claude subagent requests "count toward the same usage limits as your main conversation") rather than inventing numbers.
-
-## 🔍 VIII.13 Observability & failure recovery
-
-**Observability:** inspect running agents/tasks (`claude agents`; Copilot `list_agents`/`read_agent`), identify which agent produced a result, inspect logs/transcripts, cancel (`stop_powershell`-equivalent/process controls), resume, trace tool/MCP actions, distinguish completed vs failed work.
-
-| Failure | Detection | Containment | Recovery |
-|---|---|---|---|
-| Agent hangs/fails | No status update; error status | Cancel/stop the agent | Re-run with narrower scope |
-| Edits forbidden files | Diff review | Revert via git | Re-issue task with explicit ownership |
-| Conflicts with another agent | Merge conflict / overlapping diffs | Pause both | Sequential reconciliation |
-| Stale state / lost instructions | Unexpected behavior | New session | Re-verify instruction sources |
-| Duplicated external action | Two identical tickets/deployments | Flag immediately | Manual cleanup; add idempotency |
-
-Never hide a failure merely to finish the workflow.
-
-## 📋 VIII.14 Parallel-agent quick-decision table
-
-| Situation | Parallel agents? | Recommended pattern |
+| Product/session | Common project convention | Scope note |
 |---|---|---|
-| Small typo | Usually no | One agent |
-| One-file bug | Usually no | One agent + optional reviewer |
-| Difficult intermittent bug | Often useful | Parallel read-only hypotheses |
-| New system architecture | Discovery yes; implementation later | Parallel research → sync |
-| Large monorepo investigation | Often useful | Partition by service/domain |
-| Security review | Often useful | Independent read-only reviewers |
-| Dependency upgrade | Useful for research | Parallel research, single manifest owner |
-| Database migration | Analysis yes; execution controlled | Parallel review, one migration owner |
-| Production deployment | Usually no for mutations | One controlled owner |
-| Documentation research | Very useful | Parallel source research |
-| Shared DAW/source editing | Risky | Isolate or sequential |
-| Multiple independent modules | Often useful | Isolated branches/worktrees |
-| Same file modification | Usually avoid | Sequential or isolated alternatives |
+| Codex CLI/IDE | `AGENTS.md`; Codex walks from project root to current directory, with override behavior | Project `.codex/` config is trust-gated |
+| Claude Code | `CLAUDE.md`; `.claude/rules/` supports scoped rules | Read current Claude memory docs; files above cwd load at launch, nested files can load when read |
+| GitHub Copilot CLI | `.github/copilot-instructions.md`, `AGENTS.md`, `CLAUDE.md`, modular instructions | `/instructions`; no general precedence order |
+| VS Code Local | `.github/copilot-instructions.md`, `.github/instructions/*.instructions.md`, settings/profile formats | Local behavior is not the same as Agent Host |
+| VS Code Agent Host | Depends on selected harness; use its supported format/path | Use Session Target and customization editor |
 
-## 💬 VIII.15 Natural-language delegation examples (not special syntax)
+### Make a useful shared rule
+
+```markdown
+# Repository working agreements
+- Read the linked task brief before changing behavior.
+- Preserve public API and existing behavior unless acceptance criteria authorize a change.
+- Run `dotnet test <verified-project-or-solution>` for code changes.
+- Report actual commands/results; distinguish blocked checks from passes.
+- Do not commit, push, or deploy unless explicitly requested.
+```
+
+Replace example commands after checking README, solution files, CI, and team guidance.
+
+### Manual workflow
+
+1. Choose one target harness and scope: workspace for shared rules; user scope for personal habits.
+2. Create the *exact* product-supported path/file; do not create near-matches like `agents.md` if the tool requires `AGENTS.md`.
+3. Keep content short, stable, and checkable. Link to detailed architecture/runbooks instead of duplicating them.
+4. Save. For cross-session discovery, start a fresh session where required.
+5. Use the product’s instruction/context inspector when available.
+6. Ask a harmless question whose correct answer is only in the file.
+7. Confirm behavior through file references and tool results; “I loaded it” is not sufficient.
+
+**VS Code creation:** select the actual **Session Target** first → run **Chat: Open Customizations** → select **Instructions** → **New (Workspace/User)** → choose the supported format/location → save. In Copilot CLI, create `.github/copilot-instructions.md` using Explorer or an editor, then run `/instructions` to check discovery and enablement. In Claude Code, create `CLAUDE.md` and start a session from the project; inspect loaded instructions or ask for a project fact. In Codex, create `AGENTS.md` at repository root, start Codex in that repository, and ask it to identify a verified project command from the file. These files are not interchangeable merely because they contain Markdown.
+
+**Prompt to draft (not blindly install) instructions:**
 
 ```text
-"Use multiple agents to investigate this bug in parallel. Keep all agents
-read-only. One should inspect implementation, one tests, one API
-compatibility. Reconcile the evidence before proposing a fix."
-
-"Split this feature into independent workstreams. Do not allow concurrent
-edits to the same files. Use isolated workspaces/worktrees if supported.
-Return with the integration plan before any destructive or external action."
-
-"Run an independent security review and test-gap review in parallel after
-implementation. Do not modify files."
+Inspect this repository's README, source layout, tests, CI, and existing
+instruction files. Propose only stable, evidenced rules for [chosen harness
+and path]. Cite evidence for every build/test command. Do not create or edit
+files yet. Identify conflicts, unsupported assumptions, secrets, and a
+harmless discovery test; wait for approval.
 ```
-These are natural-language requests interpreted by the agent/orchestrator — not dedicated CLI flags, except where Part VIII.4 lists an actual command.
 
+### Path-specific instructions
+
+VS Code/Copilot `*.instructions.md` can use frontmatter such as:
+
+```markdown
+---
+description: Apply GraphQL resolver guidance
+applyTo: "src/Api/GraphQL/**"
 ---
 
-# Part IX — Writing & Maintaining Instructions 📐
-
-## ✍️ IX.1 Writing effective instructions
-
-Good instructions are: specific, stable, actionable, scoped, non-contradictory, verifiable where possible, proportional, short enough to remain useful.
-
-| ❌ Bad | ✅ Better |
-|---|---|
-| "Always make perfect code." | "Before modifying public APIs, inspect callers and existing compatibility tests." |
-| "Use best practices." | "Preserve backward compatibility unless the task explicitly authorizes a breaking change." |
-| "Never make mistakes." | "Run the project's test command before reporting completion." |
-| "Do everything professionally." | "State assumptions that materially affect implementation or verification." |
-
-Use imperative wording, conditional rules, explicit scope, explicit approval boundaries, and pointers to sources of truth instead of duplicating detail.
-
-## 🔄 IX.2 Instruction hygiene lifecycle
-
-```text
-Add only stable, useful guidance
-        ↓
-Observe real agent behavior
-        ↓
-Fix ambiguous instructions
-        ↓
-Remove obsolete rules
-        ↓
-Split narrowly-scoped rules into path-specific files
-        ↓
-Move procedures to skills
-        ↓
-Move detailed facts to docs
-        ↓
-Audit for contradictions
+- Preserve schema names, types, and nullability unless the ticket authorizes a contract change.
+- Check authorization, cancellation, error behavior, and resolver-to-service boundaries.
 ```
 
-**Audit checklist:** Is this rule still true? Does another file contradict it? Is this project-specific or global? Is this rule really a procedure? Is this content actually documentation? Does it leak secrets? Is it too broad? Is it testable? Does the product still support this behavior?
+`applyTo` patterns are workspace-relative. Claude rules use Claude’s `paths` mechanism instead. Do not copy VS Code fields into Claude or Codex config. Verify the real target file path matches the glob; a plausible-looking rule can silently never activate.
 
-## 📦 IX.3 Context cost and file size
+## 2.3 Prompt files vs task briefs vs skills
 
-```text
-More instructions ≠ a better agent
+**VS Code prompt files:** `.prompt.md` under `.github/prompts` are manually invoked in the Local agent. Official VS Code docs currently say prompt files are **deprecated for Agent Host sessions**, are not loaded there, and Local is planned for removal. For new Agent Host work, prefer a supported skill. For an existing prompt file, check the selected harness and migrate only after verifying the replacement.
+
+**Codex CLI / Claude Code / Copilot CLI:** do not assume VS Code prompt-file schema or `/prompt-name` behavior. Use the product’s documented task/command mechanism or a normal prompt.
+
+VS Code Local example:
+
+```markdown
+---
+name: investigate-bug
+description: Investigate a reproducible bug before edits
+argument-hint: "Ticket ID and symptom"
+agent: agent
+---
+Investigate ${input:ticket}. Read the task brief, reproduce the symptom,
+trace the code, and report evidence and a minimal test plan. Do not edit yet.
 ```
-Symptoms of instruction bloat: important rules ignored, conflicts, reduced task context, harder maintenance, duplicated guidance, later project instructions crowded out (Codex's 32 KiB cap makes this literal).
 
-| Refactor this... | ...into |
-|---|---|
-| Global rules | Concise principles only |
-| Project instructions | Concise rules only |
-| Detailed architecture | Project documentation |
-| Repeatable workflows | Skills |
-| Path-specific rules | Scoped instruction files |
-| One-time requirements | Task briefs |
+Manual use: create `.github/prompts/investigate-bug.prompt.md`, save, select **Local** harness, type `/investigate-bug`, provide the argument, inspect response and references. If it does not appear, check Local-vs-Agent-Host and file extension. Prompt files are not an authorization boundary.
 
-## ⚖️ IX.4 Conflicts and precedence — per tool, never universal
+**Prompt to draft one:** “Create a one-task VS Code Local prompt file for [workflow]. Use only current `.prompt.md` frontmatter fields, scope the work, request evidence, and state expected output. Show the exact file and a manual invocation/failure test. Do not write it until I approve. If I selected Agent Host, recommend a supported skill instead.”
 
-| Tool | What's defined | What's NOT defined |
+## 2.4 Create a skill from zero
+
+A skill packages a reusable **procedure**, often with references/scripts. It is not a specialist agent, and does not inherently provide a secure tool sandbox.
+
+### Agent Skills portable core
+
+The [Agent Skills specification](https://agentskills.io/specification) requires `SKILL.md` YAML frontmatter with `name` and `description`; it defines optional `license`, `compatibility`, `metadata`, and experimental `allowed-tools`. A `SKILL.md` can sit with `scripts/`, `references/`, and `assets/`.
+
+### Do not confuse same metadata with same runtime meaning
+
+| Product | Example project location | Tool-field meaning and caveat |
 |---|---|---|
-| 🟣 Claude | Applicable `CLAUDE.md` files are concatenated; Explore/Plan skip them unless overridden | No strict override stack — don't rely on "project always beats user" |
-| 🔵 Codex | Root→cwd walk, one file per directory, deeper = more specific, `AGENTS.override.md` replaces `AGENTS.md` at its scope | No cross-directory "wins" semantics beyond ordering |
-| 🟢 Copilot | Many sources combined | **No general precedence order** across instruction-file types — explicitly documented |
+| Agent Skills standard | A product-discovered skill directory | `allowed-tools` is experimental; implementations vary |
+| Copilot CLI | `.github/skills/<name>/SKILL.md`, `.claude/skills/`, `.agents/skills/` | Frontmatter `allowed-tools` can **pre-approve** listed tools. It does not create/limit a sandbox. Avoid pre-approving shell unless every script/source was reviewed |
+| Codex | `.agents/skills/<name>/SKILL.md` | Optional `agents/openai.yaml` declares UI metadata, invocation policy, and **tool dependencies** (e.g., required MCP server); it is not an `allowed-tools` security allowlist. Actual MCP/tool config and approvals are host settings |
+| Claude Code | `.claude/skills/<name>/SKILL.md` | Claude-specific `allowed-tools` can skip permission prompts for those tools during that skill’s turn; `disallowed-tools` removes tools while active. These grants/restrictions clear after the turn and remain distinct from organization/IAM controls |
+| VS Code | `.github/skills/`, `.claude/skills/`, `.agents/skills/` | Agent Skills discovery works across supported harnesses; optional frontmatter and invocation behavior remain harness-specific |
 
-**Conflict-debugging workflow:** 1) inspect discovered instruction sources (`/context`, ask Codex, `/instructions`) 2) locate overlapping rules 3) identify the product's scope behavior 4) remove the contradiction 5) start a fresh session 6) retest.
+The Agent Skills spec marks `allowed-tools` experimental; do not assume every host implements it. These examples are deliberately **not equivalent**:
 
-## 🔐 IX.5 Security and enforcement
+```yaml
+# Copilot CLI SKILL.md: this pre-approves shell (intentionally shown as a warning).
+allowed-tools: shell
+```
+
+> [!WARNING]
+> The Copilot example above is **not** a safe default. It demonstrates why the same-looking field is operational: the skill can run shell without the usual confirmation. Beginner skills should omit it unless the skill and every referenced script have been reviewed and the approval change is intentional.
+
+```yaml
+# Claude Code SKILL.md: skip prompts for Read/Grep this skill turn; remove Bash while active.
+allowed-tools: Read, Grep
+disallowed-tools: Bash
+```
+
+```yaml
+# Codex agents/openai.yaml: presentation/invocation metadata plus an MCP dependency.
+# This does not grant/limit tools or permissions.
+interface:
+  display_name: "Build investigation"
+  short_description: "Diagnose .NET build failures"
+policy:
+  allow_implicit_invocation: false
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "companyDocs"
+      description: "Company documentation MCP server"
+      transport: "streamable_http"
+      url: "https://mcp.example.invalid/docs"
+```
+
+The Codex server name/URL above are placeholders; replace them with an approved, configured MCP server or omit `dependencies` for a skill that uses only host-provided tools. Do not copy `allowed-tools` into `agents/openai.yaml`.
+
+### Create an investigation skill
+
+Example for **Copilot CLI only**:
 
 ```text
-Markdown: "Never delete production data."     → behavioral guidance
-IAM / DB permissions / sandbox / approval     → technical enforcement
+repo/
+└── .github/
+    └── skills/
+        └── dotnet-build-investigation/
+            ├── SKILL.md
+            └── references/
+                └── build-log-guide.md
 ```
-Enforcement layers: instructions, permissions, sandbox, approval modes, hooks, OS permissions, CI checks, branch protection, IAM, secret managers, network controls. **Never** store passwords, API keys, tokens, private keys, production credentials, or customer secrets inside instruction files.
+
+```markdown
+---
+name: dotnet-build-investigation
+description: Diagnose a failed .NET build from real logs. Use for dotnet build failures, CI compiler errors, or MSBuild failures; do not use for production incident response.
+---
+
+1. Read the actual task and repository instructions.
+2. Capture the exact command, working directory, exit code, and first causal error.
+3. Reproduce only with the documented safe build command.
+4. Trace the error to project/source/config. Separate evidence from hypothesis.
+5. Report a smallest fix and regression check; do not edit unless asked.
+6. If authorized to edit, preserve unrelated changes and rerun the focused check.
+7. Report actual results and anything blocked. Never invent a pass.
+```
+
+### Create and use, step by step
+
+1. Identify a repeated process (not a one-time ticket).
+2. Select the actual product and use its table above to choose a path.
+3. Create folder and exact uppercase `SKILL.md` in VS Code Explorer or shell.
+4. Keep `name` lowercase/hyphenated, matching the skill folder when required; make `description` say both purpose and trigger.
+5. Put clear steps in body; link optional scripts/references by relative path.
+6. Do not copy `allowed-tools` across products. Start with no elevated permissions.
+7. Save; refresh/reload according to that product. Copilot CLI supports `/skills reload` and `/skills info NAME`; Claude Code supports `/skill-name` and `/skills` and `/reload-skills` when a new top-level skills directory was created during the session; Codex detects changes automatically and can be restarted if a new skill is not detected. VS Code selection/invocation follows the selected harness.
+8. Invoke explicitly first. Then inspect skill list/picker/references/tool activity. Compare output against the procedure.
+9. Check `git status` and tests. A skill’s existence is not evidence the run followed it.
+
+**VS Code GUI route:** select the intended harness in **Session Target** → **Chat: Open Customizations** → **Skills** → **New Skill (Workspace/User)** → choose the location and name → edit `SKILL.md` frontmatter/body → save. Mention `/skill-name` in Chat for explicit invocation when enabled; otherwise request a task whose description clearly matches. Expand **References** in the response to verify the skill was used. If absent, check harness, path, exact `SKILL.md` casing, name/description validation, and refresh the skill list.
+
+**Prompt to draft a skill:** “Inspect these three completed examples of our repeated workflow. Propose one narrowly scoped skill with exact product-specific destination, frontmatter, and invocation. Keep deterministic checks in scripts/tests, no secrets, and no elevated tool permissions. Show a break/fix verification. Do not create files until I approve.”
+
+**Break/fix:** rename `SKILL.md` to `skill.md`; make description “helps coding”; edit after session start; put a Copilot-only field in Codex. Diagnose exact directory → exact case/name → valid YAML/frontmatter → invocation → session refresh → tool permission. Repair one issue at a time.
 
 ---
 
-# Part X — Troubleshooting, FAQ, Quick Decisions 🛠️
+# 3. 🤖 Custom agents and subagents
 
-## 🛠️ X.1 Troubleshooting matrix
+## Choose an agent only if role/tool separation pays for itself
 
-| Symptom | Likely causes | Check | Fix | Verify |
-|---|---|---|---|---|
-| Command not found | Binary not installed / not on PATH | `which`/`Get-Command` | Install per official docs | Re-run `--version` |
-| Global instructions ignored (🟣) | Wrong path; not in a new session | `/context`, `/memory` | Fix path; new session | `/context` shows file |
-| Global instructions ignored (🔵) | `AGENTS.override.md` present; wrong `CODEX_HOME`; stale run | check override file; `echo $CODEX_HOME` | remove/merge override; new run | ask agent to summarize instructions |
-| Global instructions ignored (🟢) | Wrong `COPILOT_HOME`; stale session; `--no-custom-instructions` set | `/instructions`; check launch flags | fix home/flags; new session | `/instructions` shows file |
-| Project instructions ignored | Launched from wrong directory; nested-dir discovery miss | confirm cwd; check repo root | `cd` to project root or correct subfolder | re-inspect instructions |
-| Instruction size limit reached (🔵) | Combined project docs > 32 KiB | count bytes of all `AGENTS.md` on path | shrink/move content to skills/docs | re-run and check which content loaded |
-| Skill missing | Wrong directory/frontmatter; CLI not restarted | list skill dirs; check `name`/`description` | fix location/frontmatter; restart | invoke `/skill-name` or trigger phrase |
-| Custom agent missing (🟢) | Wrong `.agent.md` location; CLI not restarted | check `.github/agents/`, `~/.copilot/agents/` | fix location; restart CLI | `/agent` lists it |
-| Subagent missing expected context | Built-in subagent type excludes it by default | check Part I.7/V.3 inheritance table | pass constraints explicitly in the task | review subagent's actual output |
-| MCP server missing | Not added / wrong config file | `codex mcp list`, `/mcp`, `copilot mcp add` history | add/correct config | `/mcp` shows it |
-| MCP authentication failure | Missing env var/header, expired OAuth | check config file, `mcp login` | re-auth, fix env/header | server responds |
-| Permission denied / sandbox blocks | Expected enforcement working as designed | review sandbox/approval mode | adjust approval policy deliberately | re-run action |
-| CLI and IDE behave differently | Different product surfaces (Part VI) | confirm which surface is active | treat as separate contexts | n/a |
-| Task file not automatically read | Expected — no product auto-loads task docs | n/a | explicitly reference/attach the file | agent confirms it read the file |
-| Agent follows stale project rule | Instructions edited mid-session | check session start time vs edit time | new/resumed session | re-ask agent to summarize rules |
-| Conflicting instruction files | Multiple sources disagree (esp. 🟢) | `/instructions`, review all discovered files | remove contradiction | retest |
+An agent is useful when a recurring specialist role has a different context or tool boundary. A prompt is sufficient for one review; a skill is better for a reusable sequence; agent config should not be created just to decorate a role name.
 
-## ❓ X.2 "What happens if…?" FAQ
+## Product schemas are different
 
-| Question | Answer |
-|---|---|
-| I change global instructions while the CLI is open? | Not applied to the current run/session in any of the three tools; start a new/resumed session. |
-| I change project instructions mid-session? | Same — treat as not applied until a new session. |
-| I launch from the wrong folder? | Discovery is rooted differently per tool (Part II); `cd` to the intended root/subfolder and relaunch. |
-| I launch from a nested folder? | 🔵 Codex walks root→cwd; 🟣 Claude discovers CLAUDE.md on the path + user level; 🟢 Copilot is largely repo-root-based regardless of cwd. |
-| I use a monorepo? | Nested instruction files add increasingly specific guidance (🔵), or are all combined (🟢/🟣) — keep shared conventions at the root and narrow rules near the code they govern. |
-| Both `CLAUDE.md` and `AGENTS.md` exist? | Claude loading depends on settings/version; use `@AGENTS.md` in `CLAUDE.md` for explicit sharing. Copilot discovery is harness-specific. See Part VI. |
-| Copilot discovers another agent instruction file (`GEMINI.md`)? | It can be combined into context, but does not support `@path` import expansion. |
-| An override file exists (🔵 `AGENTS.override.md`)? | It replaces `AGENTS.md` at that scope entirely. |
-| Instructions conflict? | No universal rule resolves this; fix the contradiction rather than guessing a precedence. |
-| My instruction file is huge? | Move content to skills/docs; 🔵 risks hitting the 32 KiB project-doc cap. |
-| I don't have Git? | All the "review the diff" guidance becomes manual file comparison; preserve copies before large changes. |
-| This is not a software project? | The same instruction/skill/task-brief model applies (Part VII.7–VII.9, VII.11, VII.13). |
-| I want private personal rules inside a team project? | 🟣 `CLAUDE.local.md`; 🟢 personal `~/.copilot/` dirs / `COPILOT_CUSTOM_INSTRUCTIONS_DIRS`; 🔵 not a documented distinct mechanism — keep personal rules in your own global file. |
-| I want the agent to read Jira/Azure DevOps/GitHub issues? | Use the relevant MCP server or native integration — not a Markdown-loading mechanism. |
-| I want a subagent to use the same project rules? | Don't assume it — verify per Part I.7/V.3 and pass constraints explicitly if not guaranteed. |
-| The skill isn't detected? | Check exact directory, `SKILL.md` filename/frontmatter, and restart the session. |
-| MCP works in one project but not another? | Check project-scoped vs user-scoped config, and any org-level allowlist/registry policy (🟢). |
-| I need to temporarily disable custom instructions (🟢)? | `--no-custom-instructions` at launch. |
-| I want to test what context the agent sees? | `/context`/`/memory` (🟣), `/instructions` (🟢), or directly ask the agent to summarize its instructions (🔵, no dedicated inspector documented). |
+| Harness | Definition | Creation/use |
+|---|---|---|
+| VS Code custom agent | `.agent.md`; workspace `.github/agents/`, Claude-format `.claude/agents/`, user paths depend on host | Agent Customizations editor or file; select Session Target, choose from Agent dropdown |
+| Copilot CLI custom agent | `.agent.md` in `.github/agents/` or `~/.copilot/agents/`; frontmatter includes role/description and optional tools | `/agent` or file; restart CLI after adding/editing; explicit `/agent`, prompt, or `copilot --agent ID --prompt ...` |
+| Claude Code custom subagent | Markdown with YAML in `.claude/agents/` or user `~/.claude/agents/` | Invoke by asking Claude to delegate to its name; tools are Claude tool names, and subagents have independent context/permission behavior |
+| Codex custom agent | TOML under `.codex/agents/` or `~/.codex/agents/` | Native subagents; custom agent config requires `name`, `description`, `developer_instructions`; use current Codex docs; no `.agent.md` interchange |
 
-## 📋 X.3 Quick decision table recap
+### Copilot CLI read-only reviewer template (illustrative)
 
-See Part III.4 for the full "user says → likely action" table, and Part VIII.14 for the parallel-agent quick-decision table.
+```markdown
+---
+name: diff-reviewer
+description: Reviews an attached code diff for correctness and compatibility. Use after a code change when independent findings are needed.
+tools: ["read", "grep", "glob"]
+---
+
+Review only the supplied diff and directly relevant files. Do not edit.
+Report each confirmed issue with file/line, trigger, impact, and evidence.
+Separate questions from defects. State what was not reviewed.
+```
+
+Copilot tool identifiers are runtime-specific. Validate names against the current CLI’s agent/tool documentation; a typo may remove intended capability or cause config validation errors. Copilot subagents do not inherit repository instructions by default. `include-custom-instructions: true` is a Copilot CLI-specific option for a custom agent acting as a subagent; `--no-custom-instructions` overrides it. Do not generalize this field to VS Code custom agents.
+
+### Create, discover, invoke, verify
+
+1. Write the job in one sentence and define read/write scope.
+2. Ask whether a normal prompt or skill is enough. If so, stop here.
+3. Choose harness; consult only its schema table and current linked docs.
+4. Create in its exact destination (VS Code Explorer: open root → New Folder → New File → exact extension → paste → save).
+5. Review every field, especially `tools`, model/permission values, scripts, and whether tool names are valid.
+6. Reload/restart as indicated above.
+7. Discover through the actual picker/list; do not rely on “agent says it exists.”
+8. Invoke against a low-risk representative task, with read-only constraints.
+9. Inspect tool activity, output, diff/status, and forbidden actions. If the agent was expected not to edit, verify no edits occurred.
+10. Break its filename, malformed metadata, or tool ID in a disposable copy; inspect diagnostics; repair and rerun.
+
+### Minimal Copilot CLI workflow
+
+```powershell
+New-Item -ItemType Directory -Force .github\agents | Out-Null
+code .github\agents\diff-reviewer.agent.md
+```
+
+Save the template above → restart `copilot` → run `/agent` to select it → provide an actual diff/read-only review task → inspect its tool calls and `git status`.
+
+### Minimal VS Code workflow
+
+Open Chat → select intended **Session Target** → **Configure Chat / Chat: Open Customizations** → Agents → New Agent (Workspace/User) → choose exact filename → inspect frontmatter and tool access → save → select the named agent from Agent dropdown → provide a bounded task → inspect tool calls and references. For missing agent: verify target/harness, location, visibility, extension/schema, trust, and Agent Debug Logs.
+
+### Codex CLI custom agent: create an actual TOML file
+
+Create `.codex/agents/reviewer.toml`:
+
+```toml
+name = "reviewer"
+description = "Read-only reviewer for correctness, security, and test gaps."
+sandbox_mode = "read-only"
+developer_instructions = """
+Review the supplied change and directly relevant code only.
+Do not edit files. Cite evidence and triggering conditions for each finding.
+Separate confirmed defects from questions and say what you did not inspect.
+"""
+```
+
+The required fields are `name`, `description`, and `developer_instructions`; `sandbox_mode` is a Codex session configuration key. Create folders with Explorer or `New-Item -ItemType Directory -Force .codex\agents`, save the exact TOML file, then start Codex in the trusted repository. Prompt: “Use the reviewer agent to review the current diff read-only; report findings with paths, line references, triggers, and evidence.” Inspect `/agent` threads, actual tool activity, and `git status`; do not treat prose saying “read-only” as enforcement. Break it by changing `sandbox_mode` to an invalid value in a disposable copy, read the parser/startup error, repair and retry.
+
+### Claude Code subagent: create an actual Markdown file
+
+Create `.claude/agents/reviewer.md`:
+
+```markdown
+---
+name: reviewer
+description: Reviews a change for correctness and test gaps. Use after implementation; never edits.
+tools: Read, Grep, Glob
+---
+
+Review the supplied diff and directly relevant files only. Do not edit.
+For each confirmed finding, include evidence, trigger, impact, and file location.
+Separate questions from defects and state what you did not inspect.
+```
+
+Use VS Code Explorer or PowerShell to create `.claude\agents`, save as `reviewer.md`, and start/restart Claude Code if the directory was newly created. Ask: “Use the reviewer subagent on the current diff, read-only.” Verify the delegation tool row names `reviewer`, inspect findings, then check `git status`. Claude’s `tools` field names (`Read, Grep, Glob`) are not Copilot’s tool aliases or VS Code’s selected-harness tool catalog.
+
+### VS Code custom agent: create through the selected harness
+
+Open **Chat: Open Customizations** → **Agents** → **New Agent (Workspace)** → save in `.github/agents/reviewer.agent.md` → inspect `name`, `description`, `tools`, and body → save. A minimal Copilot-compatible file is:
+
+```markdown
+---
+name: reviewer
+description: Read-only review of a focused code diff for correctness and missing tests.
+tools: ["read", "search"]
+---
+
+Review only the supplied diff and relevant files. Do not edit.
+Report concrete evidence, trigger, impact, and test gaps.
+```
+
+Tool names are harness-specific: choose from the selected target’s tool picker/reference, not by copying another product’s list. Select the new reviewer in Chat’s **Agent** dropdown; check tool calls and `git status`. In a Copilot CLI session, use the separate documented Copilot CLI agent schema and restart after creation.
+
+**Prompt to draft an agent:** “Propose a [read-only or bounded-write] agent for [one recurring role]. First inspect current project conventions and available tools for [selected product/harness]. Show the exact target file and every field, explain whether each field changes capability/permissions, and give a safe discovery/invocation/verification task. Do not create the file or run tools until I approve.”
+
+### Subagent vs parallel agent
+
+- **Subagent:** bounded worker inside an orchestrated conversation, own context, product-specific inheritance/permissions.
+- **Parallel agents:** independent tasks run concurrently; may be subagents, isolated worktrees, or multiple sessions depending on the product.
+- Prefer parallel **read-only** work first. For edits, assign non-overlapping files or isolated branches/worktrees and one integrator.
+
+**Good:** architecture investigation | test-gap analysis | independent security review.
+**Bad:** three workers modifying the same resolver and test file on one branch.
+
+**Verify:** wait for all requested work, inspect each report/source/tool trace, reconcile contradictions using evidence (not majority vote), then integrate and run tests.
+
+**Parallel-work prompt:** “Delegate three independent, read-only tasks: (1) trace the failing call path, (2) find relevant regression tests, (3) inspect public-contract/security risks. Give each worker the same ticket, repo root, and no-edit/no-external-side-effect rule. Wait for all results; require paths, symbols, evidence, and unknowns. Reconcile disagreements yourself and do not let workers edit shared files.” Run this through the selected product’s documented subagent feature; inspect the activity/thread view. If that harness cannot delegate, do not pretend separate shell sessions are built-in agents.
 
 ---
 
-# Part XI — Copy/Paste Templates 📋
+# 4. ⚡ Hooks: deterministic event automation
 
-**A — Minimal global instructions:** see `ENGINEERING.md` in this release; copy as-is.
+## Choose a hook only when a runtime event should trigger predictable work
 
-**B — Maintenance project instructions (project-level, concise):**
-```markdown
-# Project Instructions — <ProjectName>
+Instruction: “run formatting.” Hook: run a vetted formatter at a supported event. CI: authoritative check on the shared branch. Sandbox/IAM: restrict capability. A local hook is not a CI policy.
 
-- Build: <command>  ·  Test: <command>  ·  Lint: <command>
-- Module ownership: <short map>
-- Never deploy without <approval mechanism>.
-- Preserve existing public API in `src/api/**` without explicit authorization.
-```
+### Product comparison — not interchangeable
 
-**C — New software project instructions:** same shape as B, intentionally thinner; expand as conventions stabilize (Part VII.3).
+| Owner | Config location/schema | Important operational detail |
+|---|---|---|
+| GitHub Copilot CLI | `.github/hooks/*.json` or user hooks; top-level `{ "version": 1, "hooks": { "sessionStart": [...] } }`; command may specify `bash`, `powershell`, `cwd`, `timeoutSec` | Events are lower camel case; hook config loads at CLI startup; restart after edits |
+| Claude Code | `.claude/settings.json` / user settings; `hooks` map with event groups, matchers, handlers | Events include `PreToolUse`, `PostToolUse`, `SessionStart`, etc.; hooks receive JSON; exit/JSON decisions are Claude-specific |
+| Codex | `~/.codex/hooks.json`, `~/.codex/config.toml`, project `.codex/hooks.json` or config; event/matcher/handler format | Project hooks need trusted project; inspect `/hooks` and review/trust each changed non-managed hook |
+| VS Code Local | `.github/hooks/*.json`, PascalCase event names, Local command keys/schema | Preview; not the same behavior as Agent Host; `chat.useHooks` and Workspace Trust matter |
+| VS Code Agent Host | Harness-owned hook system | Some file formats overlap, but event names, payloads, output, and filters can differ; follow selected provider docs |
 
-**D — DevOps/infrastructure:**
-```markdown
-- Terraform plan must be reviewed before apply.
-- Never run `apply`/`destroy` without explicit human approval.
-- Production account/project IDs: see <secret manager>, not this file.
-```
+**VS Code route:** select **Session Target** → open **Chat: Open Customizations** → **Hooks**, or enter `/hooks`. To generate a starting point, run `/create-hook <description>`; review the result against the selected harness’s official reference before enabling it. VS Code hooks are Preview. Its **Local** hook schema is not automatically the schema used by Copilot, Claude, or Codex on Agent Host.
 
-**E — Cybersecurity:**
-```markdown
-- Authorized scope: <systems/targets>. Do not test systems outside this scope.
-- Evidence handling: <storage/retention rule>. Report findings via <channel>.
-```
+### Safe first hook: log, do not block
 
-**F — Graphic design:**
-```markdown
-- Brand colors: <hex list>. Approved fonts: <list>.
-- Never overwrite files under `source/`. Export format: <format/DPI>.
-```
+Copilot CLI teaching example, repository-level `.github/hooks/audit.json`:
 
-**G — Music/audio:**
-```markdown
-- Sample rate: <rate>. Bit depth: <depth>. Track naming: <pattern>.
-- Never overwrite files under `sessions/` or `masters/`.
-```
-
-**H — Research/documentation:**
-```markdown
-- Cite primary/official sources. State verification date for version-sensitive claims.
-- Document structure: <template/ToC>.
-```
-
-**I — Temporary user-story task brief:** use the template in Part IV.2.
-
-**J — Bug-fix task brief:**
-```markdown
-# Bug — <title>
-## Symptom  ## Reproduction steps  ## Expected vs actual  ## Suspected area
-## Evidence gathered  ## Root cause (once known)  ## Fix approach  ## Regression test
-```
-
-**K — Investigation task brief:**
-```markdown
-# Investigation — <question>
-## Hypotheses  ## Evidence per hypothesis  ## Conclusion  ## Confidence  ## Follow-up
-```
-
-**L — Skill template (🟣/🟢 where supported):**
-```markdown
----
-name: my-skill
-description: What it does, and specifically when to use it.
----
-Step-by-step instructions for Claude/Copilot to follow when this skill is invoked.
-```
-
-**M — Custom agent template (🟢 `.agent.md` / 🟣 subagent definition):**
-```markdown
----
-name: security-auditor
-description: Reviews code changes for common security issues. Use for security review requests.
-tools: [read, grep, glob]
----
-You are a security reviewer. Identify injection, auth, and secret-handling issues.
-Report findings with file, line, severity, and confidence. Do not modify files.
-```
-
-**N — MCP configuration template:**
-```jsonc
-// Codex: ~/.codex/config.toml excerpt (TOML, shown here conceptually)
-// [mcp_servers.context7]
-// command = "npx"
-// args = ["-y", "@upstash/context7-mcp"]
-
-// Copilot: ~/.copilot/mcp-config.json excerpt
+```json
 {
-  "mcpServers": {
-    "context7": { "type": "local", "command": "npx", "args": ["-y", "@upstash/context7-mcp"], "tools": "*" }
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "powershell": "Add-Content -Path .github/hooks/session.log -Value \"Session started: $(Get-Date -Format o)\"",
+        "bash": "printf 'Session started: %s\\n' \"$(date)\" >> .github/hooks/session.log",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ]
   }
 }
 ```
 
-For every template: **when to use it, where to place it, whether it auto-loads, how to invoke/verify it, and what not to put in it** are all specified in the surrounding sections of this handbook (Parts III–V).
+Do not commit the resulting log if it can contain private data. Create `.github/hooks/` and the JSON with Explorer or PowerShell, validate JSON (e.g. `Get-Content ... -Raw | ConvertFrom-Json`), run the exact platform command manually, then start a fresh Copilot CLI session. On Windows, the documented example expects PowerShell 7 (`pwsh --version`). Confirm one timestamp appears. Remove/break the script path in a test branch and inspect CLI errors; repair and trigger again.
 
----
+**Prompt to draft a hook:** “For [selected product/version], propose a minimal non-blocking hook that [one deterministic action] at [supported event]. Use only the current official schema. Show exact files, platform-specific command, input/output behavior, timeout, and how to trigger/diagnose it. Do not create, enable, or trust the hook; wait for approval.”
 
-# Part XII — Expert Quick-Reference Appendix 📎
+**VS Code Local hook lab:** create `.github/hooks/audit.json`:
 
-| Item | 🟣 Claude Code | 🔵 Codex | 🟢 Copilot CLI |
-|---|---|---|---|
-| Global file | `~/.claude/CLAUDE.md` | `~/.codex/AGENTS.md` (or `AGENTS.override.md`) | `~/.copilot/copilot-instructions.md` |
-| Home override env var | not documented | `CODEX_HOME` | `COPILOT_HOME` |
-| Project file(s) | `CLAUDE.md`; `AGENTS.md` via supported discovery/import | `AGENTS.md` per directory, root→cwd | `.github/copilot-instructions.md`, `AGENTS.md`, `CLAUDE.md` |
-| Path-specific | `.claude/rules/**/*.md` | one file per directory (specificity by depth) | `.github/instructions/**/*.instructions.md` + `applyTo` |
-| Local/private | `CLAUDE.local.md` | not documented | `COPILOT_CUSTOM_INSTRUCTIONS_DIRS`, personal dirs |
-| Imports | `@path` (relative/absolute) | not documented | `@relative-path` (stays inside custom-instructions dir); not in `GEMINI.md`/`*.instructions.md` |
-| Inspect context | `/context`, `/memory`, `/doctor prompt-audit` | ask agent directly (no dedicated command documented) | `/instructions`, `copilot instruction list` |
-| Reload rule | new/resumed session | new run/session (chain built once per run) | new/resumed session (`/new`) |
-| Skills location | `.claude/skills/<name>/SKILL.md` | `.agents/skills/<name>/SKILL.md` | `.github/skills/`, `.claude/skills/`, `.agents/skills/`, `~/.copilot/skills/`, `~/.agents/skills/` |
-| Skill invocation | automatic (relevance) or `/skill-name` | relevance or explicit request | automatic (relevance) |
-| Agent definitions | built-in + user/project subagents | ✅ native subagents via `[agents]` in `config.toml` (model/reasoning-effort/concurrency configurable) | `.github/agents/*.agent.md`, `~/.copilot/agents/*.agent.md` |
-| Agent invocation | Claude delegates automatically by description | explicit request, or automatic via `AGENTS.md`/skill instructions; inspect with `/agent` | `/agent`, explicit instruction, inference, `copilot --agent <id>` |
-| MCP config | `claude mcp add/list/remove` | `~/.codex/config.toml` or `.codex/config.toml`; `codex mcp add/list/login` | `~/.copilot/mcp-config.json`; `/mcp add`; `copilot mcp add` |
-| MCP built-in server | none documented as built-in | none documented as built-in | **GitHub MCP server built in** |
-| Hooks | yes (lifecycle hooks documented) | ✅ native lifecycle hooks (`~/.codex/hooks.json` or inline `[hooks]` in `config.toml`; `PreToolUse`, `PostToolUse`, `SessionStart`, `SubagentStart`/`SubagentStop`, `Stop`, etc.) | `.github/hooks/*.json` (sessionStart, preToolUse, etc.) |
-| Context/size limits | ~200 lines/`CLAUDE.md` recommended; 15,000-token combined subagent-description cap | `project_doc_max_bytes` default 32 KiB | not documented as a hard limit |
-| Approval/sandbox | permission modes, plan mode | `--ask-for-approval`, sandbox policy | approval prompts per tool, `/sandbox enable`, `copilot --cloud` |
-| Parallel dispatch | `claude agents` (agent view), agent teams (experimental), Projects (cloud) | independent CLI invocations; cloud tasks | `task` tool background mode; `write_agent`/`read_agent` |
-| Worktree integration | native awareness; auto-isolation for dispatched sessions | manual | manual |
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "node .github/hooks/log-tool-use.cjs"
+      }
+    ]
+  }
+}
+```
 
----
+Create `.github/hooks/log-tool-use.cjs`:
 
-# Part XIII — Official Sources & Validation 📚
+```javascript
+const fs = require("node:fs");
+let input = "";
+process.stdin.setEncoding("utf8");
+process.stdin.on("data", (chunk) => (input += chunk));
+process.stdin.on("end", () => {
+  const event = JSON.parse(input);
+  fs.appendFileSync(
+    ".github/hooks/tool-use.log",
+    `${event.timestamp} ${event.tool_name}\n`,
+  );
+});
+```
 
-## Anthropic Claude Code
-- https://code.claude.com/docs/en/memory — user/project `CLAUDE.md`, imports, `/context`, `/memory`, `/doctor prompt-audit`, 200-line guidance, concatenation behavior, Cowork caveat.
-- https://code.claude.com/docs/en/sub-agents — built-in subagents (Explore/Plan/General-purpose), `omitClaudeMd`, 15,000-token description cap, usage-limit sharing.
-- https://code.claude.com/docs/en/skills — `SKILL.md`, Agent Skills standard, bundled skills, `/run`, `/verify`, `/run-skill-generator`, `disableBundledSkills`.
-- https://code.claude.com/docs/en/agent-view — `claude agents`, background sessions, auto-worktree isolation.
-- https://code.claude.com/docs/en/agents — comparison of subagents, agent view, agent teams, dynamic workflows, Projects, worktrees, cross-session messaging, `/batch`.
-- https://code.claude.com/docs/en/quickstart — install commands (native installer, Homebrew, WinGet), `claude --version`, login flow, account types, first session.
-- https://code.claude.com/docs/en/troubleshoot-install — install/login error-to-fix mapping (PATH, PowerShell vs CMD, 403s, permissions, architecture mismatches).
+Select **Local**, create both files in Explorer, add `tool-use.log` to `.git/info/exclude`, and start a Local session. Ask it to perform a harmless task that reads a file; verify the tool name appears. Break the script path and check Agent Debug Logs, restore it, and retest. Local payload/tool names differ from Agent Host; never reuse this hook as a permission-control policy.
 
-## OpenAI Codex
-- https://developers.openai.com/codex/guides/agents-md — `AGENTS.md` discovery, overrides, `CODEX_HOME`, root→cwd walk, `project_doc_max_bytes` default 32 KiB.
-- https://learn.chatgpt.com/docs/extend/mcp?surface=cli — MCP support, STDIO/Streamable HTTP, `config.toml`, `codex mcp add/list/login`, `/mcp`, shared config across ChatGPT desktop/CLI/IDE extension.
-- https://github.com/openai/codex — official repository README: install script URLs, npm/Homebrew install commands, GitHub release binaries, `codex` first run, "Sign in with ChatGPT" vs API key.
+### Claude Code hook: log session start
 
-## GitHub Copilot CLI
-- https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot — customization index (instructions, settings, hooks, skills, MCP, custom agents, BYOK models, plugins).
-- https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions — instruction file locations, `@path` import rules, `/instructions`, `copilot instruction list`, subagent inheritance, `--no-custom-instructions`.
-- https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers — built-in GitHub MCP server, `/mcp add`, `copilot mcp add`, `~/.copilot/mcp-config.json`, per-repo servers, registry/allowlist.
-- https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/create-custom-agents-for-cli — `.agent.md` files, `.github/agents/`, `~/.copilot/agents/`, ID/name dedup rules, `/agent`, `copilot --agent`.
-- https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills — `SKILL.md`, skill directories, `allowed-tools`, script-enabled skills.
-- https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/use-hooks — `.github/hooks/*.json`, lifecycle events, bash/powershell keys.
-- https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/overview — launch flow, trust prompts, plan mode, `-p`/`--prompt`, approval options.
-- https://docs.github.com/en/copilot/concepts/agents/copilot-cli/about-copilot-cli — supported OSes, interactive/programmatic modes, local/cloud sandboxing, `/sandbox enable`, `copilot --cloud`.
-- https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli — prerequisites (subscription, PowerShell v6+, Node 22+), npm/WinGet/Homebrew/script install, PAT authentication, `COPILOT_GITHUB_TOKEN`/`GH_TOKEN`/`GITHUB_TOKEN`.
+Create `.claude/hooks/session_start.py`:
 
-## Model Context Protocol
-- Referenced via the above Codex and Copilot CLI documentation; no separate MCP-spec claim is made beyond what each vendor page documents.
+```python
+from datetime import datetime, timezone
+from pathlib import Path
 
-## 🧾 Validation summary
+Path(".claude/session.log").parent.mkdir(parents=True, exist_ok=True)
+with Path(".claude/session.log").open("a", encoding="utf-8") as log:
+    log.write(f"session started: {datetime.now(timezone.utc).isoformat()}\n")
+```
+
+Add this to `.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/hooks/session_start.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Use a disposable repo and add `.claude/session.log` to `.git/info/exclude`. From repo root, run `python .claude/hooks/session_start.py` manually and confirm one timestamp; start a new Claude Code session and confirm one additional line. Break the script path, observe hook diagnostics, restore it, and retest. This is an audit/logging demonstration only—not a security gate. Claude events, matchers, stdin JSON, exit status, and permission decisions are specific; consult the [hooks reference](https://code.claude.com/docs/en/hooks) before making a blocking hook. Do not reuse VS Code Local payload code.
+
+### Codex hook workflow
+
+Create `.codex/hooks.json` in a disposable repo. For a first smoke test, log a session start:
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .codex/hooks/session_start.py",
+            "commandWindows": "py -3 .codex/hooks/session_start.py",
+            "timeout": 3,
+            "statusMessage": "Recording test session start"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Create `.codex/hooks/session_start.py`:
+
+```python
+from datetime import datetime, timezone
+from pathlib import Path
+
+with Path(".codex/session.log").open("a", encoding="utf-8") as log:
+    log.write(f"session started: {datetime.now(timezone.utc).isoformat()}\n")
+```
+
+Create `.codex/session.log` and add it to `.git/info/exclude`. Start Codex from the repository root, enter `/hooks`, review the exact hook, and trust it only after inspecting the script. Trigger a new session, inspect the log, change the command path to a nonexistent file and observe the diagnostic, then repair it. Codex hook commands execute in session `cwd`; use a stable repository-root path if your team starts sessions from subdirectories. Use either hooks JSON or inline TOML for a config layer, not both. Project hooks are trust-gated, and a changed hook hash may require review again.
+
+**Codex hook creation prompt:** “Propose a Codex-only `.codex/hooks.json` entry for a harmless session-start audit action. Check current Codex hook events and command fields. Include a disposable test script, trust/review steps, failure test, Windows command, and cleanup. Do not create or trust anything until I approve.”
+
+### Troubleshoot in this order
 
 ```text
-Research performed:            official-doc fetches for Claude Code (memory, sub-agents,
-                                skills, agent-view, agents comparison), Codex (AGENTS.md
-                                guide, MCP guide), GitHub Copilot CLI (customize index,
-                                custom instructions, MCP servers, custom agents, skills,
-                                hooks, CLI overview, about-copilot-cli) during this session.
-Commands actually executed:    filesystem-only operations (mkdir/Remove-Item) in this
-                                environment; no claude/codex/copilot binary was present
-                                to execute product commands.
-Commands doc-verified only:    all claude/codex/copilot slash-commands, CLI flags, and
-                                MCP/agent/skill commands shown throughout this handbook.
-Cross-file conflicts fixed:    none found between ENGINEERING.md/CLAUDE.md/AGENTS.md/
-                                copilot-instructions.md during this pass; all four remain
-                                mutually consistent with this report.
-Outdated claims removed:       two stale Copilot CLI URLs (extend-with-mcp,
-                                customize-copilot/create-a-custom-agent) replaced with the
-                                current official pages (add-mcp-servers,
-                                create-custom-agents-for-cli) found via the customize index.
-Remaining uncertainties:       exact maximum parallel-agent concurrency is not documented
-                                for any of the three products; Codex has no documented
-                                skills/subagent concept, so no commands are invented for it;
-                                some Copilot CLI features (registry search/install, BYOK,
-                                plugins) are summarized only to the depth needed for this
-                                handbook's scope.
+Wrong product/harness?
+→ unsupported event or wrong casing?
+→ file location/scope and trust?
+→ valid JSON/TOML/frontmatter?
+→ command exists and runs manually?
+→ correct cwd, interpreter, permissions, environment?
+→ timeout or non-zero exit?
+→ event actually triggered?
+→ inspect product hook log and tool transcript
 ```
 
 ---
 
-# Part XIV — Installation From Absolute Zero 🚀
+# 5. 🔌 MCP: build, connect, invoke, diagnose
 
-> [!NOTE]
-> Every step below follows: **Prerequisite → Action → Path → Command → Expected result → Verify → Common failure → Fix → Next step.** Windows (PowerShell) is shown first since that's this handbook's primary environment; macOS/Linux equivalents are included. Every command is labeled with the validation legend from Part 0.
+## 5.1 Server-side responsibilities
 
-## 🪟 XIV.0 Opening a terminal on Windows (if you've never done this)
+An MCP server owns tools/resources/prompts. **The model proposes a tool call; the host and server validate it.** Validate every argument; authenticate users; authorize every resource/action; limit results; log safely; use read-only access by default. Never expose generic `exec`, unrestricted SQL, or all-filesystem access as a first example.
 
-1. Press the **Windows key**, type `powershell`, press **Enter**. A dark window opens showing a prompt like `PS C:\Users\YourName>`. That is your terminal, running the PowerShell shell.
-2. Everything you type until you press Enter is one **command**.
-3. Your **working directory** is shown in the prompt (`C:\Users\YourName`). Change it with `cd path\to\folder`.
+```text
+Host → client → transport → server
+     → schema validation → authz → handler → external system
+     ← structured result ← server ← audited operation
+```
 
-## 🟣 XIV.1 Claude Code — install from zero
+### Safe build/run test loop
 
-| Step | Detail |
-|---|---|
-| Prerequisite | A terminal (above) and a Claude account — Pro/Max/Team/Enterprise subscription, or a Claude Console (API) account. No Git/Node required for the native installer. |
-| Action | Run the official installer for your OS. |
-| Command (Windows PowerShell) | `irm https://claude.ai/install.ps1 | iex` 📚 |
-| Command (macOS/Linux/WSL) | `curl -fsSL https://claude.ai/install.sh | bash` 📚 |
-| Command (Windows, Homebrew alt.) | `brew install --cask claude-code` 📚 |
-| Command (Windows, WinGet alt.) | `winget install Anthropic.ClaudeCode` 📚 |
-| Expected result | Installer downloads and finishes with no red error text. |
-| Verify | Open a **new** terminal window, run `claude --version`. 📚 — a version number followed by `(Claude Code)` confirms success. |
-| Common failure | `'claude' is not recognized` / `command not found: claude` | The install directory isn't on your PATH yet. |
-| Fix | Open a brand-new terminal window (PATH changes don't apply to windows already open); if still missing, see the official [Troubleshoot installation](https://code.claude.com/docs/en/troubleshoot-install) page, which maps each exact error message to a fix. 📚 |
-| Other common errors | `irm is not recognized` → you're in Command Prompt, not PowerShell (prompt shows `C:\>` without `PS`); use the CMD-specific command instead. `syntax error near unexpected token '<'` or a `403` → the install script fetch failed; see the troubleshooting page for alternatives. 📚 |
-| Login | Run `claude` (starts an interactive session) → follow the browser prompt to sign in. If `ANTHROPIC_API_KEY` is already set, it asks you to approve the key instead. Re-authenticate anytime with `/login` inside a session. 📚 |
-| First harmless command | Inside a project folder, run `claude`, then type: `"List the files in this folder and tell me what this project is."` 📚 |
-| Update | Native installer auto-updates in the background. Homebrew: `brew upgrade claude-code`. WinGet: `winget upgrade Anthropic.ClaudeCode`. 📚 |
-| Uninstall | Remove the installed binary/cask/package via the same tool you installed it with (e.g., `brew uninstall --cask claude-code`, `winget uninstall Anthropic.ClaudeCode`), then delete `~/.claude/` if you want to remove all configuration. 🖥️ |
-| Next step | Create your global `CLAUDE.md` (Part I). |
+1. Implement one harmless read-only handler with strict input bounds.
+2. Run the server by itself with its actual startup command.
+3. Send a protocol request using the official MCP Inspector/SDK client.
+4. List tools and inspect each JSON schema.
+5. Call a valid input and invalid/unauthorized input.
+6. Check server logs; for stdio, protocol messages own stdout, so direct logs to stderr.
+7. Configure exactly one AI host.
+8. Verify host’s tool list, invoke from prompt, inspect actual tool call and result.
+9. Stop the server and test unavailable behavior.
 
-## 🔵 XIV.2 OpenAI Codex CLI — install from zero
+Official starting points: [MCP server guide](https://modelcontextprotocol.io/docs/develop/build-server), [MCP spec](https://modelcontextprotocol.io/specification), [Inspector](https://github.com/modelcontextprotocol/inspector), [.NET MCP quickstart](https://learn.microsoft.com/dotnet/ai/quickstarts/build-mcp-server).
 
-| Step | Detail |
-|---|---|
-| Prerequisite | A terminal and a ChatGPT account (Plus/Pro/Business/Edu/Enterprise) or an OpenAI API key. |
-| Action | Run the official installer, or use npm/Homebrew if you already have them. |
-| Command (Windows PowerShell) | `powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"` 📚 |
-| Command (macOS/Linux) | `curl -fsSL https://chatgpt.com/codex/install.sh | sh` 📚 |
-| Command (npm, all platforms, if Node.js is installed) | `npm install -g @openai/codex` 📚 |
-| Command (Homebrew) | `brew install --cask codex` 📚 |
-| Expected result | Installer completes without error. |
-| Verify | Run `codex --version` 📚 in a new terminal; a version string confirms success. |
-| Common failure | Command not found after install | Same PATH issue as Claude — open a brand-new terminal window first. |
-| Fix | Re-open terminal; if still failing, download the platform binary directly from the [latest GitHub release](https://github.com/openai/codex/releases/latest) and place it on your PATH. 📚 |
-| Login | Run `codex`, choose **Sign in with ChatGPT**, and complete the browser flow. API-key sign-in is documented separately for advanced/billing-sensitive setups. 📚 |
-| First harmless command | Inside a project folder, run `codex`, then type: `"Tell me about this project."` 📚 |
-| Update | Re-run the install script, or `npm update -g @openai/codex`, or `brew upgrade --cask codex`, matching whichever method you used originally. 🖥️ |
-| Uninstall | Remove the binary/package via the same install method, then delete `~/.codex/` to remove configuration. 🖥️ |
-| Next step | Create your global `AGENTS.md` (Part I). |
+### Create a real C# MCP server (local stdio)
 
-## 🟢 XIV.3 GitHub Copilot CLI — install from zero
+The current Microsoft quickstart requires the **.NET 10 SDK** and uses a **preview** project template. In PowerShell, create the sample:
 
-| Step | Detail |
-|---|---|
-| Prerequisite | An active **GitHub Copilot subscription**; on Windows, **PowerShell v6+** (not the oldest built-in `powershell.exe` v5 in some cases — check with `$PSVersionTable.PSVersion`). For the npm method, Node.js 22+. |
-| Action | Install via npm, WinGet, Homebrew, or the install script. |
-| Command (npm, all platforms) | `npm install -g @github/copilot` 📚 |
-| Command (WinGet, Windows) | `winget install GitHub.Copilot` 📚 |
-| Command (Homebrew, macOS/Linux) | `brew install --cask copilot-cli` 📚 |
-| Command (install script, macOS/Linux) | `curl -fsSL https://gh.io/copilot-install | bash` 📚 |
-| Expected result | Installer/package manager reports success with no error. |
-| Verify | Run `copilot --version` 📚 in a new terminal. |
-| Common failure | `npm install` fails with a scripts-ignored warning | Your `~/.npmrc` has `ignore-scripts=true`; use `npm_config_ignore_scripts=false npm install -g @github/copilot` instead. 📚 |
-| Fix | See above; otherwise confirm Node.js version with `node --version` (needs 22+). |
-| Login | Launch `copilot`, then run `/login` and follow the on-screen GitHub sign-in instructions. Organization/enterprise Copilot policies can disable CLI access — if login fails repeatedly, check with your GitHub admin. 📚 |
-| Login (alternative) | A fine-grained personal access token with the **Copilot Requests** permission, exported as `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `GITHUB_TOKEN` (checked in that order). 📚 |
-| First harmless command | Inside a project folder, run `copilot`, then type: `"Explain what this project does."` 📚 |
-| Update | Re-run the same install method (`npm install -g @github/copilot` again, `winget upgrade GitHub.Copilot`, or `brew upgrade --cask copilot-cli`). 🖥️ |
-| Uninstall | Remove via the same package manager (`npm uninstall -g @github/copilot`, etc.), then delete `~/.copilot/` to remove configuration. 🖥️ |
-| Next step | Create your global `copilot-instructions.md` (Part I). |
+```powershell
+dotnet new install Microsoft.McpServer.ProjectTemplates
+dotnet new mcpserver -n ProjectMcp
+Set-Location ProjectMcp
+dotnet build
+```
 
-## 🛠️ XIV.4 Installation troubleshooting quick table
+Open the generated project. `Program.cs` wires up MCP transport and tool registration; `RandomNumberTools.cs` contains the sample `get_random_number` tool. Replace or supplement the sample with a harmless read-only operation whose input bounds, user authorization, and response size you can enforce in deterministic C#. Keep stdio protocol output on stdout and send diagnostics to stderr.
 
-| Symptom | Tool(s) | Likely cause | Fix |
-|---|---|---|---|
-| Command not found right after install | 🟣🔵🟢 | PATH not refreshed in the already-open terminal | Open a brand-new terminal window |
-| Wrong install command used | 🟣🔵🟢 | PowerShell vs Command Prompt confusion — prompt shows `PS C:\` for PowerShell, plain `C:\` for CMD | Match the command to the shown prompt type |
-| `npm install` silently does nothing useful | 🟢 | `ignore-scripts=true` in `~/.npmrc` | Use the `npm_config_ignore_scripts=false` prefix shown above |
-| Login loops or fails | 🟣🔵🟢 | Expired/blocked session, or org policy disabling CLI | Retry `/login`; for 🟢 ask your GitHub org/enterprise admin whether Copilot CLI is disabled by policy |
-| Installed but an old version runs | 🟣🔵🟢 | A second, older copy earlier on PATH | Check `where claude` / `where codex` / `where copilot` (Windows) or `which` (macOS/Linux) and remove/reorder the stale copy |
+**Run and verify:** use [MCP Inspector](https://github.com/modelcontextprotocol/inspector) with the current SDK-compatible instructions to start the generated project and list/call the sample tool. Test a valid and an invalid input. Then connect to one host only:
+
+- **VS Code:** install the generated tool server via **MCP: Add Server** (stdio → command `dotnet`, args `run --project <relative-path-to-ProjectMcp.csproj>`, workspace scope). The VS Code workspace file is typically `.vscode/mcp.json` with top-level `servers`; let the UI generate the selected version’s schema.
+- **Copilot CLI:** from the repo, run `copilot mcp add project-readonly -- dotnet run --project <path-to-ProjectMcp.csproj>` or configure its `.mcp.json`/`.github/mcp.json` format. Inspect `/mcp`; use a narrow tool list and confirm project trust.
+- **Codex CLI/IDE:** run `codex mcp add project-readonly -- dotnet run --project <path-to-ProjectMcp.csproj>`; check `codex mcp list` and `/mcp`.
+- **Claude Code:** run `claude mcp add --transport stdio project-readonly -- dotnet run --project <path-to-ProjectMcp.csproj>`; check `claude mcp list`.
+
+Ask the host to call the harmless tool. Verify the visible tool invocation and actual result; stop the server to test unavailable-server behavior. Delete the sample tool or deny it after the lab. This quickstart is not a production template: before deployment add real authentication/authorization, transport security, resource limits, observability, and operational ownership. See the current Microsoft quickstart for Visual Studio connection paths and evolving template details.
+
+**Prompt to draft a server:** “Using the current official .NET MCP server template/SDK, propose a local stdio server for [one harmless read-only company task]. Show exact .NET version, creation commands, files/tools, argument validation, authorization boundary, logging behavior, Inspector test, and one selected host's configuration. Do not include secrets or unrestricted file/SQL/shell tools. Label preview APIs. Do not create or connect it until I approve.”
+
+## 5.2 Host configuration: exact differences
+
+### VS Code
+
+VS Code offers two workspace formats: portable root `.mcp.json` uses `mcpServers`; VS Code-specific `.vscode/mcp.json` uses `servers`. The MCP UI can add a server, start it after trust, and show/toggle tools. VS Code Agent Host reads the portable format natively and forwards supported `.vscode/mcp.json` configurations, but some features (such as interactive input variables) are not portable. Copilot CLI reads root `.mcp.json` but explicitly does **not** read `.vscode/mcp.json`. For a new setup, run **MCP: Add Server** → choose the portable `.mcp.json` destination when cross-tool support is needed → inspect the generated schema.
+
+Teaching example for a **local, reviewed, no-secret** server in portable workspace `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "project-readonly": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": ["run", "--project", "${workspaceFolder}/tools/ProjectMcp/ProjectMcp.csproj"]
+    }
+  }
+}
+```
+
+For VS Code-specific `.vscode/mcp.json`, the corresponding entry uses top-level `servers`, a `type` of `"stdio"`, and an `args` array; generate this format through **MCP: Add Server** to avoid schema drift. The path above is a teaching placeholder. Start/refresh server from UI, inspect available tools, invoke harmless tool, then inspect output.
+
+### Copilot CLI
+
+User config `~/.copilot/mcp-config.json` (or `$COPILOT_HOME/mcp-config.json`):
+
+```json
+{
+  "mcpServers": {
+    "project-readonly": {
+      "type": "local",
+      "command": "dotnet",
+      "args": ["run", "--project", "C:\\work\\repo\\tools\\ProjectMcp\\ProjectMcp.csproj"],
+      "tools": ["list_projects", "get_build_status"]
+    }
+  }
+}
+```
+
+The path is a teaching placeholder. Better for shared repo config: `.mcp.json` or `.github/mcp.json` supported by Copilot CLI; commit only nonsecret server metadata. It does **not** read VS Code `.vscode/mcp.json`. Folder trust is required for project-level MCP. Configure in CLI with `/mcp add` or `copilot mcp add SERVER -- COMMAND ARGS`; inspect with `/mcp`, then ask it to invoke one tool. Existing CLI docs say adding an MCP server can be immediate; check current version and server list rather than assuming restart.
+
+### Codex CLI / IDE
+
+Codex CLI and IDE share host MCP configuration. Add a local server:
+
+```powershell
+codex mcp add project-readonly -- dotnet run --project C:\work\repo\tools\ProjectMcp\ProjectMcp.csproj
+codex mcp list
+```
+
+Or in `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.project-readonly]
+command = "dotnet"
+args = ["run", "--project", "C:\\work\\repo\\tools\\ProjectMcp\\ProjectMcp.csproj"]
+enabled_tools = ["list_projects", "get_build_status"]
+```
+
+Codex project `.codex/config.toml` is trust-gated. Verify `codex mcp list` and `/mcp` in TUI. For IDE/desktop, use MCP settings and restart extension if prompted. Current Codex docs support stdio and Streamable HTTP; configure auth, timeouts, tools, and approval per server as needed.
+
+### Claude Code CLI
+
+Local server:
+
+```powershell
+claude mcp add --transport stdio project-readonly -- dotnet run --project C:\work\repo\tools\ProjectMcp\ProjectMcp.csproj
+claude mcp list
+```
+
+The `--` separates Claude options from the server command/args. For remote HTTP, use current `claude mcp add --transport http NAME URL` and approved credentials/header flow. Project `.mcp.json` and user config scopes have separate trust implications; inspect `claude mcp list`, then invoke and review tool activity.
+
+> [!WARNING]
+> Configuring MCP makes capabilities available; it does not make a server trustworthy. Prefer narrow tool lists, read-only scopes, nonproduction accounts, rotating credentials, and human approval for writes. Remote MCP needs TLS, authentication, authorization, rate limits, tenant isolation, and audit logs. Never commit access tokens in JSON/TOML.
+
+## 5.3 Troubleshoot MCP
+
+```text
+Server command works alone?
+→ protocol initialization succeeds?
+→ stdout clean for stdio / transport URL valid?
+→ host reads this exact config format/path?
+→ project trusted? process on local vs remote host?
+→ authentication present and current?
+→ tool appears with expected schema?
+→ user/tool permission allows invocation?
+→ handler validates args and returns expected result?
+→ logs identify call without secrets?
+```
+
+Break one thing at a time: typo command, stop process, alter tool name, remove credentials. Repair from the first failing layer. Do not “fix” a missing server by enabling all tools or exposing broad credentials.
 
 ---
 
-# Part XV — Zero-Knowledge Acceptance Tests ✅
+# 6. 🖥️ Use the same customizations from CLI and VS Code
 
-Each test below is answered directly, pointing to the handbook section that proves it, rather than re-explained from scratch.
+1. Open the intended repository in VS Code (`File → Open Folder`).
+2. Open Chat and identify **Session Target**.
+3. Select **Chat: Open Customizations** or use the editor’s customization panel.
+4. Create a user/workspace instruction, skill, or `.agent.md` only if that selected target supports it.
+5. In terminal, run a CLI separately if desired; that CLI has its own discovery and permissions.
+6. After editing a customization, start a fresh chat/session if the product says it is startup-loaded; otherwise use its reload command or refresh action.
+7. Verify via customization list, instruction/context view, skill info, MCP tool list, debug logs, response references, and actual tool activity.
+8. Inspect Git diff/status and test outcomes. Do not infer behavior from the file preview.
 
-| # | Question | Answer / pointer |
+VS Code Agent Customizations editor and Agent Debug Logs are useful inspection surfaces, but the harness controls what executes. VS Code prompt files continue only in Local (currently deprecated there too); Agent Host does not load them. For new work, use the selected harness’s supported skill/instruction format.
+
+---
+
+# 7. 🏢 Project playbooks: create only what the project needs
+
+## 🆕 Brand-new project
+
+1. Start with a one-page `PROJECT-BRIEF.md` and normal prompt; state goals, constraints, unknowns.
+2. Ask for architecture options and tests; do not pretend team conventions exist.
+3. After choices are made, add concise project instructions with real commands and decisions.
+4. Add one skill only after a workflow repeats.
+5. Add MCP only for a real external integration, initially read-only.
+6. Add hook/CI gates only after deciding which checks are deterministic and authoritative.
+7. Keep agent count small; use one main agent until independent work appears.
+
+## 🔄 Existing / running project
+
+```text
+inspect git status + CI + source + tests + docs
+→ verify actual conventions
+→ identify repeated AI mistake
+→ create smallest useful customization
+→ test discovery and behavior on representative task
+```
+
+Do not overwrite existing instruction files. Review them, preserve local edits, resolve conflicts, and add rules only when supported by current code/team policy.
+
+## 🧱 Maintenance / legacy project
+
+- Start read-only; inspect compatibility tests, release notes, public contract, runtime support, and migration history.
+- Add characterization/regression tests before behavioral edits where feasible.
+- Use task-specific brief and exact acceptance criteria.
+- Give reviewers read-only tools. Require a human to authorize writes with external/production effects.
+- Use worktrees for genuinely independent edits; one owner for a shared file or migration.
+- Report unavailable databases, credentials, or environments honestly.
+
+---
+
+# 8. 🛠️ Troubleshooting by symptom
+
+| Symptom | Diagnosis order | Repair / proof |
 |---|---|---|
-| 1 | *Windows + VS Code, never used an AI CLI — install/configure Claude Code* | Part XIV.0 (open PowerShell) → Part XIV.1 (install, verify, login) → Part I (create `~/.claude/CLAUDE.md`) → Part VI (use inside VS Code's integrated terminal). |
-| 2 | *Installed all global files — what exact command do I run now?* | `cd` into a real project folder, then run `claude` / `codex` / `copilot` (Part II.1 per-tool walkthroughs). |
-| 3 | *How do I know my global instructions actually loaded?* | 🟣 `/context` or `/memory`; 🔵 ask the agent to summarize its instructions (no dedicated inspector documented); 🟢 `/instructions` or `copilot instruction list` (Part 0.3, Part XII table). |
-| 4 | *Existing maintenance project, user story ABC-123 — what `.md` file do I create?* | Usually none required — put it in the prompt, or create a **task brief** (`docs/tasks/ABC-123.md`) if long; it is not auto-loaded (Part IV). |
-| 5 | *Should I put this user story into `AGENTS.md`?* | No — `AGENTS.md`/`CLAUDE.md`/`copilot-instructions.md` are for **stable, permanent** rules, not one ticket's content (Part III, Part IV.3 Option C vs B). |
-| 6 | *We repeat the same release procedure every week — should it become a skill?* | Yes, all three products support skills. Use the correct product directory and a repeatable procedure; see Parts V–VI. |
-| 7 | *Can three agents investigate my difficult bug at the same time?* | Yes, as independent **read-only** investigators producing evidence for one coordinator to reconcile (Part VIII.7 Lab 1, Part VIII.10). |
-| 8 | *Can they edit files in parallel safely?* | Only with partitioned ownership and/or isolated branches/worktrees — never concurrent edits to the same files (Part VIII.2, VIII.8). |
-| 9 | *I configured MCP — how do I know the agent sees it?* | 🟣 `claude mcp list`; 🔵 `/mcp` or `codex mcp list`; 🟢 `/mcp` or ask the agent to list available tools (Part V.3, Part XII). |
-| 10 | *My project is graphic design, not software* | Part VII's graphic-design playbook — same five-file architecture, different stable facts (brand colors, fonts, export rules) (Part VII.7, templates F in Part XI). |
-| 11 | *My project is music/audio* | Part VII's music/audio playbook (sample rate, bit depth, naming, source preservation) (Part VII.8, template G in Part XI). |
-| 12 | *The tool appears to ignore my instructions* | Part X.1 troubleshooting matrix — check file path, working directory, session freshness, override files, and `--no-custom-instructions`-style flags. |
-| 13 | *An official documentation link now returns 404* | Part IX / Part XIII protocol: never treat a 404 as "feature removed" — search the vendor's current doc site/index, verify the official domain, use the current page, record it, and continue (demonstrated live for Copilot CLI MCP/agents URLs in this release). |
+| Instruction ignored | Harness → exact filename/path → scope/target → conflicting rules → session age → inspector | Correct one source, fresh session, ask a hidden-fact check; verify behavior |
+| Skill missing | Harness → supported root → `SKILL.md` exact case → YAML/name → trigger/invocation → reload | Product-specific skill list/info or VS Code picker; run explicit low-risk task |
+| Agent missing | Selected harness → vendor-specific extension/path/schema → visibility/ID → reload → workspace trust | Open agent picker/list, invoke, inspect actual tool set |
+| Hook not firing | Event owner/casing → file path → valid schema → startup loaded → event match → command cwd/interpreter | Run script manually; inspect hook logs and exit status; retest in disposable workspace |
+| MCP absent | Config file/format → server process → transport → trust → auth → enabled tool list | Check host MCP panel/list, initialize independently, call harmless tool |
+| CLI differs from editor | Identify each active harness and host; compare version, cwd, trust, config source | Run one harmless test independently in each; don’t infer one’s behavior from the other |
+| Agent claims tests passed | Inspect exact command, cwd, exit status, tool transcript | Run tests yourself; distinguish pass, failure, skipped, and blocked |
+
+### Deliberate fault exercise
+
+Create a disposable copy of a customization and introduce exactly one: wrong filename, invalid frontmatter, stale session, wrong glob, tool-name typo, invalid JSON, unavailable MCP process, or script path error. Capture the first diagnostic, repair only that defect, and repeat. Record which surface proved discovery and which proved runtime behavior.
 
 ---
 
-> [!TIP]
-> **Final mental model:** Set up → Load/discover → Verify → Use → Decide the right context type → Work → Verify the result → Promote only stable knowledge → Maintain. Everything in this handbook exists to make each arrow in that chain concrete for Claude Code, Codex, and GitHub Copilot CLI.
+# 9. 🔐 Security operating checklist
 
+- [ ] Least privilege for files, commands, MCP tools, database roles, and service identities.
+- [ ] Independent validation and authorization in deterministic code.
+- [ ] Sandbox/approval mode appropriate to task risk; network access reviewed.
+- [ ] Separate production from development credentials and endpoints.
+- [ ] Prompt-injection content (issues, docs, web pages, tool output) treated as untrusted data.
+- [ ] Hooks, scripts, skills, MCP servers, extensions, and plugins reviewed/pinned per supply-chain policy.
+- [ ] Sensitive input/output excluded or redacted from logs, traces, and recordings.
+- [ ] CI, protected branches, code-owner review, and release approvals enforce shared gates.
+- [ ] Incident investigations remain read-only until an authorized operator approves remediation.
+
+## Set the runtime boundary before invoking an agent
+
+| Product surface | Practical setup for a read-only investigation | What to verify |
+|---|---|---|
+| Codex CLI / IDE | In CLI, start with `codex --sandbox read-only --ask-for-approval on-request`; in an interactive session inspect/change `/permissions`. Codex defaults network access off for local CLI/IDE execution. | Ask it to read a file and then attempt a harmless workspace write; verify the write is blocked. Check network settings separately. Custom agent `sandbox_mode` is a default that can be overridden by the parent session’s live permission choice. |
+| Claude Code CLI / VS Code integration | Run `/permissions`; choose Manual or Plan for investigation. Deny/ask/allow rules are enforced by Claude Code, separately from prompt wording. Avoid `bypassPermissions` except in an isolated container/VM. | Test a read and a write; inspect permission prompts and rules. The IDE harness/session target must actually be Claude Code. |
+| GitHub Copilot CLI | Keep tool approval prompts enabled; inspect tool/command requests before approving. Omit skill `allowed-tools` for shell unless reviewed because it can pre-approve execution. | Attempt a harmless unapproved command and confirm the runtime asks/blocks as configured; check trust state for project MCP. |
+| VS Code | Select the intended harness, review its tool picker, and use Workspace Trust for repository content and MCP startup. | Verify actual runtime tool availability and approval behavior; do not assume workspace trust alone sandboxed an external service. |
+| Application / CI | Use service identity, authorization checks, branch protection, required CI, and release approval independent of agent setup. | Attempt an unauthorized request and ensure deterministic application/CI policy denies it. |
+
+Sandboxing constrains local process capabilities; approval controls when the product asks; IAM authorizes external resources; CI enforces shared merge/release rules. They are separate layers. Make a harmless blocked-action test in every execution surface because VS Code, CLI, local, and cloud execution can have different policies.
+
+> [!CAUTION]
+> “Never do anything dangerous” in a prompt is not a technical security control. A hook is not a substitute for IAM. A read-only label in an agent’s prose is not proof the tools are read-only.
+
+---
+
+# 10. 📚 Official sources checked
+
+These current official pages were consulted on **2026-10-03** for the product-specific claims above. Availability, preview status, and exact UI labels can vary by version/account; follow the linked live reference before rolling out a config.
+
+| Area | Official sources |
+|---|---|
+| VS Code harness/customizations | [Overview](https://code.visualstudio.com/docs/agent-customization/overview), [instructions](https://code.visualstudio.com/docs/agent-customization/custom-instructions), [skills](https://code.visualstudio.com/docs/agent-customization/agent-skills), [agents](https://code.visualstudio.com/docs/agent-customization/custom-agents), [hooks](https://code.visualstudio.com/docs/agent-customization/hooks), [MCP](https://code.visualstudio.com/docs/agent-customization/mcp-servers), [prompt files](https://code.visualstudio.com/docs/agent-customization/prompt-files) |
+| GitHub Copilot CLI | [Instructions](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions), [skills](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills), [custom agents](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/create-custom-agents-for-cli), [hooks](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/use-hooks), [MCP](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers) |
+| OpenAI Codex | [Skills](https://developers.openai.com/codex/skills), [subagents/custom-agent TOML](https://developers.openai.com/codex/subagents), [sandbox, approvals, network](https://developers.openai.com/codex/agent-approvals-security), [MCP](https://developers.openai.com/codex/mcp), [hooks](https://developers.openai.com/codex/hooks), [config](https://developers.openai.com/codex/config-advanced), [AGENTS.md](https://developers.openai.com/codex/guides/agents-md) |
+| Claude Code | [Memory/instructions](https://code.claude.com/docs/en/memory), [skills](https://code.claude.com/docs/en/skills), [subagents](https://code.claude.com/docs/en/sub-agents), [permissions](https://code.claude.com/docs/en/permissions), [hooks](https://code.claude.com/docs/en/hooks), [MCP](https://code.claude.com/docs/en/mcp) |
+| Standards and .NET | [Agent Skills](https://agentskills.io/specification), [MCP](https://modelcontextprotocol.io/specification), [.NET AI](https://learn.microsoft.com/dotnet/ai/overview), [.NET MCP server quickstart](https://learn.microsoft.com/dotnet/ai/quickstarts/build-mcp-server), [Microsoft Agent Framework](https://learn.microsoft.com/agent-framework/) |
+
+**What was not verified:** whether any sample config will work unchanged on a particular workstation, account, operating system, organization policy, extension version, model/provider subscription, or private repository. No product CLI configuration was executed as part of this documentation review. The examples are explicitly templates to validate locally, not claimed test results.
+
+---
+
+# 🧭 PRACTICAL RUNBOOK — NEW PROJECT VS EXISTING PROJECT
+
+This runbook applies to both starting a project and opening a repository already in production. It is intentionally procedural: **inspect → choose the smallest mechanism → create it in the correct harness → invoke → observe → verify → repair or remove**.
+
+> [!IMPORTANT]
+> VS Code is an editor that can host multiple agent harnesses. Select **Session Target** first. Local, Copilot Agent Host, Copilot CLI, Codex, and Claude Code have different discovery rules, commands, hook formats, and permission controls. Changing the model does not change the harness.
+
+## 1. 🆕 Brand-new project: establish evidence before configuration
+
+### 🎯 Goal / 🧩 Problem
+
+Create a useful baseline before encoding conventions that do not exist yet.
+
+### 📁 First files and manual creation
+
+Create only the project folder and an ordinary, explicitly referenced brief:
+
+```text
+MyService/
+└── PROJECT-BRIEF.md
+```
+
+In VS Code Explorer, open the folder, click **New File**, enter `PROJECT-BRIEF.md`, paste the brief, and save. A terminal user can open a text editor in the project directory. The brief is ordinary documentation; none of these agent products should be assumed to auto-load it.
+
+```md
+# Project brief
+## User problem and desired result
+## Acceptance examples
+## Non-goals
+## Confirmed technical/business constraints
+## Security and data classification
+## Decisions still owned by a human
+```
+
+🤖 **AI-assisted creation prompt:**
+
+```text
+Help me turn these product requirements into PROJECT-BRIEF.md.
+Separate confirmed facts, assumptions, non-goals, acceptance examples,
+security/data questions, and decisions requiring an owner. Do not invent
+company standards, create code, or add agent configuration. Ask only
+questions that block a safe first vertical slice.
+```
+
+▶️ **Invoke:** In any supported harness, ask: `Read PROJECT-BRIEF.md. Summarize its facts and open decisions. Propose two small architecture options and a vertical slice. Do not create files yet.`
+✅ **Expected:** a reviewable proposal with assumptions labeled.
+🔍 **Verify:** compare each assertion with the brief and approved standards.
+
+### Add configuration only after the first work
+
+1. A human selects stack/architecture/security decisions.
+2. Scaffold with the framework's official generator.
+3. Discover actual README/build/test/CI commands and run a vertical slice.
+4. Record only stable, verified rules in the selected harness's project instruction format.
+5. Wait for a repeated procedure before making a skill; a recurring role before a custom agent; an external-system need before MCP.
+6. A hook is only for deterministic lifecycle automation; required team gates belong in CI too.
+7. Use a normal prompt for one task. A reusable prompt or skill is not a day-one prerequisite.
+
+### Six product routes — new project
+
+| Surface | Select / start | First durable customization, only if evidence supports it |
+|---|---|---|
+| VS Code + Copilot | Open folder → select **Copilot** Session Target → Ask/Plan before edits; Agent after scope is approved. | `.github/copilot-instructions.md` for stable shared project facts. Skills/agents/hooks/MCP are separate, later decisions. |
+| Copilot CLI | `cd` to trusted repository root → `copilot` → `/instructions` → ask for proposal and explicitly reference `PROJECT-BRIEF.md`. | `.github/copilot-instructions.md`; inspect with `/instructions`. |
+| Codex CLI | `cd` to project root → `codex` → explicitly name `PROJECT-BRIEF.md`; start read-only/plan-first when available. | `AGENTS.md`; loaded when a run starts. |
+| Codex IDE / VS Code | Open the repository and Codex panel, select **Codex** Session Target, sign in; inspect the project before editing. | Same Codex `AGENTS.md`, `.agents/skills`, `.codex/agents/*.toml`, hooks and MCP as the Codex host. |
+| Claude Code CLI | `cd` to root → `claude` → `/context` → explicitly name brief. | `CLAUDE.md`/`.claude/CLAUDE.md`; use `/context` to verify. |
+| Claude Code in VS Code | Install the Claude Code extension, open its panel, sign in, choose Manual/Plan for first work, attach/name brief. | Same Claude project files and settings. The extension has its own CLI runtime; its built-in panel is not the VS Code Local agent. |
+
+### 🚫 Do not configure on day one
+
+Do not create global instructions from a project decision; a prompt file for a one-time task; a skill for one occurrence; a custom agent without a recurring role; parallel agents for dependent architecture choices; hooks as a substitute for permission controls; MCP when native tools suffice; broad write/shell/network permissions; production credentials; or RAG for a handful of files already available in the workspace.
+
+### 💣 Break-it / repair / checkpoint
+
+Ask the model to “follow our standard API layout” before any standard exists. A correct response labels an assumption and requests the decision; it does not state invented rules as facts. If generated files contain an invented convention, remove or fix them and rerun the exercise. Ask it to run tests before a test project exists; it must report the missing command rather than claim a pass.
+
+🏢 Company: require architecture/security owner approval.
+🔄 Existing project: use the next scenario instead.
+🧱 Legacy: do not scaffold over existing behavior; characterize it.
+🏋️ Challenge: deliver a passing vertical slice with no skill, agent, hook, or MCP.
+🎓 Checkpoint: identify the human decisions and the evidence supporting each permanent rule.
+
+## 2. 🔄 Existing / ongoing project: repository and branch first
+
+### 🎯 Goal / 🧩 Problem
+
+Use existing team configuration and protect work already in progress. Avoid duplicate instructions, tools, or hook behavior.
+
+### Exact inspection sequence
+
+1. Confirm repo root, current branch, ticket/PR, and `git status --short`. Do not discard or overwrite unrelated changes.
+2. Read README, architecture docs, relevant source/tests, manifests, scripts, CI and release/runbook files.
+3. Inventory existing project and nested instructions, skills, agents, hooks, MCP configs, and local/personal settings where accessible.
+4. Ask the active harness which instructions/customizations it actually discovered; inspect UI/logs as well.
+5. Compare the ticket to observed behavior and acceptance criteria. Keep facts separate from hypotheses.
+6. Reuse a valid existing customization. Edit/remove stale or contradictory files; do not create a second copy to work around discovery failure.
+7. Select normal prompt, task brief, instruction, prompt file/skill, agent, subagent, parallel agents, hook, MCP, deterministic code, or CI using the decision tree below.
+8. Before editing, state ownership/scope and forbidden external side effects. After editing inspect full diff, actual tool activity, and tests.
+
+```text
+git status --short
+git branch --show-current
+```
+
+🤖 **Read-only inventory request:**
+
+```text
+Before editing, inspect this repository and current task. Cite paths for:
+Git root/branch/working tree; issue acceptance criteria; instructions,
+skills, agents, hooks and MCP config; build/test/lint commands and CI;
+relevant source and tests. Separate facts from inference. Do not create
+configuration, change files, run migrations, access production, or perform
+external mutations. Report unknowns and the smallest appropriate next step.
+```
+
+✅ **Expected:** evidence-backed inventory and bounded task proposal.
+🔍 **Verify:** open referenced files, compare commands with CI, verify current branch/status, then check the active runtime's discovery view.
+
+### Branch playbook
+
+| Branch/work context | How to begin | Safe AI role | Required completion check |
+|---|---|---|---|
+| `main` / `develop` | Confirm whether changes are prohibited; inspect status, protection and CI. | Read-only repository explanation, release status, or diff review. | No edits unless policy explicitly permits them; CI/branch rules remain decisive. |
+| Feature branch | Confirm ticket, base branch, acceptance criteria, in-flight changes and ownership. | Plan, then scoped implementation; reuse a proven skill. | Focused tests, relevant broader checks, compatibility and full diff. |
+| Bug branch | Capture expected/actual, reproduce and trace before root-cause claim. | Read-only investigation first; test-first implementation only after cause is evidenced. | Repro or test fails for the actual symptom, then passes after fix; no fabricated output. |
+| Hotfix branch | Confirm incident lead, target branch, authorized scope, mitigation and rollback. | Narrow investigation; no parallel write or speculative cleanup. | Emergency tests and backport/merge checks; human operator controls production action. |
+| Maintenance / legacy | Discover supported versions, callers, release history, characterization tests and hidden contracts. | Risk and impact review; isolated minimal patch only when authorized. | Compatibility tests, code-owner review, migration/rollback notes as needed. |
+| Release branch | Read freeze, signing, version, changelog, artifact and deployment rules. | Checklist/notes/review; never autonomous publish or deployment. | CI/artifact verification and explicit release-owner approval. |
+| Security-sensitive branch | Write scope, authorization, exclusions, data rules, allowed tools, evidence format and approval point. | Default to read-only; treat repository/ticket/log text as untrusted data. | Reproduce findings; verify no prohibited access/effects; IAM/sandbox/CI enforce real boundaries. |
+
+### Mechanism decision card
+
+| Situation | Start with | Only add when justified |
+|---|---|---|
+| One task-specific fact | Normal prompt or brief | Never permanent instructions for ticket-only requirements |
+| Stable rule repeated across tasks | Project instruction | Path-specific file if truly scoped |
+| Saved task initiated on demand | A normal prompt/task brief | Product-specific prompt file only if selected harness supports it |
+| Repeated procedure / checklist | A skill | Script/CI for deterministic steps |
+| Recurring specialist role / different tools | A custom agent | Real runtime/tool permissions; description is not enforcement |
+| Separate bounded question | One subagent | Parallel agents only when independent, with a coordinator |
+| Mandatory action at a lifecycle point | Product-specific hook | CI for an authoritative shared gate |
+| External data/action not in native tools | MCP after security review | Least-privilege account, limited tools, approval and audit |
+| Exact business rules/security decision | Normal code/tests/IAM | Model may assist with language interpretation; it never authorizes |
+
+## 3. Product-specific behavior and configuration traps
+
+These are the current official-document-backed distinctions. Link targets are checked in the **Official docs checked** table at the end.
+
+### Instructions and custom prompts
+
+| Harness | Stable project instructions | Reusable prompt/task behavior |
+|---|---|---|
+| VS Code Copilot Agent Host | `.github/copilot-instructions.md`; scoped `.github/instructions/*.instructions.md` with `applyTo`; root `AGENTS.md` where supported. | `.prompt.md` files are deprecated and **not loaded by Agent Host**. Use a skill for a reusable Agent Host workflow. |
+| VS Code Local | VS Code's instruction formats/settings; `AGENTS.md` support depends on Local settings. | `.github/prompts/*.prompt.md` is a Local feature for manually invoked `/prompt`; migration to skills is available. |
+| Copilot CLI | Root/nested `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, modular instructions and user files; `/instructions` inspects discovery. No general precedence order across all source types. | Normal prompt/task brief first; skill for reusable procedures. CLI does not use the VS Code prompt-file system. |
+| Codex CLI/IDE | `AGENTS.md`; project instructions built on run start; `AGENTS.override.md` may replace same-scope file. | Normal prompt/task brief or skill (`$skill` / `/skills`). Do not assume a VS Code prompt file is a Codex command. |
+| Claude Code CLI/VS Code | `CLAUDE.md` / `.claude/CLAUDE.md`, `.claude/rules/`; `/context`; `AGENTS.md` supported as described by current Claude docs. | Normal prompt/task brief or skill; older `.claude/commands/*.md` still work, but skills are preferred for new reusable procedures. |
+
+Manual instruction creation: inspect existing facts first; create only the selected harness's file; record one real command/rule; start/reload a session as required; ask it to state the rule and point to its source; try a harmless representative task. If it is one task only, keep it in the prompt/brief.
+
+### Skills: `SKILL.md` is a shared shape, not a universal tool grant
+
+All skill examples must keep the required `name` and `description` aligned with the folder. A skill is a directory with `SKILL.md`; scripts/resources are optional and must be reviewed.
+
+| Runtime | Typical project path | Invocation / reload | Tool semantics that must not be copied to another product |
+|---|---|---|---|
+| VS Code Copilot / Copilot CLI | `.github/skills/<name>/SKILL.md`; also compatible locations documented by Copilot | Prompt `/name`; CLI `/skills list`, `/skills info NAME`, `/skills reload` or restart. VS Code skill UI/References verifies discovery. | Copilot skill frontmatter `allowed-tools` pre-approves listed tools (not a sandbox). Omit it unless execution is intentionally pre-approved. |
+| Codex CLI / IDE | `.agents/skills/<name>/SKILL.md` | `$name` or `/skills`; Codex detects changes, restart if it does not. | `agents/openai.yaml` is optional UI metadata, invocation policy and declared tool dependencies (for example MCP); it is not the runtime permission allowlist. Actual MCP, sandbox and approval config governs access. |
+| Claude Code CLI / VS Code | `.claude/skills/<name>/SKILL.md` | `/name` or relevance; `/skills` lists. New folder-discovery/reload behavior depends on where the skill was added; restart when not discovered. | Claude-specific skill invocation/tool controls differ from Copilot. Do not transplant `allowed-tools`/`disallowed-tools` as if they had shared meanings or as if prose replaces permissions. |
+
+**Open standard:** the Agent Skills spec calls `allowed-tools` experimental and warns support varies. Product extensions and limits take precedence in product workflows. Do not put Codex `dependencies.tools` or Claude-specific frontmatter into a purportedly portable skill and call it universal.
+
+**Safe sample skill (instruction-only):**
+
+```text
+.github/skills/bug-investigation/SKILL.md
+```
+
+```md
+---
+name: bug-investigation
+description: Investigate a reproducible application bug with evidence and a regression test. Use for a bug ticket; do not use for release or deployment tasks.
+---
+
+1. Read the ticket and the existing project instructions.
+2. Preserve the working tree; reproduce the symptom using the documented test setup.
+3. Trace the actual call path and label facts, hypotheses, and unknowns.
+4. Propose the smallest regression test and wait for approval before editing.
+5. Implement only when authorized; report the actual commands and results.
+```
+
+📁 **Manual:** create the selected product's skill directory and exact `SKILL.md` filename; paste this example; save; validate YAML/name; restart/reload per product.
+🤖 **AI-assisted:** “Inspect current issue and project guidance. Propose a `<product>` skill under its documented path. Explain every frontmatter field and whether it changes permissions. Do not write it until I approve.”
+▶️ **Invoke:** run a disposable/local ticket and explicitly request `Use the bug-investigation skill...`; in Claude `/bug-investigation`, Codex `$bug-investigation` or `/skills`, Copilot `/bug-investigation`.
+✅ **Expected:** the workflow is followed, but no claim of actual test success without execution.
+🔍 **Verify:** inspect References/tool activity, the actual files changed, and actual test exit/result.
+💣 **Break it:** misspell folder or frontmatter name, test discovery, repair, reload and repeat.
+🛠️ **Troubleshoot:** exact filename, valid YAML, name/description, location, duplicate names, selected harness, invocation syntax and reload.
+🏢 Company: include approved internal steps, not secrets. 🆕 New project: wait until repeated. 🔄 Existing project: audit for duplicate skills. 🧱 Legacy: add characterization/compatibility steps. 🚫 Do not use for a one-off ticket or permission boundary. 🏋️ Challenge: run it on two tickets and remove steps that are not repeatable. 🎓 Checkpoint: explain why its metadata is product-specific.
+
+### Custom agents and subagents: roles, tool surfaces, and parallelism
+
+| Runtime | Exact definition form | Discovery / invocation | Important boundary |
+|---|---|---|---|
+| VS Code Local/Copilot | `.github/agents/<name>.agent.md` YAML + Markdown instructions. `tools` is the selected harness's tool/toolset list; VS Code custom-agent files may be used by more than one harness but tools differ. | Agent Customizations editor; select Session Target, then Agent dropdown. | Tool selection is a runtime capability choice, not OS sandbox/IAM. The active harness may not support every tool name. |
+| Copilot CLI | `.github/agents/<name>.agent.md` or `~/.copilot/agents/<name>.agent.md`. | `/agent`, explicit instruction, inference, or `copilot --agent ID --prompt ...`; restart after creating/editing. | CLI custom-agent subagents do not inherit repository instructions by default; `include-custom-instructions: true` is CLI-specific and can be disabled by `--no-custom-instructions`. |
+| Codex CLI/IDE | `.codex/agents/<name>.toml` project or `~/.codex/agents/<name>.toml` user. Required `name`, `description`, `developer_instructions`. | Ask Codex to delegate to the named agent; `/agent` in CLI or IDE agent activity inspects threads. | Custom agent's `sandbox_mode` can be overridden by parent live runtime permissions; subagents inherit parent sandbox/approval. |
+| Claude Code CLI/VS Code | `.claude/agents/<name>.md` or `~/.claude/agents/<name>.md`; Markdown body plus frontmatter such as `name`, `description`, `tools`. | Ask Claude to delegate to the agent name; inspect transcript/delegation. | Subagent has a distinct context and tool access. Explore/Plan are read-only and skip CLAUDE.md; verify inheritance for the chosen type. |
+
+**Copilot CLI read-only role example:**
+
+```md
+---
+name: api-reviewer
+description: Reviews an API diff for compatibility, authorization, and test gaps. Use after a proposed API change; do not implement fixes.
+tools: ["read", "search"]
+include-custom-instructions: true
+---
+Review only the supplied diff and relevant source. Return evidence, file
+locations, triggering conditions, impact, and uncertainty. Do not edit.
+```
+
+**Codex TOML role example:**
+
+```toml
+name = "api_reviewer"
+description = "Read-only API compatibility and authorization reviewer."
+sandbox_mode = "read-only"
+developer_instructions = """
+Review the supplied diff and relevant callers/tests. Return only evidence-
+supported findings with file references and impact. Do not edit.
+"""
+```
+
+**Claude Code subagent example:**
+
+```md
+---
+name: api-reviewer
+description: Read-only review of API contract and authorization changes.
+tools: Read, Grep, Glob
+---
+Review the supplied diff and relevant callers/tests. Do not edit. Cite evidence.
+```
+
+📁 **Manual:** create the correct path/file for one selected tool; use only that product's metadata; save, reopen the active harness, and confirm the role appears/is delegated.
+🤖 **AI-assisted:** ask it to propose (not install) a read-only agent, list its tools, prove the names are valid for the selected runtime, and show which real sandbox/approval controls still apply.
+▶️ **Invoke:** hand it one bounded review/investigation.
+✅ **Expected:** separate findings/report without unauthorized edits.
+🔍 **Verify:** inspect agent transcript and complete `git diff`; run a harmless blocked-write test only in a disposable repository.
+💣 **Break it:** add an invalid tool name or omit needed context; observe discovery/failure, repair and retest.
+🛠️ **Troubleshoot:** wrong extension/path, duplicate ID/name, stale CLI, unsupported tools, missing repo instructions, parent sandbox policy, untrusted project config.
+🏢 Company: delegate independent security/test/contract reviews. 🆕 New project: don't split unsettled architecture. 🔄 Existing project: parallelize read-only maps if large. 🧱 Legacy: one owner per mutable module. 🚫 No parallel writers on same files, migrations, releases, production or shared external state. 🏋️ Challenge: two read-only workers analyze distinct evidence and one coordinator reconciles. 🎓 Checkpoint: verify independent evidence, not majority vote.
+
+### Hooks: current implementations are harness-specific
+
+First justify the event: if the task repeats but does not need deterministic event timing, use a skill or script; if the gate must be authoritative for the team, use CI/policy. Hooks execute code and can have side effects. Test harmlessly and inspect trust/permissions.
+
+| Harness | Format and path | Events / test requirements |
+|---|---|---|
+| VS Code Local | `.github/hooks/*.json`, PascalCase event names, `command`/`windows`/`timeout`; optional user hooks in `~/.copilot/hooks/`. | Local events include `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `PreCompact`, `SubagentStart`, `SubagentStop`, `Stop`. Selected Session Target changes implementation. |
+| VS Code Agent Host + Copilot | Copilot SDK hook implementation, compatible with Copilot CLI; `.github/hooks/*.json` where supported by selected version. | Use GitHub Copilot hook event names/payloads; VS Code preview support can differ from CLI. Do not reuse Local event/payload syntax as proof. |
+| Copilot CLI | `.github/hooks/*.json`; JSON top level `version: 1`, `hooks` keys in lower camel case. | Current documented events include `sessionStart`, `sessionEnd`, `userPromptSubmitted`, `preToolUse`, `postToolUse`, `errorOccurred`, and `agentStop`; verify reference for exact event/surface. Config loads when CLI starts. |
+| Codex | `~/.codex/hooks.json`, `~/.codex/config.toml`, `<repo>/.codex/hooks.json` or `.codex/config.toml`. | Event → matcher group → handler; command hooks need review/trust via `/hooks`. Project hooks require trusted project. |
+| Claude Code | `.claude/settings.json`, `.claude/settings.local.json`, or user-level settings. | Event → matcher → handler; e.g. `PreToolUse`, `PostToolUse`, `SessionStart`, `Stop`, `SessionEnd`. Inspect `/hooks`. |
+
+**Copilot CLI harmless Windows session-start example:**
+
+```json
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "powershell": "Add-Content -Path .github/hooks/session.log -Value 'session started'",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}
+```
+
+Use both `bash` and `powershell` when a shared hook is intended for all OSes. Do not log prompts, credentials, or customer data. Start/restart CLI, invoke a harmless session, verify the log, then deliberately break the path and confirm troubleshooting catches it. Remove the test hook/log after the exercise.
+
+**VS Code Local harmless tool-audit example** (not Copilot CLI JSON and not a general Agent Host hook):
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "node .github/hooks/log-tool-use.cjs",
+        "timeout": 15
+      }
+    ]
+  }
+}
+```
+
+VS Code's published Local example reads the JSON event on stdin and logs `event.tool_name`. Local hook payloads and output decisions are different from Copilot CLI's. For Claude and Codex use their own config/event/matcher formats, exact official references, and product hook browser.
+
+📁 **Manual:** create a disposable repository hook file only after choosing the harness/event; use a harmless log-only script; exclude the log from Git if appropriate.
+🤖 **AI-assisted:** ask for the selected harness's supported event list, exact schema and harmless dry-run test; prohibit writes until approved.
+▶️ **Invoke:** trigger the event once; verify via product hook UI/log and observable test file.
+💣 **Break it:** invalid JSON, unsupported event, bad script path, and timeout; diagnose each without treating a missing hook as success.
+🏢 Company: prefer centrally enforced controls for security gates. 🆕 New project: no hook before a repeated event need. 🔄 Existing: inspect all merged scopes and existing scripts. 🧱 Legacy: use hooks only if scripts are supported and won't mutate data. 🚫 Do not use hooks as IAM, approval, sandbox, or CI replacement. 🏋️ Challenge: compare Copilot CLI and VS Code Local configurations and identify why one cannot simply be pasted into the other. 🎓 Checkpoint: show hook event, execution, output, and non-execution of prohibited effects.
+
+### MCP: add only a real missing integration
+
+🎯 **Goal:** avoid repeatedly copying data from an authorized external system.
+🧩 **Problem:** native tools cannot access the system; avoid MCP if built-in tools or a file already suffice.
+🧠 **Flow:**
+
+```text
+Agent harness → MCP client → approved server → scoped identity → external system
+```
+
+**Portable VS Code/Copilot example:** VS Code recommends root `.mcp.json` with top-level `mcpServers`; Copilot CLI can read `.mcp.json` or `.github/mcp.json`. A VS Code-specific `.vscode/mcp.json` uses `servers`, but Copilot CLI explicitly does not read that file.
+
+```json
+{
+  "mcpServers": {
+    "docs-readonly": {
+      "type": "http",
+      "url": "https://approved.example.com/mcp",
+      "tools": ["search_docs"]
+    }
+  }
+}
+```
+
+The URL and server/tool names above are placeholders, not a working public endpoint. Never add a real secret to committed config.
+
+| Product | Add/configure | Discovery / invocation |
+|---|---|---|
+| VS Code | **MCP: Add Server** and prefer `.mcp.json` for portable workspace config; `.vscode/mcp.json` has its own `servers` schema. | Trust reviewed server; inspect tools and toggle allowlist; ask a harmless read-only query. |
+| Copilot CLI | `/mcp add` or `copilot mcp add NAME -- COMMAND [ARGS]`; project config `.mcp.json`/`.github/mcp.json`; user `~/.copilot/mcp-config.json`. | Project server loads after folder trust; `/mcp`, `/mcp show NAME`; CLI reads `.mcp.json`, not `.vscode/mcp.json`. |
+| Codex | `[mcp_servers.<name>]` in `~/.codex/config.toml` or trusted project `.codex/config.toml`; `codex mcp add NAME -- COMMAND [ARGS]`. | `codex mcp list`, TUI `/mcp`; IDE shares MCP config for the same Codex host. |
+| Claude Code | `claude mcp add --transport http NAME URL` or `claude mcp add [options] NAME -- COMMAND [ARGS]`; project `.mcp.json` uses Claude schema. | `claude mcp list`; use `/mcp` or ask a harmless query; verify permissions/scope. |
+
+**End-to-end verification:** 1) review publisher/source/version/permissions; 2) use a read-only test identity and narrow server tools; 3) configure selected product; 4) verify server appears and only intended tools are available; 5) call one harmless query; 6) inspect tool activity and data returned; 7) test expected denial on an excluded resource; 8) remove test config and rotate any exposed credential.
+🤖 AI-assisted creation: have AI draft a placeholder config with no secrets, then compare every key against that product's docs.
+💣 Break it: wrong transport/key/tool; verify server fails clearly, repair and retest.
+🏢 Company: review data residency, IAM, audit and supply chain. 🆕 New project: no MCP by default. 🔄 Existing: reuse approved integration. 🧱 Legacy: use read-only first; no production mutation. 🚫 Do not connect broad admin tools for convenience. 🏋️ Challenge: prove one allowed query and one denied query. 🎓 Checkpoint: identify which identity and sandbox actually constrain the server.
+
+## 4. Permissions, sandbox, IAM, CI — separate controls
+
+| Control | What it governs | Does not mean |
+|---|---|---|
+| Instructions / prompts | Behavioral guidance | Enforcement of forbidden actions |
+| Agent `tools` selection | Tools exposed to a role/harness | Host OS containment or external IAM |
+| Product approval | When runtime pauses for confirmation | Permission of the selected external identity |
+| Sandbox | Filesystem/process/network limits for a runtime | Application authorization or branch protection |
+| IAM / service identity | Access to cloud/data/API resources | Correct generated code |
+| CI / branch rules / code owners | Shared validation and merge/release gates | Local agent sandboxing |
+| Hook | Deterministic local/product lifecycle behavior | Reliable organizational audit or complete access control |
+
+For each task, identify the execution host, user/service identity, network boundary, writable paths, approvals and CI gate. Test one harmless allowed and one denied action in a disposable environment. Codex's subagents inherit parent sandbox/approval; VS Code worktree isolation is not itself a security boundary; Copilot and Claude have their own tool/permission behavior. Never infer safety from a “read-only” label or a prompt.
+
+## 5. 🔄 Same workflow in all six surfaces
+
+| Surface | New project day | Existing project day |
+|---|---|---|
+| VS Code + Copilot | Open folder, select Copilot target, brief → Ask/Plan → human architecture choice → baseline → stable rules later. | Select correct target, inspect Git/config/CI/ticket, inspect Customizations/References, reuse existing rules, then scoped task and diff/test. |
+| Copilot CLI | Launch at trusted root; `/instructions`; normal prompt naming brief; scaffold only after approval. | `/instructions`, `/skills list`, `/agent`, `/mcp`; audit `.github/hooks` and MCP files; `/new`/restart when docs require; inspect tool activity. |
+| Codex CLI | Start at root; reference brief; plan/read-only first; use `AGENTS.md` only after decisions. | Read `AGENTS.md` and overrides; inspect `/skills`, `/agent`, `/hooks`, `/mcp`; preserve parent sandbox; report verified test results. |
+| Codex IDE/VS Code | Open Codex panel/target; same brief-first workflow; Codex owns config and approval settings. | Audit same Codex config as CLI; use IDE activity for subagents and review actual diff in editor; do not confuse local VS Code settings with Codex. |
+| Claude Code CLI | Start from project root; `/context`; brief first, then confirmed rules in `CLAUDE.md`. | `/context`, `/hooks`, `/skills`; inspect `.claude`/MCP config; choose Manual/Plan; inspect transcript and diff. |
+| Claude Code VS Code | Open Claude Code extension panel; attach/name brief; use Plan/Manual for first implementation. | Inspect same Claude instructions/skills/hooks/MCP; check active permission mode, inline diff and actual tools; extension CLI is not the Local harness. |
+
+For a brand-new and an existing project, the resulting artifacts must remain distinct: project brief/task facts stay temporary; stable project rules stay in instructions; repeatable workflows stay in skills; specialist tool configuration stays in agents; external capabilities stay in MCP; deterministic lifecycle work stays in hooks/CI.
+
+## 6. Practical audit and removal test
+
+For every customization added, keep a one-line purpose, owner, scope, source-of-truth, verification task, reload/discovery procedure, and removal path. After one or two representative uses ask:
+
+```text
+Did this customization prevent a repeated problem? Did it duplicate docs,
+contradict another rule, add unnecessary tools, or create noise? If so,
+propose the smallest edit or removal. Do not change files until approved.
+```
+
+Check it into version control only if it is genuinely team-owned. Remove unused duplicates and re-run discovery. A successful configuration check means only that the runtime found it—not that it behaved safely or produced correct code.
+
+## 7. Official references checked for this runbook
+
+- [VS Code harnesses](https://code.visualstudio.com/docs/agents/run/agent-harnesses), [customization overview](https://code.visualstudio.com/docs/agent-customization/overview), [custom instructions](https://code.visualstudio.com/docs/agent-customization/custom-instructions), [prompt files](https://code.visualstudio.com/docs/agent-customization/prompt-files), [skills](https://code.visualstudio.com/docs/agent-customization/agent-skills), [custom agents](https://code.visualstudio.com/docs/agent-customization/custom-agents), [hooks](https://code.visualstudio.com/docs/agent-customization/hooks), [MCP](https://code.visualstudio.com/docs/agent-customization/mcp-servers).
+- [Copilot CLI instructions](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions), [skills](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills), [agents](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/create-custom-agents-for-cli), [hooks](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/use-hooks), [hook reference](https://docs.github.com/en/copilot/reference/hooks-reference), [MCP](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers).
+- [Codex skills](https://developers.openai.com/codex/skills), [AGENTS.md](https://developers.openai.com/codex/agent-configuration/agents-md), [subagents/custom agents](https://developers.openai.com/codex/agent-configuration/subagents), [MCP](https://developers.openai.com/codex/mcp), [hooks](https://developers.openai.com/codex/hooks), [sandbox and approvals](https://developers.openai.com/codex/agent-approvals-security), [IDE](https://developers.openai.com/codex/ide).
+- [Claude Code memory/instructions](https://code.claude.com/docs/en/memory), [skills](https://code.claude.com/docs/en/skills), [subagents](https://code.claude.com/docs/en/sub-agents), [hooks guide](https://code.claude.com/docs/en/hooks-guide), [hooks reference](https://code.claude.com/docs/en/hooks), [MCP](https://code.claude.com/docs/en/mcp), [VS Code](https://code.claude.com/docs/en/vs-code).
+- [Agent Skills specification](https://agentskills.io/specification), [MCP specification](https://modelcontextprotocol.io/specification).
+
+**Verification boundary:** documentation pages and configuration distinctions were checked. These examples were not executed in Copilot, Codex, Claude Code, or a specific VS Code version; availability can vary by version, OS, account, organization policy, extension, and workspace trust. No test/build/product command is claimed to have run.
