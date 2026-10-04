@@ -1,8 +1,8 @@
-<div align="center">
+﻿<div align="center">
 
 # 📚 Knowledge Base
 
-### *Eight practical engineering guides — including a hands-on AI course and product-specific operating handbook — plus a real-company AI workbook*
+### *Nine practical engineering guides — including a local AI lab, hands-on AI course, and product-specific operating handbook — plus a real-company AI workbook*
 
 **_By Gehan Fernando_**
 
@@ -21,6 +21,7 @@
 
 | Guide | What it teaches | Scope | Start here if… |
 |---|---|:---:|---|
+| **[🚀 Local AI Learning Lab](local_ai_learning_lab.md)** | Build and verify a local AI environment with Qwen3.5 9B, Ollama, Python, and Streamlit; learn context windows, 32K/64K model profiles, local chat, VS Code integration, Codex, Claude Code, troubleshooting, and the progression toward tools, agents, RAG, memory, and MCP | Beginner-friendly hands-on lab | You want to learn modern AI engineering locally, one validated command and concept at a time |
 | **[🌈 AI Journey](ai_journey.md)** | Learn AI engineering by building: model-backed .NET/Python apps, structured output, safe tools, MCP, agents, RAG, evaluation, observability, security, and production workflows | Practical course | You are a developer who wants to build and verify AI features rather than study AI theory alone |
 | **[🤖 AI Coding-Agent Configuration Handbook](deep-research-report.md)** | Product-specific, step-by-step operation of GitHub Copilot, Copilot CLI, Codex, Claude Code, and VS Code: instructions, prompts, skills, agents/subagents, hooks, MCP, permissions, discovery, invocation, and troubleshooting | Practical handbook and runbook | You need to create, use, inspect, or remove AI customizations safely in a real project |
 | **[☁️ Azure Complete Engineering Cheatsheet](azure_cheatsheet.md)** | Azure architecture, identity, networking, compute, data, integration, AI, security, observability, IaC, DevOps, governance, cost, resilience, and production operations | 49 numbered sections + overview | You need the big-picture Azure engineering map: what exists, how it fits together, and how to choose between services |
@@ -31,16 +32,26 @@
 | **[🗄️ The Complete SQL Guide — MSSQL & MySQL](sql_complete_guide.md)** | SQL and relational databases from zero through querying, transactions, performance, design, security, administration, and application integration | 66 chapters | You want to learn databases from scratch or deepen production SQL knowledge in SQL Server and MySQL |
 
 > [!TIP]
+> [!TIP]
+> **Local-first AI entry point:** **[🚀 Local AI Learning Lab](local_ai_learning_lab.md)** is the quickest hands-on way to start the AI material. It builds one local Qwen/Ollama/Python/Streamlit environment, explains 32K vs 64K context, and provides a verified bridge into tool calling, agents, RAG, memory, MCP, Codex, and Claude Code.
+
 > **Practical companion:** **[🧪 Real-Company AI Engineering Workbook](end_to_end_ai_agent_graphql_workflow.md)** teaches how to choose and use ordinary prompts, task briefs, instructions, reusable prompts, skills, agents, subagents, parallel work, hooks, MCP, deterministic code, RAG, and CI in realistic situations. It has separate brand-new-project and existing-project workflows, plus bug fixes, feature work, code review, incidents, security-sensitive work, releases, and legacy maintenance. Follow it after the **AI Coding-Agent Configuration Handbook** to apply product-specific mechanics to company work. The **[`ai-cli/`](ai-cli/)** folder contains sample instruction and configuration files; adapt them to the selected product and repository rather than assuming one format works everywhere.
 
 ---
 
 ## 🧭 Which guide should I read first?
 
+### I want to start AI locally and learn by building
+Start with **[Local AI Learning Lab](local_ai_learning_lab.md)**, then continue with **[AI Journey](ai_journey.md)**.
+
+The Local AI Learning Lab is the shortest hands-on entry point into this repository's AI material. It walks through a local Qwen3.5 9B + Ollama + Python + Streamlit setup, explains context windows and model profiles, verifies the local chat application, and then maps the next steps into structured output, tool calling, agents, embeddings, RAG, persistent memory, MCP, Codex, and Claude Code. It is intentionally command-driven and beginner-friendly.
+
 ### I am a developer and want to build practical AI features
 Start with **[AI Journey](ai_journey.md)**.
 
 It is designed for developers who are new to modern AI engineering. Work through practical labs that progress from model-backed applications and structured output to tools, MCP, agents, RAG, evaluation, security, and production engineering. Build, run, break, and verify examples rather than treating the material as theory.
+
+If you want a smaller first step before the full course, complete the **[Local AI Learning Lab](local_ai_learning_lab.md)** first. It focuses specifically on getting one local model running correctly and understanding the surrounding runtime, context, chat state, and coding-agent integrations.
 
 ### I need to configure and use coding agents in a real repository
 Start with the **[AI Coding-Agent Configuration Handbook](deep-research-report.md)**, then use the **[Real-Company AI Engineering Workbook](end_to_end_ai_agent_graphql_workflow.md)**.
@@ -100,9 +111,10 @@ A practical order is:
 1. **[C# / .NET OOP](csharp_dotnet_oop_guide.md)** — strengthen language and design fundamentals if needed.
 2. **[SQL](sql_complete_guide.md)** — understand persistent data, transactions, indexing, and application/database boundaries.
 3. **[Azure](azure_cheatsheet.md)** — learn the cloud platform, identity, networking, deployment, observability, security, and operations.
-4. **[AI Journey](ai_journey.md)** — build modern AI engineering skills on top of your existing software background.
+4. **[Local AI Learning Lab](local_ai_learning_lab.md)** — get a local LLM running, understand context and chat state, and build a working Python/Streamlit assistant before adding agentic features.
+5. **[AI Journey](ai_journey.md)** — build modern AI engineering skills on top of your existing software background.
 
-You do **not** need to finish the first three before starting AI Journey. If your software fundamentals are already strong, go directly to the AI guide and use the others as references.
+You do **not** need to finish the first three before starting AI. If your software fundamentals are already strong, begin with the **Local AI Learning Lab** for the fastest hands-on start, then move into **AI Journey**. Use the other guides as references when a task needs deeper language, database, or cloud knowledge.
 
 ### Python engineering path
 
@@ -113,7 +125,9 @@ Python OOP
     │
     ├──────────► SQL
     │
-    └──────────► AI Journey
+    └──────────► Local AI Learning Lab
+                    │
+                    └──────────► AI Journey
 ```
 
 ### Database-first path
@@ -136,6 +150,7 @@ SQL fundamentals
 - **The SQL guide is language-independent.** It connects back to application design through repositories, Unit of Work, transactions, migrations, concurrency, and calling SQL from application code.
 - **The Azure guide provides the platform layer.** Its compute, networking, identity, data, messaging, observability, security, IaC, and deployment sections connect directly to real .NET/Python application architecture.
 - **The Azure Resources Cheatsheet is the deep companion to the Azure guide.** The Azure guide gives the architecture-level map and decision criteria; the Resources cheatsheet gives the per-resource CLI/Bicep/C# mechanics once you have already decided what to build.
+- **The Local AI Learning Lab is the hands-on entry point to the AI material.** It focuses on one verified local stack—Qwen3.5 9B, Ollama, Python, and Streamlit—then introduces the practical boundaries between context, conversation state, RAG, memory, tools, agents, and MCP before the broader AI Journey expands into production-oriented engineering.
 - **AI Journey teaches building AI-enabled software; it does not replace normal software engineering.** Its labs use deterministic code, tests, authorization, evaluation, and operational controls alongside model capabilities.
 - **Azure and AI Journey overlap intentionally around enterprise AI.** Azure covers the platform/service-selection view; AI Journey covers the developer learning path and hands-on AI engineering workflow.
 - **The AI Coding-Agent Configuration Handbook is complementary to AI Journey.** The course teaches you to *build* AI-powered applications; the handbook teaches you to *configure and operate* Copilot, Copilot CLI, Codex, Claude Code, and VS Code in product-specific ways.
@@ -163,6 +178,7 @@ Each guide contains its own setup or prerequisite section. You do not need every
 
 | Guide | Typical requirements |
 |---|---|
+| **Local AI Learning Lab** | Windows or another Ollama-supported OS, Ollama, Python 3.10+ (the walkthrough uses Python 3.12), and VS Code or another editor; Streamlit and the Ollama Python package are installed during the lab; Codex/Claude Code are optional later integrations |
 | **AI Journey** | .NET, Python, Git, VS Code and/or Visual Studio; provider/API access is introduced where needed |
 | **AI Coding-Agent Configuration Handbook** | Git and a terminal; install or enable only the CLI/extension and account access for the product you choose, following its current official setup instructions |
 | **Azure** / **Azure Resources Cheatsheet** | No single mandatory local setup for reading; Azure CLI/PowerShell, Bicep/Terraform, SDKs, and cloud access are used in relevant sections |
@@ -172,7 +188,7 @@ Each guide contains its own setup or prerequisite section. You do not need every
 | **SQL** | SQL Server 2019+ **or** MySQL 8.4 LTS; one engine is enough to begin |
 
 > [!TIP]
-> Install only what the section you are working through requires. A smaller learning environment is easier to troubleshoot. The AI course's local examples can be practiced independently of any specific coding-agent CLI. For harness-specific steps, use the product's current official setup and verify command results in your own environment.
+> Install only what the section you are working through requires. A smaller learning environment is easier to troubleshoot. The **Local AI Learning Lab** deliberately starts with only Ollama, one Qwen model, Python, and Streamlit; Codex, Claude Code, RAG infrastructure, memory stores, and MCP come later. The AI course's local examples can also be practiced independently of any specific coding-agent CLI. For harness-specific steps, use the product's current official setup and verify command results in your own environment.
 
 ---
 
@@ -193,6 +209,8 @@ Verify what happened
       ↓
 Explain when to use it — and when not to
 ```
+
+The **Local AI Learning Lab** applies the same philosophy even more literally: each setup stage gives one command, an expected result, a verification command, and a troubleshooting path before moving to the next stage.
 
 The **AI Journey** expresses this explicitly as:
 
@@ -219,6 +237,8 @@ Common conventions in the programming/database guides include:
 
 Where output matters, the guides show expected output or describe the expected result.
 
+For the **Local AI Learning Lab**, command accuracy is part of the lesson. For example, the Streamlit application must be started with `python -m streamlit run main.py`, not `python main.py`; the lab explains why and provides a verification sequence.
+
 ---
 
 ## ✅ Verification and freshness
@@ -229,6 +249,7 @@ These documents try to distinguish **tested facts**, **reviewed material**, and 
 - **[Python OOP](python_oop_guide.md#-how-to-run-the-examples-and-how-they-were-checked)** records the Python environment, code execution checks, type-checking scope, and version-dependent features.
 - **[Python dunder](python_dunder.md#-how-these-examples-were-checked)** records the CPython version and how runnable examples were executed and compared with expected output.
 - **[SQL](sql_complete_guide.md#-what-was-verified-and-what-was-not)** separates executed examples from material that requires environment-specific or administrative validation.
+- **[Local AI Learning Lab](local_ai_learning_lab.md)** records the validated local setup path, checks its included Python application for syntax, and anchors version-sensitive Ollama, Streamlit, VS Code, Codex, and Claude Code behavior to current official documentation. Re-check version-sensitive integrations before relying on them in production.
 - **[AI Journey](ai_journey.md#-validation-status--30-september-2026)** records a multi-pass review covering beginner usability, .NET/Python engineering, agents/MCP, RAG/production, and current official documentation.
 - **[AI Coding-Agent Configuration Handbook](deep-research-report.md)** distinguishes commands or configuration that were executed, checked against official documentation, or syntax-reviewed. Check its verification legend and re-check version-sensitive product behavior before using it.
 - **[Azure](azure_cheatsheet.md)** and **[Azure Resources Cheatsheet](azure_resources_cheatsheet.md)** are intentionally explicit that production-critical limits, quotas, pricing, SLA details, regional availability, API versions, preview status, and compliance requirements must be rechecked against current Microsoft documentation.
@@ -253,6 +274,7 @@ Different guides use different mechanisms depending on the subject:
 
 Useful built-in paths include:
 
+- **Local AI Learning Lab:** a staged path from local chat → prompts/system instructions → structured output → tool calling → agent loop → embeddings → RAG → persistent memory → MCP → combined agentic workflows.
 - **AI Journey:** a complete **12-week execution plan**.
 - **AI Coding-Agent Configuration Handbook:** product-specific creation, discovery, invocation, verification, troubleshooting, and removal workflows, followed by new-project and existing-project runbooks.
 - **Real-Company AI Engineering Workbook:** separate new-project and ongoing-project scenarios plus practical bug, feature, review, incident, security, release, and legacy workshops.
