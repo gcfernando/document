@@ -1,26 +1,38 @@
-# 🚀 Local AI Learning Lab
+# Local AI Learning Lab: your first local chat app
 
-## 🦙 Ollama + Qwen3.5 9B + Python + Streamlit on Windows
+## Start here
 
-> **Workshop outcome:** start with a Windows computer that has no Ollama model installed and finish with a verified local chat application. This is a hands-on lab: change something, inspect it, then verify it.
+Build a browser chat app with **Ollama, Qwen3.5 9B, Python, and Streamlit on Windows/PowerShell**. A local runtime runs the model; your Python app supplies messages and displays the reply. This is a chat application, not a coding agent, RAG system, or autonomous assistant.
 
-| This workshop uses | Value |
-|---|---|
-| Operating system | Windows 10 22H2+ or Windows 11 |
-| Terminal | PowerShell |
-| Editor | VS Code |
-| Python | Python 3.12 where available |
-| Runtime | Ollama |
-| Base model | `qwen3.5:9b-q4_K_M` |
-| Workshop profile | `qwen35-9b-32k` |
-| Chat interface | Streamlit |
+**Minimum prerequisites:** install Python 3.12 if available; be able to create a file and run a PowerShell command. VS Code is a convenient editor. You do not need .NET, Azure, SQL, Codex, Claude Code, or MCP for this lab.
 
-> [!IMPORTANT]
-> This project intentionally uses the Python interpreter selected by the `python` command. **Do not create a virtual environment for this workshop.** This differs from Streamlit's general recommendation, but keeps this existing project setup consistent. Always use `python -m pip` and `python -m streamlit` so packages and commands use that same interpreter.
+Follow [1–4](#lab-build): prepare the folder → install Ollama → get one base-model answer → create the profile used by this app. Then [5–8](#lab-packages): install two Python packages → create the app → start it → verify it. Stop at the browser-chat checkpoint. Profile experiments, 64K context, removal and uninstall are [optional reference](#lab-reference).
+
+**Commands have different destinations:** `ollama ...` and `python ...` run in PowerShell; `/bye` runs inside the Ollama chat; code goes in the named file; chat questions go in the browser. A long-running command occupies its terminal—use a second PowerShell to inspect it.
+
+This workshop deliberately uses the interpreter selected by `python`, without a virtual environment. This is an **existing-workshop exception**, not general Python project guidance: installing packages changes that interpreter's shared environment. Prefer the separate `.venv` setup in [AI Journey's optional Python route](ai_journey.md#cloud-and-python) for a new independent project. Keep using `python -m pip` and `python -m streamlit` here so all commands use the same interpreter. Do not mix these two setups halfway through the lab.
+
+**Execution status:** the application is a teaching example. Syntax checks do not prove that Ollama, the selected model, your GPU, or the browser app works on your computer. Complete the observable checkpoints yourself.
+
+### Essential path
+
+1. [Prepare and install](#lab-build)
+2. [Create the named model profile](#lab-profile)
+3. [Install packages](#lab-packages)
+4. [Create and run the chat app](#lab-app)
+5. [Verify, stop, and resume](#lab-verify)
+6. [Continue learning](#lab-next)
 
 ---
 
-## 🧭 1. What You Are Building
+
+---
+
+<a id="lab-build"></a>
+
+---
+
+# 1. Prepare your workspace
 
 ```text
 Windows
@@ -53,7 +65,9 @@ additional physical disk space consumed by each profile.
 
 ---
 
-## ✅ 2. Before You Start
+---
+
+## Before you start
 
 ### 2.1 Confirm PowerShell and your working folder
 
@@ -110,7 +124,9 @@ Get-CimInstance Win32_VideoController | Select-Object Name, AdapterRAM
 
 ---
 
-# 🦙 3. Install Ollama on Windows
+---
+
+# 2. Install and check Ollama
 
 Ollama's normal Windows installer installs for your user account, adds the CLI to your user PATH, runs the application in the background, and serves the local API at `http://localhost:11434`.
 
@@ -157,7 +173,7 @@ Invoke-RestMethod http://localhost:11434/api/tags
 1. Look for the Ollama icon in the Windows notification area (system tray).
 2. If it is absent, start **Ollama** from the Start menu.
 3. Wait a few seconds and retry all three commands.
-4. If it still fails, see [Troubleshooting](#-15-troubleshooting).
+4. If it still fails, see [Troubleshooting](#troubleshooting-the-essential-path).
 
 ### ✅ Checkpoint — Ollama ready
 
@@ -170,64 +186,9 @@ ollama ls
 
 ---
 
-# ▶️ 4. Start, Check, and Stop Ollama
-
-## What normally happens on Windows
-
-The standard Windows app normally runs in the background after installation. You usually **do not** need to start a server manually before running `ollama pull`, `ollama run`, or the Streamlit app.
-
-| Action | What it stops |
-|---|---|
-| `/bye` in chat | The interactive chat session only. |
-| `ollama stop <model>` | One loaded model; frees its loaded memory. |
-| Quit Ollama from the tray menu | The Ollama application/server; models cannot be queried or run. |
-| `Ctrl+C` in a manual `ollama serve` terminal | That manually started server process. |
-
-Ollama normally keeps a recently used model in memory for a short time (by default, five minutes). Therefore, leaving chat with `/bye` does not guarantee the model is unloaded.
-
-## 4.1 Check that the server is running
-
-```powershell
-ollama ls
-Invoke-RestMethod http://localhost:11434/api/tags
-```
-
-**Expected:** both succeed. `ollama ls` is the everyday check; the API call proves that the local server answers HTTP requests.
-
-## 4.2 Start it when it is not running
-
-**Recommended normal Windows method:** open **Ollama** from the Start menu, then repeat the checks above.
-
-If you deliberately use a standalone/manual server instead of the normal app, run this in a dedicated PowerShell window:
-
-```powershell
-ollama serve
-```
-
-Keep that window open. A running server prints logs and keeps the terminal occupied. Open a **second** PowerShell for `ollama ls`, `ollama pull`, and other commands.
-
-## 4.3 Stop the Ollama server/application
-
-For the normal Windows app:
-
-1. Locate the Ollama icon in the system tray. Use the `^` overflow area if necessary.
-2. Open its menu and choose **Quit**.
-3. In PowerShell, run:
-
-```powershell
-ollama ls
-```
-
-**Expected after a successful quit:** a connection error because the server is no longer listening.
-
-For a manually started `ollama serve`, press `Ctrl+C` in the window that runs it, then run `ollama ls` in the other window to confirm the same connection failure.
-
-> [!NOTE]
-> Stopping the server is different from removing models. Your model files remain installed unless you explicitly run `ollama rm`.
-
 ---
 
-# 📦 5. Download and Test the Base Qwen Model
+# 3. Download and test the base model
 
 ## 5.1 Select the workshop model
 
@@ -334,7 +295,709 @@ to unload it.
 
 ---
 
-# 🧠 6. Context and Profiles — Only What You Need Now
+---
+
+<a id="lab-profile"></a>
+
+---
+
+# 4. Create the profile used by this app
+
+A profile is optional for Ollama in general, but **required for the bundled app's default model name**. A profile saves runtime settings; it does not train a model. This route uses `qwen35-9b-32k`. If the computer cannot run it responsively, use the separate 16K profile below rather than changing a 32K-named profile to 16K.
+
+## 4.1 What is a Modelfile?
+
+A **Modelfile** is a small blueprint that tells Ollama how to create a customized model entry. Here, it says: “use the existing Qwen base model and run it with a 32,768-token context.”
+
+## 4.2 Confirm the project folder and prevent a path mistake
+
+```powershell
+Get-Location
+Get-ChildItem
+```
+
+**Expected:** you see the lab folder. If not, return to it:
+
+```powershell
+Set-Location "$HOME\LocalAI-Learning-Lab"
+```
+
+## 4.3 Create `Modelfile.32k` in VS Code
+
+1. Open the lab folder in VS Code.
+2. Create a file named exactly:
+
+```text
+Modelfile.32k
+```
+
+3. Paste and save:
+
+```text
+FROM qwen3.5:9b-q4_K_M
+PARAMETER num_ctx 32768
+```
+
+## 4.4 Or create it from PowerShell
+
+Run this only from the lab folder:
+
+```powershell
+@'
+FROM qwen3.5:9b-q4_K_M
+PARAMETER num_ctx 32768
+'@ | Set-Content -Encoding ascii .\Modelfile.32k
+```
+
+## 4.5 Verify the Modelfile before using it
+
+```powershell
+Get-Content .\Modelfile.32k
+Get-ChildItem -Name Modelfile.32k*
+```
+
+**Expected content:**
+
+```text
+FROM qwen3.5:9b-q4_K_M
+PARAMETER num_ctx 32768
+```
+
+**Expected filename:** exactly `Modelfile.32k`.
+
+### Deliberate failure — accidental `.txt` extension
+
+If the second command shows `Modelfile.32k.txt`, Windows/your editor added an extension. Rename it:
+
+```powershell
+Rename-Item -LiteralPath .\Modelfile.32k.txt -NewName Modelfile.32k
+Get-ChildItem -Name Modelfile.32k*
+```
+
+If both files exist, inspect both with `Get-Content`, keep the correct one, and delete only the known incorrect file:
+
+```powershell
+Remove-Item -LiteralPath .\Modelfile.32k.txt
+```
+
+## 4.6 Create the profile
+
+**Ollama must be running and the base model must exist.**
+
+```powershell
+ollama create qwen35-9b-32k -f .\Modelfile.32k
+```
+
+**Expected:** Ollama ends with `success`.
+
+**If it fails:**
+
+1. Run `Get-Location` and `Get-ChildItem` to confirm the file path.
+2. Run `Get-Content .\Modelfile.32k` and compare it exactly with the two required lines.
+3. Run `ollama ls` and confirm `qwen3.5:9b-q4_K_M` exists.
+4. Run `ollama ls` to confirm the server is running.
+
+## 4.7 Verify the profile configuration
+
+```powershell
+ollama ls
+ollama show --modelfile qwen35-9b-32k
+```
+
+**Expected:** `ollama ls` includes both names:
+
+```text
+qwen3.5:9b-q4_K_M
+qwen35-9b-32k
+```
+
+`ollama show --modelfile` prints the generated definition. Look for `PARAMETER num_ctx 32768` or an equivalent generated configuration. This verifies what Ollama saved.
+
+## 4.8 Run and prove the 32K context
+
+In the first PowerShell:
+
+```powershell
+ollama run qwen35-9b-32k
+```
+
+At the prompt:
+
+```text
+Reply with exactly: 32K profile is working.
+```
+
+Keep this chat open. In a **second** PowerShell:
+
+```powershell
+ollama ps
+```
+
+**Expected:** the profile row has `CONTEXT` equal to `32768`.
+
+Now in the first PowerShell:
+
+```text
+/bye
+```
+
+Then deliberately unload it:
+
+```powershell
+ollama stop qwen35-9b-32k
+ollama ps
+```
+
+**Expected:** the custom profile no longer appears in `ollama ps`.
+
+## Resource-limited alternative: a separate 16K profile
+
+In the lab folder, save `Modelfile.16k` with these two lines:
+
+```text
+FROM qwen3.5:9b-q4_K_M
+PARAMETER num_ctx 16384
+```
+
+In PowerShell, create it and select it for this app session:
+
+```powershell
+ollama create qwen35-9b-16k -f .\Modelfile.16k
+$env:LOCAL_AI_MODEL = "qwen35-9b-16k"
+```
+
+While this profile runs, inspect `ollama ps` in another PowerShell; expect `CONTEXT` 16384. The app reads `LOCAL_AI_MODEL`; otherwise it uses 32K. If even 16K is unresponsive, stop and use the base-model console checkpoint while assessing a smaller supported model. There is no universal RAM/VRAM minimum that guarantees acceptable latency. Do not increase context to fix slow generation.
+
+
+---
+
+<a id="lab-packages"></a>
+
+---
+
+# 5. Install packages for this app
+
+Return to the lab folder:
+
+```powershell
+Set-Location "$HOME\LocalAI-Learning-Lab"
+```
+
+Install into the selected global Python interpreter:
+
+```powershell
+python -m pip install ollama streamlit
+```
+
+Verify both imports:
+
+```powershell
+python -c "from ollama import Client, ResponseError; import streamlit; print('Ollama Python + Streamlit: OK')"
+```
+
+**Expected:**
+
+```text
+Ollama Python + Streamlit: OK
+```
+
+**If it fails:**
+
+1. Run `python -c "import sys; print(sys.executable)"`.
+2. Run `python -m pip --version`.
+3. Ensure both paths identify the same Python installation.
+4. Re-run the install command with that `python`.
+
+Create a minimal dependency record:
+
+```powershell
+@'
+ollama
+streamlit
+'@ | Set-Content -Encoding ascii .\requirements.txt
+
+Get-Content .\requirements.txt
+```
+
+---
+
+Record the versions that actually work before a later upgrade:
+
+```powershell
+python --version
+python -m pip show ollama streamlit
+python -m pip check
+```
+
+The two unpinned entries in `requirements.txt` describe dependencies, not a reproducible lockfile. After successful browser verification, record the installed `ollama` and `streamlit` versions in the lab notes; use those tested versions when sharing the exercise. Do not copy another machine's complete global `pip freeze` into this project's requirements.
+
+
+---
+
+<a id="lab-app"></a>
+
+---
+
+# 6. Create the Streamlit local chat app
+
+The app uses the verified 32K profile. Complete the profile checkpoint before continuing.
+
+## 6.1 Create `main.py`
+
+Create `main.py` in VS Code and paste this complete teaching application:
+
+```python
+"""Local Streamlit chat assistant powered by Ollama."""
+
+import os
+from collections.abc import Iterator
+
+import streamlit as st
+from ollama import Client, ResponseError
+
+OLLAMA_HOST = "http://127.0.0.1:11434"
+MODEL_NAME = os.environ.get("LOCAL_AI_MODEL", "qwen35-9b-32k")
+MAX_USER_CHARACTERS = 4000
+MAX_HISTORY_CHARACTERS = 12000
+MAX_COMPLETED_TURNS = 6
+
+SYSTEM_PROMPT = """
+You are an Expert Chat Assistant.
+
+Give accurate, clear, practical answers. Do not invent facts, APIs, commands,
+libraries, capabilities, sources, or results. Say when you are uncertain.
+
+For technical questions, prefer simple maintainable solutions and mention
+important errors, edge cases, security, performance, and compatibility concerns.
+You are a local model: do not claim to access the internet, private files,
+databases, APIs, or external systems unless the application actually provides them.
+""".strip()
+
+
+def initialize_session_state() -> None:
+    """Initialize values that survive Streamlit reruns for this browser session."""
+
+    if "messages" not in st.session_state:
+        st.session_state["messages"] = []
+    if "temperature" not in st.session_state:
+        st.session_state["temperature"] = 0.2
+
+
+@st.cache_resource
+def get_ollama_client() -> Client:
+    """Create one Ollama client for the Streamlit process."""
+
+    return Client(host=OLLAMA_HOST, timeout=120.0)
+
+
+def build_messages() -> list[dict[str, str]]:
+    """Build the system prompt plus current conversation for Ollama."""
+
+    return [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        *st.session_state["messages"],
+    ]
+
+
+def stream_response(
+    client: Client,
+    messages: list[dict[str, str]],
+    temperature: float,
+) -> Iterator[str]:
+    """Yield non-empty streamed text chunks from Ollama."""
+
+    response_stream = client.chat(
+        model=MODEL_NAME,
+        messages=messages,
+        stream=True,
+        think=False,
+        options={"temperature": temperature},
+        keep_alive="10m",
+    )
+
+    for chunk in response_stream:
+        if content := chunk.message.content:
+            yield content
+
+
+def clear_conversation() -> None:
+    """Remove only the browser session's conversation history."""
+
+    st.session_state["messages"] = []
+
+
+def render_sidebar() -> None:
+    """Render application controls."""
+
+    with st.sidebar:
+        st.header("⚙️ Settings")
+        st.write("### Model")
+        st.code(MODEL_NAME, language=None)
+        st.divider()
+        st.session_state["temperature"] = st.slider(
+            "Temperature",
+            min_value=0.0,
+            max_value=1.0,
+            value=st.session_state["temperature"],
+            step=0.1,
+            help="Lower values are more consistent. Higher values are more varied.",
+        )
+        if st.button("🗑️ Clear Conversation", use_container_width=True):
+            clear_conversation()
+            st.rerun()
+        st.divider()
+        st.caption(f"Ollama server: {OLLAMA_HOST}")
+
+
+def render_messages() -> None:
+    """Render the welcome text and conversation history."""
+
+    if not st.session_state["messages"]:
+        with st.chat_message("assistant"):
+            st.markdown(
+                f"Hello! I am running locally with **{MODEL_NAME}**. "
+                "What would you like to work on?"
+            )
+
+    for message in st.session_state["messages"]:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+
+def process_user_message(client: Client) -> None:
+    """Read one user message, stream the reply, and store both."""
+
+    if not (user_prompt := st.chat_input("Ask your local assistant...")):
+        return
+
+    if len(user_prompt) > MAX_USER_CHARACTERS:
+        st.warning("Please shorten this message to 4,000 characters.")
+        return
+
+    history = st.session_state["messages"]
+    history_was_trimmed = False
+    while history and (
+        len(history) >= MAX_COMPLETED_TURNS * 2
+        or sum(len(message["content"]) for message in history) > MAX_HISTORY_CHARACTERS
+    ):
+        del history[:2]  # Remove the oldest complete user/assistant pair.
+        history_was_trimmed = True
+
+    if history_was_trimmed:
+        st.info("Older conversation turns are no longer being sent to the model.")
+
+    history.append({"role": "user", "content": user_prompt})
+    with st.chat_message("user"):
+        st.markdown(user_prompt)
+
+    with st.chat_message("assistant"):
+        try:
+            assistant_response = st.write_stream(
+                stream_response(
+                    client,
+                    build_messages(),
+                    st.session_state["temperature"],
+                )
+            )
+            st.session_state["messages"].append(
+                {"role": "assistant", "content": assistant_response}
+            )
+        except ResponseError as error:
+            st.session_state["messages"].pop()
+            st.error(f"Ollama returned an error:\n\n{error.error}")
+        except ConnectionError:
+            st.session_state["messages"].pop()
+            st.error(
+                "Cannot connect to Ollama. Start the Ollama Windows application "
+                f"and verify {OLLAMA_HOST}."
+            )
+        except TimeoutError:
+            st.session_state["messages"].pop()
+            st.error(
+                "Ollama did not respond before the timeout. Check the loaded model "
+                "and machine resources, then submit the message again when ready."
+            )
+
+
+def main() -> None:
+    """Run the Streamlit application."""
+
+    st.set_page_config(page_title="Expert Chat Assistant", page_icon="🤖")
+    initialize_session_state()
+    render_sidebar()
+    st.title("🤖 Expert Chat Assistant")
+    st.caption(f"Local AI • {MODEL_NAME} • Ollama")
+    st.divider()
+    render_messages()
+    process_user_message(get_ollama_client())
+
+
+if __name__ == "__main__":
+    main()
+```
+
+> 💡 **Why does the app use `keep_alive="10m"`?** It keeps this model loaded for up to ten minutes after a request to make nearby requests faster. Stop it explicitly with `ollama stop qwen35-9b-32k` when you need to free memory.
+
+## 6.2 Validate before starting the app
+
+```powershell
+python -m py_compile .\main.py
+python -c "from ollama import Client, ResponseError; import streamlit; print('Imports: OK')"
+ollama ls
+```
+
+**Expected:**
+
+- `py_compile` prints nothing: that means Python syntax is valid.
+- The import command prints `Imports: OK`.
+- `ollama ls` includes `qwen35-9b-32k`.
+
+---
+
+### What the app remembers and how it fails
+
+`st.session_state` stores this browser session's completed messages. It is not a database or durable model memory. Reloading the browser or losing its WebSocket resets the session; see [Streamlit Session State](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state). Clear Conversation removes the supplied chat history.
+
+The app limits message size and removes old completed turns. When it removes them, it displays a notice that they are no longer sent to the model. These character/turn limits are a conservative teaching policy, **not a token counter or a proof of fit inside a context window**. Token budgeting and summarization belong in a later application lesson.
+
+Requests have a timeout and no automatic retry. A handled connection, Ollama, or timeout failure removes the unfinished user turn from stored history so a later submission does not repeatedly send it. Other unexpected errors remain visible in Streamlit's normal error output rather than being mistaken for a successful reply. Streaming may already have displayed partial text before an error; that partial text is not stored as a successful answer. Check the server, then submit again deliberately. Do not use this demo for shared/public access without a separate security and privacy design.
+
+
+---
+
+# 7. Run and test Streamlit
+
+## 7.1 Start the application correctly
+
+**Wrong:**
+
+```powershell
+python .\main.py
+```
+
+This runs a normal Python script, not the Streamlit runtime. It can produce `missing ScriptRunContext` warnings and Streamlit session state will not work as intended.
+
+**Correct:**
+
+```powershell
+python -m streamlit run .\main.py
+```
+
+**Expected:** Streamlit starts and prints a local URL, normally `http://localhost:8501`. Open it in a browser if it does not open automatically.
+
+> 💡 **Why this command?** `python -m streamlit` guarantees that Streamlit comes from the exact interpreter used for `python -m pip install`.
+
+## 7.2 Test the application
+
+| Test | Do this | Expected |
+|---|---|---|
+| Basic chat | Ask: `Reply with exactly: Streamlit is working.` | A streamed response appears. |
+| Conversation | Say: `For this chat, my project is Alpha.` Then ask for the project name. | It answers `Alpha` while the session remains active. |
+| Clear chat | Click **🗑️ Clear Conversation**, then ask for the project name. | Earlier chat history is no longer supplied. |
+| Local model | Run `ollama ps` in a second PowerShell while the app responds. | The selected profile appears: `32768` for 32K or `16384` for the explicit 16K alternative. |
+
+`Clear Conversation` clears only Streamlit's browser session history. It does not delete the model, profile, or Ollama files.
+
+## 7.3 Stop the application and model
+
+1. Return to the terminal running Streamlit.
+2. Press `Ctrl+C`.
+3. Verify Streamlit stopped by refreshing its URL; it should no longer respond.
+4. Stop the loaded model if you no longer need it:
+
+```powershell
+ollama stop qwen35-9b-32k
+ollama ps
+```
+
+---
+
+---
+
+<a id="lab-verify"></a>
+
+---
+
+# 8. Verify, stop, and resume
+
+Run these one at a time after completing the workshop:
+
+```powershell
+python --version
+python -c "import sys; print(sys.executable)"
+python -c "from ollama import Client, ResponseError; import streamlit; print('Python packages: OK')"
+ollama --version
+ollama ls
+```
+
+Run and verify the base model:
+
+```powershell
+ollama run qwen3.5:9b-q4_K_M
+```
+
+Type `/bye`, then:
+
+```powershell
+ollama stop qwen3.5:9b-q4_K_M
+```
+
+Run and verify the profile:
+
+```powershell
+ollama run qwen35-9b-32k
+```
+
+In another PowerShell:
+
+```powershell
+ollama ps
+```
+
+Confirm `CONTEXT` is `32768`. Exit with `/bye`, then:
+
+```powershell
+ollama stop qwen35-9b-32k
+python -m py_compile .\main.py
+python -m streamlit run .\main.py
+```
+
+### Final verification checklist
+
+- [ ] Correct Python executable verified
+- [ ] Ollama installed and version verified
+- [ ] Local Ollama API/server answered
+- [ ] Qwen base model downloaded
+- [ ] Base model answered a prompt
+- [ ] Base model was explicitly stopped
+- [ ] `Modelfile.32k` exists without an accidental `.txt` extension
+- [ ] `qwen35-9b-32k` was created
+- [ ] `ollama ps` showed context `32768`
+- [ ] Selected profile and live allocated context agree (32K, or the explicit 16K route)
+- [ ] Python packages imported from the selected interpreter
+- [ ] `main.py` syntax compiled
+- [ ] Streamlit started with `python -m streamlit run .\main.py`
+- [ ] Browser chat worked
+- [ ] Clear Conversation worked
+- [ ] Streamlit and loaded model were stopped correctly
+
+---
+
+## Resume tomorrow
+
+Open PowerShell, return to `$HOME\LocalAI-Learning-Lab`, and start the Ollama Windows app if `ollama ls` cannot connect. If you chose 16K, set `LOCAL_AI_MODEL` again in this shell. Then run `python -m streamlit run .\main.py`. You do not need to pull the model, create the profile, or reinstall packages again. This demo does not restore yesterday's conversation.
+
+**You are done:** a browser reply appears, a follow-up uses the current session, Clear Conversation removes that context, and `ollama ps` shows the selected model. For another application capability, continue to [AI Journey's local C# bridge](ai_journey.md#local-model-call). To operate a coding assistant, use the [configuration handbook's product routes](deep-research-report.md#choose-product).
+
+
+---
+
+# Troubleshooting the essential path
+
+## `ollama` is not recognized
+
+Close and reopen PowerShell. If it remains unavailable, reinstall using the official Windows installer and verify:
+
+```powershell
+ollama --version
+```
+
+## Ollama cannot connect / API request fails
+
+```powershell
+ollama ls
+Invoke-RestMethod http://localhost:11434/api/tags
+```
+
+Start Ollama from the Start menu if both fail. If the app appears to be running but failures continue, quit it from the tray menu, start it again, and retry. Inspect `%LOCALAPPDATA%\Ollama\server.log` for server errors.
+
+## A profile is missing
+
+```powershell
+ollama ls
+Get-Location
+Get-ChildItem
+Get-Content .\Modelfile.32k
+ollama create qwen35-9b-32k -f .\Modelfile.32k
+```
+
+The first command tells you whether the profile exists. The next commands prove you are in the folder containing the correct Modelfile.
+
+## `CONTEXT` is not what you expected
+
+Do not infer context from the profile name. Run the profile, keep it loaded, then inspect:
+
+```powershell
+ollama ps
+```
+
+If it is not `32768`, inspect the saved definition:
+
+```powershell
+ollama show --modelfile qwen35-9b-32k
+```
+
+Correct `Modelfile.32k`, recreate the named profile with `ollama create`, then repeat the live test.
+
+## Python package was installed but cannot be imported
+
+```powershell
+python -c "import sys; print(sys.executable)"
+python -m pip --version
+python -m pip install --upgrade ollama streamlit
+```
+
+The first two commands must point to the same Python installation.
+
+## `missing ScriptRunContext`
+
+You started the app with `python main.py`. Stop it and use:
+
+```powershell
+python -m streamlit run .\main.py
+```
+
+## The computer is slow
+
+```powershell
+ollama ps
+```
+
+Check `PROCESSOR` and `CONTEXT`. Stop unneeded models:
+
+```powershell
+ollama stop qwen35-9b-32k
+```
+
+Use 32K for normal work. Test 64K only when a measured workload requires it. Update GPU drivers if the model unexpectedly runs on CPU and consult Ollama's Windows/GPU documentation for supported hardware.
+
+---
+
+---
+
+<a id="lab-next"></a>
+
+---
+
+# What to learn next
+
+Use [AI Journey](ai_journey.md#course-path) for: model call → structured result/state → guarded tool → bounded agent loop → keyword retrieval/RAG → evaluations and reliability. MCP is an optional way to connect capabilities; persistent memory is optional when retention is actually required. Neither is a prerequisite for this chat app.
+
+Use the [coding-agent handbook](deep-research-report.md#choose-product) to choose one coding assistant and the [company workbook](end_to_end_ai_agent_graphql_workflow.md#workbook-path) to apply it to a ticket. This lab does not configure Codex or Claude Code or promise that they use your local Qwen model.
+
+
+---
+
+<a id="lab-reference"></a>
+
+# Optional operations and reference
+
+Stop the essential path at the working browser app. Everything below is optional. Removal exercises change installed entries; uninstall removes the runtime/data. Before returning to the app, recheck the server, recreate the app's selected profile if removed, and repeat the package/import/model checks. Run deletion only when you intentionally want that specific data removed.
+
+
+---
+
+## A. Context and profile reference
 
 ## 6.1 What is context?
 
@@ -514,261 +1177,9 @@ The selected Qwen3.5 9B model has a 256K maximum, but that does not mean 256K is
 
 ---
 
-# 🛠️ 7. Create the 32K Profile
-
-## 7.1 What is a Modelfile?
-
-A **Modelfile** is a small blueprint that tells Ollama how to create a customized model entry. Here, it says: “use the existing Qwen base model and run it with a 32,768-token context.”
-
-## 7.2 Confirm the project folder and prevent a path mistake
-
-```powershell
-Get-Location
-Get-ChildItem
-```
-
-**Expected:** you see the lab folder. If not, return to it:
-
-```powershell
-Set-Location "$HOME\LocalAI-Learning-Lab"
-```
-
-## 7.3 Create `Modelfile.32k` in VS Code
-
-1. Open the lab folder in VS Code.
-2. Create a file named exactly:
-
-```text
-Modelfile.32k
-```
-
-3. Paste and save:
-
-```text
-FROM qwen3.5:9b-q4_K_M
-PARAMETER num_ctx 32768
-```
-
-## 7.4 Or create it from PowerShell
-
-Run this only from the lab folder:
-
-```powershell
-@'
-FROM qwen3.5:9b-q4_K_M
-PARAMETER num_ctx 32768
-'@ | Set-Content -Encoding ascii .\Modelfile.32k
-```
-
-## 7.5 Verify the Modelfile before using it
-
-```powershell
-Get-Content .\Modelfile.32k
-Get-ChildItem -Name Modelfile.32k*
-```
-
-**Expected content:**
-
-```text
-FROM qwen3.5:9b-q4_K_M
-PARAMETER num_ctx 32768
-```
-
-**Expected filename:** exactly `Modelfile.32k`.
-
-### Deliberate failure — accidental `.txt` extension
-
-If the second command shows `Modelfile.32k.txt`, Windows/your editor added an extension. Rename it:
-
-```powershell
-Rename-Item -LiteralPath .\Modelfile.32k.txt -NewName Modelfile.32k
-Get-ChildItem -Name Modelfile.32k*
-```
-
-If both files exist, inspect both with `Get-Content`, keep the correct one, and delete only the known incorrect file:
-
-```powershell
-Remove-Item -LiteralPath .\Modelfile.32k.txt
-```
-
-## 7.6 Create the profile
-
-**Ollama must be running and the base model must exist.**
-
-```powershell
-ollama create qwen35-9b-32k -f .\Modelfile.32k
-```
-
-**Expected:** Ollama ends with `success`.
-
-**If it fails:**
-
-1. Run `Get-Location` and `Get-ChildItem` to confirm the file path.
-2. Run `Get-Content .\Modelfile.32k` and compare it exactly with the two required lines.
-3. Run `ollama ls` and confirm `qwen3.5:9b-q4_K_M` exists.
-4. Run `ollama ls` to confirm the server is running.
-
-## 7.7 Verify the profile configuration
-
-```powershell
-ollama ls
-ollama show --modelfile qwen35-9b-32k
-```
-
-**Expected:** `ollama ls` includes both names:
-
-```text
-qwen3.5:9b-q4_K_M
-qwen35-9b-32k
-```
-
-`ollama show --modelfile` prints the generated definition. Look for `PARAMETER num_ctx 32768` or an equivalent generated configuration. This verifies what Ollama saved.
-
-## 7.8 Run and prove the 32K context
-
-In the first PowerShell:
-
-```powershell
-ollama run qwen35-9b-32k
-```
-
-At the prompt:
-
-```text
-Reply with exactly: 32K profile is working.
-```
-
-Keep this chat open. In a **second** PowerShell:
-
-```powershell
-ollama ps
-```
-
-**Expected:** the profile row has `CONTEXT` equal to `32768`.
-
-Now in the first PowerShell:
-
-```text
-/bye
-```
-
-Then deliberately unload it:
-
-```powershell
-ollama stop qwen35-9b-32k
-ollama ps
-```
-
-**Expected:** the custom profile no longer appears in `ollama ps`.
-
-## 7.9 Modify an Existing Profile
-
-> 💡 **Why this matters:** a profile is recreated from its Modelfile. Editing the file alone does not change an already-created profile.
-
-This safe experiment temporarily changes the existing `qwen35-9b-32k` name to 16K, proves it, then restores 32K.
-
-### Do this — change the saved configuration to 16K
-
-Open `Modelfile.32k` in VS Code. Change only the second line:
-
-```text
-FROM qwen3.5:9b-q4_K_M
-PARAMETER num_ctx 16384
-```
-
-Save, then verify the file:
-
-```powershell
-Get-Content .\Modelfile.32k
-```
-
-**Expected:** it shows `PARAMETER num_ctx 16384`.
-
-Recreate the same named profile:
-
-```powershell
-ollama create qwen35-9b-32k -f .\Modelfile.32k
-```
-
-**Expected:** `success`. This updates/recreates the named profile; it does not require you to delete the profile first.
-
-### Verify — prove the running profile is now 16K
-
-In the first PowerShell:
-
-```powershell
-ollama run qwen35-9b-32k
-```
-
-In a second PowerShell:
-
-```powershell
-ollama ps
-```
-
-**Expected:** the `qwen35-9b-32k` row has `CONTEXT` equal to `16384`.
-
-Exit with `/bye`, then unload it:
-
-```powershell
-ollama stop qwen35-9b-32k
-```
-
-### Do this — restore the workshop's 32K configuration
-
-Edit `Modelfile.32k` back to:
-
-```text
-FROM qwen3.5:9b-q4_K_M
-PARAMETER num_ctx 32768
-```
-
-Verify and recreate:
-
-```powershell
-Get-Content .\Modelfile.32k
-ollama create qwen35-9b-32k -f .\Modelfile.32k
-ollama show --modelfile qwen35-9b-32k
-```
-
-Run it in one PowerShell:
-
-```powershell
-ollama run qwen35-9b-32k
-```
-
-Then in another:
-
-```powershell
-ollama ps
-```
-
-**Expected:** `CONTEXT` is `32768`. Exit with `/bye`, then unload it:
-
-```powershell
-ollama stop qwen35-9b-32k
-```
-
-**If it fails:** confirm you saved the file, run `Get-Content .\Modelfile.32k`, rerun `ollama create`, then repeat the live `ollama ps` test. The workflow is always:
-
-```text
-Edit Modelfile → Verify file → Recreate profile → Run profile → ollama ps → Verify
-```
-
-### ✅ Checkpoint — 32K profile ready
-
-These must work:
-
-```powershell
-ollama show --modelfile qwen35-9b-32k
-ollama run qwen35-9b-32k
-```
-
-While it runs, `ollama ps` must show `CONTEXT` as `32768`.
-
 ---
 
-# 🧪 8. Base Model vs. Profile Experiment
+## B. Optional base-model/profile comparison
 
 This experiment gives evidence instead of relying on a written claim.
 
@@ -823,7 +1234,9 @@ ollama stop qwen35-9b-32k
 
 ---
 
-# ➕ 9. Optional: Create a Separate 64K Profile
+---
+
+## C. Optional 64K profile
 
 Create a separate profile rather than overwriting 32K. Clear names make comparison and cleanup safe.
 
@@ -862,7 +1275,68 @@ ollama stop qwen35-9b-64k
 
 ---
 
-# 🧹 10. Reset and Remove Models Safely
+---
+
+## D. Ollama lifecycle reference
+
+## What normally happens on Windows
+
+The standard Windows app normally runs in the background after installation. You usually **do not** need to start a server manually before running `ollama pull`, `ollama run`, or the Streamlit app.
+
+| Action | What it stops |
+|---|---|
+| `/bye` in chat | The interactive chat session only. |
+| `ollama stop <model>` | One loaded model; frees its loaded memory. |
+| Quit Ollama from the tray menu | The Ollama application/server; models cannot be queried or run. |
+| `Ctrl+C` in a manual `ollama serve` terminal | That manually started server process. |
+
+Ollama normally keeps a recently used model in memory for a short time (by default, five minutes). Therefore, leaving chat with `/bye` does not guarantee the model is unloaded.
+
+## 4.1 Check that the server is running
+
+```powershell
+ollama ls
+Invoke-RestMethod http://localhost:11434/api/tags
+```
+
+**Expected:** both succeed. `ollama ls` is the everyday check; the API call proves that the local server answers HTTP requests.
+
+## 4.2 Start it when it is not running
+
+**Recommended normal Windows method:** open **Ollama** from the Start menu, then repeat the checks above.
+
+If you deliberately use a standalone/manual server instead of the normal app, run this in a dedicated PowerShell window:
+
+```powershell
+ollama serve
+```
+
+Keep that window open. A running server prints logs and keeps the terminal occupied. Open a **second** PowerShell for `ollama ls`, `ollama pull`, and other commands.
+
+## 4.3 Stop the Ollama server/application
+
+For the normal Windows app:
+
+1. Locate the Ollama icon in the system tray. Use the `^` overflow area if necessary.
+2. Open its menu and choose **Quit**.
+3. In PowerShell, run:
+
+```powershell
+ollama ls
+```
+
+**Expected after a successful quit:** a connection error because the server is no longer listening.
+
+For a manually started `ollama serve`, press `Ctrl+C` in the window that runs it, then run `ollama ls` in the other window to confirm the same connection failure.
+
+> [!NOTE]
+> Stopping the server is different from removing models. Your model files remain installed unless you explicitly run `ollama rm`.
+
+---
+
+---
+
+## E. Deliberate model removal and reset
 
 Run `ollama ls` before and after every removal. `ollama rm` removes the **named entry**, not every similarly named model.
 
@@ -987,7 +1461,9 @@ ollama run qwen35-9b-32k
 
 ---
 
-# 🗑️ 11. Completely Uninstall Ollama
+---
+
+## F. Deliberate uninstall
 
 Use this section only for a deliberate full reset or removal. It distinguishes uninstalling the application from removing models and data.
 
@@ -1152,439 +1628,13 @@ Temporary files
   → inspect separately; never mass-delete unrelated TEMP contents.
 ```
 
-To reinstall, return to [Install Ollama on Windows](#-3-install-ollama-on-windows).
+To reinstall, return to [Install Ollama](#lab-build).
 
 ---
 
-# 🐍 12. Install Python Packages for the App
-
-Return to the lab folder:
-
-```powershell
-Set-Location "$HOME\LocalAI-Learning-Lab"
-```
-
-Install into the selected global Python interpreter:
-
-```powershell
-python -m pip install --upgrade pip
-python -m pip install --upgrade ollama streamlit
-```
-
-Verify both imports:
-
-```powershell
-python -c "from ollama import Client, ResponseError; import streamlit; print('Ollama Python + Streamlit: OK')"
-```
-
-**Expected:**
-
-```text
-Ollama Python + Streamlit: OK
-```
-
-**If it fails:**
-
-1. Run `python -c "import sys; print(sys.executable)"`.
-2. Run `python -m pip --version`.
-3. Ensure both paths identify the same Python installation.
-4. Re-run the install command with that `python`.
-
-Create a minimal dependency record:
-
-```powershell
-@'
-ollama
-streamlit
-'@ | Set-Content -Encoding ascii .\requirements.txt
-
-Get-Content .\requirements.txt
-```
-
 ---
 
-# 💻 13. Create the Streamlit Local Chat App
-
-The app uses the verified 32K profile. Complete the profile checkpoint before continuing.
-
-## 13.1 Create `main.py`
-
-Create `main.py` in VS Code and paste this working application:
-
-```python
-"""Local Streamlit chat assistant powered by Ollama."""
-
-from collections.abc import Iterator
-
-import streamlit as st
-from ollama import Client, ResponseError
-
-OLLAMA_HOST = "http://127.0.0.1:11434"
-MODEL_NAME = "qwen35-9b-32k"
-
-SYSTEM_PROMPT = """
-You are an Expert Chat Assistant.
-
-Give accurate, clear, practical answers. Do not invent facts, APIs, commands,
-libraries, capabilities, sources, or results. Say when you are uncertain.
-
-For technical questions, prefer simple maintainable solutions and mention
-important errors, edge cases, security, performance, and compatibility concerns.
-You are a local model: do not claim to access the internet, private files,
-databases, APIs, or external systems unless the application actually provides them.
-""".strip()
-
-
-def initialize_session_state() -> None:
-    """Initialize values that survive Streamlit reruns for this browser session."""
-
-    if "messages" not in st.session_state:
-        st.session_state["messages"] = []
-    if "temperature" not in st.session_state:
-        st.session_state["temperature"] = 0.2
-
-
-@st.cache_resource
-def get_ollama_client() -> Client:
-    """Create one Ollama client for the Streamlit process."""
-
-    return Client(host=OLLAMA_HOST)
-
-
-def build_messages() -> list[dict[str, str]]:
-    """Build the system prompt plus current conversation for Ollama."""
-
-    return [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        *st.session_state["messages"],
-    ]
-
-
-def stream_response(
-    client: Client,
-    messages: list[dict[str, str]],
-    temperature: float,
-) -> Iterator[str]:
-    """Yield non-empty streamed text chunks from Ollama."""
-
-    response_stream = client.chat(
-        model=MODEL_NAME,
-        messages=messages,
-        stream=True,
-        think=False,
-        options={"temperature": temperature},
-        keep_alive="10m",
-    )
-
-    for chunk in response_stream:
-        if content := chunk.message.content:
-            yield content
-
-
-def clear_conversation() -> None:
-    """Remove only the browser session's conversation history."""
-
-    st.session_state["messages"] = []
-
-
-def render_sidebar() -> None:
-    """Render application controls."""
-
-    with st.sidebar:
-        st.header("⚙️ Settings")
-        st.write("### Model")
-        st.code(MODEL_NAME, language=None)
-        st.divider()
-        st.session_state["temperature"] = st.slider(
-            "Temperature",
-            min_value=0.0,
-            max_value=1.0,
-            value=st.session_state["temperature"],
-            step=0.1,
-            help="Lower values are more consistent. Higher values are more varied.",
-        )
-        if st.button("🗑️ Clear Conversation", use_container_width=True):
-            clear_conversation()
-            st.rerun()
-        st.divider()
-        st.caption(f"Ollama server: {OLLAMA_HOST}")
-
-
-def render_messages() -> None:
-    """Render the welcome text and conversation history."""
-
-    if not st.session_state["messages"]:
-        with st.chat_message("assistant"):
-            st.markdown(
-                f"Hello! I am running locally with **{MODEL_NAME}**. "
-                "What would you like to work on?"
-            )
-
-    for message in st.session_state["messages"]:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
-
-def process_user_message(client: Client) -> None:
-    """Read one user message, stream the reply, and store both."""
-
-    if not (user_prompt := st.chat_input("Ask your local assistant...")):
-        return
-
-    st.session_state["messages"].append({"role": "user", "content": user_prompt})
-    with st.chat_message("user"):
-        st.markdown(user_prompt)
-
-    with st.chat_message("assistant"):
-        try:
-            assistant_response = st.write_stream(
-                stream_response(
-                    client,
-                    build_messages(),
-                    st.session_state["temperature"],
-                )
-            )
-            st.session_state["messages"].append(
-                {"role": "assistant", "content": assistant_response}
-            )
-        except ResponseError as error:
-            st.error(f"Ollama returned an error:\n\n{error.error}")
-        except ConnectionError:
-            st.error(
-                "Cannot connect to Ollama. Start the Ollama Windows application "
-                f"and verify {OLLAMA_HOST}."
-            )
-
-
-def main() -> None:
-    """Run the Streamlit application."""
-
-    st.set_page_config(page_title="Expert Chat Assistant", page_icon="🤖")
-    initialize_session_state()
-    render_sidebar()
-    st.title("🤖 Expert Chat Assistant")
-    st.caption(f"Local AI • {MODEL_NAME} • Ollama")
-    st.divider()
-    render_messages()
-    process_user_message(get_ollama_client())
-
-
-if __name__ == "__main__":
-    main()
-```
-
-> 💡 **Why does the app use `keep_alive="10m"`?** It keeps this model loaded for up to ten minutes after a request to make nearby requests faster. Stop it explicitly with `ollama stop qwen35-9b-32k` when you need to free memory.
-
-## 13.2 Validate before starting the app
-
-```powershell
-python -m py_compile .\main.py
-python -c "from ollama import Client, ResponseError; import streamlit; print('Imports: OK')"
-ollama ls
-```
-
-**Expected:**
-
-- `py_compile` prints nothing: that means Python syntax is valid.
-- The import command prints `Imports: OK`.
-- `ollama ls` includes `qwen35-9b-32k`.
-
----
-
-# 🌐 14. Run and Test Streamlit
-
-## 14.1 Start the application correctly
-
-**Wrong:**
-
-```powershell
-python .\main.py
-```
-
-This runs a normal Python script, not the Streamlit runtime. It can produce `missing ScriptRunContext` warnings and Streamlit session state will not work as intended.
-
-**Correct:**
-
-```powershell
-python -m streamlit run .\main.py
-```
-
-**Expected:** Streamlit starts and prints a local URL, normally `http://localhost:8501`. Open it in a browser if it does not open automatically.
-
-> 💡 **Why this command?** `python -m streamlit` guarantees that Streamlit comes from the exact interpreter used for `python -m pip install`.
-
-## 14.2 Test the application
-
-| Test | Do this | Expected |
-|---|---|---|
-| Basic chat | Ask: `Reply with exactly: Streamlit is working.` | A streamed response appears. |
-| Conversation | Say: `For this chat, my project is Alpha.` Then ask for the project name. | It answers `Alpha` while the session remains active. |
-| Clear chat | Click **🗑️ Clear Conversation**, then ask for the project name. | Earlier chat history is no longer supplied. |
-| Local model | Run `ollama ps` in a second PowerShell while the app responds. | `qwen35-9b-32k` appears, with context `32768`. |
-
-`Clear Conversation` clears only Streamlit's browser session history. It does not delete the model, profile, or Ollama files.
-
-## 14.3 Stop the application and model
-
-1. Return to the terminal running Streamlit.
-2. Press `Ctrl+C`.
-3. Verify Streamlit stopped by refreshing its URL; it should no longer respond.
-4. Stop the loaded model if you no longer need it:
-
-```powershell
-ollama stop qwen35-9b-32k
-ollama ps
-```
-
----
-
-# 🧯 15. Troubleshooting
-
-## `ollama` is not recognized
-
-Close and reopen PowerShell. If it remains unavailable, reinstall using the official Windows installer and verify:
-
-```powershell
-ollama --version
-```
-
-## Ollama cannot connect / API request fails
-
-```powershell
-ollama ls
-Invoke-RestMethod http://localhost:11434/api/tags
-```
-
-Start Ollama from the Start menu if both fail. If the app appears to be running but failures continue, quit it from the tray menu, start it again, and retry. Inspect `%LOCALAPPDATA%\Ollama\server.log` for server errors.
-
-## A profile is missing
-
-```powershell
-ollama ls
-Get-Location
-Get-ChildItem
-Get-Content .\Modelfile.32k
-ollama create qwen35-9b-32k -f .\Modelfile.32k
-```
-
-The first command tells you whether the profile exists. The next commands prove you are in the folder containing the correct Modelfile.
-
-## `CONTEXT` is not what you expected
-
-Do not infer context from the profile name. Run the profile, keep it loaded, then inspect:
-
-```powershell
-ollama ps
-```
-
-If it is not `32768`, inspect the saved definition:
-
-```powershell
-ollama show --modelfile qwen35-9b-32k
-```
-
-Correct `Modelfile.32k`, recreate the named profile with `ollama create`, then repeat the live test.
-
-## Python package was installed but cannot be imported
-
-```powershell
-python -c "import sys; print(sys.executable)"
-python -m pip --version
-python -m pip install --upgrade ollama streamlit
-```
-
-The first two commands must point to the same Python installation.
-
-## `missing ScriptRunContext`
-
-You started the app with `python main.py`. Stop it and use:
-
-```powershell
-python -m streamlit run .\main.py
-```
-
-## The computer is slow
-
-```powershell
-ollama ps
-```
-
-Check `PROCESSOR` and `CONTEXT`. Stop unneeded models:
-
-```powershell
-ollama stop qwen35-9b-32k
-```
-
-Use 32K for normal work. Test 64K only when a measured workload requires it. Update GPU drivers if the model unexpectedly runs on CPU and consult Ollama's Windows/GPU documentation for supported hardware.
-
----
-
-# ✅ 16. Full Health Check
-
-Run these one at a time after completing the workshop:
-
-```powershell
-python --version
-python -c "import sys; print(sys.executable)"
-python -c "from ollama import Client, ResponseError; import streamlit; print('Python packages: OK')"
-ollama --version
-ollama ls
-```
-
-Run and verify the base model:
-
-```powershell
-ollama run qwen3.5:9b-q4_K_M
-```
-
-Type `/bye`, then:
-
-```powershell
-ollama stop qwen3.5:9b-q4_K_M
-```
-
-Run and verify the profile:
-
-```powershell
-ollama run qwen35-9b-32k
-```
-
-In another PowerShell:
-
-```powershell
-ollama ps
-```
-
-Confirm `CONTEXT` is `32768`. Exit with `/bye`, then:
-
-```powershell
-ollama stop qwen35-9b-32k
-python -m py_compile .\main.py
-python -m streamlit run .\main.py
-```
-
-### Final verification checklist
-
-- [ ] Correct Python executable verified
-- [ ] Ollama installed and version verified
-- [ ] Local Ollama API/server answered
-- [ ] Qwen base model downloaded
-- [ ] Base model answered a prompt
-- [ ] Base model was explicitly stopped
-- [ ] `Modelfile.32k` exists without an accidental `.txt` extension
-- [ ] `qwen35-9b-32k` was created
-- [ ] `ollama ps` showed context `32768`
-- [ ] Base vs. profile experiment was completed
-- [ ] Python packages imported from the selected interpreter
-- [ ] `main.py` syntax compiled
-- [ ] Streamlit started with `python -m streamlit run .\main.py`
-- [ ] Browser chat worked
-- [ ] Clear Conversation worked
-- [ ] Streamlit and loaded model were stopped correctly
-
----
-
-# 📋 17. Lifecycle Cheat Sheet
+## G. Lifecycle cheat sheet
 
 | Task | Command or action |
 |---|---|
@@ -1607,16 +1657,6 @@ python -m streamlit run .\main.py
 | Stop Streamlit | `Ctrl+C` in its terminal |
 
 ---
-
-# 🌱 18. What to Learn Next
-
-First become comfortable with this lifecycle: **install → run → inspect → stop → remove → recreate**. After that, learn one topic at a time:
-
-```text
-structured output → tool calling → RAG → persistent memory → agents → MCP
-```
-
-Those are later workshops. They are not prerequisites for running a reliable local model and chat application today.
 
 ---
 

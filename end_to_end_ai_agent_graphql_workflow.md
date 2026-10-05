@@ -1,10 +1,10 @@
-# 📗 Real-Company AI Engineering Workbook
+# 📗 AI-Assisted Engineering Workbook: GraphQL Foundations and Existing-Service Workflows
 
 > **Bring a real engineering situation. Decide what to use. Then do the work safely.**
 >
 > This workbook is deliberately scenario-driven. It does not say “today we learn skills.” It starts with the problem and asks whether a normal prompt, brief, instruction, prompt file, skill, agent, subagent, hook, MCP, RAG, deterministic C#, or CI is actually needed.
 
-All example responses are **expected shapes**, not claims that a command was run. Execute in a safe repository, capture real results, and mark checks as passed, failed, skipped, or blocked. Configuration syntax is harness-specific; consult `deep-research-report.md` before creating vendor files.
+Example responses are **expected shapes**. A separately labeled historical local .NET audit appears in the foundation exercise; it is not evidence that GraphQL, CI, or your environment was tested. Execute in a safe repository, capture real results, and mark checks as passed, failed, skipped, or blocked. Configuration syntax is harness-specific; consult `deep-research-report.md` before creating vendor files.
 
 ---
 
@@ -35,19 +35,498 @@ User/task → context + applicable instructions
 
 ---
 
-# 1. 🆕 A company is starting a new .NET service
+<a id="workbook-path"></a>
 
-This is a quick decision entry point, not a second walkthrough: begin with a brief and normal prompt; do not assume conventions or add AI configuration on day one. The complete empty-folder-to-tested-feature exercise, including exact PowerShell commands, C# source/tests, README, minimal instructions, AI-assisted follow-up, and optional CI, is in **“Scenario 1 — Starting a brand-new GraphQL service”** near the end of this workbook.
+## Start here
+
+Use this workbook to **do ordinary engineering work with AI assistance**. Use [AI Journey](ai_journey.md#course-path) to build an AI application's runtime, and the [handbook](deep-research-report.md#choose-product) for the exact configuration of your chosen assistant. This workbook contains a GraphQL-ready C# foundation and existing-service workflows; it does not present the foundation exercise as a completed HTTP GraphQL service.
+
+You need basic C# and familiarity with your repository's build/test workflow. The [new-project foundation](#new-project) requires the .NET 10 SDK and a place to create a disposable project. The [existing-project route](#existing-project) requires an actual ticket and test repository; it does not require a new model subscription, skill, hook or MCP server.
+
+Read one entry route, complete its first observable checkpoint, then pick the scenario that matches your task:
+
+- [1. New-project C# foundation](#new-project): build/test/run a fake-data lookup. GraphQL transport is an explicitly separate later stage.
+- [2. Existing project](#existing-project): verify branch, task, relevant instructions and actual test commands.
+- [3. GraphQL bug worksheet](#graphql-investigation): reproduce and trace a real service before naming a cause.
+- [4–13. Task scenarios](#task-scenarios): legacy work, features, reviews, incidents, security, releases, build failures, RAG, audits and parallel investigation.
+- [14. Capstone and evidence report](#workbook-capstone).
+
+Only add durable configuration after a repeated need. Reversible local work already authorized by the task can proceed; publication, production changes and external writes need the applicable separate authority. The workbook's read-only exercises remain read-only until their implementation stage is authorized.
 
 ---
 
-# 2. 🔄 Joining an existing .NET project
+---
 
-First inspect the repository, active harness, current branch/ticket, working tree, tests, CI, and already-discovered customizations. The complete inspection, six product entry routes, task/mechanism decision, branch playbooks, verification, and cleanup exercise is in **“Scenario 2 — Joining a running GraphQL service”** near the end. Do not create duplicate configuration to work around a discovery problem.
+<a id="new-project"></a>
+
+# 1. New-project foundation: ProjectStatus core and console
+
+### 🎯 Goal
+
+Build the domain/authorization foundation that a later GraphQL API can call. This exercise produces a C# core, console demo and tests; it does not produce a GraphQL endpoint. The human product owner owns business rules and data policy; the engineer owns technical choices; deterministic C# code owns authorization and business invariants.
+
+### 🧩 Request
+
+“Create a service for internal teams to query project status. Teams must only see projects they are authorized to view. Support a project lookup and status summary. Do not connect to production systems.”
+
+### Step A — ask, do not configure
+
+Create `PROJECT-BRIEF.md` using the complete template below. Ask a normal prompt to extract questions, options, and acceptance examples. Do not begin with skill, agent, hook, or MCP.
+
+```text
+Read PROJECT-BRIEF.md and identify unknown authorization rules, data
+classification, and acceptance examples. Propose a small local-only C#
+GraphQL vertical slice. Do not scaffold or invent identity behavior.
+```
+
+**Human decisions required:** identity provider, project/team authorization model, data classification, supported GraphQL operations, local test fixtures, hosting/runtime target, and who approves access.
+**AI may propose:** schema alternatives, test cases, folder layout options, implementation risks.
+**AI may not decide:** whether a caller is authorized or connect to a real system.
+
+### Step B — create only the project baseline
+
+Use the .NET SDK/framework generator selected by the company; confirm the installed SDK and official template rather than copying a version-specific command blindly. The following small vertical slice uses the .NET 10 SDK and default xUnit template. It is not yet a GraphQL transport: first prove the project/status and authorization boundary in deterministic C#, then choose the company-approved GraphQL host/auth integration.
+
+#### 🧪 Empty-folder-to-working-feature workshop
+
+**Manual setup (PowerShell):** start in the parent directory where you want the project created (not inside a different repository). Open that parent in VS Code if desired, open Terminal (**Terminal → New Terminal**), and run:
+
+```powershell
+dotnet --info
+dotnet new list
+New-Item -ItemType Directory -Force ProjectStatus | Out-Null
+Set-Location ProjectStatus
+dotnet new sln --name ProjectStatus
+New-Item -ItemType Directory -Force src, tests | Out-Null
+dotnet new classlib --name ProjectStatus.Core --output src\ProjectStatus.Core --framework net10.0
+dotnet new console --name ProjectStatus.Demo --output src\ProjectStatus.Demo --framework net10.0
+dotnet new xunit --name ProjectStatus.Core.Tests --output tests\ProjectStatus.Core.Tests --framework net10.0
+dotnet sln add src\ProjectStatus.Core\ProjectStatus.Core.csproj src\ProjectStatus.Demo\ProjectStatus.Demo.csproj tests\ProjectStatus.Core.Tests\ProjectStatus.Core.Tests.csproj
+dotnet add src\ProjectStatus.Demo\ProjectStatus.Demo.csproj reference src\ProjectStatus.Core\ProjectStatus.Core.csproj
+dotnet add tests\ProjectStatus.Core.Tests\ProjectStatus.Core.Tests.csproj reference src\ProjectStatus.Core\ProjectStatus.Core.csproj
+dotnet new gitignore
+```
+
+After the commands finish, open the generated `ProjectStatus` folder itself in VS Code (**File → Open Folder** → select `ProjectStatus`) or run `code .` from that directory.
+
+The current .NET 10 SDK creates `ProjectStatus.slnx`; earlier SDKs may create `.sln`. Keep the generated filename—`dotnet build` and `dotnet test` at the root use the discovered solution when there is exactly one. Do not run these commands on top of an existing repository or use `--force` to overwrite files.
+
+**VS Code creation:** in Explorer, select the `ProjectStatus` root, create `README.md`, then create the files below at the exact paths. Paste and save each snippet. Review the generated `.csproj` target frameworks/package references; keep the versions the SDK template selected.
+
+```text
+ProjectStatus/
+├── README.md
+├── PROJECT-BRIEF.md
+├── ProjectStatus.slnx          # current .NET 10 template output
+├── src/
+│   ├── ProjectStatus.Core/
+│   │   └── ProjectStatusReader.cs
+│   └── ProjectStatus.Demo/
+│       └── Program.cs
+└── tests/
+    └── ProjectStatus.Core.Tests/
+        └── ProjectStatusReaderTests.cs
+```
+If you add the optional AI customization or GitHub CI below, `.github/` contains only the selected harness's instruction file and/or `.github/workflows/ci.yml`.
+
+Create `PROJECT-BRIEF.md` at the root:
+
+```md
+# ProjectStatus brief
+
+## Goal
+Show a project status only to a team authorized to see it.
+
+## First local slice
+Use fake in-memory project records and a deterministic C# lookup.
+
+## Non-goals
+No production data, identity integration, HTTP/GraphQL transport, or deployment.
+
+## Human-owned decisions
+Choose the real identity provider, authorization policy, GraphQL host,
+data classification, hosting target, and release owner before integration.
+
+## Acceptance examples
+- A team can read its own project's status.
+- A different team receives no project data.
+```
+
+Create `src/ProjectStatus.Core/ProjectStatusReader.cs`:
+
+```csharp
+namespace ProjectStatus.Core;
+
+public sealed record ProjectRecord(string Id, string TeamId, string Status);
+public sealed record ProjectStatusSummary(string ProjectId, string Status);
+
+public sealed class ProjectStatusReader(IEnumerable<ProjectRecord> projects)
+{
+    private readonly ProjectRecord[] _projects = projects.ToArray();
+
+    public ProjectStatusSummary? GetSummary(string projectId, string authenticatedTeamId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(projectId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(authenticatedTeamId);
+
+        var project = _projects.SingleOrDefault(x =>
+            x.Id == projectId && x.TeamId == authenticatedTeamId);
+
+        return project is null ? null : new ProjectStatusSummary(project.Id, project.Status);
+    }
+}
+```
+
+Create `src/ProjectStatus.Demo/Program.cs`:
+
+```csharp
+using ProjectStatus.Core;
+
+var sampleProjects = new[]
+{
+    new ProjectRecord("p-1", "team-a", "Active"),
+    new ProjectRecord("p-2", "team-b", "Paused")
+};
+
+var reader = new ProjectStatusReader(sampleProjects);
+var summary = reader.GetSummary("p-1", "team-a");
+Console.WriteLine(summary is null
+    ? "Project not found or not authorized."
+    : $"{summary.ProjectId}: {summary.Status}");
+```
+
+Create `tests/ProjectStatus.Core.Tests/ProjectStatusReaderTests.cs`:
+
+```csharp
+using ProjectStatus.Core;
+
+namespace ProjectStatus.Core.Tests;
+
+public sealed class ProjectStatusReaderTests
+{
+    private readonly ProjectStatusReader _reader = new(
+    [
+        new ProjectRecord("p-1", "team-a", "Active"),
+        new ProjectRecord("p-2", "team-b", "Paused")
+    ]);
+
+    [Fact]
+    public void GetSummary_ReturnsProjectForAuthenticatedTeam()
+    {
+        var result = _reader.GetSummary("p-1", "team-a");
+
+        Assert.Equal(new ProjectStatusSummary("p-1", "Active"), result);
+    }
+
+    [Fact]
+    public void GetSummary_HidesProjectFromDifferentTeam()
+    {
+        var result = _reader.GetSummary("p-2", "team-a");
+
+        Assert.Null(result);
+    }
+}
+```
+
+Create `README.md` with the actual scope and run instructions:
+
+````md
+# ProjectStatus
+
+Local-only teaching vertical slice for looking up a project status by ID
+within an authenticated team's scope. The console demo uses fake data.
+It is not an HTTP or GraphQL service and does not implement production
+authentication.
+
+## Build, test, run
+
+From the repository root:
+
+```powershell
+dotnet build
+dotnet test
+dotnet run --project src\ProjectStatus.Demo\ProjectStatus.Demo.csproj
+```
+````
+
+**Run and verify:**
+
+```powershell
+dotnet build
+dotnet test
+dotnet run --project src\ProjectStatus.Demo\ProjectStatus.Demo.csproj
+```
+
+Expected behavior: the demo prints `p-1: Active`; the two tests cover an allowed same-team lookup and a different-team lookup that returns no data. This example treats `authenticatedTeamId` as a value supplied by a trusted identity boundary. A real API must derive it from the authenticated principal, never trust a caller-supplied team ID, and must have its authorization policy approved before deployment. Do not connect production data.
+
+> [!WARNING]
+> A green unit test here verifies only this small in-memory rule. It does not prove authentication, tenant isolation in a database, GraphQL security, or production readiness.
+
+#### 📜 Add only a minimal instruction after facts are stable
+
+If CI is appropriate, complete the CI subsection below before finalizing the build/test rule in your instructions. Once the architecture and actual commands are confirmed, choose **one** instruction format for the harness you use. Do not create all variants “for compatibility.” For a Copilot CLI project, manually create `.github/copilot-instructions.md`; for Codex use `AGENTS.md`; for Claude Code use `CLAUDE.md`. For VS Code Agent Host, confirm the selected target and supported instruction path in [the configuration handbook](deep-research-report.md#choose-product).
+
+In VS Code Explorer, right-click the repository root → **New Folder** → `.github` → right-click `.github` → **New File** → the selected product's exact instruction filename → paste the rules below and save. In PowerShell, `New-Item -ItemType Directory -Force .github` creates the folder; use an editor such as `code .github\copilot-instructions.md` for the selected file. Do not make a Copilot instruction file and assume Codex or Claude loaded it.
+
+```md
+# Project working agreements
+- Keep project lookup/domain rules in ProjectStatus.Core.
+- Derive the team scope from the authenticated identity in a real host;
+  never trust a request-supplied team ID.
+- Run `dotnet build` and `dotnet test` from the solution root after behavior changes.
+- Report commands actually run; never claim blocked or skipped checks passed.
+- Do not add production credentials, external connections, or unrelated refactors.
+```
+
+Save, start/reload according to the chosen product, and verify discovery with its instruction/context view plus a harmless question whose answer is in the file. In Copilot CLI use `/instructions`; Codex use its active instruction context; Claude Code use `/context`; VS Code inspect the selected harness and References. File presence alone is not discovery.
+
+#### 🤖 Use the minimal setup on a second feature
+
+Now ask the selected product's main coding agent to implement a small follow-up feature. A normal prompt is enough; do not create a skill or custom agent for this one task.
+
+❌ **Bad:** `Add useful project reporting.`
+
+✅ **Good prompt:**
+
+```text
+Read PROJECT-BRIEF.md, the discovered project instructions, and the current
+ProjectStatusReader implementation/tests. Add GetActiveProjectCount for an
+authenticated team. Count only that team's records whose status is "Active".
+Do not accept a team ID from an HTTP/user request; this demo passes a
+simulated trusted identity value directly. Add tests for the correct count,
+another team's records being excluded, and an unknown team. Do not add
+packages, API/GraphQL endpoints, persistence, or unrelated refactoring.
+Show a short plan first. After I approve, implement the code/tests, run
+dotnet build and dotnet test from the root, and report the actual commands,
+exit status, files changed, and any blocked checks.
+```
+
+Review the plan before authorizing edits. Then inspect the code and tests yourself, check `git diff`, and run the commands. If you need to replace the current feature's explicit team value with authentication, stop: that is a human-owned design decision, not a safe assumption for the AI to invent.
+
+🤖 **AI-assisted creation prompt (proposal first):**
+
+```text
+Inspect this new repository after the first vertical slice. Propose a
+minimal project instruction file only for the harness I name: [harness].
+Use verified architecture facts and the actual README/CI commands; do not
+invent company standards or duplicate a different product's file. Explain
+each proposed rule, the exact path, discovery/reload procedure, and one
+harmless verification task. Do not create or edit files until I approve.
+```
+
+#### ⚙️ Add team CI only when the repository needs it
+
+If this is a shared GitHub repository and no company workflow template applies, create `.github/workflows/ci.yml`. Review the repository's branch protection, approved actions, runner, SDK policy, and required checks first; do not copy this sample into a company repo without that review.
+
+```yaml
+name: build-and-test
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet restore
+      - run: dotnet build --no-restore
+      - run: dotnet test --no-build
+```
+
+**Verify CI:** push only through the normal repository process, open a pull request, inspect the workflow run and required-check status, and confirm an intentionally failing test makes the check fail before merging. The workflow is an example; no GitHub Actions run is claimed in this workbook.
+
+#### 🛠️ Break/fix and completion checkpoint
+
+1. Change the allowed Team A fixture to request Team B's project; the test must fail if the implementation is insecure.
+2. Remove the project reference from the test project; diagnose the compile failure from the real output and restore it.
+3. Rename the instruction file or create it for the wrong harness; use that product's instruction list/context to prove discovery failed, then repair the exact path and restart/reload if required.
+4. Give the assistant an imaginary “company folder standard”; it must label it unknown rather than assert it as fact.
+
+If tests do not run, capture the actual command and error; do not write “passed.” If CI is not appropriate yet, keep the local README commands and record the CI decision/owner rather than inventing a pipeline.
+
+✅ **New-project checklist:** normal folder structure exists; README states scope and actual commands; source and tests are separate; build and tests were run; CI is added only when appropriate; one small product-specific instruction is based on verified rules; no unnecessary prompts/skills/agents/hooks/MCP/parallel-agent setup was created.
+
+**Local documentation-audit result:** these exact scaffold commands and code snippets were exercised with .NET SDK **10.0.401** on Windows. The build succeeded with zero warnings/errors, both xUnit tests passed, and the demo printed `p-1: Active`. That verifies only this local teaching sample, not another machine, the optional GitHub workflow, or a production GraphQL/authentication setup.
+
+**Official references checked for this workshop:** [.NET `dotnet new`](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-new), [GitHub Actions: building and testing .NET](https://docs.github.com/en/actions/tutorials/build-and-test-code/net), and [Microsoft Agent Framework — first agent](https://learn.microsoft.com/en-us/agent-framework/get-started/your-first-agent). The GraphQL transport and identity-provider decisions remain intentionally open for the company owner.
+
+```text
+GraphQLService/
+├── README.md
+├── PROJECT-BRIEF.md
+├── src/
+│   └── GraphQLService.Api/
+├── tests/
+│   └── GraphQLService.Api.Tests/
+└── .github/
+    └── workflows/             # only after confirming company CI policy
+```
+
+Do not commit secrets or production endpoints. Add a deterministic authorization service interface and tests before a real identity integration. Keep GraphQL field resolvers thin; use normal C# for authorization, validation, domain invariants, and predictable state transitions.
+
+### Step C — verify the baseline, then choose durable AI help
+
+1. Build and test the plain vertical slice. Capture actual command, working directory, exit code, and output.
+2. Add project instructions only for stable decisions: target framework, actual build/test commands, architecture boundaries, generated-file rules, and secret policy.
+3. Keep a one-off schema task in a normal prompt or brief.
+4. Make a skill only after the GraphQL change workflow is repeated (e.g., schema → resolver → authorization test → compatibility review).
+5. Make a custom agent only if a recurring role needs distinct tools or a separate context (e.g., read-only schema compatibility reviewer).
+6. Use a subagent for a bounded independent review. Parallelize only independent axes, such as schema compatibility and authorization test coverage, never overlapping file edits.
+7. Add a hook only for a repeatable local lifecycle task whose behavior is explicitly supported by the active harness. Use CI for required validation.
+8. Add MCP only when an approved external system is necessary and no native/file workflow works. Begin read-only with least privilege.
+9. Apply real permission, sandbox, IAM, protected-branch, code-owner and CI controls independently of prompt wording.
+10. Revisit and remove every customization that has no demonstrated repeat use.
+
+### Use your selected coding assistant
+
+Choose one [handbook product route](deep-research-report.md#choose-product). Supply `PROJECT-BRIEF.md` explicitly and ask for the small follow-up feature below. Product discovery and configuration are tested in that route; they are not six extra steps in this domain lesson.
+
+### 💣 Break-it workshop: unauthorized caller
+
+The supplied test already denies a different team's project. To practice a failure-before/fix-after cycle in a disposable copy, temporarily remove the `TeamId` predicate from `ProjectStatusReader`, run that test and observe its failure, then restore the predicate. This is an explicitly injected domain bug, not evidence of a bug in an unprovided resolver. Keep authorization in deterministic C#; rerun the exact test. Do not “fix” this by instructing an agent to hide the project, by filtering only in the UI, or by relying on a skill/hook.
+
+**Expected:** the application denies unauthorized access in server-side code, and the regression test proves it.
+**Verification:** inspect the domain lookup path, authorization test, real test output, lookup behavior and diff.
+**Troubleshooting:** if the test cannot represent caller identity, fix the test seam; do not weaken the policy. If identity policy is undecided, stop for the owner rather than inventing it.
+
+🏋️ **Challenge:** complete the local fake-data vertical slice without MCP, custom agent, hook, or skill.
+🎓 **Checkpoint:** show what is an AI suggestion, a human decision, a deterministic invariant, and a CI-enforced gate.
+
+### Optional next stage: make this a real GraphQL service
+
+The next stage is deliberately **not provided as runnable code**: select your approved GraphQL library/version and identity policy first. Completion requires an API project; schema and resolver wired to `ProjectStatusReader`; a test principal from a trusted local authentication fixture; one HTTP GraphQL query with `data` and `errors` recorded; integration tests for same-team, different-team, missing project and malformed ID; and a schema compatibility check. Derive team identity server-side. An in-memory unit test cannot substitute for these checks.
+
+Use this acceptance brief with your existing project/framework documentation. Do not call the console exercise an end-to-end GraphQL service or a production authentication implementation. If you want a process worksheet for a running GraphQL API, continue to [the bug investigation](#graphql-investigation).
+
 
 ---
+
+<a id="existing-project"></a>
+
+# 2. Join an existing project and choose a ticket
+
+### 🎯 Goal / 🧩 Problem
+
+An engineer receives ticket `API-248` in an existing company service. There is already a main/develop branch, custom instructions, a schema review skill, and CI. Your first task is not to configure AI; it is to understand the code, ticket, active harness and branch state without disturbing ongoing work.
+
+### Step A — inspect before proposing changes
+
+Run in the repository root:
+
+```text
+git status --short
+git branch --show-current
+```
+
+Read ticket acceptance criteria; README and architecture docs; solution/project files; the relevant schema/resolver/domain/tests; build/test/lint scripts; CI and release rules. Inventory `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.github/instructions/`, all skills/agents/hooks, `.mcp.json`, `.vscode/mcp.json`, `.codex/`, `.claude/`, and any user-level MCP/hook settings that are applicable. Do not open secret values; check only whether required names/variables are present.
+
+Ask for a read-only report that cites every claim with a path or command output. Confirm that it saw the current branch and ticket. Check the product's discovery UI or command output; file presence alone does not prove the active harness loaded a customization.
+
+### Step B — route by work type, not habit
+
+| Ticket situation | Start with | Add or avoid |
+|---|---|---|
+| New feature | Task brief, acceptance tests and relevant existing instructions | Skill if schema/resolver/test procedure is repeated; custom agent for a recurring independent review |
+| Bug fix | Reproduce exact symptom; trace callers and add failing regression test | Read-only subagent for independent root-cause review; avoid parallel writers |
+| Code review | Review diff against API compatibility, auth and tests | Read-only custom agent if this role repeats; report evidence and confidence |
+| Production incident | Incident scope, timeline, dashboards/logs approved for use; read-only access | MCP only if approved, narrowly scoped evidence source; no remediation/deploy without incident lead |
+| Release preparation | Release checklist, version, changelog, CI/artifact status | Normal prompt/checklist; CI and release owner are gates, not agent claims |
+| Security-sensitive change | Explicit scope, exclusions, identity and approval point | Read-only-first, least privilege and independent review; no broad shell/network/MCP permissions |
+| Repeated task | Confirm successful prior runs and stable steps | Skill, then verify discovery and outcome; remove if no longer useful |
+| Deterministic validation | Existing script or CI | Do not replace with an agent, skill, or hook |
+
+### Run API-248 through your selected product
+
+Follow the [handbook's chosen product route](deep-research-report.md#choose-product) to verify the runtime and already-loaded configuration. Use the same task prompt below in that session. You do not need to create a new skill or reviewer to begin.
+
+**First task request:**
+
+```text
+Investigate API-248 read-only. Confirm repository root, current branch and
+working-tree state. Read the ticket and only the applicable existing
+instructions. Trace the reported request through schema, resolver,
+application service, repository, and tests. Cite paths/symbols and separate
+facts, hypotheses, and unknowns. Do not create configuration, edit files,
+run migrations, access production, or perform external mutations. Report
+the smallest verification plan and ask before implementation.
+```
+
+**Expected:** a cited investigation and bounded plan, not a claimed fix.
+**Verify:** independently open the cited source, compare branch/status, inspect actual tool activity and ensure no forbidden mutation. If the team approves an implementation, ask the chosen runtime to add a failing regression test, implement the smallest fix, run the real focused tests, inspect complete diff, and report actual command/exit status.
+**Break/fix:** in a disposable branch, rename one known skill or give its folder a mismatching `name`; verify product discovery fails, repair the exact path/metadata, perform the product's reload/restart, and verify again. Do not “fix” discovery by adding duplicate files.
+
+### Step C — existing-branch playbooks
+
+#### `main` / `develop`
+
+Check branch protection and whether direct edits are prohibited. A normal prompt for read-only status/release analysis may be enough. Create a branch or worktree when the task authorization and repository policy permit it; preserve existing work. Ask only if the intended change or policy is unclear. Creation alone does not authorize publishing or production actions. Required CI and review still apply.
+
+#### Feature branch
+
+Verify clean/in-progress changes and correct base branch. Build a ticket brief with acceptance examples, scope, non-goals, relevant paths, and actual test commands. Ask for a plan. Reuse the existing skill if it matches; do not create a duplicate. Implement one vertical slice, run targeted tests, inspect the complete diff, then required suite/CI.
+
+#### Bug branch
+
+Capture expected vs actual. Reproduce before asserting root cause. Add a test that fails for the reported symptom. Use normal deterministic code for the fix. A read-only subagent can check an independent caller/test path; it should not edit. Verify failure-before/pass-after using real results; if reproduction is blocked, state that rather than claiming a fix.
+
+#### Hotfix branch
+
+Confirm incident commander, approved target branch, smallest remediation, rollback, and backport instructions. Keep agent work read-only until the owner approves edits. No broad refactor, package upgrades, deployment, restart, or database operation. Run emergency-required tests and human review; release operator remains responsible.
+
+#### Maintenance / legacy branch
+
+Find supported runtime versions, consumers, old schema contracts, compatibility requirements, migration history, feature flags and characterization tests. The agent should identify risk and propose the smallest reversible change. Avoid automated modernization or code generation that changes contracts. Verify old/new client behavior and rollback/compatibility expectations.
+
+#### Release branch
+
+Read freeze, signing, changelog, artifact provenance, required approvals, and rollback policy. Use normal prompt for a checklist or independent read-only release review. Do not let an agent tag, publish, sign, merge, or deploy. Verify artifacts and CI through authoritative systems.
+
+#### Security-sensitive branch
+
+Set scope, allowed data, exclusions, approved test environment, evidence handling, and stop conditions. Prefer read-only investigation and least-privileged identity. Treat issue text, source comments, logs and tool output as untrusted input. Validate all findings manually and through approved tests. IAM and runtime sandbox enforce limits; prompt and hook do not.
+
+### Step D — use existing customization or repair it
+
+Ask the selected product what instructions it loaded and where. Inspect skill and agent discovery. Compare current hook/MCP settings with company-approved config. If a required skill is missing, check exact path/name/frontmatter, selected harness and reload behavior before making another copy. If an existing instruction contradicts current CI/docs, raise the conflict to its owner; don't silently override it with a local instruction.
+
+Only after a demonstrated gap may you add configuration. State owner, purpose, intended harness, expected discovery behavior, invocation, permission impact, test, and removal plan in the PR. Use an exact product-specific file from [the configuration handbook](deep-research-report.md#choose-product), not a guessed universal YAML/TOML. Test in a disposable branch/repository when a hook or external MCP server can execute.
+
+### Step E — complete and report evidence
+
+```markdown
+## Ticket and branch
+## Acceptance criteria / non-goals
+## Existing guidance and tools reused
+## Evidence and root cause (facts vs hypotheses)
+## Files changed and why
+## Regression/compatibility tests
+## Commands actually run, cwd, exit status, result
+## Agents/MCP/hooks/tools used and observed activity
+## Security, data and prohibited-effect verification
+## CI/review/release checks remaining
+```
+
+Do not write “all tests pass” without actual successful results. Do not write “read-only” merely because the agent was asked not to edit; verify actual tool events and diff.
+
+## Branch-based independent exercise
+
+Choose one branch card above. Given a ticket, produce (1) a read-only inventory, (2) a mechanism decision with explicit rejected alternatives, (3) a minimal execution brief, (4) expected tests, (5) prohibited actions, and (6) an evidence report. Then deliberately break one discovery path (wrong filename, unsupported hook event, malformed MCP key, or missing test command). Diagnose and repair it without weakening security.
+
+**Checkpoint:** a reviewer can reproduce the investigation and tests; team configuration is reused rather than duplicated; no claim relies on simulated output; the branch/ticket policy remains intact; and every customization is specific to the active product/harness.
+
+---
+
+<a id="graphql-investigation"></a>
 
 # 3. 🐛 GraphQL bug investigation — end to end
+
+**Format:** process worksheet for a repository you already have. The named files are fictional. This section supplies no runnable GraphQL host, buggy fixture, or pre-proven root cause. Use your service's real test setup; a blocked reproduction remains blocked.
 
 ## 🎫 Example ticket ABC-123
 
@@ -105,7 +584,7 @@ The plan names regression test, expected fail-before result, minimal fix, affect
 
 ### 5. Regression test first
 
-Add a test matching the external-ID case; run it before production changes. It should fail for the observed behavior, not compilation/environment error. Only then apply the smallest fix.
+Add a regression test matching the evidenced cause and observed request; use a distinct external/internal ID fixture only if ID mapping has been confirmed; run it before production changes. It should fail for the observed behavior, not compilation/environment error. Only then apply the smallest fix.
 
 ### 6. Verify and review
 
@@ -129,7 +608,7 @@ Run focused GraphQL test → related test project → solution tests as appropri
 
 ## 💣 Failure exercise
 
-Break the test’s ID fixture so it uses a database key instead of public vehicle ID. Watch how it can falsely pass. Repair fixture to use a distinct external ID, rerun failing test and pass-after-fix sequence. If no test service is available, mark direct request **blocked**; do not invent simulated output.
+If evidence proves an ID-mapping cause, deliberately change the test fixture to use a database key instead of the public vehicle ID. Watch how it can falsely pass. Repair fixture to use a distinct external ID, rerun failing test and pass-after-fix sequence. If no test service is available, mark direct request **blocked**; do not invent simulated output.
 
 ### New / existing / legacy variants
 
@@ -138,6 +617,8 @@ Break the test’s ID fixture so it uses a database key instead of public vehicl
 - **Legacy GraphQL:** add characterization tests and avoid resolver/service-wide refactor; use read-only investigation before touching data mappings.
 
 ---
+
+<a id="task-scenarios"></a>
 
 # 4. 🧱 Legacy maintenance: undocumented behavior
 
@@ -378,7 +859,7 @@ CI failures frequently result from parallel logs, generated code, and multiple t
 
 ## Workshop
 
-Use the build-investigation procedure from the handbook. Give one agent the failing test project and another a read-only CI-log analysis; tell each the same run ID/commit and ask them not to edit. Coordinator verifies first causal error, not the first red line. If correction needs code, one owner writes a regression test and fixes it.
+Use the [build-investigation skill reference](deep-research-report.md#handbook-skills) only if that procedure is already repeated. Give one agent the failing test project and another a read-only CI-log analysis; tell each the same run ID/commit and ask them not to edit. Coordinator verifies first causal error, not the first red line. If correction needs code, one owner writes a regression test and fixes it.
 
 ## Verify
 
@@ -491,6 +972,8 @@ Do not describe manual multiple terminals or Git worktrees as built-in agent orc
 
 ---
 
+<a id="workbook-capstone"></a>
+
 # 14. 🎓 Final company capstone
 
 ## Assignment
@@ -536,475 +1019,3 @@ You pass when a second engineer can replay the steps; every claim has evidence; 
 For current exact mechanics and sources, use the companion `deep-research-report.md`, especially the tables for instructions, skills, agents, hooks, MCP, permissions, CLI/VS Code differences, and troubleshooting. The original practical GraphQL workflow has been retained here as an evidence-first process and expanded into distinct company scenarios rather than repeated as three tool-specific scripts.
 
 ---
-
-# 🏢 COMPANY WORKBOOK — TWO DEVELOPER DAYS
-
-The scenario below uses a fictional company and fictional GraphQL service. Example ticket IDs, names, URLs, and command results are illustrative; **they are not claims that commands ran or that a real company uses these values**. Before using a command, inspect the repository's actual scripts and CI.
-
-## Scenario 1 — 🆕 Starting a brand-new GraphQL service
-
-### 🎯 Goal
-
-Build a small, testable GraphQL vertical slice without starting with agent machinery. The human product owner owns business rules and data policy; the engineer owns technical choices; deterministic C# code owns authorization and business invariants.
-
-### 🧩 Request
-
-“Create a service for internal teams to query project status. Teams must only see projects they are authorized to view. Support a project lookup and status summary. Do not connect to production systems.”
-
-### Step A — ask, do not configure
-
-Create `PROJECT-BRIEF.md` from the template in Book 2. Ask a normal prompt to extract questions, options, and acceptance examples. Do not begin with skill, agent, hook, or MCP.
-
-```text
-Read PROJECT-BRIEF.md and identify unknown authorization rules, data
-classification, and acceptance examples. Propose a small local-only C#
-GraphQL vertical slice. Do not scaffold or invent identity behavior.
-```
-
-**Human decisions required:** identity provider, project/team authorization model, data classification, supported GraphQL operations, local test fixtures, hosting/runtime target, and who approves access.
-**AI may propose:** schema alternatives, test cases, folder layout options, implementation risks.
-**AI may not decide:** whether a caller is authorized or connect to a real system.
-
-### Step B — create only the project baseline
-
-Use the .NET SDK/framework generator selected by the company; confirm the installed SDK and official template rather than copying a version-specific command blindly. The following small vertical slice uses the .NET 10 SDK and default xUnit template. It is not yet a GraphQL transport: first prove the project/status and authorization boundary in deterministic C#, then choose the company-approved GraphQL host/auth integration.
-
-#### 🧪 Empty-folder-to-working-feature workshop
-
-**Manual setup (PowerShell):** start in the parent directory where you want the project created (not inside a different repository). Open that parent in VS Code if desired, open Terminal (**Terminal → New Terminal**), and run:
-
-```powershell
-dotnet --info
-dotnet new list
-New-Item -ItemType Directory -Force ProjectStatus | Out-Null
-Set-Location ProjectStatus
-dotnet new sln --name ProjectStatus
-New-Item -ItemType Directory -Force src, tests | Out-Null
-dotnet new classlib --name ProjectStatus.Core --output src\ProjectStatus.Core --framework net10.0
-dotnet new console --name ProjectStatus.Demo --output src\ProjectStatus.Demo --framework net10.0
-dotnet new xunit --name ProjectStatus.Core.Tests --output tests\ProjectStatus.Core.Tests --framework net10.0
-dotnet sln add src\ProjectStatus.Core\ProjectStatus.Core.csproj src\ProjectStatus.Demo\ProjectStatus.Demo.csproj tests\ProjectStatus.Core.Tests\ProjectStatus.Core.Tests.csproj
-dotnet add src\ProjectStatus.Demo\ProjectStatus.Demo.csproj reference src\ProjectStatus.Core\ProjectStatus.Core.csproj
-dotnet add tests\ProjectStatus.Core.Tests\ProjectStatus.Core.Tests.csproj reference src\ProjectStatus.Core\ProjectStatus.Core.csproj
-dotnet new gitignore
-```
-
-After the commands finish, open the generated `ProjectStatus` folder itself in VS Code (**File → Open Folder** → select `ProjectStatus`) or run `code .` from that directory.
-
-The current .NET 10 SDK creates `ProjectStatus.slnx`; earlier SDKs may create `.sln`. Keep the generated filename—`dotnet build` and `dotnet test` at the root use the discovered solution when there is exactly one. Do not run these commands on top of an existing repository or use `--force` to overwrite files.
-
-**VS Code creation:** in Explorer, select the `ProjectStatus` root, create `README.md`, then create the files below at the exact paths. Paste and save each snippet. Review the generated `.csproj` target frameworks/package references; keep the versions the SDK template selected.
-
-```text
-ProjectStatus/
-├── README.md
-├── PROJECT-BRIEF.md
-├── ProjectStatus.slnx          # current .NET 10 template output
-├── src/
-│   ├── ProjectStatus.Core/
-│   │   └── ProjectStatusReader.cs
-│   └── ProjectStatus.Demo/
-│       └── Program.cs
-└── tests/
-    └── ProjectStatus.Core.Tests/
-        └── ProjectStatusReaderTests.cs
-```
-If you add the optional AI customization or GitHub CI below, `.github/` contains only the selected harness's instruction file and/or `.github/workflows/ci.yml`.
-
-Create `PROJECT-BRIEF.md` at the root:
-
-```md
-# ProjectStatus brief
-
-## Goal
-Show a project status only to a team authorized to see it.
-
-## First local slice
-Use fake in-memory project records and a deterministic C# lookup.
-
-## Non-goals
-No production data, identity integration, HTTP/GraphQL transport, or deployment.
-
-## Human-owned decisions
-Choose the real identity provider, authorization policy, GraphQL host,
-data classification, hosting target, and release owner before integration.
-
-## Acceptance examples
-- A team can read its own project's status.
-- A different team receives no project data.
-```
-
-Create `src/ProjectStatus.Core/ProjectStatusReader.cs`:
-
-```csharp
-namespace ProjectStatus.Core;
-
-public sealed record ProjectRecord(string Id, string TeamId, string Status);
-public sealed record ProjectStatusSummary(string ProjectId, string Status);
-
-public sealed class ProjectStatusReader(IEnumerable<ProjectRecord> projects)
-{
-    private readonly ProjectRecord[] _projects = projects.ToArray();
-
-    public ProjectStatusSummary? GetSummary(string projectId, string authenticatedTeamId)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(projectId);
-        ArgumentException.ThrowIfNullOrWhiteSpace(authenticatedTeamId);
-
-        var project = _projects.SingleOrDefault(x =>
-            x.Id == projectId && x.TeamId == authenticatedTeamId);
-
-        return project is null ? null : new ProjectStatusSummary(project.Id, project.Status);
-    }
-}
-```
-
-Create `src/ProjectStatus.Demo/Program.cs`:
-
-```csharp
-using ProjectStatus.Core;
-
-var sampleProjects = new[]
-{
-    new ProjectRecord("p-1", "team-a", "Active"),
-    new ProjectRecord("p-2", "team-b", "Paused")
-};
-
-var reader = new ProjectStatusReader(sampleProjects);
-var summary = reader.GetSummary("p-1", "team-a");
-Console.WriteLine(summary is null
-    ? "Project not found or not authorized."
-    : $"{summary.ProjectId}: {summary.Status}");
-```
-
-Create `tests/ProjectStatus.Core.Tests/ProjectStatusReaderTests.cs`:
-
-```csharp
-using ProjectStatus.Core;
-
-namespace ProjectStatus.Core.Tests;
-
-public sealed class ProjectStatusReaderTests
-{
-    private readonly ProjectStatusReader _reader = new(
-    [
-        new ProjectRecord("p-1", "team-a", "Active"),
-        new ProjectRecord("p-2", "team-b", "Paused")
-    ]);
-
-    [Fact]
-    public void GetSummary_ReturnsProjectForAuthenticatedTeam()
-    {
-        var result = _reader.GetSummary("p-1", "team-a");
-
-        Assert.Equal(new ProjectStatusSummary("p-1", "Active"), result);
-    }
-
-    [Fact]
-    public void GetSummary_HidesProjectFromDifferentTeam()
-    {
-        var result = _reader.GetSummary("p-2", "team-a");
-
-        Assert.Null(result);
-    }
-}
-```
-
-Create `README.md` with the actual scope and run instructions:
-
-````md
-# ProjectStatus
-
-Local-only teaching vertical slice for looking up a project status by ID
-within an authenticated team's scope. The console demo uses fake data.
-It is not an HTTP or GraphQL service and does not implement production
-authentication.
-
-## Build, test, run
-
-From the repository root:
-
-```powershell
-dotnet build
-dotnet test
-dotnet run --project src\ProjectStatus.Demo\ProjectStatus.Demo.csproj
-```
-````
-
-**Run and verify:**
-
-```powershell
-dotnet build
-dotnet test
-dotnet run --project src\ProjectStatus.Demo\ProjectStatus.Demo.csproj
-```
-
-Expected behavior: the demo prints `p-1: Active`; the two tests cover an allowed same-team lookup and a different-team lookup that returns no data. This example treats `authenticatedTeamId` as a value supplied by a trusted identity boundary. A real API must derive it from the authenticated principal, never trust a caller-supplied team ID, and must have its authorization policy approved before deployment. Do not connect production data.
-
-> [!WARNING]
-> A green unit test here verifies only this small in-memory rule. It does not prove authentication, tenant isolation in a database, GraphQL security, or production readiness.
-
-#### 📜 Add only a minimal instruction after facts are stable
-
-If CI is appropriate, complete the CI subsection below before finalizing the build/test rule in your instructions. Once the architecture and actual commands are confirmed, choose **one** instruction format for the harness you use. Do not create all variants “for compatibility.” For a Copilot CLI project, manually create `.github/copilot-instructions.md`; for Codex use `AGENTS.md`; for Claude Code use `CLAUDE.md`. For VS Code Agent Host, confirm the selected target and supported instruction path in Book 2.
-
-In VS Code Explorer, right-click the repository root → **New Folder** → `.github` → right-click `.github` → **New File** → the selected product's exact instruction filename → paste the rules below and save. In PowerShell, `New-Item -ItemType Directory -Force .github` creates the folder; use an editor such as `code .github\copilot-instructions.md` for the selected file. Do not make a Copilot instruction file and assume Codex or Claude loaded it.
-
-```md
-# Project working agreements
-- Keep project lookup/domain rules in ProjectStatus.Core.
-- Derive the team scope from the authenticated identity in a real host;
-  never trust a request-supplied team ID.
-- Run `dotnet build` and `dotnet test` from the solution root after behavior changes.
-- Report commands actually run; never claim blocked or skipped checks passed.
-- Do not add production credentials, external connections, or unrelated refactors.
-```
-
-Save, start/reload according to the chosen product, and verify discovery with its instruction/context view plus a harmless question whose answer is in the file. In Copilot CLI use `/instructions`; Codex use its active instruction context; Claude Code use `/context`; VS Code inspect the selected harness and References. File presence alone is not discovery.
-
-#### 🤖 Use the minimal setup on a second feature
-
-Now ask the selected product's main coding agent to implement a small follow-up feature. A normal prompt is enough; do not create a skill or custom agent for this one task.
-
-❌ **Bad:** `Add useful project reporting.`
-
-✅ **Good prompt:**
-
-```text
-Read PROJECT-BRIEF.md, the discovered project instructions, and the current
-ProjectStatusReader implementation/tests. Add GetActiveProjectCount for an
-authenticated team. Count only that team's records whose status is "Active".
-Do not accept a team ID from an HTTP/user request; this demo passes a
-simulated trusted identity value directly. Add tests for the correct count,
-another team's records being excluded, and an unknown team. Do not add
-packages, API/GraphQL endpoints, persistence, or unrelated refactoring.
-Show a short plan first. After I approve, implement the code/tests, run
-dotnet build and dotnet test from the root, and report the actual commands,
-exit status, files changed, and any blocked checks.
-```
-
-Review the plan before authorizing edits. Then inspect the code and tests yourself, check `git diff`, and run the commands. If you need to replace the current feature's explicit team value with authentication, stop: that is a human-owned design decision, not a safe assumption for the AI to invent.
-
-🤖 **AI-assisted creation prompt (proposal first):**
-
-```text
-Inspect this new repository after the first vertical slice. Propose a
-minimal project instruction file only for the harness I name: [harness].
-Use verified architecture facts and the actual README/CI commands; do not
-invent company standards or duplicate a different product's file. Explain
-each proposed rule, the exact path, discovery/reload procedure, and one
-harmless verification task. Do not create or edit files until I approve.
-```
-
-#### ⚙️ Add team CI only when the repository needs it
-
-If this is a shared GitHub repository and no company workflow template applies, create `.github/workflows/ci.yml`. Review the repository's branch protection, approved actions, runner, SDK policy, and required checks first; do not copy this sample into a company repo without that review.
-
-```yaml
-name: build-and-test
-
-on: [push, pull_request]
-
-permissions:
-  contents: read
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.0.x
-      - run: dotnet restore
-      - run: dotnet build --no-restore
-      - run: dotnet test --no-build
-```
-
-**Verify CI:** push only through the normal repository process, open a pull request, inspect the workflow run and required-check status, and confirm an intentionally failing test makes the check fail before merging. The workflow is an example; no GitHub Actions run is claimed in this workbook.
-
-#### 🛠️ Break/fix and completion checkpoint
-
-1. Change the allowed Team A fixture to request Team B's project; the test must fail if the implementation is insecure.
-2. Remove the project reference from the test project; diagnose the compile failure from the real output and restore it.
-3. Rename the instruction file or create it for the wrong harness; use that product's instruction list/context to prove discovery failed, then repair the exact path and restart/reload if required.
-4. Give the assistant an imaginary “company folder standard”; it must label it unknown rather than assert it as fact.
-
-If tests do not run, capture the actual command and error; do not write “passed.” If CI is not appropriate yet, keep the local README commands and record the CI decision/owner rather than inventing a pipeline.
-
-✅ **New-project checklist:** normal folder structure exists; README states scope and actual commands; source and tests are separate; build and tests were run; CI is added only when appropriate; one small product-specific instruction is based on verified rules; no unnecessary prompts/skills/agents/hooks/MCP/parallel-agent setup was created.
-
-**Local documentation-audit result:** these exact scaffold commands and code snippets were exercised with .NET SDK **10.0.401** on Windows. The build succeeded with zero warnings/errors, both xUnit tests passed, and the demo printed `p-1: Active`. That verifies only this local teaching sample, not another machine, the optional GitHub workflow, or a production GraphQL/authentication setup.
-
-**Official references checked for this workshop:** [.NET `dotnet new`](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-new), [GitHub Actions: building and testing .NET](https://docs.github.com/en/actions/tutorials/build-and-test-code/net), and [Microsoft Agent Framework — first agent](https://learn.microsoft.com/en-us/agent-framework/get-started/your-first-agent). The GraphQL transport and identity-provider decisions remain intentionally open for the company owner.
-
-```text
-GraphQLService/
-├── README.md
-├── PROJECT-BRIEF.md
-├── src/
-│   └── GraphQLService.Api/
-├── tests/
-│   └── GraphQLService.Api.Tests/
-└── .github/
-    └── workflows/             # only after confirming company CI policy
-```
-
-Do not commit secrets or production endpoints. Add a deterministic authorization service interface and tests before a real identity integration. Keep GraphQL field resolvers thin; use normal C# for authorization, validation, domain invariants, and predictable state transitions.
-
-### Step C — verify the baseline, then choose durable AI help
-
-1. Build and test the plain vertical slice. Capture actual command, working directory, exit code, and output.
-2. Add project instructions only for stable decisions: target framework, actual build/test commands, architecture boundaries, generated-file rules, and secret policy.
-3. Keep a one-off schema task in a normal prompt or brief.
-4. Make a skill only after the GraphQL change workflow is repeated (e.g., schema → resolver → authorization test → compatibility review).
-5. Make a custom agent only if a recurring role needs distinct tools or a separate context (e.g., read-only schema compatibility reviewer).
-6. Use a subagent for a bounded independent review. Parallelize only independent axes, such as schema compatibility and authorization test coverage, never overlapping file edits.
-7. Add a hook only for a repeatable local lifecycle task whose behavior is explicitly supported by the active harness. Use CI for required validation.
-8. Add MCP only when an approved external system is necessary and no native/file workflow works. Begin read-only with least privilege.
-9. Apply real permission, sandbox, IAM, protected-branch, code-owner and CI controls independently of prompt wording.
-10. Revisit and remove every customization that has no demonstrated repeat use.
-
-### Select the same workflow in each supported surface
-
-| Surface | First session | Where to put durable project rules | How to verify |
-|---|---|---|---|
-| VS Code + GitHub Copilot | Open folder → select **Copilot** Session Target → ask for read-only proposal; use Plan before edits. | `.github/copilot-instructions.md`; skill/agent/hook formats belong to the selected Agent Host. | Review References, selected tools, activity, files and actual test result. |
-| GitHub Copilot CLI | `cd` to root; run `copilot`; inspect `/instructions`; explicitly name `PROJECT-BRIEF.md`. | `.github/copilot-instructions.md`; CLI-specific agent/skill/MCP customizations only when needed. | `/instructions`, `/skills list`, `/mcp`, CLI tool-approval/activity and diff. |
-| Codex CLI | Start from root with `codex`; reference brief; plan/read-only first. | `AGENTS.md`, `.agents/skills/`, `.codex/agents/*.toml`, Codex-specific hooks/config. | Confirm loaded instructions; `/skills`, `/agent`, `/hooks`, `/mcp`; inspect actual diff and tests. |
-| Codex IDE / VS Code integration | Open Codex panel and select Codex Session Target; use same brief-first plan. | Same Codex project files; do not assume VS Code Copilot config governs Codex. | Review Codex activity/subagent thread, permissions and editor diff. |
-| Claude Code CLI | Start `claude` in root; `/context`; name the brief; use Plan/Manual permissions. | `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`, Claude agent/hooks/MCP config. | `/context`, `/skills`, `/hooks`, `/mcp`, permission prompts, transcript and diff. |
-| Claude Code in VS Code | Open Claude Code extension panel, not Local Agent; attach/reference brief; plan before edits. | Same Claude Code project files and runtime config. | Confirm Claude Code panel/runtime, permissions, tool activity, diff and tests. |
-
-Do not promise a reusable `.prompt.md` file will work in all rows. VS Code Agent Host and Local have different prompt-file behavior; Copilot CLI, Codex, and Claude have their own prompt/skill invocation mechanisms. See Book 2 before creating exact files.
-
-### 💣 Break-it workshop: unauthorized caller
-
-Add a test where a caller from Team A requests Team B's project. The initial test must fail against the insecure resolver. Implement authorization in deterministic C# using the approved policy abstraction; rerun the exact test. Do not “fix” this by instructing an agent to hide the project, by filtering only in the UI, or by relying on a skill/hook.
-
-**Expected:** the application denies unauthorized access in server-side code, and the regression test proves it.
-**Verification:** inspect resolver/service path, authorization test, real test output, schema behavior and diff.
-**Troubleshooting:** if the test cannot represent caller identity, fix the test seam; do not weaken the policy. If identity policy is undecided, stop for the owner rather than inventing it.
-
-🏋️ **Challenge:** complete the local fake-data vertical slice without MCP, custom agent, hook, or skill.
-🎓 **Checkpoint:** show what is an AI suggestion, a human decision, a deterministic invariant, and a CI-enforced gate.
-
-## Scenario 2 — 🔄 Joining a running GraphQL service
-
-### 🎯 Goal / 🧩 Problem
-
-An engineer receives ticket `API-248` in an existing company service. There is already a main/develop branch, custom instructions, a schema review skill, and CI. Your first task is not to configure AI; it is to understand the code, ticket, active harness and branch state without disturbing ongoing work.
-
-### Step A — inspect before proposing changes
-
-Run in the repository root:
-
-```text
-git status --short
-git branch --show-current
-```
-
-Read ticket acceptance criteria; README and architecture docs; solution/project files; the relevant schema/resolver/domain/tests; build/test/lint scripts; CI and release rules. Inventory `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.github/instructions/`, all skills/agents/hooks, `.mcp.json`, `.vscode/mcp.json`, `.codex/`, `.claude/`, and any user-level MCP/hook settings that are applicable. Do not open secret values; check only whether required names/variables are present.
-
-Ask for a read-only report that cites every claim with a path or command output. Confirm that it saw the current branch and ticket. Check the product's discovery UI or command output; file presence alone does not prove the active harness loaded a customization.
-
-### Step B — route by work type, not habit
-
-| Ticket situation | Start with | Add or avoid |
-|---|---|---|
-| New feature | Task brief, acceptance tests and relevant existing instructions | Skill if schema/resolver/test procedure is repeated; custom agent for a recurring independent review |
-| Bug fix | Reproduce exact symptom; trace callers and add failing regression test | Read-only subagent for independent root-cause review; avoid parallel writers |
-| Code review | Review diff against API compatibility, auth and tests | Read-only custom agent if this role repeats; report evidence and confidence |
-| Production incident | Incident scope, timeline, dashboards/logs approved for use; read-only access | MCP only if approved, narrowly scoped evidence source; no remediation/deploy without incident lead |
-| Release preparation | Release checklist, version, changelog, CI/artifact status | Normal prompt/checklist; CI and release owner are gates, not agent claims |
-| Security-sensitive change | Explicit scope, exclusions, identity and approval point | Read-only-first, least privilege and independent review; no broad shell/network/MCP permissions |
-| Repeated task | Confirm successful prior runs and stable steps | Skill, then verify discovery and outcome; remove if no longer useful |
-| Deterministic validation | Existing script or CI | Do not replace with an agent, skill, or hook |
-
-### Run `API-248` through the selected product — existing-project routes
-
-These are six entry points to the same evidence-first workflow, not six compatible config formats. Begin in read-only mode; name the task/brief; confirm the branch and loaded project rules; then use the same approved task prompt below. Exact skill/agent/hook/MCP setup remains product-specific as detailed in Book 2.
-
-| Surface | Open / inspect existing setup | Invoke the investigation and verify |
-|---|---|---|
-| VS Code + GitHub Copilot | Open repository → select **Copilot** Session Target → inspect Customizations, loaded instruction References, selected tools, and Git state. | Attach/name `docs/tasks/API-248.md`; ask for read-only trace; inspect References/tool activity, Source Control diff, and actual tests. |
-| GitHub Copilot CLI | From repo root run `copilot`; `/instructions`, `/skills list`, `/agent`, `/mcp`; inspect `.github/hooks` and approved MCP config. | Name ticket in prompt; explicitly invoke existing skill/agent only if it fits. Use `/skills info NAME`; review approvals/tool calls and Git state. |
-| Codex CLI | From repo root run `codex`; inspect `AGENTS.md`/overrides and current approval/sandbox. Inspect `/skills`, `/agent`, `/hooks`, `/mcp`. | Name ticket; `$skill` or existing custom agent only when justified. Inspect delegation/thread, tool log, Git diff, actual tests. |
-| Codex IDE / VS Code | Open Codex panel and select **Codex** Session Target; inspect Codex settings/instructions rather than Copilot's Local files. | Ask Codex to investigate the ticket read-only; inspect Codex activity/subagent thread, approval mode, editor diff and real test result. |
-| Claude Code CLI | From repo root run `claude`; `/context`, `/skills`, `/hooks`, `/mcp`; inspect project `CLAUDE.md`, `.claude/`, and permission mode. | Name ticket and use an existing `/skill-name` or named subagent only if discovered. Inspect transcript/tool permissions, diff and real tests. |
-| Claude Code in VS Code | Open the Claude Code extension panel (not VS Code Local); inspect Claude context and permission mode. | Attach/name ticket; invoke existing skill or delegate only if useful; inspect Claude tool activity, inline diff and actual test output. |
-
-**Shared first request (all six surfaces):**
-
-```text
-Investigate API-248 read-only. Confirm repository root, current branch and
-working-tree state. Read the ticket and only the applicable existing
-instructions. Trace the reported request through schema, resolver,
-application service, repository, and tests. Cite paths/symbols and separate
-facts, hypotheses, and unknowns. Do not create configuration, edit files,
-run migrations, access production, or perform external mutations. Report
-the smallest verification plan and ask before implementation.
-```
-
-**Expected:** a cited investigation and bounded plan, not a claimed fix.
-**Verify:** independently open the cited source, compare branch/status, inspect actual tool activity and ensure no forbidden mutation. If the team approves an implementation, ask the chosen runtime to add a failing regression test, implement the smallest fix, run the real focused tests, inspect complete diff, and report actual command/exit status.
-**Break/fix:** in a disposable branch, rename one known skill or give its folder a mismatching `name`; verify product discovery fails, repair the exact path/metadata, perform the product's reload/restart, and verify again. Do not “fix” discovery by adding duplicate files.
-
-### Step C — existing-branch playbooks
-
-#### `main` / `develop`
-
-Check branch protection and whether direct edits are prohibited. A normal prompt for read-only status/release analysis may be enough. Never create a worktree or branch using a tool without authorization. Required CI and review still apply.
-
-#### Feature branch
-
-Verify clean/in-progress changes and correct base branch. Build a ticket brief with acceptance examples, scope, non-goals, relevant paths, and actual test commands. Ask for a plan. Reuse the existing skill if it matches; do not create a duplicate. Implement one vertical slice, run targeted tests, inspect the complete diff, then required suite/CI.
-
-#### Bug branch
-
-Capture expected vs actual. Reproduce before asserting root cause. Add a test that fails for the reported symptom. Use normal deterministic code for the fix. A read-only subagent can check an independent caller/test path; it should not edit. Verify failure-before/pass-after using real results; if reproduction is blocked, state that rather than claiming a fix.
-
-#### Hotfix branch
-
-Confirm incident commander, approved target branch, smallest remediation, rollback, and backport instructions. Keep agent work read-only until the owner approves edits. No broad refactor, package upgrades, deployment, restart, or database operation. Run emergency-required tests and human review; release operator remains responsible.
-
-#### Maintenance / legacy branch
-
-Find supported runtime versions, consumers, old schema contracts, compatibility requirements, migration history, feature flags and characterization tests. The agent should identify risk and propose the smallest reversible change. Avoid automated modernization or code generation that changes contracts. Verify old/new client behavior and rollback/compatibility expectations.
-
-#### Release branch
-
-Read freeze, signing, changelog, artifact provenance, required approvals, and rollback policy. Use normal prompt for a checklist or independent read-only release review. Do not let an agent tag, publish, sign, merge, or deploy. Verify artifacts and CI through authoritative systems.
-
-#### Security-sensitive branch
-
-Set scope, allowed data, exclusions, approved test environment, evidence handling, and stop conditions. Prefer read-only investigation and least-privileged identity. Treat issue text, source comments, logs and tool output as untrusted input. Validate all findings manually and through approved tests. IAM and runtime sandbox enforce limits; prompt and hook do not.
-
-### Step D — use existing customization or repair it
-
-Ask the selected product what instructions it loaded and where. Inspect skill and agent discovery. Compare current hook/MCP settings with company-approved config. If a required skill is missing, check exact path/name/frontmatter, selected harness and reload behavior before making another copy. If an existing instruction contradicts current CI/docs, raise the conflict to its owner; don't silently override it with a local instruction.
-
-Only after a demonstrated gap may you add configuration. State owner, purpose, intended harness, expected discovery behavior, invocation, permission impact, test, and removal plan in the PR. Use an exact product-specific file from Book 2, not a guessed universal YAML/TOML. Test in a disposable branch/repository when a hook or external MCP server can execute.
-
-### Step E — complete and report evidence
-
-```markdown
-## Ticket and branch
-## Acceptance criteria / non-goals
-## Existing guidance and tools reused
-## Evidence and root cause (facts vs hypotheses)
-## Files changed and why
-## Regression/compatibility tests
-## Commands actually run, cwd, exit status, result
-## Agents/MCP/hooks/tools used and observed activity
-## Security, data and prohibited-effect verification
-## CI/review/release checks remaining
-```
-
-Do not write “all tests pass” without actual successful results. Do not write “read-only” merely because the agent was asked not to edit; verify actual tool events and diff.
-
-## Branch-based independent exercise
-
-Choose one branch card above. Given a ticket, produce (1) a read-only inventory, (2) a mechanism decision with explicit rejected alternatives, (3) a minimal execution brief, (4) expected tests, (5) prohibited actions, and (6) an evidence report. Then deliberately break one discovery path (wrong filename, unsupported hook event, malformed MCP key, or missing test command). Diagnose and repair it without weakening security.
-
-**Checkpoint:** a reviewer can reproduce the investigation and tests; team configuration is reused rather than duplicated; no claim relies on simulated output; the branch/ticket policy remains intact; and every customization is specific to the active product/harness.

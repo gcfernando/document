@@ -2,7 +2,37 @@
 
 > A workshop-first course for professional .NET/C# developers who are new to AI engineering.
 >
-> **This book teaches concepts and small builds.** For exact product-specific customization paths and schemas, use `deep-research-report.md`. For choosing the right mechanism in company work, use `end_to_end_ai_agent_graphql_workflow.md`.
+> **This book teaches concepts and small builds.** For exact product-specific customization paths and schemas, use [the configuration handbook](deep-research-report.md#choose-product). For choosing the right mechanism in company work, use [the company workbook](end_to_end_ai_agent_graphql_workflow.md#workbook-path).
+
+<a id="course-path"></a>
+
+## Start here: build application capabilities
+
+This course is for a developer who can run a C# console app and wants to build AI features. Your application's model calls and tools are separate from the coding assistant that may help write the code. For coding-assistant setup use [the handbook](deep-research-report.md#choose-product); for project/ticket workflows use [the workbook](end_to_end_ai_agent_graphql_workflow.md#workbook-path).
+
+**Core route:** LLM limits → a local C# model call → a validated structured result → a guarded tool/agent loop → keyword retrieval with citations → evaluation and reliability. The same fictional **BuildDesk** application explains build logs and retrieves fake build metadata. Small projects are independent checkpoints so an optional lesson does not overwrite a working one.
+
+You need the .NET 10 SDK for the included console checkpoints, PowerShell, and a running local model. If you do not yet have one, complete [the local chat lab](local_ai_learning_lab.md#lab-build) first; Python is required for that browser app, not for the C# model call. You may also use an already approved local model and skip the browser app.
+
+Read sections 1–2, then [the local C# bridge](#local-model-call), [structured output](#course-output), [the complete guarded tool loop](#course-tools), and [keyword retrieval](#course-rag). Sections 3 and 9 explain coding assistance; MCP, cloud providers, Python SDKs, and framework migration are optional branches. Cloud credentials and potential billing first appear in [the optional cloud/Python route](#cloud-and-python). No Azure account is needed for the local core route.
+
+**First success:** a real local model reply from `BuildDesk.Chat`. Then prove schema validation and tool denial with deterministic checks, separately from live-model quality. A model choosing not to call a tool is not a successful tool demonstration.
+
+### Small glossary, used throughout the four guides
+
+| Term | Meaning here |
+|---|---|
+| Model / inference | The trained generator / running it on a request. Training changes its parameters; these labs do not train it. |
+| Provider / endpoint / runtime | Who supplies inference / the address you call / software that runs the model or assistant. Ollama is the local model runtime. |
+| Client library / editor / harness | Code that calls an API / where you edit / the coding-agent product that loads instructions and executes tools. |
+| Prompt / brief / instruction | This request / a referenced task document / durable project guidance. They have different lifetimes. |
+| Skill / custom specialist / subagent | Repeated procedure / configured role / delegated worker with its own context. Parallel means concurrent execution, not a different file format. |
+| Application agent / coding agent | Your model choosing among bounded application tools / an assistant working on repository code. |
+| Context / chat history / memory | What fits in a request / messages your app supplies / deliberately retained information. None is model training. |
+| RAG / MCP | Retrieve evidence before generation / a protocol for connecting capabilities. A search tool can use RAG, but the terms are not interchangeable. |
+| Permission / authorization | Runtime permission to attempt an operation / trusted system policy deciding whether this caller may access this resource. Prose is guidance, not enforcement. |
+
+---
 
 ## How to use this course
 
@@ -23,17 +53,34 @@ Markers are deliberately precise:
 > [!IMPORTANT]
 > A fluent answer is not proof. Verify claims against source, tests, schemas, and real tool results. Never paste company secrets, customer data, or production credentials into an unapproved AI service.
 
-## 🧭 Course map
+<a id="course-validation"></a>
 
-| Stage | You will build |
-|---|---|
-| 1 | A safe AI-assisted development routine and better task brief |
-| 2 | Small C# and Python model calls |
-| 3 | Typed outputs, conversation state, and a safe function tool |
-| 4 | A local MCP server and an agent that uses it |
-| 5 | A simple agent/workflow distinction and project customization |
-| 6 | A tiny RAG pipeline and an evaluation set |
-| 7 | Reliability, telemetry, security boundaries, and a capstone |
+## Verification and freshness
+
+The local deterministic examples and checkpoints are teaching material, not
+evidence that a model provider, local runtime, MCP host, or cloud account
+worked on your machine. Run the stated command and record its actual output
+before treating a checkpoint as complete.
+
+Provider SDKs, packages, model names, preview APIs, and product configuration
+change independently of this course. Follow the linked official documentation
+for the exact version you use, especially for the optional cloud, MCP, and
+agent-framework routes. A blocked credential, unavailable model, or failed
+network call is an honest result to diagnose, not a reason to print
+success-shaped placeholder output.
+
+## Course map
+
+| Milestone | Deliverable | Required next? |
+|---|---|---|
+| 1–2 | Task classification and scoped prompt | Yes |
+| 4 | BuildDesk.Chat: one model call | Yes; local route |
+| 5 | BuildDesk.Triage: validated response; state/streaming exercise | Yes |
+| 6 + 8 | BuildDesk.Tools: guarded dispatch and bounded agent loop | Yes |
+| 10 | BuildDesk.Search: keyword retrieval and evidence-linked answer | Yes |
+| 11–12 | Fixed evaluations, failures and redacted traces | Yes |
+| 7, 9, 13 | MCP, coding-agent customization, advanced integrations | Optional when required |
+| 14 | Capstone plus one twelve-week plan | Final consolidation |
 
 ---
 
@@ -128,7 +175,7 @@ hypotheses, reproduction, relevant tests, and exact verification commands.
 3. Compare citations, assumptions, and proposed tests. Record which extra context changed the answer.
 4. Ask the assistant to label **observed fact**, **inference**, and **unknown** separately.
 
-**Verification:** open every cited file; run the named test yourself. Do not treat a confident answer as a reproduced result.
+**Verification:** open every cited file; run the named test yourself when that test execution is authorized. Do not treat a confident answer as a reproduced result.
 
 **When not to add more context:** when the source is huge or sensitive, retrieve a narrow relevant slice or use an approved search/RAG mechanism instead.
 
@@ -174,7 +221,7 @@ Give the assistant an incorrect test command. It should discover the real comman
 
 ## 🎯 Goal
 
-Make one model request from C# and one from Python while keeping credentials out of source control.
+Make one local C# request first. The cloud-provider and Python examples are optional alternatives and introduce credentials/billing separately.
 
 ## Architecture
 
@@ -184,7 +231,83 @@ Your app → SDK/client abstraction → authenticated endpoint → model
     └──────────── validate and display result ────┘
 ```
 
-## C# lab — console summary
+<a id="local-model-call"></a>
+
+## Local C# bridge — BuildDesk.Chat
+
+**Goal:** send one prompt from a C# console app to the local Ollama runtime
+you already proved in the [local chat lab](local_ai_learning_lab.md#lab-build).
+This is a local application call, not a coding-agent configuration.
+
+**Prerequisites:** .NET 10 SDK, Ollama running at `http://localhost:11434`,
+and the model/profile name you intend to use. The lab creates
+`qwen35-9b-32k`; if you chose the 16K alternative, use that exact name
+instead. In PowerShell, first verify:
+
+```powershell
+dotnet --version
+ollama ls
+```
+
+Create the independent checkpoint project:
+
+```powershell
+dotnet new console -o BuildDesk.Chat
+Set-Location BuildDesk.Chat
+```
+
+Replace `Program.cs` with this complete teaching example:
+
+```csharp
+using System.Net.Http.Json;
+using System.Text.Json;
+
+const string model = "qwen35-9b-32k";
+using var client = new HttpClient
+{
+    BaseAddress = new Uri("http://127.0.0.1:11434"),
+    Timeout = TimeSpan.FromSeconds(120)
+};
+
+var request = new
+{
+    model,
+    stream = false,
+    messages = new[]
+    {
+        new { role = "user", content = "Reply with one sentence about unit tests." }
+    }
+};
+
+using var response = await client.PostAsJsonAsync("/api/chat", request);
+response.EnsureSuccessStatusCode();
+
+using JsonDocument result = JsonDocument.Parse(
+    await response.Content.ReadAsStreamAsync());
+string reply = result.RootElement
+    .GetProperty("message")
+    .GetProperty("content")
+    .GetString()
+    ?? throw new InvalidOperationException("Ollama returned no message content.");
+
+Console.WriteLine(reply);
+```
+
+Run `dotnet run` from `BuildDesk.Chat`. **Expected:** one model-generated
+sentence. Wording varies; a real response is the success criterion.
+
+**Break and repair:** quit Ollama or temporarily use a nonexistent model name,
+then rerun `dotnet run`. Record the actual connection or model error. Restore
+the running server/model name; do not replace a failure with hard-coded output.
+
+**Checkpoint:** the app sends a request to a local endpoint, and the runtime
+selects the named model. The model does not remember this program after it
+exits. Conversation state, structured output, tools, and retrieval are added
+in later lessons.
+
+<a id="cloud-and-python"></a>
+
+## Optional cloud C# lab — console summary
 
 📚 Microsoft’s `.NET` AI quickstart uses `Microsoft.Extensions.AI` and `IChatClient`; it currently shows package setup and provider-specific options for OpenAI/Azure OpenAI. Follow the current quickstart for package versions and provider setup: [Connect to and prompt an AI model with .NET](https://learn.microsoft.com/dotnet/ai/quickstarts/prompt-model).
 
@@ -231,9 +354,9 @@ Console.WriteLine(response);
 
 Run `dotnet run`. Expected: one generated sentence. Verify the selected model is enabled for the account. If missing secret/model/auth causes failure, fix configuration; do not substitute a hard-coded key or claim success. For Azure OpenAI, follow the Azure-specific branch of the official quickstart and use its identity/endpoint setup instead of copying this OpenAI constructor.
 
-## Python lab — same concept, provider-native SDK
+## Optional Python/cloud lab — same concept, provider-native SDK
 
-Create `python/first_llm_app/` and a virtual environment:
+From your chosen practice root, create `python/first_llm_app/` and a virtual environment. This independent project uses `.venv`; the local browser lab's shared-interpreter exception does not carry over:
 
 ```powershell
 New-Item -ItemType Directory -Force python\first_llm_app | Out-Null
@@ -285,11 +408,13 @@ Logs: status, latency, request ID; redact prompt and response by policy
 
 ## ▶️ Run and verify
 
-Run `dotnet run`, then the Python script. Expected: one generated summary from each program. Verify the account, endpoint, model/deployment, and billable usage in the provider console. Test missing credentials and network failure; the app must show a useful error rather than a fake answer.
+For the optional cloud/Python branches, run their commands from their own project directories; complete one branch, not both, unless comparing providers. Expected: one generated summary from each program. Verify the account, endpoint, model/deployment, and billable usage in the provider console. Test missing credentials and network failure; the app must show a useful error rather than a fake answer.
 
 **Troubleshooting:** check credentials → endpoint/deployment → SDK version → network/proxy → quota/rate limit → cancellation/timeout. Retry transient failures only with bounded backoff and honor `Retry-After`; do not retry invalid credentials or invalid requests indefinitely.
 
 ---
+
+<a id="course-output"></a>
 
 # 5. 🧾 Structure, stream, and remember
 
@@ -335,6 +460,8 @@ Create ten fixed ticket examples with expected categories. Include an ambiguous 
 **Checkpoint:** streamed display, conversation state, and schema validation are separate concerns.
 
 ---
+
+<a id="course-tools"></a>
 
 # 6. 🧰 Function calling: give the model one safe capability
 
@@ -386,6 +513,8 @@ Register a `GetBuildStatus` function using the provider/framework’s official f
 **When not to use a tool:** if ordinary deterministic code can retrieve the value before the model call, do that. A tool is not a reason to let the model choose an unnecessary operation.
 
 ---
+
+<a id="course-mcp"></a>
 
 # 7. 🔌 MCP: connect a server, then a host
 
@@ -463,7 +592,7 @@ For a disposable/nonproduction test, configure one approved Streamable HTTP endp
 }
 ```
 
-The `.invalid` hostname is deliberately non-routable. Use only an endpoint provided by your organization. Do not place bearer tokens or client secrets in this file; use the selected product's documented sign-in/secret flow. Configure a narrow enabled-tool list in the selected client's tool controls where supported. Codex and Claude Code have their own configuration commands/scope; see Book 2 rather than pasting this block into their config.
+The `.invalid` hostname is deliberately non-routable. Use only an endpoint provided by your organization. Do not place bearer tokens or client secrets in this file; use the selected product's documented sign-in/secret flow. Configure a narrow enabled-tool list in the selected client's tool controls where supported. Codex and Claude Code have their own configuration commands/scope; see [the handbook](deep-research-report.md#handbook-mcp) rather than pasting this block into their config.
 
 **Workshop:** 1) request the approved nonproduction endpoint and identity; 2) review server owner, transport, authentication, authorization, data retention, and exposed read/write tools; 3) add it to one selected client; 4) inspect the discovered tool list; 5) query one harmless public/test document; 6) confirm a restricted document is denied; 7) inspect client activity and server audit logs; 8) remove the temporary entry. If a server is down, auth fails, or denial is unclear, stop and report the actual failure.
 
@@ -578,103 +707,17 @@ Run `dotnet run`. Expected shape: the agent reports that `demo-1` is Active; the
 
 ---
 
-# 9. 📁 Instructions, task briefs, skills, agents, hooks
+# 9. Optional: choose a coding-assistant customization
 
-The same engineering decision appears in different files depending on the selected harness. Exact locations and syntax live in `deep-research-report.md`.
+This section concerns your development assistant, not BuildDesk's application agent. A normal prompt handles one task; a brief holds long acceptance criteria; instructions hold stable rules; a skill packages a repeated procedure; a custom agent defines a recurring specialist; a subagent handles a bounded independent question; a hook runs lifecycle automation; MCP connects a missing capability.
 
-## Decision workshop
+The authoritative mechanism decision card and exact product formats live in the [configuration handbook](deep-research-report.md#handbook-decisions). To practice, follow one [product route](deep-research-report.md#choose-product), then one [workbook ticket](end_to_end_ai_agent_graphql_workflow.md#existing-project). Do not create every customization to complete this course.
 
-| Need | Start with |
-|---|---|
-| One request/ticket | Normal prompt or task brief |
-| Stable repository convention | Project instruction file |
-| Repeated step-by-step procedure with references/scripts | Skill |
-| Recurring specialist role and distinct tool policy | Custom agent |
-| Parallel independent investigation | Subagents |
-| Deterministic lifecycle automation | Product-specific hook |
-
-```text
-Developer → harness loads instructions → task matches skill/agent
-         → tools run under product permission boundary → evidence returned
-```
-
-### ❌ Bad
-
-Create ten agents and twenty skills on day one; put the current ticket in global instructions; assume an agent file creates tools; use a prompt as security enforcement.
-
-### ✅ Good
-
-Observe the same error twice, capture the smallest stable rule, write one customization, create it in the chosen product’s supported folder, reload if that harness needs it, inspect discovery, invoke it, inspect tool activity, and test expected behavior.
-
-## Mini-lab: repeatable build failure procedure → skill
-
-For this lab choose **Copilot CLI**, so the sample has one exact schema. Create:
-
-```text
-.github/
-└── skills/
-    └── dotnet-build-investigation/
-        └── SKILL.md
-```
-
-In VS Code Explorer, create each folder and exact uppercase `SKILL.md`. Paste:
-
-```markdown
----
-name: dotnet-build-investigation
-description: Diagnose a failed .NET build from real logs. Use for dotnet build or CI compiler failures; do not use for incidents.
----
-
-1. Read repository instructions and the supplied task/log.
-2. Capture command, working directory, exit code, and first causal error.
-3. Reproduce only with the repository's documented build command.
-4. Trace evidence to source/project/config; separate facts from guesses.
-5. Report a minimal fix and focused regression check. Do not edit unless asked.
-6. Report actual commands/results and any blocked checks.
-```
-
-Save; in a Copilot CLI session run `/skills reload`, then `/skills info dotnet-build-investigation`. Invoke with: “Use `/dotnet-build-investigation` on this real failing build log; investigate only.” Inspect the actual commands and source references. Confirm it does not edit by checking `git status`. Break by renaming `SKILL.md`, use `/skills info` to observe discovery failure, restore exact filename, reload, and verify again. The handbook gives Codex/Claude/VS Code-specific destinations and semantics; do not copy Copilot’s tool configuration to them.
-
-**Verify:** explicit invocation should make the procedure observable in the response/tool sequence.
-**Break:** misspell `SKILL.md`, use a weak description, or start a stale session. Check path, frontmatter, discovery command/picker, relevance and reload behavior; repair and retry.
-
-## Mini-lab: read-only reviewer agent
-
-Create a Copilot CLI file at `.github/agents/diff-reviewer.agent.md`; add a frontmatter `name`, `description`, and only read/search tools supported by that CLI version. In its body say to review a supplied diff, not edit, and cite evidence/trigger/impact. Restart CLI, select with `/agent`, and ask it to review a real small diff. Inspect tool calls and `git status`; if it edited, the tool restriction failed—fix the runtime config, not just the wording. Break its filename and restore it. For VS Code, Codex, or Claude Code use the corresponding exact agent format in the handbook; agent files are not portable configs.
-
-## Mini-lab: one subagent or parallel agents?
-
-🎯 **Goal:** delegate evidence gathering only when the questions are independent.
-
-```text
-Developer/main agent
-   ├── Worker A: trace one request path (read-only)
-   ├── Worker B: locate existing tests (read-only)
-   └── Worker C: check public-contract risks (read-only)
-                         ↓
-              coordinator reconciles evidence
-```
-
-**Start with one worker.** In a test repository, give a selected harness one bounded task: “Find the existing tests and the request path for this feature. Read-only; return file/symbol references, facts, and unknowns.” Inspect the product's delegation/tool activity and verify the cited files yourself.
-
-Only dispatch parallel workers if the questions can be answered separately and their output can be reconciled. Give each the same ticket/branch context, a disjoint question, no-edit/no-external-side-effect limits, and the same report format. Keep file ownership with the main developer. Use separate Git worktrees only for genuinely independent edits, with explicit branches, owners, and an integration/test step; a worktree is Git isolation, not a security sandbox.
-
-❌ **Bad:** three workers edit `VehicleResolver.cs` on one branch at once.
-✅ **Good:** separate read-only call-path, test-gap, and contract analyses; one engineer compares evidence, decides, implements, and runs the tests.
-
-**Break/fix:** intentionally give one worker no ticket or repository path. If its answer is generic or ungrounded, stop parallel dispatch, add the missing context, and rerun just that worker. If two reports conflict, inspect source/tests; do not decide by majority vote.
-
-**Cost/checkpoint:** parallelism adds model calls, context, coordination, and integration time. Compare that cost with the saved elapsed time. New project: don't parallelize unresolved architecture choices. Existing project: parallelize independent exploration in a large codebase. Legacy/hotfix: prefer read-only analysis and one change owner. Do not use a second context as permission to perform production or shared-state actions. Product-specific subagent commands, context inheritance, and parallel limits are in Book 2.
-
-## Mini-lab: reusable custom prompt vs skill
-
-If you use **VS Code Local**, create `.github/prompts/investigate-build.prompt.md` with the `name`, `description`, `agent`, and argument-hint metadata from the current VS Code prompt-file guide. Save, select **Local**, type `/investigate-build`, provide a test log, and verify it asks for observed command/exit code rather than asserting a fix. Break the extension to `.md`, confirm it no longer appears, restore it. VS Code prompt files are deprecated/not loaded in Agent Host sessions; do not use this artifact for a new Agent Host workflow. In Copilot CLI, Codex, or Claude Code, use a normal prompt or explicit skill invocation instead of this VS Code file schema.
-
-## Mini-lab: hook vs CI
-
-An instruction says what to do. A hook runs predictable local automation at a product event. CI remains the authoritative shared build/release gate. Build a harmless log hook from the handbook, run its script manually, trigger one event, inspect its log and exit code, then break its path. Never use a hook as the only enforcement for access control or production safety.
+**Checkpoint:** explain the repeated problem, why ordinary code/CI or a normal prompt is insufficient, the chosen runtime, discovery/invocation evidence, and the technical permission boundary. If no repeated need exists, add nothing.
 
 ---
+
+<a id="course-rag"></a>
 
 # 10. 📚 RAG: retrieve evidence for a model
 
@@ -825,6 +868,8 @@ The Microsoft Agent Framework, Semantic Kernel, provider APIs, model names, and 
 
 ---
 
+<a id="course-capstone"></a>
+
 # 14. 🏆 Capstone and 12-week plan
 
 ## Capstone — evidence-first build-failure assistant
@@ -883,273 +928,3 @@ Can you explain why the component exists, create it in the right harness, verify
 Product-specific claims were checked against the official pages linked in the operational handbook on **2026-10-03**. Examples are teaching material, not executed commands or a certification that every service/preview is available to every account.
 
 ---
-
-# 🧭 PRACTICAL PLAYBOOK — I OPENED AN AI CODING TOOL. WHAT NOW?
-
-This is a separate, do-this-next guide for the two situations every developer meets. The editor is not the agent: in VS Code first identify the **Session Target / harness**. A Copilot model selected inside another harness does not make its configuration portable to that harness.
-
-```text
-Choose project situation
-  ├─ Brand-new → brief → decisions → scaffold → prove build/test → add only proven rules
-  └─ Existing → preserve work → inspect repository/branch/ticket → choose smallest helper
-       ↓
-Choose harness → confirm its files and permissions → perform task → inspect diff → verify
-```
-
-> [!IMPORTANT]
-> Do not create instructions, skills, agents, hooks, parallel workers, or MCP configuration just to “set up AI.” Start with a normal prompt. Promote a customization only after you have evidence that the same problem recurs or a real capability is missing.
-
-## Scenario 1 — 🆕 Starting a brand-new project
-
-### 🎯 Goal and real problem
-
-Start from an empty directory without encoding guessed architecture, granting tools too early, or filling the repository with customizations no one needs.
-
-### Step 1 — make the brief; do not make code or permanent rules yet
-
-Create an empty project folder and one ordinary brief:
-
-```text
-MyService/
-└── PROJECT-BRIEF.md
-```
-
-In VS Code Explorer, open the folder, click **New File**, type `PROJECT-BRIEF.md`, paste the template below, and save. In a CLI, use the editor you already have. An ordinary task brief is not auto-loaded; name it in your prompt.
-
-```md
-# Project brief
-
-## User/problem and desired outcome
-## Known constraints (language, hosting, privacy, budget)
-## Non-goals
-## Acceptance examples
-## Security/data classification
-## Unknown decisions
-```
-
-🤖 **Ask AI to help draft, not decide secretly:**
-
-```text
-Help me fill PROJECT-BRIEF.md. Ask only questions that block a safe first
-vertical slice. Label facts, assumptions, and decisions separately. Do not
-choose a company standard, add files, run commands, or create instructions.
-```
-
-✅ **Expected result:** a short brief and a list of decisions for a human owner.
-🔍 **Verify:** each claimed constraint came from the user, ticket, or approved standard; assumptions remain labeled.
-
-### Step 2 — create a real project and learn its real commands
-
-Ask for a plan before scaffolding:
-
-```text
-Read PROJECT-BRIEF.md. Propose two reasonable architectures for a small
-service, with trade-offs, security implications, build/test implications,
-and the first vertical slice. Do not create files until I choose.
-```
-
-After choosing, scaffold with the language/framework's official tool. Confirm actual project paths and commands from generated files and CI. Build and test the smallest end-to-end slice before customizations.
-
-```text
-request → deterministic validation → application behavior → persistence boundary → test
-```
-
-❌ **Bad:** “Use our normal architecture and build the whole product.”
-💥 The AI cannot know standards or unstated requirements and may invent both.
-✅ **Good:** state known facts, ask for options, decide explicitly, then scaffold.
-
-### Step 3 — add only the customization supported by evidence
-
-| Evidence from actual work | Smallest next step |
-|---|---|
-| One missing requirement this time | Add it to the current prompt/brief |
-| A rule repeats and is stable across the project | Add a short project instruction |
-| A rule applies only to a folder/type | Add the selected harness's scoped instruction |
-| A multi-step procedure repeats | Create a skill |
-| A recurring role needs its own tool surface | Create a custom agent |
-| An independent, substantial question can be delegated | Use one read-only subagent; parallelize only independent questions |
-| An action must run at a lifecycle event | Add a small, tested hook; use CI for authoritative team gates |
-| Required facts/actions live in an external system | Consider MCP after authorization and data-flow review |
-| Logic must be exact/repeatable | Write ordinary code, tests, scripts, or CI—not an agent |
-
-### 🧪 Product-specific first-session routes
-
-The table is a starter route, not permission to create every file in every row.
-
-| Surface | Start the project task | If stable instructions later help | Reusable workflow / specialist later |
-|---|---|---|---|
-| **VS Code + GitHub Copilot** | Open folder → select **Copilot** Session Target → start in **Ask/Plan** for decisions; **Agent** only after approving scope. A normal chat request needs no file. | `.github/copilot-instructions.md`; scoped `.github/instructions/*.instructions.md` with verified `applyTo`. | Skill: `.github/skills/<name>/SKILL.md`; agent: `.github/agents/<name>.agent.md`; hook depends on selected harness. Prompt files `.github/prompts/*.prompt.md` are for the Local harness and are deprecated/not loaded by Agent Host. |
-| **GitHub Copilot CLI** | From the trusted project root, run `copilot`, inspect `/instructions`, and ask a normal prompt referencing `PROJECT-BRIEF.md`. | `.github/copilot-instructions.md` or `AGENTS.md`; inspect loaded files with `/instructions`. | Skill: `.github/skills/<name>/SKILL.md`, invoked as `/skill-name` in a prompt; agent: `.github/agents/<name>.agent.md`, selected with `/agent`; hook: `.github/hooks/*.json`. |
-| **Codex CLI** | From the project root, run `codex`; provide the brief path in a normal prompt and ask it to inspect before edits. | Root `AGENTS.md`; Codex builds the instruction chain when a run starts. | Skill: `.agents/skills/<name>/SKILL.md`, mention with `$name` or `/skills`; custom spawned agent: `.codex/agents/<name>.toml`; hooks: `.codex/hooks.json` or `.codex/config.toml`. |
-| **Codex IDE / VS Code** | Install/open the Codex extension, choose the Codex harness, and use its chat against the open repository. VS Code remains the editor; Codex supplies its own runtime and controls. | Root `AGENTS.md`; inspect Codex's active instruction/config behavior, not Local-agent settings. | Same Codex skill, agent, and hook formats as its CLI. MCP settings are shared for the same Codex host; permission state belongs to Codex. |
-| **Claude Code CLI** | From project root run `claude`; `/context` shows loaded project/user guidance. Mention `PROJECT-BRIEF.md` explicitly. | `CLAUDE.md` or `.claude/CLAUDE.md`; scoped rules under `.claude/rules/`. | Skill: `.claude/skills/<name>/SKILL.md`, invoke `/name`; subagent: `.claude/agents/<name>.md`; hooks in `.claude/settings.json` or `.claude/settings.local.json`. |
-| **Claude Code in VS Code** | Install the official Claude Code extension, open its panel, sign in, and use a normal prompt with the brief attached or named. The panel bundles its CLI; a standalone CLI install is separate. | Same Claude `CLAUDE.md` and `.claude/rules/` instructions. | Same Claude skill/subagent/hook formats; verify in the extension's selected session and tool activity, not Copilot's customization picker. |
-
-> [!WARNING]
-> VS Code Local, Copilot Agent Host, Copilot CLI, Codex, and Claude Code are separate runtimes. Confirm the selected harness before trusting a file path, hook event, tool allowlist, or MCP configuration. The exact verified examples are in **File 2 — Configure and Operate**.
-
-### ❌ Do not configure on day one
-
-- Do not create global instructions from a project-specific guess.
-- Do not create skills/agents until the workflow or role repeats.
-- Do not add hooks to “make AI safe”; use runtime permissions, sandboxing, OS/IAM, and CI as appropriate.
-- Do not add MCP if built-in repository tools already answer the task.
-- Do not enable shell pre-approval, broad write access, production credentials, or network access for convenience.
-- Do not use parallel agents to design overlapping architecture or edit the same files.
-- Do not store secrets, customer data, or ticket-specific facts in permanent instructions.
-
-### 💣 Break-it, repair, checkpoint
-
-Ask the model to use “our standard folder layout” when none exists. If it states an invented standard as fact, stop, correct the brief, and remove or revise any generated files. Repeat the exercise by asking it to run tests before a test command exists: it must discover and report the gap, not claim a successful run.
-
-🏢 **Company use:** architecture/security owners approve stack, data classification, and deployment boundaries.
-🔄 **Existing project:** do not copy this greenfield sequence; inventory repository conventions first.
-🧱 **Legacy:** scaffold nothing over existing behavior; characterize it and add tests first.
-🚫 **Do not use this scenario** when a repository, CI pipeline, or team standard already exists.
-🏋️ **Challenge:** create a brief and passing vertical slice without adding an agent, skill, hook, or MCP server.
-🎓 **Checkpoint:** explain which choices were facts, which were human decisions, and why no day-one customization was necessary.
-
-## Scenario 2 — 🔄 Joining an existing / ongoing project
-
-### 🎯 Goal and real problem
-
-Protect existing work and use what the team already configured. Do not create duplicate AI files or mistake an AI suggestion for project policy.
-
-### Step 1 — inspect before prompting for edits
-
-1. Confirm repository root, current branch, ticket/PR scope, and working-tree changes. Preserve all uncommitted work.
-2. Read `README`, build/test/lint scripts, CI workflows, solution/package manifests, tests, architecture docs, release/runbooks, and relevant source.
-3. Inventory `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.github/instructions/`, `.github/skills/`, `.agents/skills/`, `.claude/skills/`, agent directories, hook files, MCP configs, and ignored/local configuration where accessible.
-4. In the selected product, verify what actually loaded. A file existing in the repo does not prove the active harness discovers it.
-5. Read the ticket/acceptance criteria; record facts, hypotheses, non-goals, and external effects.
-6. Reuse accurate configuration. Edit a stale file rather than making a duplicate.
-
-```text
-git status --short
-git branch --show-current
-```
-
-Use the repository's documented commands; do not assume these example commands are correct for the project.
-
-🤖 **Read-only repository-audit prompt:**
-
-```text
-Inspect this repository before any changes. Report root/current branch and
-working-tree state; locate instruction, prompt, skill, agent, hook, and MCP
-configuration; identify build/test/lint/CI commands and applicable ticket.
-Cite file paths for every claim. Separate observed facts from inferences.
-Do not edit, execute deployment/migration/data mutation, or create AI config.
-```
-
-✅ **Expected result:** inventory, actual commands, unknowns, and change boundaries.
-🔍 **Verify:** independently inspect cited files, actual Git state, CI scripts, and active-harness customization view.
-
-### Step 2 — decide the smallest useful mechanism
-
-| Need | Use first | Add only when |
-|---|---|---|
-| One bug, one feature, one review | Normal prompt; task brief when scope/acceptance is long | A stable project rule or repeated process is demonstrated |
-| Repeated task with many steps | Skill | The same procedure recurs and can be stated/tested |
-| Specialist with narrower tools | Custom agent | A stable role recurs; permissions are enforced outside prose |
-| Independent investigation/review | Subagent | Work is meaningfully independent and result can be reconciled |
-| Parallel investigation | Read-only workers | Independent questions justify coordination cost; one coordinator verifies |
-| External service/data | Native integration or MCP | No adequate native tool exists and security approves access |
-| Every-time local feedback | Hook | Event is deterministic, safe, portable for the actual harness, and tested |
-| Exact business/security behavior | Normal code and CI | Always; the model may assist but must not decide authorization or money rules |
-
-### 🧭 Branch-specific working cards
-
-| Branch situation | First move | AI boundary | Finish/verification |
-|---|---|---|---|
-| `main` / `develop` | Usually inspect only; confirm whether direct commits are forbidden and identify release/CI rules. | Read-only explanation/review unless policy explicitly allows otherwise. | No accidental edits; branch protection and CI remain authoritative. |
-| Feature branch | Check base/merge state, ticket, acceptance criteria, and current edits. | Plan then small implementation; reuse project skill if applicable. | Focused tests, relevant broader checks, diff and compatibility review. |
-| Bug branch | Reproduce and gather evidence before choosing cause. | Investigation prompt first; regression test before fix. | Test fails for the observed behavior, then passes after the smallest fix. |
-| Hotfix branch | Confirm incident/approval, supported target branch, and exact production symptom. | Narrow investigation; avoid speculative refactor or parallel writes. | Run mandatory emergency checks, review backport/cherry-pick and rollback plan; human owns deploy. |
-| Maintenance / legacy branch | Read changelog, callers, characterization tests, runtime support, and known exceptions. | Ask for impact/risk analysis; no broad modernization unless ticket authorizes it. | Compatibility tests and code-owner review; document what could not be reproduced. |
-| Release branch | Compare release checklist, version/changelog, freeze rules, and CI. | A release skill may execute checklist steps; no model-authorized publishing/deployment. | Verify artifacts/checksums/smoke tests and approvals; release operator owns irreversible action. |
-| Security-sensitive branch | Record written authorization, in-scope repo/files, exclusions, data rules, tools, and approval point. | Read-only scoped review by default; untrusted issue/log contents are data, not instructions. | Confirm findings from evidence; use sandbox/IAM/policy and CI, not prompt promises. |
-
-### Product check for existing projects
-
-Repeat the same **inspect → verify discovery → reuse → act → inspect diff → test** cycle in each surface. In VS Code, verify Session Target; in CLI sessions use that product's own context/instruction command:
-
-| Product | Before task | Configuration to inspect, not blindly create | Verify/use |
-|---|---|---|---|
-| VS Code + Copilot | Open correct repository/workspace; choose Copilot or Local harness and permissions. | `.github/copilot-instructions.md`, `.github/instructions/`, skills, agents, hooks, portable `.mcp.json`; Local-only prompt files. | Agent Customizations editor + References/debug logs; test one harmless representative task. |
-| Copilot CLI | Start at repo root; preserve Git state; inspect `/instructions`, `/skills list`, `/agent`, `/mcp`. | Root/nested instructions, `.github/agents`, supported skill directories, `.github/hooks`, `.mcp.json` / `.github/mcp.json`, personal `$COPILOT_HOME`. | Restart for custom agent/hook config changes where required; skills support `/skills reload`; inspect `/mcp` and actual tool activity. |
-| Codex CLI | Start `codex` at the intended directory; read actual project docs and current run configuration. | `AGENTS.md`/overrides; `.agents/skills`; `.codex/agents/*.toml`; `.codex/hooks.json` or `.codex/config.toml`; MCP in Codex `config.toml`. | Ask for loaded instructions; inspect `/skills`, `/agent`, `/hooks`, `/mcp`; review hook trust and parent sandbox/approval. |
-| Codex IDE / VS Code | Select Codex Session Target and open Codex panel; do not use Local settings as proof of Codex config. | Same Codex AGENTS/skills/agent TOML/hooks; Codex-host MCP configuration. | Test within Codex chat/activity, inspect diff in VS Code, verify product settings on the Codex host. |
-| Claude Code CLI | Start `claude` from repo root; `/context`; inspect permissions and `git status`. | `CLAUDE.md`, `.claude/rules/`, `.claude/skills`, `.claude/agents`, `.claude/settings*.json`, `.mcp.json`/Claude MCP scopes. | `/hooks`, `/skills`, `claude mcp list`; try the skill/subagent in read-only mode; inspect tool transcripts. |
-| Claude Code VS Code | Use Claude Code extension panel; review permission mode; confirm loaded project files in the session. | Same Claude-native files; the extension is distinct from the VS Code Copilot Local harness. | Review inline diff/tool calls; use `/context`, `/hooks`, skill invocation and MCP list in its session. |
-
-⚠️ **A shared `SKILL.md` format is not a shared permission model.** Copilot's `allowed-tools` can pre-approve tools; Claude's skill controls and subagent controls are Claude-specific; Codex skill `agents/openai.yaml` tool dependencies are not a permission allowlist. VS Code custom-agent `tools` selects a tool surface for that harness. See File 2 before changing any field.
-
-### 🛠️ Break/fix and final checkpoint
-
-In a disposable branch, rename or mis-scope one customization and ask the same harmless task. Diagnose using the selected product's discovery UI/command and logs; restore it, start/reload as that product requires, and repeat. Verify both that the intended customization applied and that forbidden actions did **not** occur. If AI configuration duplicates or contradicts team rules, remove the unnecessary copy and rerun the test.
-
-🏢 **Company:** check policy/IAM/branch protection, data handling, and owner approvals before connecting systems.
-🆕 **New project:** begin with a brief and a working baseline; introduce only evidenced stable guidance.
-🧱 **Legacy:** preserve undocumented behavior with characterization tests; avoid speculative refactoring.
-🚫 **Do not use parallel agents** for dependent questions, overlapping edits, migrations, deploys, or external mutations.
-🏋️ **Challenge:** choose a branch card, map actual repository configuration, and complete one ticket with only the required mechanism.
-🎓 **Checkpoint:** show ticket/branch, loaded configuration, true test results, full diff, and any actions that were deliberately not performed.
-
-## 🧾 Two-scenario completion checklist
-
-- [ ] I know which harness—not merely editor/model—is running.
-- [ ] I read actual repository, CI/test commands, branch, ticket, and existing AI files.
-- [ ] I used a normal prompt or brief before creating permanent configuration.
-- [ ] I can explain why an instruction, prompt, skill, agent, subagent, hook, MCP, or parallel worker is needed—or why it is not.
-- [ ] Any exact product path/field was checked in the relevant official product docs.
-- [ ] I observed discovery/invocation/tool activity in the selected runtime.
-- [ ] I checked permissions, sandbox, identity/IAM, and CI separately.
-- [ ] I reviewed the real diff, verified with actual commands, and removed unnecessary configuration.
-
-See **File 2 — Configure and Operate** for the exact product-specific setup and troubleshooting labs, and **File 3 — Real-Company Workbook** for the seven branch scenarios and end-to-end exercises.
-
----
-
-# 🧪 PRACTICAL PROJECT LADDER — KEEP BUILDING
-
-Each project is a small deliverable, not a reading assignment. Use a test repository and non-sensitive data. Record the actual commands, tool activity, outcomes, and blocked checks; the “done” column describes the evidence you should produce, not a prewritten claim that you passed.
-
-| # | Build this | Practical sequence | Done when |
-|---|---|---|---|
-| 1 | **AI codebase explorer** | Ask a coding harness for project map, one request path, tests, and CI; verify every cited file and one symbol. | A new developer can find the entry point and run the real test command without invented architecture. |
-| 2 | **C# LLM console app** | Create a console project; use an approved .NET SDK/client path and secret store; send one harmless request; handle missing config/API errors. | Actual request succeeds or failure is honestly diagnosed; no key is in source or logs. |
-| 3 | **Python LLM console app** | Create a virtual environment, install the documented client, read credentials from environment/secret store, send same harmless task. | Dependency/environment are isolated and the real result/error is captured. |
-| 4 | **Structured bug analyzer** | Define a C# record/schema, send a sanitized bug report, parse/validate response, reject malformed output. | Invalid or incomplete model output fails safely with a useful diagnostic. |
-| 5 | **Read-only function tool** | Expose one typed fake-data lookup; validate arguments and authorization; reject unknown IDs and malformed input. | An allowed lookup and a denied lookup have deterministic tested outcomes. |
-| 6 | **Local C# MCP server** | Follow current .NET/MCP SDK quickstart; expose one harmless tool; start locally; list/call with current SDK-compatible Inspector. | Valid and invalid tool requests are observed and server errors are understood. |
-| 7 | **VS Code MCP connection** | Configure the server for the selected harness using its exact schema; inspect trust and tool allowlist; query fake data. | Correct host discovers only intended tools; no production identity or secret is used. |
-| 8 | **Deterministic C# workflow vs agent** | Implement fixed steps as ordinary C#; prototype an agent only where intermediate model choices matter; compare failure paths. | Team can explain why any model-driven step is needed and tests protect exact logic. |
-| 9 | **Proven skill + reviewer** | Use a repeated procedure; create a product-specific skill, then a separate read-only reviewer only if role separation helps. | Both are discovered/invoked in their runtime; tool activity and diff confirm expected boundaries. |
-| 10 | **Small RAG app** | Ingest a handful of approved docs; preserve source metadata; retrieve, cite, and enforce authorization before answer generation. | Tests cover missing, stale, conflicting, unauthorized, and relevant evidence. |
-| 11 | **Build-failure investigator** | Parse logs deterministically; ask for evidence-backed diagnosis; do not execute generated commands automatically. | Every diagnosis points to actual log/source evidence and reports uncertainty. |
-| 12 | **Production-hardening review** | Add fixed evaluations, tracing with content redacted, timeouts, bounded retries, cost limits, human approvals and supply-chain review. | Threat/failure exercises produce observed denial, timeout and recovery evidence. |
-
-### 🧠 Keep context useful without making it a policy source
-
-Project notes, chat summaries, agent auto-memory, and durable instructions have different scopes and trust. Do not store secrets, customer data, or one-ticket assumptions as long-lived memory. If an agent-generated memory is available, inspect it before relying on it; compare every project fact to current source/CI. A memory file guides future model context; it does not enforce permissions or replace the project’s authoritative docs.
-
-### 🆘 Beginner rescue prompt
-
-Use this when a lesson is confusing; ask for one concept and a practical exercise rather than a wall of extra theory:
-
-```text
-I am a C# developer and a beginner in [topic].
-Explain only what I need to complete this exercise.
-Give me one analogy to ordinary .NET development, one current official
-documentation link, exact safe steps, expected output, common failures,
-one break/fix test, and three short checkpoint questions. Mark any
-version-dependent step. Do not claim commands were run.
-```
-
-### 🟢 Start today / this week
-
-**Today:** open a repository you may inspect; preserve its working tree; ask for a file-cited codebase map; independently verify one request path, one test, and the actual CI command. Do not add MCP or agent configuration.
-
-**This week:** complete one codebase map, one feature trace, one reproducible bug investigation, one test-design task, and one diff review. Use the real repository tests. Keep a short glossary in your own words. Do not connect production data or add permanent customizations before a repeated need is demonstrated.
-
-**After three months:** the target is practical fluency with C#/Python model calls, structured output, streaming/state, typed tools, MCP, agents vs workflows, skills/instructions, retrieval, evaluation/tracing, and security boundaries—not mastery of model training or every framework.
