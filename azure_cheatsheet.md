@@ -1,5 +1,7 @@
 # ☁️ Azure Engineering Cheat Sheet
 
+**🏷️ Difficulty:** 🟡 Intermediate → 🔴 Advanced (reference map — not a from-zero tutorial)
+
 > 🌈 **Fast decisions. Fast recall. Production-aware.**  
 > **Edition:** 2026-10-03  
 > **Purpose:** A true engineering cheat sheet for choosing, connecting, operating, and troubleshooting Azure services quickly.  
@@ -119,6 +121,22 @@ IaC + CI/CD make changes REPEATABLE.
 | 🛠️ Control plane | Create VM, change firewall, assign role | ARM + Azure RBAC |
 | 📦 Data plane | Read blob, query SQL, fetch secret | Service-specific data RBAC/auth |
 
+## 🧪 Try it yourself
+
+**Goal:** Map the picture (tenant → subscription → resource group → resources) onto a real subscription.
+
+```bash
+az account show --query "{subscription:name, tenant:tenantId}" -o table
+az group list --query "[].name" -o table
+az resource list -g <your-resource-group> --query "[].{name:name,type:type}" -o table
+```
+
+**👀 Expected result:** Your current subscription/tenant, the resource groups inside it, and the resources inside one group.
+
+**✅ Checkpoint:** Can you point at one returned resource and say whether its RBAC role assignment is control-plane or data-plane?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -167,6 +185,21 @@ az group list -o table
 az resource list -g <rg> -o table
 az provider show --namespace Microsoft.Web --query registrationState -o tsv
 ```
+
+## 🧪 Try it yourself
+
+**Goal:** Create and delete a resource group to see the lifecycle/ownership boundary in action.
+
+```bash
+az group create -n rg-lab-demo -l swedencentral
+az group show -n rg-lab-demo -o table
+```
+
+**👀 Expected result:** The resource group is created and shown with `provisioningState: Succeeded`.
+
+**✅ Checkpoint:** What ARM path (`/subscriptions/.../resourceGroups/...`) does this new group live at?
+
+**🧹 Clean up:** `az group delete -n rg-lab-demo --yes --no-wait`
 
 [⬆️ Back to TOC](#toc)
 
@@ -235,6 +268,21 @@ App Service / Function / VM / Container App
 - Management-plane `Owner` does not guarantee every data-plane permission.
 - Don't create a client secret just so the app can fetch another secret.
 
+## 🧪 Try it yourself
+
+**Goal:** Create a user-assigned managed identity and inspect its role assignments, then clean up.
+
+```bash
+az identity create -g <your-resource-group> -n <your-identity-name>
+az role assignment list --assignee $(az identity show -g <your-resource-group> -n <your-identity-name> --query principalId -o tsv) -o table
+```
+
+**👀 Expected result:** The identity is created with its own `principalId`, and the role assignment list is empty until you assign a role.
+
+**✅ Checkpoint:** Why would you use this identity on an App Service instead of storing a connection string with a key?
+
+**🧹 Clean up:** `az identity delete -g <your-resource-group> -n <your-identity-name>`
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -296,6 +344,21 @@ az network nic show-effective-route-table -g <rg> -n <nic>
 az network private-endpoint list -g <rg> -o table
 ```
 
+## 🧪 Try it yourself
+
+**Goal:** Walk the Private Endpoint troubleshooting order end-to-end on a real VNet/subnet.
+
+```bash
+az network vnet list -g <your-resource-group> -o table
+az network nsg rule list -g <your-resource-group> --nsg-name <your-nsg-name> -o table
+```
+
+**👀 Expected result:** Your VNet(s) listed, then the NSG rules controlling what traffic may pass on a given subnet.
+
+**✅ Checkpoint:** Which NSG rule (if any) would block inbound traffic to a private endpoint on that subnet?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -340,6 +403,21 @@ Private Endpoint = INBOUND private access to App Service
 - **Container Apps / AKS / ACI / App Service** run images.
 - Use **managed identity** for ACR pulls where supported.
 - Prefer immutable image digests/tags for production.
+
+## 🧪 Try it yourself
+
+**Goal:** Apply the compute decision table to real SKUs available to you right now.
+
+```bash
+az appservice plan list -o table
+az vm list-sizes --location swedencentral -o table | head -n 10
+```
+
+**👀 Expected result:** Any existing App Service plans (and their SKU), plus a list of real VM sizes available in that region.
+
+**✅ Checkpoint:** For "containerized app, low Kubernetes ops" from the table, which concrete Azure resource would you provision, and does it appear above?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
 
 [⬆️ Back to TOC](#toc)
 
@@ -388,6 +466,21 @@ Storage account keys
 ⚠️ Replication is **not backup**.  
 ⚠️ A Private Endpoint may need separate `blob`, `file`, `dfs`, etc. DNS/subresources depending on what you use.
 
+## 🧪 Try it yourself
+
+**Goal:** Create a storage account with ZRS redundancy, verify the setting, then clean up.
+
+```bash
+az storage account create -g <your-resource-group> -n <yourstorageacct> -l swedencentral --sku Standard_ZRS --kind StorageV2
+az storage account show -g <your-resource-group> -n <yourstorageacct> --query sku.name -o tsv
+```
+
+**👀 Expected result:** The command returns `Standard_ZRS`, confirming the account is zone-redundant.
+
+**✅ Checkpoint:** What's the practical difference between this ZRS account and if you'd chosen GRS instead?
+
+**🧹 Clean up:** `az storage account delete -g <your-resource-group> -n <yourstorageacct> --yes`
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -426,6 +519,22 @@ OS/full SQL control     → SQL Server on VM
 > [!WARNING]
 > Azure Cache for Redis is retiring. For new Azure Redis designs, start with **Azure Managed Redis** and verify the current migration/tier guidance.
 
+## 🧪 Try it yourself
+
+**Goal:** Inventory the database services already running before picking a new one.
+
+```bash
+az sql server list -o table
+az cosmosdb list --query "[].{name:name,kind:kind}" -o table
+az postgres flexible-server list -o table
+```
+
+**👀 Expected result:** Tables (possibly empty) of SQL servers, Cosmos DB accounts, and PostgreSQL flexible servers in the subscription.
+
+**✅ Checkpoint:** For a Cosmos DB account returned, can you find its configured partition key path with `az cosmosdb sql container show`?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -459,6 +568,21 @@ OS/full SQL control     → SQL Server on VM
 | Generic WebSocket pub/sub | Web PubSub |
 
 ⚠️ Never assume “exactly once end-to-end.” Design retries + idempotency + deduplication where business correctness requires it.
+
+## 🧪 Try it yourself
+
+**Goal:** Create a Service Bus queue, send/peek a message, then clean up — proving queue vs DLQ mentally.
+
+```bash
+az servicebus namespace create -g <your-resource-group> -n <your-sb-namespace> -l swedencentral --sku Basic
+az servicebus queue create -g <your-resource-group> --namespace-name <your-sb-namespace> -n demo-queue
+```
+
+**👀 Expected result:** A new Service Bus namespace and queue, visible in `az servicebus queue show`.
+
+**✅ Checkpoint:** Where would a message land if its lock expired 10 times in a row?
+
+**🧹 Clean up:** `az servicebus namespace delete -g <your-resource-group> -n <your-sb-namespace>`
 
 [⬆️ Back to TOC](#toc)
 
@@ -504,6 +628,23 @@ AppRequests
 
 Collect **what you can act on**. “Enable every log forever” is expensive and often useless.
 
+## 🧪 Try it yourself
+
+**Goal:** Run the KQL starter query for real against your own Log Analytics workspace.
+
+```bash
+az monitor log-analytics query \
+  -w <your-workspace-id> \
+  --analytics-query "AppRequests | where TimeGenerated > ago(1h) | summarize Requests=count(), Failures=countif(Success==false) by bin(TimeGenerated, 5m)" \
+  -o table
+```
+
+**👀 Expected result:** A time-bucketed table of request counts and failures for the last hour (empty if no telemetry exists yet).
+
+**✅ Checkpoint:** If `Failures` spikes in one bucket, what are your next two checks from the diagram above?
+
+**🧹 Clean up:** Nothing to clean up — read-only query.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -537,6 +678,21 @@ Identity → least privilege → secrets → network boundaries
 ✅ Centralized security telemetry.  
 ✅ Separate admin and workload identities.  
 ✅ Patch supported runtimes/OS.
+
+## 🧪 Try it yourself
+
+**Goal:** Check real Defender for Cloud posture instead of assuming it's enabled.
+
+```bash
+az security pricing list --query "[].{name:name,tier:pricingTier}" -o table
+az security secure-scores list -o table
+```
+
+**👀 Expected result:** Which Defender for Cloud plans (if any) are set to `Standard` vs `Free`, and the current secure score.
+
+**✅ Checkpoint:** Is any plan still on `Free` for a workload that actually needs the layered protection shown above?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
 
 [⬆️ Back to TOC](#toc)
 
@@ -587,6 +743,21 @@ Multi-region active/active
 > [!TIP]
 > A DR plan is only real after a **test failover/restore** proves applications, DNS, identities, networks, secrets, and dependencies all work.
 
+## 🧪 Try it yourself
+
+**Goal:** Check whether backup is actually configured, not merely assumed, for a resource.
+
+```bash
+az backup vault list -o table
+az backup item list --resource-group <your-resource-group> --vault-name <your-vault-name> -o table
+```
+
+**👀 Expected result:** Any Recovery Services vaults in the subscription, then the protected items inside a chosen vault.
+
+**✅ Checkpoint:** For your most critical resource, can you currently answer "when was it last backed up, and have we ever restored it"?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -624,6 +795,21 @@ az graph query -q "Resources | summarize count() by type | order by count_ desc"
 ```
 
 Example: `app-orders-prod-swc-001`
+
+## 🧪 Try it yourself
+
+**Goal:** Use Resource Graph to see your real estate instead of guessing its shape.
+
+```bash
+az graph query -q "PolicyResources | where type =='microsoft.authorization/policyassignments' | project name, properties.displayName" -o table
+az policy state list --query "[?complianceState=='NonCompliant'].{resource:resourceId,policy:policyDefinitionName}" -o table
+```
+
+**👀 Expected result:** A list of active policy assignments, then any non-compliant resources flagged against them.
+
+**✅ Checkpoint:** Pick one non-compliant resource — which Azure Policy definition is it violating, and why?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
 
 [⬆️ Back to TOC](#toc)
 
@@ -663,6 +849,20 @@ Compute runtime/capacity
 - Cross-region egress nobody modeled.
 - Premium SKUs selected for features not actually used.
 
+## 🧪 Try it yourself
+
+**Goal:** Pull real spend data instead of guessing where the cost levers are hurting you.
+
+```bash
+az consumption usage list --start-date 2025-01-01 --end-date 2025-01-31 --query "[].{instance:instanceName,cost:pretaxCost}" -o table
+```
+
+**👀 Expected result:** A line-item table of costs by resource for the date range (adjust dates to a real billing period).
+
+**✅ Checkpoint:** Which "common waste" bullet above best explains your single most expensive line item?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -699,6 +899,21 @@ PR → validate/lint → what-if/plan → approval → deploy → smoke test →
 ✅ CI/CD identity = workload federation/OIDC where possible.  
 ❌ Long-lived client secrets in pipeline variables.
 
+## 🧪 Try it yourself
+
+**Goal:** Run the safer deployment workflow's validate step on a real template.
+
+```bash
+az bicep build --file main.bicep
+az deployment group validate -g <your-resource-group> --template-file main.bicep --parameters environment=dev
+```
+
+**👀 Expected result:** `bicep build` compiles without errors; `validate` returns a success result describing what would be deployed, with no resources actually changed.
+
+**✅ Checkpoint:** Where in the "PR → validate → what-if → approval → deploy" pipeline would you insert this command?
+
+**🧹 Clean up:** Nothing to clean up — `validate` does not deploy anything.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -723,6 +938,22 @@ Lake files      → ADLS Gen2
 Batch pipelines → Data Factory / Databricks
 Telemetry       → Event Hubs → ADX / analytics
 ```
+
+## 🧪 Try it yourself
+
+**Goal:** Check which analytics services are actually provisioned before you reach for a new one.
+
+```bash
+az datafactory list -o table
+az synapse workspace list -o table
+az kusto cluster list -o table
+```
+
+**👀 Expected result:** Tables (possibly empty) listing any Data Factory, Synapse, or Azure Data Explorer resources in the subscription.
+
+**✅ Checkpoint:** If none exist yet, which one would you provision first for a "batch pipeline into a lakehouse" need?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
 
 [⬆️ Back to TOC](#toc)
 
@@ -758,6 +989,20 @@ User question → embed → retrieve ─┘
 🔐 Treat tool calls as privileged operations.  
 ⚠️ Prompt injection is an authorization/security problem, not just a prompting problem.
 
+## 🧪 Try it yourself
+
+**Goal:** Inventory the AI resources already deployed in a subscription.
+
+```bash
+az cognitiveservices account list --query "[].{name:name,kind:kind,location:location}" -o table
+```
+
+**👀 Expected result:** A table of any Azure OpenAI / Foundry / AI Search / Document Intelligence accounts, with their `kind` field telling you which service each one is.
+
+**✅ Checkpoint:** Can you map each returned `kind` value to a row in the "Need → Start with" table above?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -780,6 +1025,21 @@ User question → embed → retrieve ─┘
 
 > [!TIP]
 > Migration is not modernization. A successful lift-and-shift should usually be followed by cost, reliability, security, and platform-fit review.
+
+## 🧪 Try it yourself
+
+**Goal:** See what Arc-connected (non-Azure) machines/clusters look like from inside Azure.
+
+```bash
+az connectedmachine list -o table
+az connectedk8s list -o table
+```
+
+**👀 Expected result:** Either a table of Arc-enabled servers/Kubernetes clusters, or an empty result if none are onboarded yet in this subscription.
+
+**✅ Checkpoint:** Can you explain the difference between a VM "in Azure" and a server "managed by Azure via Arc"?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
 
 [⬆️ Back to TOC](#toc)
 
@@ -827,6 +1087,21 @@ User question → embed → retrieve ─┘
 | Distributed NoSQL | Cosmos DB |
 | Cache | Azure Managed Redis |
 
+## 🧪 Try it yourself
+
+**Goal:** Turn the "which compute?" decision row into a real comparison of what's actually available to you.
+
+```bash
+az appservice list-locations --sku P1v3 --linux-workers-enabled -o table
+az vm list-skus --location swedencentral --size Standard_D --output table | head -n 10
+```
+
+**👀 Expected result:** Real SKU names/tiers for App Service and VMs in your target region, not just the generic decision-table labels.
+
+**✅ Checkpoint:** For your next workload, which row of the decision table applies, and which concrete SKU backs it in this region?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -872,6 +1147,23 @@ Private DNS → Private Endpoint → SQL / Storage / Key Vault
 - Cache-aside.
 - Publisher/subscriber.
 - Health endpoint that checks meaningful readiness, not merely “process alive”.
+
+## 🧪 Try it yourself
+
+**Goal:** Validate a Web/API + database topology deployment without actually deploying it.
+
+```bash
+az deployment group what-if \
+  --resource-group <your-resource-group> \
+  --template-file main.bicep \
+  --parameters appName=orders environment=dev
+```
+
+**👀 Expected result:** A color-coded plan showing which resources (App Service, SQL, Key Vault, App Insights) would be created/modified/left unchanged.
+
+**✅ Checkpoint:** Does the what-if output match the Web/API + database diagram above — one App Service node fanning out to SQL, Key Vault, and App Insights?
+
+**🧹 Clean up:** Nothing to clean up — `what-if` never deploys anything.
 
 [⬆️ Back to TOC](#toc)
 
@@ -921,6 +1213,22 @@ az graph query -q "Resources | summarize count() by type"
 | Log Analytics | `log` |
 | Application Insights | `appi` |
 
+## 🧪 Try it yourself
+
+**Goal:** Chain several quick-reference commands into one real inventory pass.
+
+```bash
+az account show -o table
+az group list --query "[].name" -o table
+az resource list -g <your-resource-group> --query "[].{name:name,type:type}" -o table
+```
+
+**👀 Expected result:** Your active subscription, all resource groups, then every resource and its type in one group.
+
+**✅ Checkpoint:** Could you now rebuild this resource group's naming convention table from what you saw?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -960,6 +1268,20 @@ Microsoft's Well-Architected Framework uses five pillars: **Reliability, Securit
 - [ ] Autoscale tied to meaningful signals.
 - [ ] DB/storage/VM throughput limits understood.
 - [ ] Caching used only where it improves measured bottlenecks.
+
+## 🧪 Try it yourself
+
+**Goal:** Pull real recommendations against the five WAF pillars instead of guessing gaps.
+
+```bash
+az advisor recommendation list --query "[].{category:category,impact:impact,problem:shortDescription.problem}" -o table
+```
+
+**👀 Expected result:** A table of Advisor findings grouped by category (Cost, Security, Reliability, OperationalExcellence, Performance).
+
+**✅ Checkpoint:** Pick one `High` impact finding — which checklist box above does it map to?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
 
 [⬆️ Back to TOC](#toc)
 
@@ -1003,6 +1325,21 @@ nslookup hostname
 4. Azure Status for broad context.
 5. Support ticket if needed.
 
+## 🧪 Try it yourself
+
+**Goal:** Practice the "first five checks" triage flow on a resource you own.
+
+```bash
+az resource list -g <your-resource-group> --query "[].{name:name,changedTime:changedTime}" -o table
+az monitor activity-log list -g <your-resource-group> --offset 1d -o table
+```
+
+**👀 Expected result:** A list of recent control-plane changes in that resource group over the last day.
+
+**✅ Checkpoint:** If something broke right now, could you name the most recent change from this output as suspect #1?
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -1035,6 +1372,20 @@ Check Microsoft Learn retirement page
 → Remove old resource only after verification
 ```
 
+## 🧪 Try it yourself
+
+**Goal:** Confirm a fact live instead of trusting memory, using quota as the example.
+
+```bash
+az vm list-usage --location "swedencentral" -o table
+```
+
+**👀 Expected result:** A table of compute quota families with `CurrentValue` vs `Limit` for that region, right now — not a remembered number.
+
+**✅ Checkpoint:** Could your current value vs limit block a deployment you're planning this week?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
+
 [⬆️ Back to TOC](#toc)
 
 ---
@@ -1056,6 +1407,20 @@ Check Microsoft Learn retirement page
 | Policy | https://learn.microsoft.com/azure/governance/policy/ |
 | Bicep | https://learn.microsoft.com/azure/azure-resource-manager/bicep/ |
 | Microsoft Foundry | https://learn.microsoft.com/azure/ai-foundry/what-is-azure-ai-foundry |
+
+## 🧪 Try it yourself
+
+**Goal:** Practice treating Microsoft Learn as the source of truth instead of memory.
+
+```bash
+az provider show --namespace Microsoft.Web --query "resourceTypes[?resourceType=='sites'].apiVersions[0]" -o tsv
+```
+
+**👀 Expected result:** An API version string (e.g. `2023-12-01`) straight from the live platform, not from a cached memory of docs.
+
+**✅ Checkpoint:** Can you explain why this command is more trustworthy than citing an API version from memory?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
 
 ---
 

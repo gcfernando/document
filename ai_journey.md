@@ -1,5 +1,7 @@
 # 📘 AI Engineering from Zero: Learn by Building
 
+**🏷️ Difficulty:** 🟡 Intermediate → 🔴 Advanced
+
 > A workshop-first course for professional .NET/C# developers who are new to AI engineering.
 >
 > **This book teaches concepts and small builds.** For exact product-specific customization paths and schemas, use [the configuration handbook](deep-research-report.md#choose-product). For choosing the right mechanism in company work, use [the company workbook](end_to_end_ai_agent_graphql_workflow.md#workbook-path).
@@ -621,6 +623,9 @@ Agent = model + instructions + tools + context/state + runtime policy
 Workflow = explicit orchestration; may call models/agents as steps
 ```
 
+> [!TIP]
+> Want to build a multi-tool agent and a multi-agent orchestrator yourself, fully locally, before using a managed framework? **[Building Agents & Multi-Agent Systems](agents_and_subagents_lab.md)** builds the single-tool loop, tool routing, conversation state, failure handling, a human-approval gate, and an orchestrator with specialist sub-agents as seven sequential labs using the Ollama setup from this course — then this section's cloud lab shows the same loop with a provider's native tool-calling API and Microsoft Agent Framework.
+
 ## Workshop: support triage
 
 Build deterministic intake, schema validation, and routing. Let an LLM propose a category and summary. Require a human for low-confidence or sensitive tickets. Use a workflow to enforce the steps; do not allow the model to grant refunds or change access.
@@ -713,7 +718,30 @@ This section concerns your development assistant, not BuildDesk's application ag
 
 The authoritative mechanism decision card and exact product formats live in the [configuration handbook](deep-research-report.md#handbook-decisions). To practice, follow one [product route](deep-research-report.md#choose-product), then one [workbook ticket](end_to_end_ai_agent_graphql_workflow.md#existing-project). Do not create every customization to complete this course.
 
-**Checkpoint:** explain the repeated problem, why ordinary code/CI or a normal prompt is insufficient, the chosen runtime, discovery/invocation evidence, and the technical permission boundary. If no repeated need exists, add nothing.
+## 🧪 Hands-on: create and verify one real customization
+
+Pick whichever coding assistant/CLI you actually use day to day. Create the **smallest** customization artifact it supports, then prove the tool actually loaded it — a file that only exists on disk and was never exercised is not a verified customization.
+
+1. Pick one repeated annoyance from your own recent sessions (for example: "it keeps suggesting `var` where this repo requires explicit types").
+2. Create the smallest artifact your tool supports for that rule — pick whichever applies:
+   ```text
+   # repository-wide instructions (many tools read this convention)
+   .github/copilot-instructions.md
+
+   # or a one-line path-scoped instruction
+   .github/instructions/csharp-style.instructions.md
+
+   # or a tiny single-procedure skill
+   .github/skills/my-skill/SKILL.md
+   ```
+3. Write one concrete, checkable rule — not a vague preference:
+   ```markdown
+   Always use explicit types instead of `var` in C# files under src/.
+   ```
+4. Start a **new** session (most tools do not hot-reload instruction files into an already-running session) and ask the assistant to list or inspect the instructions/skills it discovered (for example `/instructions`, `copilot instruction list`, or the tool's equivalent command).
+5. Ask a small on-topic question in that repository and confirm the new rule is reflected in the response or discovery listing — not merely that the file exists.
+
+**Checkpoint:** explain the repeated problem, why ordinary code/CI or a normal prompt is insufficient, the chosen runtime, discovery/invocation evidence (the exact command/output showing the tool loaded your artifact), and the technical permission boundary. If no repeated need exists, add nothing.
 
 ---
 
@@ -731,6 +759,9 @@ question → retrieve/filter/rank → evidence context → answer + citations
 ```
 
 RAG does not retrain the model. It supplies retrieved context at query time.
+
+> [!TIP]
+> Want to build the embeddings/vector-search part yourself, locally, before touching a framework? **[RAG From Scratch: Embeddings & Retrieval Lab](rag_embeddings_lab.md)** walks through chunking, embedding, cosine similarity, storage, retrieval, citations, and evaluation as ten sequential labs using the Ollama setup from this course. Do it before or after this section — it fills in exactly the part this workshop starts with a keyword baseline and then defers to the .NET quickstart below.
 
 ## 🧪 Workshop
 
@@ -865,6 +896,40 @@ These are applied exercises, not prerequisite theory chapters.
 | Background work | Use a documented background job/polling API for a long request; test cancellation and partial failure | A normal bounded request meets latency needs |
 
 The Microsoft Agent Framework, Semantic Kernel, provider APIs, model names, and local runtimes change. Use their current official migration/quickstart pages and keep experimental features clearly marked.
+
+## 🧪 Lab — local-model few-shot calibration (chains Sections 10 and 11)
+
+This picks the **local model** row above and reuses the fixed `eval/tickets.jsonl` regression set from Section 11 instead of a new dataset, so you're applying an advanced technique to evidence you already have rather than vibes.
+
+### 🎯 Goal
+
+Show, with your own fixed eval set and local Ollama models, whether adding a few labeled examples to the prompt ("few-shot") measurably improves classification accuracy over a bare zero-shot prompt — without any weight updates. This is the smallest honest step toward "fine-tuning" territory: calibrate the prompt against a held-out set before ever considering an actual training run.
+
+### 🧩 Problem
+
+Teams often jump to "let's fine-tune a model" the moment zero-shot accuracy looks weak, without first measuring whether better-chosen examples in the prompt close the gap. Fine-tuning has a real cost (data, training run, versioning, re-evaluation). Prompt calibration costs one script.
+
+### Steps
+
+1. Reuse (or recreate) `eval/tickets.jsonl` from Section 11 — ten fixed, non-sensitive support-ticket cases, each with `text` and an `expected_category` field.
+2. Pull a small local model if you don't already have one: `ollama pull llama3.2:3b`.
+3. Create `notes/calibration/zero_shot.py` (or the language of your choice) that, for every case, sends only the ticket text and a category list to `http://localhost:11434/api/generate`, parses the returned category, and records pass/fail against `expected_category`.
+4. Create `notes/calibration/few_shot.py`: same loop, but prepend 3 labeled examples (different from the ten test cases) to every prompt.
+5. Run both scripts against the same ten cases and the same model/tag. Record a table:
+   ```text
+   case | expected | zero-shot actual | zero-shot pass | few-shot actual | few-shot pass
+   ```
+6. Compute pass-rate for each approach. Re-run once to confirm results are not noise from sampling/temperature.
+
+### Expected result
+
+Few-shot pass-rate is usually equal to or higher than zero-shot on small local models; record the actual numbers rather than assuming an outcome. If few-shot does **not** help, that is still a valid, useful result — it means the failure is not an examples-in-prompt problem and justifies escalating toward retrieval, better instructions, or (only then) a real fine-tune workflow.
+
+### 💣 Break-it
+
+Shuffle the expected-category labels for the eval set and confirm pass-rate collapses toward chance — this proves your scoring script is actually comparing content, not silently always passing.
+
+**Checkpoint:** state the goal, the zero-shot vs few-shot pass-rate numbers for your ten cases, which model/tag you used, whether the result justifies stopping here (per the "Stop if" column above) or escalating to retrieval/tools/real fine-tuning, and the break-it result proving your scoring is honest.
 
 ---
 

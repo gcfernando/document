@@ -1334,6 +1334,36 @@ Think of it like converting a letter into Morse code before sending it over tele
 
 </details>
 
+### 🧪 Exercise
+
+Write a `Resource` class that ties together construction and representation:
+
+1. `__new__` rejects an empty `name` with `ValueError` *before* the instance is created (so `__init__` never runs on bad input);
+2. `__init__` stores `name` and `size_mb`;
+3. `__init_subclass__` records every subclass in a class-level `Resource.registry` list automatically, keyed by class name;
+4. `__repr__` returns something that looks like the constructor call, e.g. `Resource(name='db-backup', size_mb=512)`;
+5. `__str__` returns a friendly one-liner, e.g. `"db-backup (512 MB)"`;
+6. `__format__` supports an empty spec (same as `str()`) and a `'b'` spec showing the size in bytes instead of megabytes;
+7. `__bytes__` returns `name` encoded as UTF-8.
+
+```text
+class Dataset(Resource):
+    pass
+
+print(Resource.registry)              # ['Dataset']
+r = Dataset("db-backup", 512)
+print(repr(r))                        # Dataset(name='db-backup', size_mb=512)
+print(str(r))                         # db-backup (512 MB)
+print(f"{r:b}")                       # 536870912 bytes
+print(bytes(r))                       # b'db-backup'
+
+try:
+    Resource("", 10)
+except ValueError as e:
+    print(e)                          # name must not be empty
+```
+
+*Hint:* `__new__` receives the same arguments as `__init__`; validate there and call `super().__new__(cls)`. `__init_subclass__` is a classmethod Python calls automatically whenever a subclass is defined — append `cls.__name__` to a registry list stored on the base class. Solution in [Exercise Solutions](#-exercise-solutions).
 
 ---
 
@@ -1932,6 +1962,26 @@ Note `Version(1, 2, 3) < Version(1, 10, 0)` is `True`: fields compare as a tuple
 | Ordering is "compare these fields in this order" | `@dataclass(order=True)` |
 | Ordering is a custom rule, and you want all four operators | `@total_ordering` + `__eq__` + `__lt__` |
 | You only need sorting, not the operators | `sorted(key=...)` — no dunder at all |
+
+### 🧪 Exercise
+
+Write a `Task` class with `priority` (int, higher = more urgent) and `name` (str) that supports full ordering:
+
+1. Define `__eq__` and `__lt__` comparing by `priority` only, and decorate the class with `@functools.total_ordering` so `<=`, `>`, and `>=` come for free;
+2. When two tasks share a priority, `Task` should still be comparable — it should not raise;
+3. Verify that `sorted()`, `min()`, and `max()` all work and that `__ne__` is automatically the opposite of `__eq__`.
+
+```text
+tasks = [Task(2, "email"), Task(5, "deploy"), Task(2, "review")]
+print(sorted(tasks, reverse=True))  # [Task(5, deploy), Task(2, email), Task(2, review)]
+print(min(tasks))                   # Task(2, email) or Task(2, review) — either is correct
+print(Task(2, "x") <= Task(5, "y")) # True
+print(Task(2, "x") != Task(2, "y")) # False — same priority
+```
+
+Then write the same class a second way using `@dataclass(order=True)` with `priority` first and `name` second in field order, and confirm it sorts identically for distinct priorities but *additionally* breaks ties by `name` — something the hand-written version above does not do.
+
+*Hint:* `functools.total_ordering` needs `__eq__` plus exactly one of `__lt__`/`__le__`/`__gt__`/`__ge__`; it derives the rest. Solution in [Exercise Solutions](#-exercise-solutions).
 
 ---
 
@@ -3177,6 +3227,35 @@ print(f)   # 0b1011
 >
 > **Best practices.** Keep these operators **pure**: readers assume arithmetic has no side effects. If a rounding method is defined, make sure it agrees with the type's other numeric behaviour. For flag-like types, prefer the standard library's `enum.Flag` over hand-rolled bitwise classes — it gives you the operators, the naming, and a sensible `repr` for free.
 
+### 🧪 Exercise
+
+Write a `Vector2D` class holding `x` and `y` (floats) that exercises the full numeric-operator family:
+
+1. `__add__`/`__sub__` return a new `Vector2D` (component-wise), guarding the operand type and returning `NotImplemented` for anything else;
+2. `__mul__` supports multiplying by a plain number (scalar scaling) — and so does `__rmul__`, so `2 * v` and `v * 2` both work;
+3. `__eq__` and `__neg__` so `-v` flips both components and `v == Vector2D(-v.x, -v.y)` behaves as expected after negation;
+4. `__abs__` returns the vector's length (`math.hypot(x, y)`);
+5. an in-place `__iadd__` that mutates `self` and returns it, so `+=` avoids allocating a new object;
+6. a reflected `__radd__` so `sum([v1, v2], Vector2D(0, 0))` works, because `sum` starts by computing `0 + v1`.
+
+```text
+v1, v2 = Vector2D(1, 2), Vector2D(3, 4)
+print(v1 + v2)          # Vector2D(4, 6)
+print(2 * v1)           # Vector2D(2, 4)
+print(v1 * 2)           # Vector2D(2, 4)
+print(abs(Vector2D(3, 4)))   # 5.0
+print(-v1 == Vector2D(-1, -2))  # True
+
+v1 += v2
+print(v1)               # Vector2D(4, 6) — same object, mutated
+
+try:
+    v1 + "nope"
+except TypeError as e:
+    print(e)             # unsupported operand type(s) for +: 'Vector2D' and 'str'
+```
+
+*Hint:* for step 2, Python tries `__mul__` on the left operand first; when that returns `NotImplemented` (because the other side isn't a `Vector2D`), it tries `__rmul__` on the right operand. For step 6, `__radd__` is only tried when the left operand's `__add__` doesn't know what to do with a `Vector2D` — which is exactly the case for `int.__add__(0, v1)`. Solution in [Exercise Solutions](#-exercise-solutions).
 
 ---
 
@@ -3803,6 +3882,32 @@ False
 ```
 
 Without `__contains__`, answering this would require generating a million values. This is exactly how the built-in `range` behaves: `999_999 in range(1_000_000)` is instant, because `range.__contains__` does arithmetic instead of iterating.
+
+### 🧪 Exercise
+
+Write a `Playlist` class wrapping a list of song titles that exercises conversion and the container protocol together:
+
+1. `__len__` returns the number of songs, and `__bool__` is *not* defined separately — confirm that `if Playlist([]):` is already `False` because Python falls back to `__len__`;
+2. `__getitem__` supports both a single integer index and a slice (slicing should return a plain `list`, not a `Playlist`);
+3. `__setitem__` and `__delitem__` let callers replace or remove a song by index;
+4. `__contains__` does a case-insensitive check instead of the default exact-match scan;
+5. `__index__` is defined on a separate small `TrackNumber` class so a `TrackNumber` instance can be used directly as a list index (`playlist[TrackNumber(2)]`).
+
+```text
+p = Playlist(["Imagine", "Yesterday", "Hey Jude"])
+print(len(p), bool(p))        # 3 True
+print(bool(Playlist([])))     # False
+print(p[1])                   # Yesterday
+print(p[0:2])                 # ['Imagine', 'Yesterday']  (a plain list)
+print("hey jude" in p)        # True — case-insensitive
+p[0] = "Let It Be"
+del p[2]
+print(list(p))                # ['Let It Be', 'Yesterday']
+
+print(p[TrackNumber(1)])      # Yesterday — TrackNumber used as an index
+```
+
+*Hint:* `__getitem__` receives either an `int` or a `slice` object — check with `isinstance(key, slice)` and branch. `__index__` must return a plain `int`; once it does, any code that calls `operator.index()` (including list indexing and slicing) accepts your object. Solution in [Exercise Solutions](#-exercise-solutions).
 
 ---
 
@@ -4511,6 +4616,41 @@ asyncio.run(main())
 
 </details>
 
+### 🧪 Exercise
+
+Write a `RateLimiter` that combines `__call__` with an **async** context manager:
+
+1. `RateLimiter(max_calls)` is constructed with a budget and tracks how many times it has been invoked;
+2. `__call__(self, fn)` makes the instance usable as a **decorator**: wrap `fn` so each call increments a counter and raises `RuntimeError` once `max_calls` is exceeded;
+3. `__aenter__` resets the counter to `0` and prints `"budget reset"`; `__aexit__` prints how many calls were made and — importantly — returns a falsy value so a real error inside the block still propagates.
+
+```text
+import asyncio
+
+limiter = RateLimiter(max_calls=2)
+
+@limiter
+def ping():
+    return "pong"
+
+async def main():
+    async with limiter:
+        print(ping())       # pong
+        print(ping())       # pong
+        try:
+            print(ping())   # raises — budget exceeded
+        except RuntimeError as e:
+            print(e)        # rate limit exceeded (2/2)
+
+asyncio.run(main())
+# budget reset
+# pong
+# pong
+# rate limit exceeded (2/2)
+# calls made: 2
+```
+
+*Hint:* `__call__` here wraps a function and returns a new function (much like a decorator), so store the original `fn` and the limiter's state in a closure or on `self`. `__aenter__`/`__aexit__` must be defined with `async def` even though neither does real I/O. Solution in [Exercise Solutions](#-exercise-solutions).
 
 ---
 
@@ -5112,6 +5252,31 @@ This is how form-validation libraries and database ORMs (like Django's models) e
 
 </details>
 
+### 🧪 Exercise
+
+Write a `PositiveNumber` descriptor and a `Sensor` class that uses it, exercising both descriptors and the attribute-access hooks:
+
+1. `PositiveNumber` implements `__set_name__` (to remember the attribute's name), `__get__` (returning the stored value, or itself when accessed on the class, i.e. `Sensor.reading` returns the descriptor object), and `__set__` (raising `ValueError` for a non-positive value);
+2. `Sensor` uses `__slots__` for `_reading` plus whatever the descriptor needs — no free-form `__dict__`;
+3. `Sensor.__getattr__` provides a fallback: accessing `sensor.reading_fahrenheit` computes it from `reading` on the fly, without storing it;
+4. `Sensor.__dir__` is overridden so `dir(sensor)` also lists `"reading_fahrenheit"` even though it is not a real attribute.
+
+```text
+s = Sensor()
+s.reading = 20
+print(s.reading)               # 20
+print(s.reading_fahrenheit)    # 68.0
+
+try:
+    s.reading = -5
+except ValueError as e:
+    print(e)                   # reading must be positive, got -5
+
+print("reading_fahrenheit" in dir(s))   # True
+print(type(Sensor.reading).__name__)    # PositiveNumber — class access returns the descriptor
+```
+
+*Hint:* a descriptor's `__get__(self, obj, objtype=None)` receives `obj=None` when accessed on the class itself — return `self` in that case. `__getattr__` only fires for names Python could not find any other way, which is exactly why it is the right place for a *computed* attribute like `reading_fahrenheit`. Solution in [Exercise Solutions](#-exercise-solutions).
 
 ---
 
@@ -5240,12 +5405,68 @@ Normally `MyClass[X]` would be an error. But if you define `__class_getitem__`, 
 ### 🔍 When to use it
 Rare — used when a class is not a proper class but should still work in an inheritance list. Safe to skip.
 
+### 💻 How to use it
+
+```python
+class GenericAlias:
+    """A stand-in object that is *not* itself a class."""
+    def __init__(self, origin):
+        self.origin = origin
+
+    def __mro_entries__(self, bases):
+        return (self.origin,)     # substitute a real base class
+
+alias = GenericAlias(dict)
+
+class Config(alias):              # `alias` is not a class — Python asks it what to use instead
+    pass
+
+print(Config.__mro__)
+print(isinstance(Config(), dict))
+```
+
+**Expected output:**
+
+```
+(<class '__main__.Config'>, <class 'dict'>, <class 'object'>)
+True
+```
+
+This is exactly the mechanism behind `typing.Generic[T]`: `Generic[T]` is not a class, but its `__mro_entries__` substitutes plain `Generic` so `class Box(Generic[T]):` works at runtime.
+
 ---
 
 ## 95. `__prepare__` — Metaclass Namespace Preparation
 
 ### 🔍 When to use it
 Very advanced. Used inside metaclasses to control how the class body's namespace is built. Almost no one writes this. Safe to skip.
+
+### 💻 How to use it
+
+```python
+class RecordingMeta(type):
+    @classmethod
+    def __prepare__(mcs, name, bases):
+        print(f"preparing namespace for {name}")
+        return {}                  # any mapping; dict keeps insertion order already
+
+    def __new__(mcs, name, bases, namespace):
+        print("namespace keys:", list(namespace))
+        return super().__new__(mcs, name, bases, namespace)
+
+class Thing(metaclass=RecordingMeta):
+    a = 1
+    b = 2
+```
+
+**Expected output** (Python 3.13+ also injects `__firstlineno__` and `__static_attributes__` into every class namespace, so the exact key list is version-dependent; `'a'` and `'b'` are always there):
+
+```
+preparing namespace for Thing
+namespace keys: ['__module__', '__qualname__', 'a', 'b']
+```
+
+`__prepare__` runs *before* the class body executes, so the mapping it returns is what `a = 1` and `b = 2` are actually assigned into.
 
 > ### 🧭 In practice — class and metaclass machinery
 >
@@ -5298,6 +5519,43 @@ class MyAwaitable:
 
 ### 🧒 In Plain English
 Very advanced. In everyday async code, you'd just write `async def my_task():` and use `await`. Only library authors define `__await__` themselves.
+
+### 🧪 Exercise
+
+Write a small duck-typed "shape" plugin system that exercises the class/metaclass family:
+
+1. Define an abstract base `Drawable(abc.ABC)` and give it a `__subclasshook__` that makes `issubclass(X, Drawable)` (and therefore `isinstance`) return `True` for **any** class that defines a `draw()` method — whether or not it inherits from `Drawable`. (`__subclasshook__` is only consulted for classes built on `abc.ABCMeta`, which is what `abc.ABC` provides.)
+2. Define a metaclass `RegistryMeta` with `__instancecheck__`, and a class `PluginRegistry(metaclass=RegistryMeta)` holding a class-level `allowed = ["Circle"]` list, so that `isinstance(x, PluginRegistry)` is `True` only when `type(x).__name__` is in `allowed` — regardless of actual inheritance;
+3. Give a `TypedBox` class a `__class_getitem__` so `TypedBox[int]` returns a descriptive string like `"TypedBox[int]"` instead of raising `TypeError: 'type' object is not subscriptable`;
+4. Write a tiny custom awaitable (reusing the `__await__` pattern above) and confirm it works inside `asyncio.run(...)`.
+
+```text
+class Circle:
+    def draw(self):
+        return "o"
+
+print(issubclass(Circle, Drawable))     # True — never inherited from Drawable
+print(isinstance(Circle(), Drawable))   # True
+
+print(TypedBox[int])                    # TypedBox[int]
+
+print(isinstance(Circle(), PluginRegistry))  # True  — 'Circle' is in PluginRegistry.allowed
+print(isinstance(3, PluginRegistry))         # False — 'int' is not
+
+import asyncio
+
+class Ping:
+    def __await__(self):
+        yield
+        return "pong"
+
+async def main():
+    print(await Ping())
+
+asyncio.run(main())                     # pong
+```
+
+*Hint:* `__subclasshook__` is a classmethod that returns `True`, `False`, or `NotImplemented`; return `NotImplemented` for classes you don't recognise so normal inheritance checks still apply. `__instancecheck__` must live on the **metaclass** of the class passed as `isinstance`'s second argument — defining it directly on `PluginRegistry` would never be consulted. Solution in [Exercise Solutions](#-exercise-solutions).
 
 ---
 
@@ -5522,6 +5780,44 @@ The advanced version of `__getstate__`/`__setstate__`. Gives you full control ov
 ### 🔍 When to use them
 Very rarely. Only when the default pickling behavior can't handle your object (like objects with unusual construction).
 
+### 💻 How to use it
+
+```python
+import pickle
+
+class Point:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+
+    def __reduce__(self):
+        # (callable, args-tuple) — pickle rebuilds the object as callable(*args)
+        return (Point, (self.x, self.y))
+
+p = pickle.loads(pickle.dumps(Point(3, 4)))
+print(p.x, p.y)
+
+
+class Versioned:
+    def __init__(self, value):
+        self.value = value
+
+    def __reduce_ex__(self, protocol):
+        # `protocol` is the pickle protocol version in use — rarely needed in practice
+        return (self.__class__, (self.value,))
+
+v = pickle.loads(pickle.dumps(Versioned(42), protocol=4))
+print(v.value)
+```
+
+**Expected output:**
+
+```
+3 4
+42
+```
+
+`object` already provides a default `__reduce_ex__` that calls `__reduce__` for you, which is why most classes never need either — `__getstate__`/`__setstate__` (Entries 101–102) cover almost every real case with far less code.
+
 ---
 
 # 🗂️ PART S: Path-Like Objects
@@ -5571,6 +5867,40 @@ Without `__fspath__`, you'd have to write `open(p.path)`. With it, you can just 
 >
 > **Best practices.** Know the difference between shallow and deep copying and be explicit about which your type needs: a shallow copy **shares** the nested objects, which is very often not what “copy” meant to the caller. Prefer `__fspath__` to a `str()` conversion, because it is the protocol the whole standard library actually checks for.
 
+### 🧪 Exercise
+
+Write a `Deck` class (a mutable list of `cards`) that exercises async iteration, copying, pickling, and the path protocol together:
+
+1. `__aiter__`/`__anext__` let `async for card in deck:` deal one card per "tick" (use `await asyncio.sleep(0)` to simulate a real I/O wait) and raise `StopAsyncIteration` when the deck is empty;
+2. `__copy__` returns a new `Deck` sharing the *same* `cards` list object (a genuine shallow copy — mutating one's cards affects the other);
+3. `__deepcopy__` returns a new `Deck` with an independent copy of `cards`, using `copy.deepcopy` on nested data so mutating one never affects the other;
+4. `__getstate__`/`__setstate__` exclude a non-picklable `shuffle_rng` attribute (pretend it's a live object such as a thread or socket) from pickling and recreate a fresh one on load;
+5. A companion `DeckFile` class implements `__fspath__` so `open(DeckFile("deck.txt"))` works without manual `str()` conversion.
+
+```text
+import asyncio, copy, pickle
+
+async def deal_all(deck):
+    async for card in deck:
+        print(card)
+
+d1 = Deck(["A", "K", "Q"])
+asyncio.run(deal_all(d1))      # A / K / Q  (printed one per simulated tick; drains d1.cards)
+
+d2 = Deck(["A", "K", "Q"])     # a fresh, untouched deck for the copy/pickle checks
+shallow = copy.copy(d2)
+deep = copy.deepcopy(d2)
+shallow.cards.append("J")
+print("J" in d2.cards)    # True  — shallow copy shares the list
+print("J" in deep.cards)  # False — deep copy does not
+
+data = pickle.dumps(d2)
+restored = pickle.loads(data)
+print(restored.cards)              # ['A', 'K', 'Q', 'J']  — the shared-list append above is included
+print(restored.shuffle_rng is not None)  # True — rebuilt fresh, not the pickled one
+```
+
+*Hint:* `__anext__` must be an `async def` and raise `StopAsyncIteration` (not `StopIteration`) when exhausted. Deal from `d1` directly rather than a copy of it — dealing through a shallow copy would drain `d1.cards` too, since the copy shares the same list object. For the shallow/deep split, only `cards` needs special handling in `__deepcopy__`; everything else can be copied with the ordinary `copy` module helpers. Solution in [Exercise Solutions](#-exercise-solutions).
 
 ---
 
@@ -6880,6 +7210,30 @@ print(ref())   # None — the weak reference "knows" it's dead
 ### ⚠️ Note
 `__weakref__` is a slot that Python creates automatically on most classes. You rarely touch it directly — you just use the `weakref` module.
 
+### 🧪 Exercise
+
+Write a tiny plugin-loading script that exercises module, package, and introspection attributes together:
+
+1. In a module-level script (or a string executed with `exec` in its own namespace), print `__name__` and confirm it is `"__main__"` when run directly;
+2. Define a class `Plugin` and, from an **instance**, print `instance.__class__.__module__` and `instance.__class__.__qualname__`;
+3. Define a subclass `LoggingPlugin(Plugin)` and print `LoggingPlugin.__bases__` and `LoggingPlugin.__mro__`, confirming `Plugin` and `object` both appear;
+4. Call `Plugin.__subclasses__()` and confirm `LoggingPlugin` shows up only *after* it has been defined — not before;
+5. Create an instance of `Plugin`, take a `weakref.ref` to it, delete the original, and confirm the weak reference now returns `None`.
+
+```text
+print(__name__)                          # __main__ (when run as a script)
+print(LoggingPlugin.__bases__)           # (<class '...Plugin'>,)
+print([c.__name__ for c in LoggingPlugin.__mro__])  # ['LoggingPlugin', 'Plugin', 'object']
+print(Plugin.__subclasses__())           # [] before LoggingPlugin is defined, then [<class '...LoggingPlugin'>]
+
+p = Plugin()
+ref = weakref.ref(p)
+del p
+print(ref())                             # None
+```
+
+*Hint:* `__subclasses__()` only reports classes that currently exist and have not been garbage-collected — define `Plugin` first, call `__subclasses__()`, *then* define `LoggingPlugin` and call it again to see the list change. Solution in [Exercise Solutions](#-exercise-solutions).
+
 ---
 
 # 🧰 PART W: Function & Method Attributes
@@ -7357,6 +7711,36 @@ class Config:
 >
 > **Best practices.** State your minimum Python version in `pyproject.toml` (`requires-python`) and mean it. Let `@dataclass` generate `__match_args__` rather than writing it by hand. When a feature is version-gated, say so in the code or the docs — the guide labels each of these inline for exactly that reason.
 
+### 🧪 Exercise
+
+Write a `@logged` decorator and a `Point` dataclass that together exercise function and dataclass attributes:
+
+1. `logged(fn)` wraps `fn`, copying over `__wrapped__` (pointing at the original), and prints the wrapped function's `__name__`, `__defaults__`, and `__closure__` the first time it is called;
+2. Confirm that `inspect.signature(wrapped_fn)` still reports the *original* parameter list — this only works because `__wrapped__` is set;
+3. Define `Point` as a `@dataclass` with `x` and `y`, add a `__post_init__` that raises `ValueError` if `x == y == 0` (forbidding the origin), and confirm `Point.__match_args__` is `("x", "y")` so `match`/`case Point(x, y):` destructures positionally;
+4. On Python 3.12+, add a generic `Box[T]` class using the new `class Box[T]:` syntax and print `Box.__type_params__`; note in a comment that this step is skipped on older interpreters.
+
+```text
+@logged
+def add(a, b=10):
+    return a + b
+
+print(add(5))                 # prints diagnostics, then 15
+print(add.__wrapped__ is add.__dict__.get("__wrapped__") or True)  # True
+import inspect
+print(inspect.signature(add)) # (a, b=10)  — not (*args, **kwargs)
+
+try:
+    Point(0, 0)
+except ValueError as e:
+    print(e)                  # origin is not a valid point
+
+match Point(1, 2):
+    case Point(x, y):
+        print(x, y)            # 1 2
+```
+
+*Hint:* `functools.wraps` does exactly steps 1–2 for you in a few lines — write the decorator by hand once to see what it copies (`__name__`, `__doc__`, `__wrapped__`, …), then note that production code should just use `functools.wraps`. `__post_init__` runs automatically after a dataclass's generated `__init__`, so validation belongs there, not in a hand-written `__init__`. Solution in [Exercise Solutions](#-exercise-solutions).
 
 ---
 
@@ -7774,6 +8158,657 @@ propagated correctly
 ```
 
 The bare `raise` is essential — without it, the `except` clause would consume the exception and the caller would never learn the block failed.
+
+---
+
+### Entries 1–9 — `Resource` (construction & representation)
+
+```python
+class Resource:
+    registry = []
+
+    def __new__(cls, name, size_mb):
+        if not name:
+            raise ValueError("name must not be empty")
+        return super().__new__(cls)
+
+    def __init__(self, name, size_mb):
+        self.name = name
+        self.size_mb = size_mb
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        Resource.registry.append(cls.__name__)
+
+    def __repr__(self):
+        return f"{type(self).__name__}(name={self.name!r}, size_mb={self.size_mb})"
+
+    def __str__(self):
+        return f"{self.name} ({self.size_mb} MB)"
+
+    def __format__(self, spec):
+        if spec == "b":
+            return f"{self.size_mb * 1024 * 1024} bytes"
+        return str(self)
+
+    def __bytes__(self):
+        return self.name.encode("utf-8")
+
+
+class Dataset(Resource):
+    pass
+
+print(Resource.registry)              # ['Dataset']
+r = Dataset("db-backup", 512)
+print(repr(r))                        # Dataset(name='db-backup', size_mb=512)
+print(str(r))                         # db-backup (512 MB)
+print(f"{r:b}")                       # 536870912 bytes
+print(bytes(r))                       # b'db-backup'
+
+try:
+    Resource("", 10)
+except ValueError as e:
+    print(e)                          # name must not be empty
+```
+
+**Expected output:**
+
+```
+['Dataset']
+Dataset(name='db-backup', size_mb=512)
+db-backup (512 MB)
+536870912 bytes
+b'db-backup'
+name must not be empty
+```
+
+`__new__` raises *before* `__init__` ever runs — the broken `Resource("", 10)` never creates a half-initialised object. `__init_subclass__` fires once per subclass definition, which is why `Resource` itself never appears in its own registry.
+
+---
+
+### Entries 11–15 — `Task` ordering
+
+```python
+import functools
+from dataclasses import dataclass
+
+@functools.total_ordering
+class Task:
+    def __init__(self, priority, name):
+        self.priority = priority
+        self.name = name
+
+    def __eq__(self, other):
+        if not isinstance(other, Task):
+            return NotImplemented
+        return self.priority == other.priority
+
+    def __lt__(self, other):
+        if not isinstance(other, Task):
+            return NotImplemented
+        return self.priority < other.priority
+
+    def __repr__(self):
+        return f"Task({self.priority}, {self.name!r})"
+
+tasks = [Task(2, "email"), Task(5, "deploy"), Task(2, "review")]
+print(sorted(tasks, reverse=True))
+print(min(tasks))
+print(Task(2, "x") <= Task(5, "y"))   # True
+print(Task(2, "x") != Task(2, "y"))   # False
+
+
+@dataclass(order=True, frozen=True)
+class TaskD:
+    priority: int
+    name: str
+
+print(sorted([TaskD(2, "b"), TaskD(2, "a"), TaskD(5, "c")]))
+```
+
+**Expected output** (order of same-priority items from the hand-written class may vary, both are correct):
+
+```
+[Task(5, 'deploy'), Task(2, 'email'), Task(2, 'review')]
+Task(2, 'email')
+True
+False
+[TaskD(priority=2, name='a'), TaskD(priority=2, name='b'), TaskD(priority=5, name='c')]
+```
+
+`@total_ordering` only ever compares `priority`, so two tasks with equal priority are "equal" for sorting purposes and their relative order is whatever Python's stable sort leaves them in. `@dataclass(order=True)` compares the full field tuple, so it additionally breaks the tie by `name` — `TaskD(2, "a")` sorts before `TaskD(2, "b")`.
+
+---
+
+### Entries 17–60 — `Vector2D` (arithmetic family)
+
+```python
+import math
+
+class Vector2D:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+
+    def __add__(self, other):
+        if not isinstance(other, Vector2D):
+            return NotImplemented
+        return Vector2D(self.x + other.x, self.y + other.y)
+
+    def __radd__(self, other):
+        # only reached when the left operand (e.g. int 0 from sum()) doesn't know Vector2D
+        if other == 0:
+            return Vector2D(self.x, self.y)
+        return NotImplemented
+
+    def __iadd__(self, other):
+        if not isinstance(other, Vector2D):
+            return NotImplemented
+        self.x += other.x
+        self.y += other.y
+        return self
+
+    def __sub__(self, other):
+        if not isinstance(other, Vector2D):
+            return NotImplemented
+        return Vector2D(self.x - other.x, self.y - other.y)
+
+    def __mul__(self, scalar):
+        if not isinstance(scalar, (int, float)):
+            return NotImplemented
+        return Vector2D(self.x * scalar, self.y * scalar)
+
+    __rmul__ = __mul__
+
+    def __neg__(self):
+        return Vector2D(-self.x, -self.y)
+
+    def __eq__(self, other):
+        if not isinstance(other, Vector2D):
+            return NotImplemented
+        return (self.x, self.y) == (other.x, other.y)
+
+    def __abs__(self):
+        return math.hypot(self.x, self.y)
+
+    def __repr__(self):
+        return f"Vector2D({self.x}, {self.y})"
+
+v1, v2 = Vector2D(1, 2), Vector2D(3, 4)
+print(v1 + v2)
+print(2 * v1)
+print(v1 * 2)
+print(abs(Vector2D(3, 4)))
+print(-v1 == Vector2D(-1, -2))
+
+v1 += v2
+print(v1)
+
+try:
+    v1 + "nope"
+except TypeError as e:
+    print(e)
+
+print(sum([Vector2D(1, 1), Vector2D(2, 2)], Vector2D(0, 0)))
+```
+
+**Expected output:**
+
+```
+Vector2D(4, 6)
+Vector2D(2, 4)
+Vector2D(2, 4)
+5.0
+True
+Vector2D(4, 6)
+unsupported operand type(s) for +: 'Vector2D' and 'str'
+Vector2D(3, 3)
+```
+
+`v1 + "nope"` raises because `__add__` returns `NotImplemented` for a `str`, Python then tries `str.__add__`, which also returns `NotImplemented`, and Python raises `TypeError` itself. `sum(...)` works only because `__radd__` handles the `0 + Vector2D(...)` step that `sum` always starts with.
+
+---
+
+### Entries 61–72 — `Playlist` (conversion & collection)
+
+```python
+class TrackNumber:
+    def __init__(self, n):
+        self.n = n
+
+    def __index__(self):
+        return self.n
+
+
+class Playlist:
+    def __init__(self, songs):
+        self.songs = list(songs)
+
+    def __len__(self):
+        return len(self.songs)
+
+    def __getitem__(self, key):
+        if isinstance(key, slice):
+            return self.songs[key]
+        return self.songs[key]
+
+    def __setitem__(self, index, value):
+        self.songs[index] = value
+
+    def __delitem__(self, index):
+        del self.songs[index]
+
+    def __contains__(self, title):
+        return title.lower() in (s.lower() for s in self.songs)
+
+    def __iter__(self):
+        return iter(self.songs)
+
+    def __repr__(self):
+        return f"Playlist({self.songs!r})"
+
+
+p = Playlist(["Imagine", "Yesterday", "Hey Jude"])
+print(len(p), bool(p))
+print(bool(Playlist([])))
+print(p[1])
+print(p[0:2])
+print("hey jude" in p)
+p[0] = "Let It Be"
+del p[2]
+print(list(p))
+print(p[TrackNumber(1)])
+```
+
+**Expected output:**
+
+```
+3 True
+False
+Yesterday
+['Imagine', 'Yesterday']
+True
+['Let It Be', 'Yesterday']
+Yesterday
+```
+
+`bool(Playlist([]))` is `False` purely because of the fallback chain: Python looks for `__bool__`, does not find it, falls back to `__len__() == 0`. `TrackNumber(1)` works as an index because `list.__getitem__` calls `operator.index()` on the key, which in turn calls `TrackNumber.__index__`.
+
+---
+
+### Entries 76–80 — `RateLimiter` (callable & async context manager)
+
+```python
+import asyncio
+import functools
+
+class RateLimiter:
+    def __init__(self, max_calls):
+        self.max_calls = max_calls
+        self.calls = 0
+
+    def __call__(self, fn):
+        @functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            if self.calls >= self.max_calls:
+                raise RuntimeError(f"rate limit exceeded ({self.max_calls}/{self.max_calls})")
+            self.calls += 1
+            return fn(*args, **kwargs)
+        return wrapper
+
+    async def __aenter__(self):
+        self.calls = 0
+        print("budget reset")
+        return self
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        print(f"calls made: {self.calls}")
+        return False     # never swallow a real exception
+
+limiter = RateLimiter(max_calls=2)
+
+@limiter
+def ping():
+    return "pong"
+
+async def main():
+    async with limiter:
+        print(ping())
+        print(ping())
+        try:
+            print(ping())
+        except RuntimeError as e:
+            print(e)
+
+asyncio.run(main())
+```
+
+**Expected output:**
+
+```
+budget reset
+pong
+pong
+rate limit exceeded (2/2)
+calls made: 2
+```
+
+`__call__` turns the *instance* into a decorator factory: `@limiter` on `ping` calls `limiter.__call__(ping)` and rebinds `ping` to the returned `wrapper`. `__aexit__` runs its reporting line regardless of whether an exception occurred, and returning `False` guarantees a genuine failure (not demonstrated here) would still propagate.
+
+---
+
+### Entries 81–89 — `PositiveNumber` descriptor and `Sensor`
+
+```python
+class PositiveNumber:
+    def __set_name__(self, owner, name):
+        self.name = "_" + name
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self                      # accessed on the class itself
+        return getattr(obj, self.name, None)
+
+    def __set__(self, obj, value):
+        if value <= 0:
+            raise ValueError(f"{self.name.lstrip('_')} must be positive, got {value}")
+        setattr(obj, self.name, value)
+
+
+class Sensor:
+    __slots__ = ("_reading",)
+    reading = PositiveNumber()
+
+    def __getattr__(self, name):
+        if name == "reading_fahrenheit":
+            return self.reading * 9 / 5 + 32
+        raise AttributeError(name)
+
+    def __dir__(self):
+        return list(super().__dir__()) + ["reading_fahrenheit"]
+
+
+s = Sensor()
+s.reading = 20
+print(s.reading)
+print(s.reading_fahrenheit)
+
+try:
+    s.reading = -5
+except ValueError as e:
+    print(e)
+
+print("reading_fahrenheit" in dir(s))
+print(type(Sensor.reading).__name__)
+```
+
+**Expected output:**
+
+```
+20
+68.0
+reading must be positive, got -5
+True
+PositiveNumber
+```
+
+`__getattr__` only fires for `reading_fahrenheit` because that name is never actually stored — ordinary lookup fails first, which is exactly the trigger condition for `__getattr__`. `Sensor.reading` (accessed on the class) hits `__get__` with `obj=None`, so it returns the descriptor object itself rather than a number.
+
+---
+
+### Entries 90–96 — `Drawable`, `PluginRegistry`, `TypedBox`, `Ping`
+
+```python
+import abc
+import asyncio
+
+class Drawable(abc.ABC):
+    @classmethod
+    def __subclasshook__(cls, other):
+        if cls is Drawable:
+            if any("draw" in base.__dict__ for base in other.__mro__):
+                return True
+        return NotImplemented
+
+
+class RegistryMeta(type):
+    def __instancecheck__(cls, instance):
+        return type(instance).__name__ in cls.allowed
+
+
+class PluginRegistry(metaclass=RegistryMeta):
+    allowed = ["Circle"]
+
+
+class TypedBox:
+    def __class_getitem__(cls, item):
+        return f"{cls.__name__}[{item.__name__}]"
+
+
+class Circle:
+    def draw(self):
+        return "o"
+
+print(issubclass(Circle, Drawable))
+print(isinstance(Circle(), Drawable))
+print(TypedBox[int])
+print(isinstance(Circle(), PluginRegistry))
+print(isinstance(3, PluginRegistry))
+
+
+class Ping:
+    def __await__(self):
+        yield
+        return "pong"
+
+async def main():
+    print(await Ping())
+
+asyncio.run(main())
+```
+
+**Expected output:**
+
+```
+True
+True
+TypedBox[int]
+True
+False
+pong
+```
+
+`__subclasshook__` returning `NotImplemented` for classes it doesn't recognise is essential: it lets Python fall back to the normal MRO-based check instead of declaring every unrelated class *not* `Drawable`. `__instancecheck__` only works because it lives on `RegistryMeta`, the metaclass of `PluginRegistry` — `isinstance(x, PluginRegistry)` looks it up on `type(PluginRegistry)`, not on `PluginRegistry` itself.
+
+---
+
+### Entries 97–105 — `Deck` and `DeckFile`
+
+```python
+import asyncio
+import copy
+import pickle
+
+class Deck:
+    def __init__(self, cards):
+        self.cards = list(cards)
+        self.shuffle_rng = object()     # stand-in for something unpicklable
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        if not self.cards:
+            raise StopAsyncIteration
+        await asyncio.sleep(0)
+        return self.cards.pop(0)
+
+    def __copy__(self):
+        new = Deck.__new__(Deck)
+        new.cards = self.cards            # same list object — shared
+        new.shuffle_rng = self.shuffle_rng
+        return new
+
+    def __deepcopy__(self, memo):
+        new = Deck.__new__(Deck)
+        new.cards = copy.deepcopy(self.cards, memo)   # independent list
+        new.shuffle_rng = object()
+        return new
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["shuffle_rng"]          # drop the unpicklable attribute
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self.shuffle_rng = object()       # rebuild fresh on load
+
+
+class DeckFile:
+    def __init__(self, path):
+        self.path = path
+
+    def __fspath__(self):
+        return self.path
+
+
+async def deal_all(deck):
+    async for card in deck:
+        print(card)
+
+d1 = Deck(["A", "K", "Q"])
+asyncio.run(deal_all(d1))
+
+d2 = Deck(["A", "K", "Q"])
+shallow = copy.copy(d2)
+deep = copy.deepcopy(d2)
+shallow.cards.append("J")
+print("J" in d2.cards)
+print("J" in deep.cards)
+
+data = pickle.dumps(d2)
+restored = pickle.loads(data)
+print(restored.cards)
+print(restored.shuffle_rng is not None)
+```
+
+**Expected output:**
+
+```
+A
+K
+Q
+True
+False
+['A', 'K', 'Q', 'J']
+True
+```
+
+The shallow copy's `cards` is the *same* list object as the original's, so appending through one is visible through the other; the deep copy's `cards` is an independent list built by `copy.deepcopy`. `__getstate__`/`__setstate__` keep `shuffle_rng` out of the pickle stream entirely and rebuild a new one on load, since the original could never have been pickled in the first place.
+
+---
+
+### Entries 106–129 — Module and class introspection
+
+```python
+import weakref
+
+print(__name__)      # '__main__' when this file is run directly
+
+class Plugin:
+    pass
+
+print(Plugin.__module__)      # the module Plugin is defined in
+print(Plugin.__qualname__)    # 'Plugin'
+print(Plugin.__subclasses__())    # [] — no subclasses yet
+
+class LoggingPlugin(Plugin):
+    pass
+
+print(LoggingPlugin.__bases__)
+print([c.__name__ for c in LoggingPlugin.__mro__])
+print(Plugin.__subclasses__())    # [<class '...LoggingPlugin'>] — now it appears
+
+p = Plugin()
+ref = weakref.ref(p)
+del p
+print(ref())
+```
+
+**Expected output:**
+
+```
+__main__
+__main__
+Plugin
+[]
+(<class '__main__.Plugin'>,)
+['LoggingPlugin', 'Plugin', 'object']
+[<class '__main__.LoggingPlugin'>]
+None
+```
+
+`Plugin.__subclasses__()` is live, not cached: calling it before `LoggingPlugin` exists correctly reports `[]`, and calling it again afterwards picks up the new subclass automatically — there is no manual registration step, unlike `__init_subclass__` in Entry 4.
+
+---
+
+### Entries 130–145 — `@logged` and `Point`
+
+```python
+import functools
+import inspect
+from dataclasses import dataclass
+
+def logged(fn):
+    @functools.wraps(fn)     # copies __name__, __doc__, __wrapped__, etc.
+    def wrapper(*args, **kwargs):
+        print(wrapper.__name__, fn.__defaults__, fn.__closure__)
+        return fn(*args, **kwargs)
+    return wrapper
+
+@logged
+def add(a, b=10):
+    return a + b
+
+print(add(5))
+print(add.__wrapped__ is not None)
+print(inspect.signature(add))
+
+
+@dataclass
+class Point:
+    x: int
+    y: int
+
+    def __post_init__(self):
+        if self.x == 0 and self.y == 0:
+            raise ValueError("origin is not a valid point")
+
+print(Point.__match_args__)
+
+try:
+    Point(0, 0)
+except ValueError as e:
+    print(e)
+
+match Point(1, 2):
+    case Point(x, y):
+        print(x, y)
+```
+
+**Expected output:**
+
+```
+add (10,) None
+15
+True
+(a, b=10)
+('x', 'y')
+origin is not a valid point
+1 2
+```
+
+`inspect.signature` reports `(a, b=10)` — the *original* function's signature — only because `functools.wraps` copied `__wrapped__` onto `wrapper`; `inspect.signature` follows that chain automatically. `__post_init__` runs after the dataclass-generated `__init__` has already set `self.x`/`self.y`, which is why the validation can read them directly.
 
 ---
 

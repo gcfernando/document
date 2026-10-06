@@ -1,5 +1,7 @@
 # 📙 AI Coding-Agent Configuration Handbook
 
+**🏷️ Difficulty:** 🟡 Intermediate (reference/runbook — no coding prerequisite, but assumes Git fluency)
+
 > **The operational manual:** choose the harness, create the exact artifact, discover it, invoke it, inspect what happened, break it, and repair it.
 >
 > This is not a universal configuration guide. VS Code is an editor and can host different harnesses. **The selected product/harness owns the schema and runtime.** Copy only the block for the tool you actually use.
@@ -132,6 +134,18 @@ Put a ticket’s acceptance criteria in global instructions, create a role just 
 ### ✅ Do
 
 Observe the same problem repeatedly → choose the smallest mechanism → create one artifact → test on a safe representative task → keep or delete based on evidence.
+
+### 🏋️ Exercise: pick an artifact, then build the smallest one
+
+For each scenario, write one sentence naming the artifact type (prompt file, task brief, skill, custom agent, or hook) and why:
+
+1. A teammate filed one ticket asking why `GetVehicleById` returns null for a specific ID.
+2. Three different reviewers keep forgetting to check nullability and cancellation before approving a GraphQL resolver change.
+3. Every session start should silently append a timestamp to a local audit log.
+
+Expected reasoning: (1) is one-off acceptance criteria → task brief, not an always-on rule. (2) is a repeated, evidenced procedure → skill (or a scoped `applyTo` instruction if it is a pure rule rather than a sequence of steps). (3) is a deterministic lifecycle action → hook, not an instruction that merely asks politely.
+
+Now build the smallest real artifact for scenario 1: create `docs/tasks/ABC-100.md` using the task-brief template in §2.1 (just below), with real goal/acceptance-criteria text for a null-return bug in your own repo. Confirm the file exists with `Get-Item docs\tasks\ABC-100.md`. You have completed the exercise when the file exists on disk and you can state, in one sentence, why the other two scenarios would have produced a different artifact.
 
 ---
 
@@ -367,6 +381,16 @@ description: Diagnose a failed .NET build from real logs. Use for dotnet build f
 
 **Break/fix:** rename `SKILL.md` to `skill.md`; make description “helps coding”; edit after session start; put a Copilot-only field in Codex. Diagnose exact directory → exact case/name → valid YAML/frontmatter → invocation → session refresh → tool permission. Repair one issue at a time.
 
+### 🏋️ Section exercise: one real task brief + one real skill
+
+Using your own project (not a toy example) and your chosen harness from the [product route](#choose-product):
+
+1. Identify one real, currently-open issue or recurring friction in that project. Create an actual `docs/tasks/<ID>.md` task brief for it, following §2.1's template above with real goal/acceptance-criteria text.
+2. Identify one procedure you have done at least twice in that project (e.g., diagnosing a failed build, reviewing a migration, triaging a flaky test). Create an actual `SKILL.md` for it in your harness's supported path from the [table above](#handbook-skills), following the "Create and use, step by step" sequence.
+3. Verify discovery for both: reference the task brief in a prompt and confirm the assistant restates its acceptance criteria; reload/restart as required and confirm the skill appears in your harness's skill list/picker (`/skills info NAME`, `/skills`, or the VS Code Skills customization view).
+
+You have completed the exercise when both files exist on disk, the assistant demonstrably used the brief's content (not guessed content), and the skill is listed as discovered by name — not merely present in the folder.
+
 ---
 
 <a id="handbook-agents"></a>
@@ -494,6 +518,16 @@ Tool names are harness-specific: choose from the selected target’s tool picker
 **Verify:** wait for all requested work, inspect each report/source/tool trace, reconcile contradictions using evidence (not majority vote), then integrate and run tests.
 
 **Parallel-work prompt:** “Delegate three independent, read-only tasks: (1) trace the failing call path, (2) find relevant regression tests, (3) inspect public-contract/security risks. Give each worker the same ticket, repo root, and no-edit/no-external-side-effect rule. Wait for all results; require paths, symbols, evidence, and unknowns. Reconcile disagreements yourself and do not let workers edit shared files.” Run this through the selected product’s documented subagent feature; inspect the activity/thread view. If that harness cannot delegate, do not pretend separate shell sessions are built-in agents.
+
+### 🏋️ Exercise: create one minimal subagent and invoke it
+
+1. Choose your actual harness and copy the matching minimal reviewer template above (Copilot CLI `.github/agents/diff-reviewer.agent.md`, Claude `.claude/agents/reviewer.md`, Codex `.codex/agents/reviewer.toml`, or VS Code's Agent customization equivalent).
+2. Create the file at its exact required path, with no edits to the template fields beyond what the schema requires.
+3. Reload/restart as that harness requires (CLI restart, VS Code Agent dropdown refresh, Codex/Claude session restart).
+4. Invoke it on a harmless, bounded task: “Use the reviewer/diff-reviewer agent to review the current `git diff` read-only and report findings.”
+5. Confirm it responds: the agent must appear by name in the picker/`/agent` list/delegation row, and its reply must contain concrete findings or “no diff found,” not a generic assistant answer.
+
+You have completed the exercise when you can point to the actual file path, the actual invocation command/selection, and the actual response showing the named subagent — not the default assistant — handled the task. Then confirm `git status` shows no unexpected edits, since this subagent was read-only.
 
 ---
 
@@ -663,6 +697,18 @@ Wrong product/harness?
 → inspect product hook log and tool transcript
 ```
 
+### ✅ Checkpoint: confirm your hook actually fired
+
+Pick the hook lab matching your harness above (Copilot CLI `sessionStart` audit, VS Code Local `PreToolUse` logger, Claude `SessionStart` logger, or Codex `SessionStart` logger). Before declaring it done, confirm all of the following with real evidence, not expectation:
+
+- [ ] The exact command ran manually once outside the hook and produced the expected log line.
+- [ ] The hook config file is valid (parsed without error) and lives at the exact required path for your harness.
+- [ ] A **new** session/event of the matching type was started or triggered after saving the hook.
+- [ ] The log file contains one **additional** line with a timestamp later than the manual test — proving the harness, not you, produced it.
+- [ ] Breaking the command path (typo) produces a visible diagnostic (hook log, `/hooks`, Agent Debug Logs, or startup error), and restoring the path makes the log grow again on the next matching event.
+
+You have completed the exercise only when the last checkbox is true for both the broken and the repaired state — a single successful log line can be a coincidence, but reproducing failure then repair confirms the hook, not something else, is the cause.
+
 ---
 
 <a id="handbook-mcp"></a>
@@ -791,6 +837,18 @@ Server command works alone?
 
 Break one thing at a time: typo command, stop process, alter tool name, remove credentials. Repair from the first failing layer. Do not “fix” a missing server by enabling all tools or exposing broad credentials.
 
+### ✅ Checkpoint: connect one server and invoke one tool
+
+Using the [AI Journey local C# MCP server](ai_journey.md#course-mcp) (or any other server you have reviewed), confirm all of the following in order:
+
+- [ ] The server runs standalone with its real startup command and responds to the MCP Inspector/SDK client without your host configured yet.
+- [ ] You configured exactly one host (VS Code, Copilot CLI, Codex, or Claude Code) using that host's real config file/command from [§5.2](#handbook-mcp) above, with a real path — not a copied placeholder.
+- [ ] The host's own MCP panel/list (`/mcp`, `codex mcp list`, `claude mcp list`, or VS Code's MCP view) shows the server **and** its tools, confirming discovery.
+- [ ] You asked the assistant to invoke one specific read-only tool by name and inspected the actual tool call and its structured result in the transcript — not just a plausible-sounding answer.
+- [ ] You stopped the server process and confirmed the host now reports the tool as unavailable, proving the result in the previous step came from the real server.
+
+You have completed the exercise when you can name the server, the tool invoked, and the exact result returned, and you have evidence (transcript + stopped-server test) that the call went through the real server rather than the model guessing.
+
 ---
 
 # 6. 🖥️ Use the same customizations from CLI and VS Code
@@ -806,6 +864,28 @@ Break one thing at a time: typo command, stop process, alter tool name, remove c
 
 VS Code Agent Customizations editor and Agent Debug Logs are useful inspection surfaces, but the harness controls what executes. VS Code prompt files continue only in Local (currently deprecated there too); Agent Host does not load them. For new work, use the selected harness’s supported skill/instruction format.
 
+### 🏋️ Runnable check: compare config-file locations across CLI and VS Code
+
+Run this in the repository root to see exactly which customization files each surface will actually discover, then compare against what you expect from the tables above:
+
+```powershell
+Write-Host "--- Copilot CLI project files ---"
+Get-ChildItem -Recurse -Force -ErrorAction SilentlyContinue `
+  .github\copilot-instructions.md, .github\skills, .github\agents, .github\hooks, .mcp.json |
+  Select-Object FullName
+
+Write-Host "--- VS Code-specific files ---"
+Get-ChildItem -Recurse -Force -ErrorAction SilentlyContinue `
+  .vscode\mcp.json |
+  Select-Object FullName
+
+Write-Host "--- Shared/cross-product files ---"
+Get-ChildItem -Force -ErrorAction SilentlyContinue AGENTS.md, CLAUDE.md |
+  Select-Object FullName
+```
+
+**Expected result:** every file your chosen harness is supposed to read appears under the matching heading, and any file meant for a *different* harness (e.g., `.vscode\mcp.json`) does **not** appear under Copilot CLI's heading. If a file you created is missing from its expected heading, you have the exact same evidence a harness would use to say "not discovered" — fix the path before trusting the config, rather than assuming the content is correct.
+
 ---
 
 # 7. Apply configuration to an engineering task
@@ -813,6 +893,16 @@ VS Code Agent Customizations editor and Agent Debug Logs are useful inspection s
 Project/branch working practices live once in the [company workbook](end_to_end_ai_agent_graphql_workflow.md#workbook-path). Use its [new-project foundation](end_to_end_ai_agent_graphql_workflow.md#new-project) or [existing-project inspection](end_to_end_ai_agent_graphql_workflow.md#existing-project), then return to your selected product route here only if a configuration gap exists.
 
 For each added customization, record purpose, owner, scope, authoritative source, discovery/invocation test, permissions, reload behavior, and removal steps. Keep ticket facts in the brief and stable rules in project instructions. Reuse valid team configuration rather than adding a duplicate.
+
+### 🏋️ End-to-end runnable task: chain one artifact onto one trivial task
+
+Pick one artifact you already created earlier in this handbook (the `docs/tasks/ABC-100.md` brief from [Section 1](#handbook-decisions), the skill from [Section 2](#handbook-skills), or the subagent from [Section 3](#handbook-agents)). Then:
+
+1. Pick one trivial, real, low-risk task in your project (e.g., add a missing docstring, fix one obviously-wrong comment, or list the files touched by the last commit).
+2. Start a fresh session in your chosen harness and explicitly reference the artifact (attach the brief, invoke the skill by name, or delegate to the subagent) as part of asking for the trivial task.
+3. Record: which artifact you used, the exact invocation, the files the assistant touched or read, and whether `git status`/the transcript shows it actually used the artifact's content rather than generic knowledge.
+
+**Expected outcome:** the trivial task is completed correctly, and you have concrete evidence (a citation, a restated acceptance criterion, a named skill/agent in the transcript) that the artifact — not just the base assistant — drove the result. If the artifact wasn't used, diagnose with the "Troubleshooting by symptom" table in Section 8 below before retrying.
 
 ---
 

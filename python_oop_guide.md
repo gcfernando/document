@@ -73,7 +73,7 @@ Because this guide teaches with code, it matters that you can tell at a glance w
 | **▶️ Continues from §X.Y** | **Continuation.** Needs the class defined in the *named* section, which may be several pages back. | Paste it below that earlier block in the same file |
 | **📄 Fragment** | **Part of a multi-file project.** Cannot run alone by design. | Follow the file layout shown beside it |
 
-Blocks that are *meant* to fail are labelled **❌ This example fails on purpose** together with the exact error, so a traceback never leaves you wondering whether you typed something wrong.
+Blocks that are *meant* to raise an error catch it with `try`/`except` and print it, so a traceback never leaves you wondering whether you typed something wrong — look for the printed exception type and message in the **Expected output** block.
 
 > [!TIP]
 > **The short rule:** if a block is preceded by the word **Usage:**, it continues from the block
@@ -343,6 +343,49 @@ oop_practice/
 │   └── test_examples.py
 └── pyproject.toml
 ```
+
+## 1.3 🏋️ Hands-on exercise
+
+Set up a real Python playground and prove it works.
+
+- Create a project folder with a virtual environment.
+- Activate it and install `pytest`.
+- Create `src/oop_practice/main.py` that prints your Python version using `sys.version`.
+- Run it.
+
+**Expected result:** running the script prints a line starting with your installed Python version, and `pip list` inside the activated environment shows only `pytest` (plus its own dependencies) — not packages from any other project.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```bash
+mkdir oop_practice
+cd oop_practice
+python -m venv .venv
+.venv\Scripts\Activate.ps1      # Windows PowerShell
+pip install pytest
+```
+
+```python
+# src/oop_practice/main.py
+import sys
+
+print(f"Running on Python {sys.version}")
+```
+
+```bash
+python src/oop_practice/main.py
+```
+
+**Expected output (the version text will differ on your machine):**
+
+```
+Running on Python 3.12.4 (main, ...)
+```
+
+**What to check in your own version.** Did you run `pip list` *inside* the activated environment — do you see `(.venv)` at the start of your prompt? If `pip list` shows dozens of unrelated packages, the virtual environment was never actually activated; redo the activation step before installing anything.
+
+</details>
 
 > ### 🧭 In practice — a virtual environment and project layout
 >
@@ -1078,6 +1121,69 @@ class Printer:
 
 > 🎯 **When to use which:** reach for **default arguments** first (simplest), **`*args`** when the count varies, and **`singledispatchmethod`** only when behavior genuinely depends on the *type* of the argument.
 
+## 5.10 🏋️ Hands-on exercise
+
+Build a `Temperature` class that:
+
+- stores a Celsius value behind a validated `@property` (reject anything below absolute zero, `-273.15`),
+- exposes a **read-only, computed** `fahrenheit` property derived from Celsius — never stored separately.
+
+**Verify it yourself:** `Temperature(25).fahrenheit` should be `77.0`, and both an impossible Celsius value and a direct assignment to `fahrenheit` should raise.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+class Temperature:
+    def __init__(self, celsius: float) -> None:
+        self._celsius = 0.0
+        self.celsius = celsius
+
+    @property
+    def celsius(self) -> float:
+        return self._celsius
+
+    @celsius.setter
+    def celsius(self, value: float) -> None:
+        if value < -273.15:
+            raise ValueError("Temperature cannot be below absolute zero.")
+        self._celsius = value
+
+    @property
+    def fahrenheit(self) -> float:
+        return self._celsius * 9 / 5 + 32
+
+
+temp = Temperature(25)
+print(temp.fahrenheit)
+
+temp.celsius = 100
+print(temp.fahrenheit)
+
+try:
+    Temperature(-300)
+except ValueError as e:
+    print(f"ValueError: {e}")
+
+try:
+    temp.fahrenheit = 50
+except AttributeError as e:
+    print(f"AttributeError: {e}")
+```
+
+**Expected output:**
+
+```
+77.0
+212.0
+ValueError: Temperature cannot be below absolute zero.
+AttributeError: property 'fahrenheit' of 'Temperature' object has no setter
+```
+
+**What this proves.** `fahrenheit` is never stored — change `celsius` and it is correct automatically, because it is computed (§5.6). The validation in `celsius`'s setter runs on every assignment, including the one inside `__init__`.
+
+</details>
+
 > ### 🧭 In practice — attributes, properties, and methods
 >
 > **How to use it.** Start with a plain public attribute (`self.price = price`). The moment that value acquires a rule, rename the stored field to `self._price` and add a `@property` with the public name plus a `@price.setter` that validates. **Prerequisite:** §4. **Expected result:** calling code keeps working unchanged — `product.price = 60` still reads the same — but `product.price = -5` now raises `ValueError`.
@@ -1463,6 +1569,44 @@ __all__ = ["BankAccount"]
 >
 > **Best practices.** Start with a small public surface and treat everything else as internal — it is easy to make a name public later and painful to take one back. Use double underscores sparingly; their real purpose is avoiding accidental collisions in subclass hierarchies, not privacy, and they make debugging and testing noticeably more awkward.
 
+## 7.3 🏋️ Hands-on exercise
+
+Write a `Thermostat` class with a public `target_temperature` attribute, an internal `_sensor_offset` attribute (a correction value nobody outside the class should rely on), and a name-mangled `__calibration_key` attribute. Add a public method `read_temperature()` that uses `_sensor_offset` internally. Then, in a separate `Usage:` snippet, show that Python does **not** stop you from reading `_sensor_offset` or `obj._Thermostat__calibration_key` from outside the class — only the convention asks you not to.
+
+**Verify it yourself:** confirm `dir(instance)` lists the mangled name as `_Thermostat__calibration_key`, not `__calibration_key`.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+class Thermostat:
+    def __init__(self, target_temperature: float) -> None:
+        self.target_temperature = target_temperature
+        self._sensor_offset = 0.5
+        self.__calibration_key = "factory-default"
+
+    def read_temperature(self) -> float:
+        return self.target_temperature + self._sensor_offset
+```
+
+**Usage:**
+
+```python
+t = Thermostat(21.0)
+print(t.read_temperature())          # 21.5
+print(t._sensor_offset)              # 0.5 — nothing stops this, it is only a convention
+print(t._Thermostat__calibration_key)  # factory-default — name mangling, not security
+```
+
+**Expected output:**
+
+```
+21.5
+0.5
+factory-default
+```
+
+</details>
 
 ---
 
@@ -1595,6 +1739,64 @@ class NativeResourceWrapper:
 ```
 
 > ⚠️ **When to avoid:** almost always. **Prefer context managers over `__del__` for resource cleanup.** Treat `__del__` as a last-resort safety net, never your main plan.
+
+## 8.8 🏋️ Hands-on exercise
+
+Write a custom context manager class `TemporaryCounter` that:
+
+- on `__enter__`, prints `"Counter opened"` and returns itself,
+- has an `increment()` method,
+- on `__exit__`, always prints the final count and `"Counter closed"` — even if an exception happened inside the `with` block.
+
+**Verify it yourself:** deliberately raise an exception inside the `with` block and confirm `__exit__` still runs and prints the count *before* the exception propagates.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+class TemporaryCounter:
+    def __init__(self) -> None:
+        self._count = 0
+
+    def __enter__(self) -> "TemporaryCounter":
+        print("Counter opened")
+        return self
+
+    def increment(self) -> None:
+        self._count += 1
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        print(f"Final count: {self._count}")
+        print("Counter closed")
+
+
+with TemporaryCounter() as counter:
+    counter.increment()
+    counter.increment()
+
+try:
+    with TemporaryCounter() as counter:
+        counter.increment()
+        raise RuntimeError("boom")
+except RuntimeError as e:
+    print(f"Caught after exit: {e}")
+```
+
+**Expected output:**
+
+```
+Counter opened
+Final count: 2
+Counter closed
+Counter opened
+Final count: 1
+Counter closed
+Caught after exit: boom
+```
+
+**What to check.** The "Final count" and "Counter closed" lines print **before** "Caught after exit" — proof that `__exit__` ran during unwinding, not after. That is the entire value of a context manager over a manual `open()`/`close()` pair, which an exception could skip.
+
+</details>
 
 > ### 🧭 In practice — object lifecycle and resource management
 >
@@ -1777,6 +1979,70 @@ Examples:
 > [!IMPORTANT]
 > OOP design should **protect invariants inside the object** — not scatter the checks across the whole program. The object is the single source of truth for its own rules.
 
+## 9.5 🏋️ Hands-on exercise
+
+Build a `StockItem` class that:
+
+- stores `name` and an internal `_quantity` (never directly settable from outside),
+- has `receive(amount)` and `remove(amount)` methods that enforce the invariant "quantity never goes below zero",
+- exposes `quantity` as a read-only property.
+
+**Verify it yourself:** try to force the quantity negative two different ways — direct assignment, and `remove` beyond what's in stock — and confirm both are refused.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+class StockItem:
+    def __init__(self, name: str, quantity: int = 0) -> None:
+        self.name = name
+        self._quantity = 0
+        self.receive(quantity)
+
+    @property
+    def quantity(self) -> int:
+        return self._quantity
+
+    def receive(self, amount: int) -> None:
+        if amount < 0:
+            raise ValueError("Amount received must not be negative.")
+        self._quantity += amount
+
+    def remove(self, amount: int) -> None:
+        if amount < 0:
+            raise ValueError("Amount removed must not be negative.")
+        if amount > self._quantity:
+            raise ValueError("Cannot remove more than is in stock.")
+        self._quantity -= amount
+
+
+item = StockItem("Widget", 10)
+item.remove(4)
+print(item.quantity)
+
+try:
+    item.quantity = -100
+except AttributeError as e:
+    print(f"AttributeError: {e}")
+
+try:
+    item.remove(100)
+except ValueError as e:
+    print(f"ValueError: {e}")
+```
+
+**Expected output:**
+
+```
+6
+AttributeError: property 'quantity' of 'StockItem' object has no setter
+ValueError: Cannot remove more than is in stock.
+```
+
+**What this proves.** There is exactly one door in (`receive`) and one door out (`remove`), and both check the invariant — the object is the single source of truth for its own rule, as §9.4 describes.
+
+</details>
+
 > ### 🧭 In practice — encapsulation
 >
 > **How to use it.** Write down the object's **invariants** — the statements that must always be true of it — then make each one impossible to break. Store the data in `_underscore` fields, expose a read-only `@property` for anything callers may see, and provide named methods (`deposit`, `withdraw`) as the only ways to change it. Hand out copies of internal collections (`tuple(self._items)`) rather than the list itself. **Expected result:** `account.balance = -1` and `order.items.append(junk)` both fail; the only routes in are the methods that check.
@@ -1818,6 +2084,8 @@ class Shape(ABC):
     def display_area(self) -> None:
         print(f"Area: {self.calculate_area()}")
 ```
+
+**▶️ Continues from the block above** — `Circle` needs the `Shape` class just defined.
 
 ```python
 import math
@@ -1894,6 +2162,81 @@ class DataImporter(ABC):
 > 🌍 **Analogy:** A **recipe template**: "read ingredients → clean them → cook." The overall steps are fixed, but *how* you read and save is filled in by each specific importer (CSV, database, API).
 
 > 🎯 **When to use the template method:** when several classes share the *same overall process* but differ in a few steps.
+
+## 10.5 🏋️ Hands-on exercise
+
+Using the template-method shape from §10.4, build a `ReportGenerator` abstract base class with:
+
+- a concrete `generate()` method that calls `fetch_data()`, then `format_data(data)`, then `deliver(formatted)`, in that order,
+- `fetch_data` and `deliver` as `@abstractmethod`,
+- a `format_data` with a sensible default (join with newlines) that subclasses may override.
+
+Then build two subclasses: `ConsoleReportGenerator`, and `UppercaseReportGenerator` (which overrides `format_data`).
+
+**Verify it yourself:** confirm `ReportGenerator()` itself cannot be instantiated.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+from abc import ABC, abstractmethod
+
+
+class ReportGenerator(ABC):
+    def generate(self) -> None:
+        data = self.fetch_data()
+        formatted = self.format_data(data)
+        self.deliver(formatted)
+
+    @abstractmethod
+    def fetch_data(self) -> list[str]:
+        ...
+
+    def format_data(self, data: list[str]) -> str:
+        return "\n".join(data)
+
+    @abstractmethod
+    def deliver(self, formatted: str) -> None:
+        ...
+
+
+class ConsoleReportGenerator(ReportGenerator):
+    def fetch_data(self) -> list[str]:
+        return ["Sales: 100", "Returns: 5"]
+
+    def deliver(self, formatted: str) -> None:
+        print(formatted)
+
+
+class UppercaseReportGenerator(ConsoleReportGenerator):
+    def format_data(self, data: list[str]) -> str:
+        return super().format_data(data).upper()
+
+
+ConsoleReportGenerator().generate()
+print("---")
+UppercaseReportGenerator().generate()
+
+try:
+    ReportGenerator()
+except TypeError as e:
+    print(f"TypeError: {e}")
+```
+
+**Expected output:**
+
+```
+Sales: 100
+Returns: 5
+---
+SALES: 100
+RETURNS: 5
+TypeError: Can't instantiate abstract class ReportGenerator with abstract methods deliver, fetch_data
+```
+
+**What this proves.** The workflow order (`fetch → format → deliver`) is fixed in the base class and cannot be skipped or reordered by a subclass; only the individual steps vary — that is the template method pattern (§10.4) doing its job.
+
+</details>
 
 > ### 🧭 In practice — abstraction with abstract base classes
 >
@@ -2110,6 +2453,65 @@ The rule Python enforces is that a class must always appear **before** its own b
 > [!IMPORTANT]
 > **Professional rule:** Use inheritance for *true specialization*, not just to avoid retyping code. When in doubt, prefer **composition** ([Section 15](#15-composition-and-object-relationships)).
 
+## 11.8 🏋️ Hands-on exercise
+
+Model a small employee hierarchy:
+
+- `Employee` with `name`, `base_salary`, and a `calculate_pay()` method returning `base_salary`.
+- `Manager(Employee)` adding a `bonus`, overriding `calculate_pay()` to call `super().calculate_pay()` and add the bonus.
+- `Executive(Manager)` adding `stock_value`, overriding `calculate_pay()` the same way.
+
+**Verify it yourself:** confirm `isinstance(executive, Employee)` is `True`, and that `calculate_pay()` correctly stacks the amounts from every level.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+class Employee:
+    def __init__(self, name: str, base_salary: float) -> None:
+        self.name = name
+        self.base_salary = base_salary
+
+    def calculate_pay(self) -> float:
+        return self.base_salary
+
+
+class Manager(Employee):
+    def __init__(self, name: str, base_salary: float, bonus: float) -> None:
+        super().__init__(name, base_salary)
+        self.bonus = bonus
+
+    def calculate_pay(self) -> float:
+        return super().calculate_pay() + self.bonus
+
+
+class Executive(Manager):
+    def __init__(self, name: str, base_salary: float, bonus: float, stock_value: float) -> None:
+        super().__init__(name, base_salary, bonus)
+        self.stock_value = stock_value
+
+    def calculate_pay(self) -> float:
+        return super().calculate_pay() + self.stock_value
+
+
+executive = Executive("Anna", 80_000, 10_000, 25_000)
+print(executive.calculate_pay())
+print(isinstance(executive, Employee))
+print(isinstance(executive, Manager))
+```
+
+**Expected output:**
+
+```
+115000
+True
+True
+```
+
+**What this proves.** Each `super().calculate_pay()` call extends rather than replaces the parent's behaviour (§11.4), so the final number is the sum of all three levels — and `isinstance` confirms the "is-a" chain holds all the way up (§11.2).
+
+</details>
+
 > ### 🧭 In practice — inheritance
 >
 > **How to use it.** Write `class Manager(Employee):`, and in the subclass's `__init__` call `super().__init__(...)` first, then set the subclass's own attributes. Override a method simply by defining it again; call `super().method()` inside the override when you want to *extend* the parent's behaviour rather than replace it. **Expected result:** the subclass has everything the parent had, plus its own additions, and `isinstance(manager, Employee)` is `True`.
@@ -2247,6 +2649,65 @@ def calculate_discount(policy: DiscountPolicy) -> float:
 ```
 
 > 🎯 **When to use this:** when you see a big `if/elif` or `match` that branches on a "type" string. Adding a new customer type should mean adding a *class*, not editing old logic.
+
+## 12.5 🏋️ Hands-on exercise
+
+Build three unrelated classes — `Dog`, `Duck`, `Robot` — each with a `make_sound()` method and **no shared base class** (duck typing). Write a `def chorus(speakers) -> None:` function that loops over any list and calls `make_sound()` on each. Then replace the loose typing with a `SoundMaker` protocol so a type checker can verify the list.
+
+**Verify it yourself:** confirm `chorus` works unchanged for all three types, and that adding a fourth class (`Cat`) requires zero changes to `chorus`.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+from typing import Protocol
+
+
+class SoundMaker(Protocol):
+    def make_sound(self) -> None:
+        ...
+
+
+class Dog:
+    def make_sound(self) -> None:
+        print("Woof!")
+
+
+class Duck:
+    def make_sound(self) -> None:
+        print("Quack!")
+
+
+class Robot:
+    def make_sound(self) -> None:
+        print("Beep boop.")
+
+
+class Cat:                     # added later, chorus() never changes
+    def make_sound(self) -> None:
+        print("Meow!")
+
+
+def chorus(speakers: list[SoundMaker]) -> None:
+    for speaker in speakers:
+        speaker.make_sound()
+
+
+chorus([Dog(), Duck(), Robot(), Cat()])
+```
+
+**Expected output:**
+
+```
+Woof!
+Quack!
+Beep boop.
+Meow!
+```
+
+**What this proves.** None of the four classes shares a base class or inherits from `SoundMaker` — `chorus` works because every object simply *has* `make_sound()` (§12.2, §12.3). Adding `Cat` meant writing one new class and changing nothing else, which is the entire point of polymorphism.
+
+</details>
 
 > ### 🧭 In practice — polymorphism
 >
@@ -2443,6 +2904,62 @@ PaymentProcessor
 
 > 💡 Some teams still use names like `IRepository`, but that is less Pythonic. Prefer plain, descriptive names.
 
+## 13.7 🏋️ Hands-on exercise
+
+Define a `Notifier` protocol with one method, `notify(message: str) -> None`. Write a function `alert_all(notifiers, message)` that calls `notify` on each. Implement two unrelated classes satisfying the protocol — `ConsoleNotifier` and a test-only `RecordingNotifier` that stores messages in a list instead of printing — **without inheriting from `Notifier`**.
+
+**Verify it yourself:** make the protocol `@runtime_checkable` and confirm `isinstance(RecordingNotifier(), Notifier)` is `True` even though it never declared the relationship.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+from typing import Protocol, runtime_checkable
+
+
+@runtime_checkable
+class Notifier(Protocol):
+    def notify(self, message: str) -> None:
+        ...
+
+
+class ConsoleNotifier:
+    def notify(self, message: str) -> None:
+        print(f"Console: {message}")
+
+
+class RecordingNotifier:
+    def __init__(self) -> None:
+        self.messages: list[str] = []
+
+    def notify(self, message: str) -> None:
+        self.messages.append(message)
+
+
+def alert_all(notifiers: list[Notifier], message: str) -> None:
+    for notifier in notifiers:
+        notifier.notify(message)
+
+
+recorder = RecordingNotifier()
+alert_all([ConsoleNotifier(), recorder], "Server down")
+
+print(recorder.messages)
+print(isinstance(recorder, Notifier))
+```
+
+**Expected output:**
+
+```
+Console: Server down
+['Server down']
+True
+```
+
+**What this proves.** `RecordingNotifier` satisfies `Notifier` purely by having the right method — structural typing (§13.1, §13.4) — which is exactly what makes it a safe, inheritance-free stand-in for tests.
+
+</details>
+
 > ### 🧭 In practice — protocols
 >
 > **How to use it.** Define `class Repository(Protocol):` in a `typing` import and list the methods with `...` as the body. Any class that has those methods satisfies it — no inheritance, no registration. Type your function parameters with the protocol (`def save(repo: Repository)`) and run `mypy` or `pyright`. Add `@runtime_checkable` only if you genuinely need `isinstance`. **Expected result:** the type checker flags mismatches before the program runs; Python itself is unaffected.
@@ -2526,6 +3043,80 @@ Create abstractions only when you need:
 - 🔄 Dependency inversion
 - 🧱 A stable boundary between layers
 - 🔌 Plugin-like behavior
+
+## 14.5 🏋️ Hands-on exercise
+
+Two features need an abstraction. Decide ABC vs protocol for each, then write it:
+
+1. `Vehicle` — `Car`, `Motorcycle`, and `Truck` all **are** vehicles, share a `fuel_level` attribute and a concrete `refuel()` method, but each must supply its own `calculate_range()`.
+2. `Trackable` — a capability: "can report a `get_location()`". A `Drone` and a `Smartphone` can both do this, but a `Smartphone` is clearly not a `Vehicle`.
+
+**Verify it yourself:** confirm a `Smartphone` can be passed to a function typed `Trackable` without inheriting from `Vehicle`.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+from abc import ABC, abstractmethod
+from typing import Protocol
+
+
+class Vehicle(ABC):
+    def __init__(self, fuel_level: float) -> None:
+        self.fuel_level = fuel_level
+
+    def refuel(self, amount: float) -> None:
+        self.fuel_level += amount
+
+    @abstractmethod
+    def calculate_range(self) -> float:
+        ...
+
+
+class Car(Vehicle):
+    def calculate_range(self) -> float:
+        return self.fuel_level * 15
+
+
+class Trackable(Protocol):
+    def get_location(self) -> str:
+        ...
+
+
+class Drone:
+    def get_location(self) -> str:
+        return "lat=0, lon=0"
+
+
+class Smartphone:
+    def get_location(self) -> str:
+        return "GPS: 6.9, 79.8"
+
+
+def report_location(item: Trackable) -> None:
+    print(item.get_location())
+
+
+report_location(Drone())
+report_location(Smartphone())
+
+car = Car(10)
+print(car.calculate_range())
+print(isinstance(car, Vehicle))
+```
+
+**Expected output:**
+
+```
+lat=0, lon=0
+GPS: 6.9, 79.8
+150
+True
+```
+
+**What this proves.** `Vehicle` models identity ("what *is* this?") via an ABC with shared `refuel()` code (§14.1). `Trackable` models capability ("what can it *do*?") via a protocol, so a `Smartphone` — not any kind of `Vehicle` — satisfies it just by having the right method (§14.3).
+
+</details>
 
 > ### 🧭 In practice — choosing between an abstract base class and a protocol
 >
@@ -2674,6 +3265,55 @@ One-to-one:   Customer has Profile.
 One-to-many:  Customer has Orders.
 Many-to-many: Student has Courses, Course has Students.
 ```
+
+## 15.8 🏋️ Hands-on exercise
+
+Build a `Car` that **has an** `Engine` (composition, injected via the constructor) and can `start()` by delegating to it. Create two engine types, `PetrolEngine` and `ElectricEngine`, both with a `start()` method (no shared base class needed). Build two different `Car` instances with different engines.
+
+**Verify it yourself:** prove that swapping the engine changes the car's behaviour without touching the `Car` class at all.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+class PetrolEngine:
+    def start(self) -> None:
+        print("Petrol engine rumbles to life.")
+
+
+class ElectricEngine:
+    def start(self) -> None:
+        print("Electric engine hums silently.")
+
+
+class Car:
+    def __init__(self, engine) -> None:
+        self._engine = engine
+
+    def start(self) -> None:
+        self._engine.start()
+        print("Car ready to drive.")
+
+
+petrol_car = Car(PetrolEngine())
+electric_car = Car(ElectricEngine())
+
+petrol_car.start()
+electric_car.start()
+```
+
+**Expected output:**
+
+```
+Petrol engine rumbles to life.
+Car ready to drive.
+Electric engine hums silently.
+Car ready to drive.
+```
+
+**What this proves.** `Car` never changed between the two instances — only the object handed to its constructor changed (§15.1). That is composition's main advantage over inheritance: behaviour varies by *what you plug in*, not by *which subclass you wrote*.
+
+</details>
 
 > ### 🧭 In practice — composition and object relationships
 >
@@ -3009,6 +3649,8 @@ class Producer(Generic[T_co]):
 **Contravariance** — a consumer of `Animal` can be used where a consumer of `Dog` is expected.
 
 ```python
+from typing import Generic, TypeVar
+
 T_contra = TypeVar("T_contra", contravariant=True)
 
 class Consumer(Generic[T_contra]):
@@ -3502,6 +4144,68 @@ ValueError: Quantity must be positive.
 
 > ⚠️ Avoid exposing mutable internal lists unless external mutation is genuinely intended (see [Section 9.3](#93--protecting-collections)).
 
+## 17.9 🏋️ Hands-on exercise
+
+Given this list of orders:
+
+```python
+class Order:
+    def __init__(self, order_id: int, customer: str, total: float, status: str) -> None:
+        self.id = order_id
+        self.customer = customer
+        self.total = total
+        self.status = status
+
+    def __repr__(self) -> str:
+        return f"Order({self.id}, {self.customer!r}, {self.total}, {self.status!r})"
+
+orders = [
+    Order(1, "Anna", 120.0, "shipped"),
+    Order(2, "Bob", 45.0, "pending"),
+    Order(3, "Anna", 300.0, "shipped"),
+    Order(4, "Cara", 60.0, "cancelled"),
+]
+```
+
+Using comprehensions and built-ins (no manual accumulation loops), produce: (1) a `dict[int, Order]` keyed by id, (2) the total value of all **shipped** orders, (3) the single most expensive order, (4) orders grouped by status.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+orders_by_id = {o.id: o for o in orders}
+print(orders_by_id[3])
+
+shipped_total = sum(o.total for o in orders if o.status == "shipped")
+print(shipped_total)
+
+most_expensive = max(orders, key=lambda o: o.total)
+print(most_expensive)
+
+from collections import defaultdict
+
+by_status: dict[str, list[Order]] = defaultdict(list)
+for o in orders:
+    by_status[o.status].append(o)
+for status, group in sorted(by_status.items()):
+    print(status, [o.id for o in group])
+```
+
+**Expected output:**
+
+```
+Order(3, 'Anna', 300.0, 'shipped')
+420.0
+Order(3, 'Anna', 300.0, 'shipped')
+cancelled [4]
+pending [2]
+shipped [1, 3]
+```
+
+**What this proves.** Each container was chosen for the question asked: a `dict` for lookup by id (§17.3), a generator expression plus `sum` for the total (§17.5/§17.6), `max(key=...)` for "the biggest one" (§17.6), and `defaultdict(list)` for grouping (§17.7) — no manual loop-and-accumulate code was needed.
+
+</details>
+
 > ### 🧭 In practice — collections and querying objects
 >
 > **How to use it.** Choose the container by the question you ask most: `list` for order, `dict` for lookup by key, `set` for uniqueness, `tuple` for a fixed snapshot. Filter and reshape with comprehensions (`[p for p in products if p.price > 100]`), sort with `sorted(..., key=lambda p: p.name)`, summarise with `sum`, `min`, `max`, `any`, `all`, and group with `defaultdict(list)`. **Expected result:** the same answers a database query would give, over objects already in memory.
@@ -3605,6 +4309,59 @@ class PriorityTask:
 ```
 
 > ⚠️ Be careful: ordering should represent a **meaningful business concept**, not just "whatever field comes first."
+
+## 18.6 🏋️ Hands-on exercise
+
+Build a `Coordinate` class (plain, not a dataclass) with `x` and `y`, implementing `__eq__` and `__hash__` so two coordinates with the same values are equal and interchangeable in a `set`. Then rewrite it as a frozen dataclass and confirm it behaves identically.
+
+**Verify it yourself:** put duplicate coordinates in a `set` both ways and confirm the duplicates collapse.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+class Coordinate:
+    def __init__(self, x: int, y: int) -> None:
+        self.x = x
+        self.y = y
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Coordinate):
+            return NotImplemented
+        return (self.x, self.y) == (other.x, other.y)
+
+    def __hash__(self) -> int:
+        return hash((self.x, self.y))
+
+
+points = {Coordinate(1, 2), Coordinate(1, 2), Coordinate(3, 4)}
+print(len(points))
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class CoordinateDataclass:
+    x: int
+    y: int
+
+
+points2 = {CoordinateDataclass(1, 2), CoordinateDataclass(1, 2), CoordinateDataclass(3, 4)}
+print(len(points2))
+print(CoordinateDataclass(1, 2) == CoordinateDataclass(1, 2))
+```
+
+**Expected output:**
+
+```
+2
+2
+True
+```
+
+**What this proves.** Both versions collapse the duplicate `(1, 2)` to a single set entry, because `__eq__`/`__hash__` (hand-written or dataclass-generated) say "same values, same object for this purpose" (§18.2–§18.4) — identity (`is`) would never have collapsed them.
+
+</details>
 
 > ### 🧭 In practice — equality and comparison
 >
@@ -3738,6 +4495,79 @@ class Product:
 ```
 
 > 🎯 **When to use:** when you create *many* instances (memory matters) or want to catch typos like `product.pirce = 5`. Use it when helpful, not automatically.
+
+## 19.8 🏋️ Hands-on exercise
+
+For each scenario, pick and implement the right shape from §19 (plain class, dataclass, frozen dataclass, or named tuple):
+
+1. A `Point` that is just `x, y` and never changes.
+2. A `ShoppingCartItemDto` parsed from JSON, with no business rules.
+3. An `Account` with behavior and rules (`deposit`) that must stay encapsulated.
+4. `Coordinates` — a fact that should never change, needed in an immutable "changed copy" form.
+
+**Verify it yourself:** confirm the frozen type raises when you try to mutate it directly, and that `dataclasses.replace` produces a changed copy instead.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+from dataclasses import dataclass, replace
+from typing import NamedTuple
+
+
+class Point(NamedTuple):
+    x: float
+    y: float
+
+
+@dataclass
+class ShoppingCartItemDto:
+    product_id: int
+    quantity: int
+
+
+class Account:
+    def __init__(self, balance: float) -> None:
+        self._balance = balance
+
+    @property
+    def balance(self) -> float:
+        return self._balance
+
+    def deposit(self, amount: float) -> None:
+        self._balance += amount
+
+
+@dataclass(frozen=True)
+class Coordinates:
+    lat: float
+    lon: float
+
+
+point = Point(1.0, 2.0)
+print(point)
+
+coords = Coordinates(6.9, 79.8)
+try:
+    coords.lat = 0.0
+except AttributeError as e:
+    print(f"AttributeError: {e}")
+
+moved = replace(coords, lat=7.0)
+print(coords, moved)
+```
+
+**Expected output:**
+
+```
+Point(x=1.0, y=2.0)
+AttributeError: cannot assign to field 'lat'
+Coordinates(lat=6.9, lon=79.8) Coordinates(lat=7.0, lon=79.8)
+```
+
+**What this proves.** `Point` is a tiny, truly fixed record — `NamedTuple` fits (§19.4). `ShoppingCartItemDto` is a bag of values crossing a boundary — a plain `@dataclass` fits (§19.2). `Account` has rules that must be protected — a hand-written class with a read-only property fits (§19.1/§5.5). `Coordinates` is a fact that should never change — `frozen=True` plus `replace()` fits (§19.3/§19.5).
+
+</details>
 
 > ### 🧭 In practice — choosing between class, dataclass, named tuple, and frozen
 >
@@ -3974,6 +4804,53 @@ mypy src
 
 > 💡 **Pro tip:** Running a type checker in your editor is like having a spell-checker for `None` bugs.
 
+## 20.7 🏋️ Hands-on exercise
+
+Write `find_discount_code(codes: dict[str, float], name: str) -> float | None` that looks up a discount by name and returns `None` if missing. Write a caller that handles the `None` case explicitly (not with `or`), and a second, deliberately buggy caller that uses `or` and mishandles a legitimate `0.0` discount.
+
+**Verify it yourself:** show the exact input where the `or` version gives the wrong answer.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+codes = {"WELCOME10": 0.10, "VIP": 0.25, "LOYALTY": 0.0}
+
+
+def find_discount_code(codes: dict[str, float], name: str) -> float | None:
+    return codes.get(name)
+
+
+def apply_discount_safe(total: float, discount: float | None) -> float:
+    if discount is None:
+        return total
+    return total * (1 - discount)
+
+
+def apply_discount_buggy(total: float, discount: float | None) -> float:
+    return total * (1 - (discount or 0.10))   # wrong: treats missing AND 0.0 the same
+
+
+print(apply_discount_safe(100.0, find_discount_code(codes, "VIP")))
+print(apply_discount_safe(100.0, find_discount_code(codes, "UNKNOWN")))
+print(apply_discount_safe(100.0, find_discount_code(codes, "LOYALTY")))   # legitimate 0% discount
+
+print(apply_discount_buggy(100.0, find_discount_code(codes, "LOYALTY")))  # BUG: silently applies 10%
+```
+
+**Expected output:**
+
+```
+75.0
+100.0
+100.0
+90.0
+```
+
+**What this proves.** `"LOYALTY"` is a real code with a genuine `0.0` discount. The safe version correctly leaves the price at `100.0`; the `or` version treats `0.0` as "nothing supplied" and wrongly applies a 10% fallback discount — exactly the trap described in §20.3.
+
+</details>
+
 > ### 🧭 In practice — None safety
 >
 > **How to use it.** Annotate anything that may legitimately be absent as `str | None`, then narrow it with an explicit `if value is not None:` before use. Push the handling into one helper rather than repeating it at every call site, and reject `None` at the boundary (`if name is None: raise ValueError(...)`) so the rest of your code can trust the value. Run `mypy src`. **Expected result:** the type checker reports the missing check *before the program runs*, with a message naming the exact argument.
@@ -4201,6 +5078,64 @@ except ValueError as error:
 
 > 💡 `from error` preserves the whole story — future-you debugging at 2 AM will be grateful.
 
+## 21.7 🏋️ Hands-on exercise
+
+Build a small validation pipeline: a `DomainError` base class, an `InvalidAgeError(DomainError)` carrying the bad value as an attribute, and a function `register(age: str)` that converts `age` to `int` and raises `InvalidAgeError` **chained** (`from`) onto the original `ValueError` if conversion fails, or directly if the value is negative.
+
+**Verify it yourself:** catch the exception, print its message and the carried attribute, and print the cause's type to confirm the original error is preserved.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+class DomainError(Exception):
+    pass
+
+
+class InvalidAgeError(DomainError):
+    def __init__(self, raw_value: str) -> None:
+        self.raw_value = raw_value
+        super().__init__(f"'{raw_value}' is not a valid age.")
+
+
+def register(age: str) -> int:
+    try:
+        value = int(age)
+    except ValueError as error:
+        raise InvalidAgeError(age) from error
+
+    if value < 0:
+        raise InvalidAgeError(age)
+
+    return value
+
+
+try:
+    register("thirty")
+except InvalidAgeError as e:
+    print(f"{type(e).__name__}: {e}")
+    print(f"raw_value = {e.raw_value!r}")
+    print(f"caused by = {type(e.__cause__).__name__}")
+
+try:
+    register("-5")
+except DomainError as e:
+    print(f"Caught as DomainError: {e}")
+```
+
+**Expected output:**
+
+```
+InvalidAgeError: 'thirty' is not a valid age.
+raw_value = 'thirty'
+caused by = ValueError
+Caught as DomainError: '-5' is not a valid age.
+```
+
+**What this proves.** `e.raw_value` lets calling code act on structured data, not just a string (§21.3). `from error` preserves the original `ValueError` as `__cause__` (§21.6). Catching the specific `InvalidAgeError` and the general `DomainError` both work, because of the shared base class (§21.4).
+
+</details>
+
 > ### 🧭 In practice — exceptions and custom domain errors
 >
 > **How to use it.** Raise when a method cannot deliver what its name promises. Define one base class for your business-rule failures (`class DomainError(Exception)`) and subclass it per rule. Give each exception **attributes**, not just a message, so callers can act on the data. Preserve the original cause with `raise DomainError(...) from error`. **Expected result:** callers can catch one specific rule, or all of your rules as a group, without also swallowing genuine bugs.
@@ -4335,6 +5270,58 @@ class Team:
         self.members: list[str] = []
 ```
 
+## 22.7 🏋️ Hands-on exercise
+
+Build a `Product` class that:
+
+- tracks how many `Product` instances have been created, using a **class attribute** that is an `int` counter incremented in `__init__` (not a mutable object shared by reference),
+- has a `@staticmethod` `apply_tax(price: float, rate: float) -> float`,
+- has a `@classmethod` `clearance(cls, name: str) -> "Product"` that builds a product with price `0.0`.
+
+**Verify it yourself:** create three products and confirm the counter reads `3`, independent of any single instance.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+class Product:
+    instance_count = 0
+
+    def __init__(self, name: str, price: float) -> None:
+        self.name = name
+        self.price = price
+        Product.instance_count += 1
+
+    @staticmethod
+    def apply_tax(price: float, rate: float) -> float:
+        return price * (1 + rate)
+
+    @classmethod
+    def clearance(cls, name: str) -> "Product":
+        return cls(name, 0.0)
+
+
+a = Product("Laptop", 1000.0)
+b = Product("Mouse", 25.0)
+c = Product.clearance("Old Keyboard")
+
+print(Product.instance_count)
+print(Product.apply_tax(100.0, 0.15))
+print(c.name, c.price)
+```
+
+**Expected output:**
+
+```
+3
+115.0
+Old Keyboard 0.0
+```
+
+**What this proves.** `instance_count` lives on the class and is shared (§22.1), but because it is an immutable `int` reassigned with `Product.instance_count += 1` — not a mutable list appended to — there is no §22.6-style sharing bug. `apply_tax` needs neither `self` nor `cls` (static), while `clearance` needs `cls` to build the right type (class method, §22.4).
+
+</details>
+
 > ### 🧭 In practice — class attributes, constants, static and class methods
 >
 > **How to use it.** Put per-object data in `__init__` (`self.name = name`) and shared data in the class body (`name = "OOP Guide"`). Use `@staticmethod` for a helper that needs neither `self` nor `cls`, and `@classmethod` when you need the class itself — chiefly for alternative constructors that `return cls(...)`. Name constants in `UPPER_CASE`. **Expected result:** `AppSettings.development()` builds a configured instance without the caller knowing the arguments.
@@ -4452,6 +5439,75 @@ class OrderService:
 Use observer-style design when many objects need to react to something that happened.
 
 > ⚠️ **When to avoid:** don't make *everything* event-driven. Events can make program flow harder to follow if overused. Use them when decoupling genuinely helps.
+
+## 23.7 🏋️ Hands-on exercise
+
+Build a `StockTicker` that fires a `PriceChangedEvent(symbol, new_price)` to any number of subscribers. Add two subscribers — one that prints an alert, one that records every event into a list — and demonstrate **unsubscribing** one of them mid-way.
+
+**Verify it yourself:** confirm the unsubscribed handler stops receiving events after removal, while the other keeps receiving them.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+from dataclasses import dataclass
+from collections.abc import Callable
+
+
+@dataclass(frozen=True)
+class PriceChangedEvent:
+    symbol: str
+    new_price: float
+
+
+class StockTicker:
+    def __init__(self) -> None:
+        self._handlers: list[Callable[[PriceChangedEvent], None]] = []
+
+    def on_price_changed(self, handler: Callable[[PriceChangedEvent], None]) -> None:
+        self._handlers.append(handler)
+
+    def off_price_changed(self, handler: Callable[[PriceChangedEvent], None]) -> None:
+        self._handlers.remove(handler)
+
+    def update_price(self, symbol: str, new_price: float) -> None:
+        event = PriceChangedEvent(symbol, new_price)
+        for handler in self._handlers:
+            handler(event)
+
+
+recorded: list[PriceChangedEvent] = []
+
+
+def alert(event: PriceChangedEvent) -> None:
+    print(f"ALERT: {event.symbol} is now {event.new_price}")
+
+
+def record(event: PriceChangedEvent) -> None:
+    recorded.append(event)
+
+
+ticker = StockTicker()
+ticker.on_price_changed(alert)
+ticker.on_price_changed(record)
+
+ticker.update_price("ACME", 10.0)
+ticker.off_price_changed(alert)
+ticker.update_price("ACME", 11.0)
+
+print(len(recorded))
+```
+
+**Expected output:**
+
+```
+ALERT: ACME is now 10.0
+2
+```
+
+**What this proves.** `alert` fired for the first update but not the second, because it was unsubscribed — while `record` (never removed) silently captured both events into `recorded`. This is the subscriber-list pattern from §23.4/§23.5, including the unsubscribe hook §23.6 recommends when subscribers are added dynamically.
+
+</details>
 
 > ### 🧭 In practice — callbacks and events
 >
@@ -4648,6 +5704,71 @@ The `with` block is what makes this acceptable: the patch is visible, narrow, an
 > [!WARNING]
 > Outside tests, monkey patching surprises other developers and breaks the assumption that a class's source file describes its behaviour. Prefer explicit functions, wrappers, or mixins.
 
+## 24.5 🏋️ Hands-on exercise
+
+You are given a third-party-style `Rectangle` class you must not edit:
+
+```python
+class Rectangle:
+    def __init__(self, width: float, height: float) -> None:
+        self.width = width
+        self.height = height
+
+    def area(self) -> float:
+        return self.width * self.height
+```
+
+Add an "is a square" capability **without modifying `Rectangle`**, two ways: (1) a free function `is_square(rect) -> bool`, and (2) a `DescribableMixin` with a `describe()` method usable by any class that defines `area()`, applied to a new `Square(Rectangle)` subclass.
+
+**Verify it yourself:** confirm neither approach touched `Rectangle`'s source, and both work correctly.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+class Rectangle:
+    def __init__(self, width: float, height: float) -> None:
+        self.width = width
+        self.height = height
+
+    def area(self) -> float:
+        return self.width * self.height
+
+
+def is_square(rect: Rectangle) -> bool:
+    return rect.width == rect.height
+
+
+class DescribableMixin:
+    def describe(self) -> str:
+        return f"{type(self).__name__} with area {self.area()}"
+
+
+class Square(DescribableMixin, Rectangle):
+    def __init__(self, side: float) -> None:
+        super().__init__(side, side)
+
+
+rect = Rectangle(4, 5)
+square = Square(4)
+
+print(is_square(rect))
+print(is_square(square))
+print(square.describe())
+```
+
+**Expected output:**
+
+```
+False
+True
+Square with area 16
+```
+
+**What this proves.** `is_square` adds behaviour to `Rectangle` through a plain function (§24.1) — the preferred, simplest option. `DescribableMixin` adds a reusable method to any class with an `area()` method (§24.2), and nothing in `Rectangle`'s own file changed in either case.
+
+</details>
+
 > ### 🧭 In practice — extension-style techniques
 >
 > **How to use it.** To add behaviour to a type you do not own, write a **plain function** that takes it as a parameter. To share small behaviour across unrelated classes, use a **mixin**. To wrap a function without editing it, use a **decorator** with `functools.wraps`. To adapt an object's interface, wrap it in a class. **Expected result:** the new behaviour is reachable, greppable, and visible to your editor and type checker.
@@ -4671,7 +5792,7 @@ The `with` block is what makes this acceptable: the patch is visible, narrow, an
 
 ## 25.1 🔢 Indexing with `__getitem__`
 
-**▶️ Continues** — the usage snippet assumes a `classroom` object built from the `Classroom` class above it. For the full contract of `__getitem__`, including slicing and the `IndexError` requirement, see the companion `python_dunder.md`, Entry 68.
+**▶️ Continues** — the usage snippet below builds a `classroom` object from the `Classroom` class above it. For the full contract of `__getitem__`, including slicing and the `IndexError` requirement, see the companion `python_dunder.md`, Entry 68.
 
 ```python
 class Classroom:
@@ -4691,8 +5812,19 @@ class Classroom:
 **Usage:**
 
 ```python
+classroom = Classroom()
+classroom.add("Anna")
+classroom.add("Ben")
+
 first_student = classroom[0]
 print(len(classroom))
+```
+
+**Expected output:**
+
+```
+Anna
+2
 ```
 
 ## 25.2 ➕ Operator overloading
@@ -4793,6 +5925,60 @@ Python does not have partial classes. Alternatives:
 - Use mixins carefully.
 - Keep classes small.
 - Use generated code in separate files.
+
+## 25.8 🏋️ Hands-on exercise
+
+Build a `Vector2D` class with `x` and `y` that supports `+` (`__add__`), equality (`__eq__`), and has both `__repr__` (developer) and `__str__` (user-friendly, e.g. `"(3, 4)"`).
+
+**Verify it yourself:** add two vectors and check the result; print a `Vector2D` directly (uses `__str__`) and print a list containing one (uses `__repr__`).
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+class Vector2D:
+    def __init__(self, x: float, y: float) -> None:
+        self.x = x
+        self.y = y
+
+    def __add__(self, other: "Vector2D") -> "Vector2D":
+        if not isinstance(other, Vector2D):
+            return NotImplemented
+        return Vector2D(self.x + other.x, self.y + other.y)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Vector2D):
+            return NotImplemented
+        return (self.x, self.y) == (other.x, other.y)
+
+    def __str__(self) -> str:
+        return f"({self.x}, {self.y})"
+
+    def __repr__(self) -> str:
+        return f"Vector2D(x={self.x!r}, y={self.y!r})"
+
+
+a = Vector2D(1, 2)
+b = Vector2D(3, 4)
+
+print(a + b)
+print(a + b == Vector2D(4, 6))
+print(a)
+print([a])
+```
+
+**Expected output:**
+
+```
+(4, 6)
+True
+(1, 2)
+[Vector2D(x=1, y=2)]
+```
+
+**What this proves.** `a + b` works because `__add__` hooks into the `+` operator (§25.2); `print(a)` uses `__str__` while printing it *inside a list* uses `__repr__` (§25.3) — exactly the distinction the section draws.
+
+</details>
 
 > ### 🧭 In practice — special methods and operator overloading
 >
@@ -4930,6 +6116,76 @@ Coming from C#? Here's the translation:
 | Project | Python package/distribution |
 | Assembly | installed package/wheel, loosely speaking |
 | Solution | repository/workspace with multiple packages/apps |
+
+## 26.8 🏋️ Hands-on exercise
+
+Design a package layout for a small "todo list" app with a `domain` module (a `Task` class), an `application` module (a `TaskService` that adds/completes tasks), and a `cli.py` entry point — following the layered structure from §26.5. Write the explicit import statements each file needs.
+
+**Verify it yourself:** confirm none of your imports use `import *`, and that `domain` imports nothing from `application` or `cli` — dependencies point one way, inward.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```text
+todo_app/
+├── pyproject.toml
+├── src/
+│   └── todo_app/
+│       ├── __init__.py
+│       ├── domain/
+│       │   ├── __init__.py
+│       │   └── tasks.py        # class Task
+│       ├── application/
+│       │   ├── __init__.py
+│       │   └── services.py     # class TaskService
+│       └── cli.py
+```
+
+```python
+# src/todo_app/domain/tasks.py
+class Task:
+    def __init__(self, title: str) -> None:
+        self.title = title
+        self.completed = False
+
+    def complete(self) -> None:
+        self.completed = True
+```
+
+```python
+# src/todo_app/application/services.py
+from todo_app.domain.tasks import Task
+
+
+class TaskService:
+    def __init__(self) -> None:
+        self._tasks: list[Task] = []
+
+    def add(self, title: str) -> Task:
+        task = Task(title)
+        self._tasks.append(task)
+        return task
+
+    def complete(self, title: str) -> None:
+        for task in self._tasks:
+            if task.title == title:
+                task.complete()
+                return
+        raise ValueError(f"No task named {title!r}")
+```
+
+```python
+# src/todo_app/cli.py
+from todo_app.application.services import TaskService
+
+service = TaskService()
+service.add("Write guide")
+service.complete("Write guide")
+```
+
+**What to check in your own version.** `domain/tasks.py` imports nothing from `application` or `cli` — the dependency arrow only ever points from `cli` → `application` → `domain`, never backwards (§26.7). No file uses `from module import *`.
+
+</details>
 
 > ### 🧭 In practice — modules, packages, and project structure
 >
@@ -5236,6 +6492,8 @@ Two of the three methods exist only to satisfy the contract, and both are landmi
 **✅ Better — small, focused contracts:**
 
 ```python
+from typing import Protocol
+
 class Printer(Protocol):
     def print_item(self) -> None:
         ...
@@ -5276,6 +6534,85 @@ class OrderService:
 ```
 
 > 💡 This directly sets up the next topic: **Dependency Injection**.
+
+## 27.6 🏋️ Hands-on exercise
+
+Start from this SRP-violating class:
+
+```python
+class ReportManager:
+    def calculate_total(self, items: list[float]) -> float:
+        return sum(items)
+
+    def save_to_file(self, text: str, path: str) -> None:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(text)
+
+    def print_report(self, text: str) -> None:
+        print(text)
+```
+
+Split it into three single-responsibility classes (`ReportCalculator`, `ReportFileWriter`, `ReportPrinter`). Then, separately, apply the Open/Closed principle: build a `DiscountPolicy` protocol and add a **new** discount type without editing any existing class.
+
+**Verify it yourself:** confirm each new class has exactly one public method/reason to change, and that adding `VipDiscountPolicy` required zero edits elsewhere.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+from typing import Protocol
+
+
+class ReportCalculator:
+    def calculate_total(self, items: list[float]) -> float:
+        return sum(items)
+
+
+class ReportFileWriter:
+    def save(self, text: str, path: str) -> None:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(text)
+
+
+class ReportPrinter:
+    def print_report(self, text: str) -> None:
+        print(text)
+
+
+class DiscountPolicy(Protocol):
+    def get_discount(self) -> float:
+        ...
+
+
+class RegularDiscountPolicy:
+    def get_discount(self) -> float:
+        return 0.05
+
+
+class VipDiscountPolicy:          # added later; nothing above was edited
+    def get_discount(self) -> float:
+        return 0.20
+
+
+def final_price(total: float, policy: DiscountPolicy) -> float:
+    return total * (1 - policy.get_discount())
+
+
+printer = ReportPrinter()
+printer.print_report(f"Total: {ReportCalculator().calculate_total([10, 20, 30])}")
+print(final_price(100.0, VipDiscountPolicy()))
+```
+
+**Expected output:**
+
+```
+Total: 60
+80.0
+```
+
+**What this proves.** Each split-out class now has one reason to change — the calculation, the file format, or the console output (§27.1). `VipDiscountPolicy` was *added*, and `final_price` never needed to change to support it — the Open/Closed principle in action (§27.2).
+
+</details>
 
 > ### 🧭 In practice — the SOLID principles
 >
@@ -5380,6 +6717,70 @@ Python doesn't have built-in DI lifetimes like some frameworks, but the ideas st
 - 🏛️ Cleaner architecture
 - 🔄 Replaceable implementations
 - 📦 Better separation of concerns
+
+## 28.6 🏋️ Hands-on exercise
+
+Build a `SignupService` that depends on an `EmailSender` protocol, injected through the constructor (not created inside the class). Write a `SmtpEmailSender` (just prints, pretending to send) for production, and a `FakeEmailSender` that records messages for testing. Then write a `build_signup_service()` composition-root function.
+
+**Verify it yourself:** call `SignupService` with the fake and assert the message was recorded, without any real email being sent.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+from typing import Protocol
+
+
+class EmailSender(Protocol):
+    def send(self, to: str, body: str) -> None:
+        ...
+
+
+class SmtpEmailSender:
+    def send(self, to: str, body: str) -> None:
+        print(f"Sending real email to {to}: {body}")
+
+
+class FakeEmailSender:
+    def __init__(self) -> None:
+        self.sent: list[tuple[str, str]] = []
+
+    def send(self, to: str, body: str) -> None:
+        self.sent.append((to, body))
+
+
+class SignupService:
+    def __init__(self, email_sender: EmailSender) -> None:
+        self._email_sender = email_sender
+
+    def sign_up(self, email: str) -> None:
+        self._email_sender.send(email, "Welcome!")
+
+
+def build_signup_service() -> SignupService:
+    return SignupService(SmtpEmailSender())
+
+
+fake = FakeEmailSender()
+test_service = SignupService(fake)
+test_service.sign_up("anna@example.com")
+
+assert fake.sent == [("anna@example.com", "Welcome!")]
+print("Test passed:", fake.sent)
+
+build_signup_service().sign_up("bob@example.com")
+```
+
+**Expected output:**
+
+```
+Test passed: [('anna@example.com', 'Welcome!')]
+Sending real email to bob@example.com: Welcome!
+```
+
+**What this proves.** `SignupService` never constructs its own `EmailSender` — it receives one (§28.1). Swapping `SmtpEmailSender` for `FakeEmailSender` required no change to `SignupService` at all, which is exactly what makes it testable without sending a real email.
+
+</details>
 
 > ### 🧭 In practice — dependency injection
 >
@@ -5672,6 +7073,91 @@ APPLICATION_NAME = "OOP App"
 
 > 💡 Avoid complex singleton classes unless there's a strong reason. A module-level value usually does the job.
 
+## 29.11 🏋️ Hands-on exercise
+
+Implement the **Strategy** pattern for shipping cost (one class per method: `StandardShipping`, `ExpressShipping`), plus a simple **Factory function** `create_shipping(method_name: str)` that builds the right one from a string. Then write a `Builder`-style `OrderBuilder` (à la §29.9) that chains `.with_customer(...)`, `.with_shipping(...)`, `.build()`.
+
+**Verify it yourself:** confirm the factory raises a clear error for an unknown method name, and that the builder's chained calls produce a correctly assembled object.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+from typing import Protocol
+
+
+class ShippingMethod(Protocol):
+    def calculate_cost(self) -> float:
+        ...
+
+
+class StandardShipping:
+    def calculate_cost(self) -> float:
+        return 5.0
+
+
+class ExpressShipping:
+    def calculate_cost(self) -> float:
+        return 15.0
+
+
+def create_shipping(method_name: str) -> ShippingMethod:
+    methods = {"standard": StandardShipping, "express": ExpressShipping}
+    if method_name not in methods:
+        raise ValueError(f"Unknown shipping method: {method_name!r}")
+    return methods[method_name]()
+
+
+class Order:
+    def __init__(self, customer: str, shipping: ShippingMethod) -> None:
+        self.customer = customer
+        self.shipping = shipping
+
+
+class OrderBuilder:
+    def __init__(self) -> None:
+        self._customer = ""
+        self._shipping: ShippingMethod | None = None
+
+    def with_customer(self, customer: str) -> "OrderBuilder":
+        self._customer = customer
+        return self
+
+    def with_shipping(self, shipping: ShippingMethod) -> "OrderBuilder":
+        self._shipping = shipping
+        return self
+
+    def build(self) -> Order:
+        if self._shipping is None:
+            raise ValueError("Shipping method is required.")
+        return Order(self._customer, self._shipping)
+
+
+order = (
+    OrderBuilder()
+    .with_customer("Anna")
+    .with_shipping(create_shipping("express"))
+    .build()
+)
+print(order.customer, order.shipping.calculate_cost())
+
+try:
+    create_shipping("drone")
+except ValueError as e:
+    print(f"ValueError: {e}")
+```
+
+**Expected output:**
+
+```
+Anna 15.0
+ValueError: Unknown shipping method: 'drone'
+```
+
+**What this proves.** `create_shipping` hides the dictionary lookup behind a clear name (a Factory, §29 family); `ShippingMethod` is the Strategy being selected (§32.3); `OrderBuilder`'s `return self` chaining (§29.9) assembles a multi-step object fluently.
+
+</details>
+
 > ### 🧭 In practice — design patterns in Python
 >
 > **How to use it.** Learn the **problem** each pattern solves, then reach for the simplest Python tool that solves it. Strategy is usually a function or a protocol parameter; Factory is often a dictionary; Observer is a list of callables; Singleton is usually a module. Use the full class-based shape only when the extra structure earns its place. **Expected result:** less code than the textbook version, doing the same job.
@@ -5850,6 +7336,90 @@ entity, the rule has been broken and both benefits are gone.
 > [!IMPORTANT]
 > **Business logic should not depend directly on databases, UI, or external systems.** The domain sits at the center; everything else points *inward* toward it.
 
+## 30.8 🏋️ Hands-on exercise
+
+Model a tiny `ShoppingCart` **aggregate**: an `Entity` base class with an `id`, a frozen `Money` value object, and a `ShoppingCart(Entity)` that owns a list of `CartLine` items and enforces the rule "cannot add a line with non-positive quantity." Add a `total()` method that sums line totals as `Money`.
+
+**Verify it yourself:** confirm adding an invalid quantity is refused, and `total()` returns a correct `Money` value.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+from dataclasses import dataclass
+
+
+class Entity:
+    def __init__(self, entity_id: int) -> None:
+        self.id = entity_id
+
+
+@dataclass(frozen=True)
+class Money:
+    amount: float
+    currency: str = "USD"
+
+    def __add__(self, other: "Money") -> "Money":
+        if self.currency != other.currency:
+            raise ValueError("Currencies must match.")
+        return Money(self.amount + other.amount, self.currency)
+
+
+@dataclass(frozen=True)
+class CartLine:
+    product_name: str
+    quantity: int
+    unit_price: Money
+
+    @property
+    def total(self) -> Money:
+        return Money(self.unit_price.amount * self.quantity, self.unit_price.currency)
+
+
+class ShoppingCart(Entity):
+    def __init__(self, cart_id: int) -> None:
+        super().__init__(cart_id)
+        self._lines: list[CartLine] = []
+
+    @property
+    def lines(self) -> tuple[CartLine, ...]:
+        return tuple(self._lines)
+
+    def add_line(self, product_name: str, quantity: int, unit_price: Money) -> None:
+        if quantity <= 0:
+            raise ValueError("Quantity must be positive.")
+        self._lines.append(CartLine(product_name, quantity, unit_price))
+
+    def total(self) -> Money:
+        result = Money(0.0)
+        for line in self._lines:
+            result = result + line.total
+        return result
+
+
+cart = ShoppingCart(1)
+cart.add_line("Book", 2, Money(15.0))
+cart.add_line("Pen", 3, Money(2.0))
+
+print(cart.total())
+
+try:
+    cart.add_line("Ghost", 0, Money(1.0))
+except ValueError as e:
+    print(f"ValueError: {e}")
+```
+
+**Expected output:**
+
+```
+Money(amount=36.0, currency='USD')
+ValueError: Quantity must be positive.
+```
+
+**What this proves.** `ShoppingCart` is the **aggregate root** (§30.3) — the only way to add a line is through `add_line`, which enforces the invariant. `Money` and `CartLine` are **value objects** (§30.2), frozen and defined entirely by their values.
+
+</details>
+
 > ### 🧭 In practice — domain modelling and architecture
 >
 > **How to use it.** Separate the ideas. Things with identity that survives change are **entities** (`Order`, `Customer`). Things that are entirely their values are **value objects** (`Money`, `EmailAddress`), and they should be frozen. One entity that guards a cluster of related objects is an **aggregate** (`Order` guarding its `OrderItem`s). Logic belonging to no single object is a **domain service**; orchestration of a use case is an **application service**. **Expected result:** the business rules live in one layer, and that layer imports nothing technical.
@@ -5971,6 +7541,69 @@ def test_order_service_sends_email() -> None:
 - ❌ Avoid brittle tests.
 - ✅ Use fake dependencies when needed.
 - ✅ Mock **external systems**, not your domain model.
+
+## 31.7 🏋️ Hands-on exercise
+
+Given this class:
+
+```python
+class InsufficientFundsError(Exception):
+    pass
+
+
+class Wallet:
+    def __init__(self, balance: float = 0.0) -> None:
+        self._balance = balance
+
+    @property
+    def balance(self) -> float:
+        return self._balance
+
+    def withdraw(self, amount: float) -> None:
+        if amount > self._balance:
+            raise InsufficientFundsError("Not enough funds.")
+        self._balance -= amount
+```
+
+Write three `pytest` test functions, following Arrange/Act/Assert: one for a successful withdrawal, one that expects `InsufficientFundsError` via `pytest.raises`, and one confirming two `Wallet` instances are independent (one's withdrawal does not affect the other's balance).
+
+**Verify it yourself:** run `pytest` and confirm all three pass.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+import pytest
+
+
+def test_withdraw_should_decrease_balance() -> None:
+    wallet = Wallet(100.0)
+
+    wallet.withdraw(30.0)
+
+    assert wallet.balance == 70.0
+
+
+def test_withdraw_should_raise_when_amount_exceeds_balance() -> None:
+    wallet = Wallet(50.0)
+
+    with pytest.raises(InsufficientFundsError):
+        wallet.withdraw(100.0)
+
+
+def test_wallets_should_be_independent() -> None:
+    wallet_a = Wallet(100.0)
+    wallet_b = Wallet(100.0)
+
+    wallet_a.withdraw(40.0)
+
+    assert wallet_a.balance == 60.0
+    assert wallet_b.balance == 100.0
+```
+
+**What to check in your own version.** Each test does exactly one Arrange, one Act, one Assert (§31.2). `pytest.raises` is used instead of a manual `try`/`except` (§31.3). Running `pytest -v` should show `3 passed`.
+
+</details>
 
 > ### 🧭 In practice — unit testing
 >
@@ -6115,6 +7748,70 @@ If shipping costs are three fixed numbers that change once a year, the original 
 
 > [!IMPORTANT]
 > **Never refactor without tests.** Tests are what let you change code confidently, knowing you didn't break anything.
+
+## 32.5 🏋️ Hands-on exercise
+
+Start from this working but overloaded function:
+
+```python
+def process_order(items: list[tuple[str, float, int]]) -> str:
+    total = 0.0
+    for name, price, quantity in items:
+        if quantity <= 0:
+            raise ValueError(f"Invalid quantity for {name}")
+        total += price * quantity
+    if total > 100:
+        total *= 0.9
+    return f"Total due: {total:.2f}"
+```
+
+First, write one test that pins its current behaviour. Then apply **Extract Function** (§32.1) to split it into `validate_items`, `calculate_subtotal`, and `apply_bulk_discount`, keeping `process_order` as a thin orchestrator. Re-run your test.
+
+**Verify it yourself:** the test must pass both before and after — identical behaviour, better structure.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+def test_process_order_applies_discount_over_100() -> None:
+    items = [("Book", 60.0, 1), ("Pen", 50.0, 1)]
+    assert process_order(items) == "Total due: 99.00"
+
+
+def validate_items(items: list[tuple[str, float, int]]) -> None:
+    for name, _price, quantity in items:
+        if quantity <= 0:
+            raise ValueError(f"Invalid quantity for {name}")
+
+
+def calculate_subtotal(items: list[tuple[str, float, int]]) -> float:
+    return sum(price * quantity for _name, price, quantity in items)
+
+
+def apply_bulk_discount(total: float) -> float:
+    return total * 0.9 if total > 100 else total
+
+
+def process_order(items: list[tuple[str, float, int]]) -> str:
+    validate_items(items)
+    total = calculate_subtotal(items)
+    total = apply_bulk_discount(total)
+    return f"Total due: {total:.2f}"
+
+
+test_process_order_applies_discount_over_100()
+print("Test still passes after refactoring.")
+```
+
+**Expected output:**
+
+```
+Test still passes after refactoring.
+```
+
+**What this proves.** The test (§31, §32.4 step 1) passed unchanged before and after the split — proof the refactoring changed *structure*, not *behaviour*. Each extracted function now has one clear job (§32.1), matching the "Extract Function" refactoring named in the table.
+
+</details>
 
 > ### 🧭 In practice — refactoring
 >
@@ -6439,6 +8136,84 @@ ValueError: mutable default <class 'list'> for field items is not allowed: use d
 `default_factory=list` stores the *function* `list`, which the generated `__init__` calls once per instance, producing a fresh list every time.
 
 **This is one of the strongest reasons to prefer dataclasses** for data-holding classes: the error is caught when the class is defined, long before any confusing runtime behaviour.
+
+## 33.12 🏋️ Hands-on exercise
+
+This code has **three** of the mistakes from this section. Find and fix all three:
+
+```python
+class EmailSender:
+    def send(self, to: str, body: str) -> None:
+        print(f"Sending to {to}: {body}")
+
+
+class Order:
+    def __init__(self, items=[]):           # mistake 1
+        self.items = items                  # mistake 2
+        self.sender = EmailSender()          # mistake 3
+
+    def add(self, item):
+        self.items.append(item)
+
+    def notify(self, to: str) -> None:
+        self.sender.send(to, f"You have {len(self.items)} items.")
+```
+
+**Verify it yourself:** create two `Order` instances, add an item to only one, and confirm the other's `items` stays empty.
+
+<details>
+<summary><b>🔑 Solution</b></summary>
+
+```python
+from typing import Protocol
+
+
+class EmailSenderProtocol(Protocol):
+    def send(self, to: str, body: str) -> None:
+        ...
+
+
+class EmailSender:
+    def send(self, to: str, body: str) -> None:
+        print(f"Sending to {to}: {body}")
+
+
+class Order:
+    def __init__(self, sender: EmailSenderProtocol, items: list[str] | None = None) -> None:
+        self._items: list[str] = items if items is not None else []   # fixes 1 & 2
+        self._sender = sender                                          # fixes 3: injected
+
+    @property
+    def items(self) -> tuple[str, ...]:
+        return tuple(self._items)
+
+    def add(self, item: str) -> None:
+        self._items.append(item)
+
+    def notify(self, to: str) -> None:
+        self._sender.send(to, f"You have {len(self._items)} items.")
+
+
+sender = EmailSender()
+order_a = Order(sender)
+order_b = Order(sender)
+
+order_a.add("Book")
+
+print(order_a.items)
+print(order_b.items)
+```
+
+**Expected output:**
+
+```
+('Book',)
+()
+```
+
+**What this proves.** Mistake 1 (`items=[]` as a mutable default, §33.11) and its twin, exposing that same list publicly (§33.4), together meant every `Order` without an explicit list could end up sharing one. Mistake 3 (constructing `EmailSender()` inside `__init__`, §33.6) made the class impossible to test without sending real emails; injecting it fixes both the coupling and the testability.
+
+</details>
 
 > ### 🧭 In practice — recognising common OOP mistakes
 >

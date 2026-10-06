@@ -517,6 +517,20 @@ Now the email exists **once**. Fix it once, and all three orders are correct. Th
 >
 > **Best practices.** Split repeating data into its own table from the start and join it back — the single most expensive mistake in this chapter is one wide table that repeats the customer's email on every order row, because then a typo creates two customers and nobody can tell which is real. Give every table a primary key on day one; adding one later means deciding what to do with the duplicates you have already accumulated.
 
+## 🧪 Try it yourself
+
+**Goal:** prove to yourself, with a text editor and no database engine at all, why the "one giant table" design breaks and the relational design doesn't.
+
+1. Open any plain-text or spreadsheet file and type the **bad, repeating table** from [§1.4](#14--what-relational-means) by hand — three order rows, each repeating Amara's name, email, and city.
+2. Deliberately mistype the email on just the **third** row (`amara@exampel.com` instead of `amara@example.com`), exactly like the example.
+3. Now answer, in writing, one sentence each:
+   - Which email address is "the real one" for Amara — row 1, row 2, or row 3? How would a program decide?
+   - If Amara really did change her email, how many rows would you have to find and edit in the bad design?
+4. Now split the same data into the two **relational** tables (`customers` and `orders`) shown in the "✅ relational way" example. Change Amara's email **once**, in the `customers` table only, and confirm by inspection that all three orders are now consistent.
+
+**✅ Checkpoint:** you should be able to explain, in one sentence, why "split the data and join it with a key" prevents the typo problem — this sentence is the entire justification for everything in Chapters 2 onward.
+
+**🏋️ Exercise:** sketch (on paper or in a spreadsheet) the table design for a very small library: `books` and `borrowers`. Decide what the primary key of each table is, and what foreign key links a borrowed book back to the person who borrowed it. There is no SQL yet — the goal is to practice *thinking* in tables and keys before you write a single query.
 
 ---
 
@@ -671,6 +685,22 @@ ORDER BY o.order_date DESC;
 >
 > **Best practices.** Write standard SQL wherever a standard form exists (`COALESCE` rather than `ISNULL`/`IFNULL`, `CASE` rather than `IIF`/`IF`) so your knowledge and your queries travel. When you do use an engine-specific feature, know that you are doing it — this guide marks every such block with 🟥 or 🟦 precisely so that you can tell.
 
+## 🧪 Try it yourself
+
+**Goal:** spot the five SQL command families in a block of SQL you did not write yet, before you ever run a query.
+
+1. Without running anything, read this list of statements and label each one with its family — **Query (DQL)**, **Data change (DML)**, **Structure (DDL)**, **Access (DCL)**, or **Transaction (TCL)**:
+   ```sql
+   SELECT * FROM customers;
+   INSERT INTO customers (full_name, email) VALUES ('Nadia Lopez', 'nadia@example.com');
+   CREATE TABLE products (product_id INT PRIMARY KEY, name VARCHAR(100));
+   GRANT SELECT ON customers TO reporting_user;
+   ROLLBACK;
+   ```
+2. Rewrite the formatted multi-line `JOIN` query from [§2.5](#25--sql-syntax-rules-you-must-know-from-minute-one) as a single line with no formatting, then rewrite it back — notice that SQL does not care about whitespace, only *you* do.
+3. Deliberately break rule 4 by changing one of the single-quoted strings in the query above to double quotes, and predict (before you have a database to test on) which engine you'd expect to complain.
+
+**✅ Checkpoint:** you should be able to say, for any SQL statement someone shows you, which of the five families it belongs to and therefore how "dangerous" running it is (a `SELECT` can't lose data; a bare `DELETE` can).
 
 ---
 
@@ -779,6 +809,10 @@ SELECT VERSION() AS engine_version, NOW() AS server_time;
 | *Cannot connect* / *server was not found* | The database server is not running | Start the service (or `docker start` the container) and try again |
 | *Login failed* / *Access denied* | Wrong user name or password | Check the password you chose when installing |
 | *Certificate … not trusted* | Your tool does not trust the local server | Tick **Trust server certificate** (SSMS / VS Code) or add `-C` (sqlcmd) |
+
+**✅ Checkpoint (this *is* your Chapter 3 "try it yourself"):** if the query above returned one row with a version string and a timestamp, your server and client are both working — you have officially run your first SQL statement.
+
+**🏋️ Exercise:** run the version query again, but change it to also select the literal text `'hello from SQL'` as a third column (`SELECT @@VERSION AS engine_version, GETDATE() AS server_time, 'hello from SQL' AS greeting;` for MSSQL, swapping in `VERSION()`/`NOW()` for MySQL). Confirm you get three columns back. This proves you can add to a query, not just copy one.
 
 > ### 🧭 In practice — installing and connecting
 >
@@ -1387,6 +1421,17 @@ UNION ALL SELECT 'payments',    COUNT(*) FROM payments;
 >
 > **Best practices.** Notice that `order_items.unit_price` duplicates `products.unit_price` **on purpose**: an order must remember the price at the moment of sale, because product prices change. That is a real design decision, not a normalisation mistake, and [Chapter 52](#52-denormalization-and-when-to-break-the-rules) explains when duplication is correct. Keep the build script handy — breaking your practice data deliberately is how you learn.
 
+## 🏋️ Try it yourself
+
+**Goal:** prove you can both *verify* and *extend* ShopDB, not just run someone else's script.
+
+1. Re-run the row-count query from [§4.6](#46--verify-your-build) and confirm your numbers match the table exactly.
+2. Add one new row to `categories` for a category that does not exist yet (for example `'Outdoor'`), then add one new `products` row that references it by `category_id`.
+3. Re-run the row-count query — `categories` and `products` should each be exactly one higher than before.
+
+**✅ Checkpoint:** if both counts increased by exactly 1, you have successfully inserted related rows across two tables and verified the result yourself — the same loop (change → verify) you will use in every chapter from here on.
+
+**🧹 Clean up:** delete the row you added (`DELETE FROM products WHERE product_name = '...';` then the matching category) so your ShopDB matches the guide's numbers again for later chapters — or simply re-run the build script from [§4.3](#43--build-shopdb--mssql-version)/[§4.4](#44--build-shopdb--mysql-version).
 
 ---
 

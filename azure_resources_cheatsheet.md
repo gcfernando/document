@@ -1,5 +1,7 @@
 # 📦 Azure Resources Deep Reference
 
+**🏷️ Difficulty:** 🟡 Intermediate → 🔴 Advanced (reference — assumes [`azure_cheatsheet.md`](./azure_cheatsheet.md)'s architecture map)
+
 > 🌈 **A structured, resource-by-resource Azure engineering reference**  
 > **Edition:** 2026-10-03  
 > **Companion:** [`azure_cheatsheet.md`](./azure_cheatsheet.md) helps you choose a service quickly. This file goes deeper into **what the resource contains, how it connects, where it fails, and what to verify before production**.
@@ -172,6 +174,24 @@
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types
 
+## 🧪 Try it yourself
+
+**Goal:** Connect this reference to a real subscription by discovering registered resource providers and resource types.
+
+```bash
+az login
+az account show --output table
+az provider list --query "[?registrationState=='Registered'].namespace" --output table
+az provider show --namespace Microsoft.KeyVault --query "resourceTypes[].resourceType" --output table
+```
+
+**👀 Expected result:** A table of registered provider namespaces, then a list of resource types exposed by `Microsoft.KeyVault`.
+
+**✅ Checkpoint:** Is `Microsoft.Compute` registered in your subscription?
+
+**🧹 Clean up:**
+Nothing to clean up — read-only command.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -215,6 +235,26 @@ https://learn.microsoft.com/azure/azure-resource-manager/management/resource-pro
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/virtual-machines/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy the smallest practical Linux VM, confirm it runs, then deallocate it.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az vm create --resource-group <your-resource-group> --name demo-vm --image Ubuntu2204 --size Standard_B1s --generate-ssh-keys --public-ip-sku Standard
+az vm show --resource-group <your-resource-group> --name demo-vm --show-details --query "{power:powerState,ip:publicIps}" -o jsonc
+az vm deallocate --resource-group <your-resource-group> --name demo-vm
+```
+
+**👀 Expected result:** VM shows `powerState: VM running` with a public IP, then transitions to deallocated (stopped, not billed for compute) after the last command.
+
+**✅ Checkpoint:** After `az vm deallocate`, does `az vm get-instance-view` report `PowerState/deallocated`?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -255,6 +295,26 @@ https://learn.microsoft.com/azure/app-service/
 https://learn.microsoft.com/azure/azure-functions/
 
 https://learn.microsoft.com/azure/azure-app-configuration/
+
+## 🧪 Try it yourself
+
+**Goal:** Deploy a free-tier App Service plan and web app, then confirm it serves traffic.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az appservice plan create --name demo-plan --resource-group <your-resource-group> --sku F1 --is-linux
+az webapp create --name <unique-app-name> --resource-group <your-resource-group> --plan demo-plan --runtime "NODE:20-lts"
+az webapp show --name <unique-app-name> --resource-group <your-resource-group> --query defaultHostName -o tsv
+```
+
+**👀 Expected result:** A hostname like `<unique-app-name>.azurewebsites.net` is printed; browsing it returns the default Node.js container welcome page (HTTP 200).
+
+**✅ Checkpoint:** Does `curl -I https://<hostname>` return `HTTP/2 200`?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -299,6 +359,25 @@ https://learn.microsoft.com/azure/container-apps/
 https://learn.microsoft.com/azure/aks/
 
 https://learn.microsoft.com/azure/container-registry/
+
+## 🧪 Try it yourself
+
+**Goal:** Run the smallest real container workload — a single Azure Container Instance — without standing up AKS.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az container create --resource-group <your-resource-group> --name demo-aci --image mcr.microsoft.com/azuredocs/aci-helloworld --cpu 1 --memory 1 --ports 80 --ip-address Public
+az container show --resource-group <your-resource-group> --name demo-aci --query "{ip:ipAddress.ip,state:instanceView.state}" -o jsonc
+```
+
+**👀 Expected result:** `state: Running` with a public IP; browsing `http://<ip>` shows "Welcome to Azure Container Instances!".
+
+**✅ Checkpoint:** Does `curl http://<ip>` return the hello-world HTML?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -348,6 +427,25 @@ https://learn.microsoft.com/azure/private-link/
 
 https://learn.microsoft.com/azure/nat-gateway/
 
+## 🧪 Try it yourself
+
+**Goal:** Create a minimal VNet/subnet and inspect its address space.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az network vnet create --resource-group <your-resource-group> --name demo-vnet --address-prefix 10.10.0.0/16 --subnet-name demo-subnet --subnet-prefix 10.10.1.0/24
+az network vnet subnet show --resource-group <your-resource-group> --vnet-name demo-vnet --name demo-subnet --query addressPrefix -o tsv
+```
+
+**👀 Expected result:** `10.10.1.0/24` is printed, confirming the subnet was carved out of the VNet's `/16`.
+
+**✅ Checkpoint:** Does `az network vnet subnet list` show exactly one subnet in `demo-vnet`?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -382,6 +480,26 @@ https://learn.microsoft.com/azure/nat-gateway/
 https://learn.microsoft.com/azure/dns/
 
 https://learn.microsoft.com/azure/dns/dns-private-resolver-overview
+
+## 🧪 Try it yourself
+
+**Goal:** Create a Private DNS zone, link it to a VNet, and add a record.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az network private-dns zone create --resource-group <your-resource-group> --name demo.internal
+az network private-dns link vnet create --resource-group <your-resource-group> --zone-name demo.internal --name demo-link --virtual-network <your-vnet-name> --registration-enabled false
+az network private-dns record-set a add-record --resource-group <your-resource-group> --zone-name demo.internal --record-set-name app --ipv4-address 10.10.1.4
+```
+
+**👀 Expected result:** The zone, VNet link, and A record `app.demo.internal -> 10.10.1.4` are created.
+
+**✅ Checkpoint:** From a VM inside the linked VNet, does `nslookup app.demo.internal` resolve to `10.10.1.4`?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -423,6 +541,23 @@ https://learn.microsoft.com/azure/expressroute/
 
 https://learn.microsoft.com/azure/virtual-wan/
 
+## 🧪 Try it yourself
+
+**Goal:** Inspect available ExpressRoute providers and any existing gateways without provisioning costly hybrid infrastructure.
+
+```bash
+az network express-route list-service-providers --output table
+az network vnet-gateway list --resource-group <your-resource-group> --output table
+az network vpn-gateway list --output table
+```
+
+**👀 Expected result:** A table of ExpressRoute service providers and peering locations; gateway lists are empty unless you already have one deployed.
+
+**✅ Checkpoint:** Which ExpressRoute providers/bandwidths are available at your nearest peering location?
+
+**🧹 Clean up:**
+Nothing to clean up — read-only command.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -460,6 +595,25 @@ https://learn.microsoft.com/azure/load-balancer/
 https://learn.microsoft.com/azure/application-gateway/
 
 https://learn.microsoft.com/azure/frontdoor/
+
+## 🧪 Try it yourself
+
+**Goal:** Create a minimal public Basic Load Balancer and inspect its frontend configuration.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az network lb create --resource-group <your-resource-group> --name demo-lb --sku Basic --public-ip-address demo-pip
+az network lb show --resource-group <your-resource-group> --name demo-lb --query "frontendIPConfigurations[].publicIPAddress.id" -o tsv
+```
+
+**👀 Expected result:** The resource ID of `demo-pip` is printed, confirming the LB frontend is bound to the public IP.
+
+**✅ Checkpoint:** Does `az network lb probe list --resource-group <your-resource-group> --lb-name demo-lb` return an empty list until a backend pool and probe are added?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -502,6 +656,26 @@ https://learn.microsoft.com/azure/bastion/
 
 https://learn.microsoft.com/azure/network-watcher/
 
+## 🧪 Try it yourself
+
+**Goal:** Create an NSG with a custom deny-all-inbound rule and compare it against the built-in default rules.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az network nsg create --resource-group <your-resource-group> --name demo-nsg
+az network nsg rule create --resource-group <your-resource-group> --nsg-name demo-nsg --name DenyAllInbound --priority 4096 --direction Inbound --access Deny --protocol "*" --source-address-prefixes "*" --destination-address-prefixes "*" --source-port-ranges "*" --destination-port-ranges "*"
+az network nsg rule list --resource-group <your-resource-group> --nsg-name demo-nsg --output table
+```
+
+**👀 Expected result:** `DenyAllInbound` appears at priority 4096, below the auto-created `AllowVnetInBound` (65000) and `DenyAllInBound` (65500) default rules.
+
+**✅ Checkpoint:** What priority do the implicit default rules use compared to your custom rule, and which one wins?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -536,6 +710,25 @@ https://learn.microsoft.com/azure/network-watcher/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/storage/common/storage-account-overview
+
+## 🧪 Try it yourself
+
+**Goal:** Create a minimal Standard LRS storage account and inspect its default security settings.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az storage account create --resource-group <your-resource-group> --name <unique-storage-acct> --sku Standard_LRS --kind StorageV2
+az storage account show --resource-group <your-resource-group> --name <unique-storage-acct> --query "{sku:sku.name,kind:kind,https:enableHttpsTrafficOnly}" -o jsonc
+```
+
+**👀 Expected result:** JSON showing `sku: Standard_LRS`, `kind: StorageV2`, `https: true`.
+
+**✅ Checkpoint:** Is `enableHttpsTrafficOnly` true by default, and what happens if you try an `http://` request to the blob endpoint?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -575,6 +768,25 @@ https://learn.microsoft.com/azure/storage/blobs/
 
 https://learn.microsoft.com/azure/storage/blobs/data-lake-storage-introduction
 
+## 🧪 Try it yourself
+
+**Goal:** Create a blob container, upload a test blob, and list it back.
+
+```bash
+az storage container create --account-name <unique-storage-acct> --name demo-container --auth-mode login
+az storage blob upload --account-name <unique-storage-acct> --container-name demo-container --name hello.txt --data "hello azure" --auth-mode login
+az storage blob list --account-name <unique-storage-acct> --container-name demo-container --auth-mode login --output table
+```
+
+**👀 Expected result:** A table listing `hello.txt` with its size, access tier and last-modified timestamp.
+
+**✅ Checkpoint:** What access tier does `hello.txt` show (Hot by default), and does it match the storage account's default tier?
+
+**🧹 Clean up:**
+```bash
+az storage container delete --account-name <unique-storage-acct> --name demo-container --auth-mode login
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -608,6 +820,24 @@ https://learn.microsoft.com/azure/storage/blobs/data-lake-storage-introduction
 https://learn.microsoft.com/azure/storage/files/
 
 https://learn.microsoft.com/azure/azure-netapp-files/
+
+## 🧪 Try it yourself
+
+**Goal:** Create a minimal Azure Files share and inspect its quota/protocol.
+
+```bash
+az storage share-rm create --resource-group <your-resource-group> --storage-account <unique-storage-acct> --name demo-share --quota 5
+az storage share-rm show --resource-group <your-resource-group> --storage-account <unique-storage-acct> --name demo-share --query "{quota:shareQuota,protocol:enabledProtocols}" -o jsonc
+```
+
+**👀 Expected result:** JSON showing `quota: 5` (GiB) and `protocol: SMB`.
+
+**✅ Checkpoint:** What mount command does `az storage share-rm` guidance suggest for a Linux client versus a Windows client?
+
+**🧹 Clean up:**
+```bash
+az storage share-rm delete --resource-group <your-resource-group> --storage-account <unique-storage-acct> --name demo-share --yes
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -645,6 +875,25 @@ https://learn.microsoft.com/azure/virtual-machines/managed-disks-overview
 
 https://learn.microsoft.com/azure/storage/elastic-san/
 
+## 🧪 Try it yourself
+
+**Goal:** Create a small standalone managed disk and confirm it is unattached.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az disk create --resource-group <your-resource-group> --name demo-disk --size-gb 4 --sku Standard_LRS
+az disk show --resource-group <your-resource-group> --name demo-disk --query "{sku:sku.name,sizeGb:diskSizeGb,state:diskState}" -o jsonc
+```
+
+**👀 Expected result:** JSON showing `sku: Standard_LRS`, `sizeGb: 4`, `state: Unattached`.
+
+**✅ Checkpoint:** Why does `diskState` stay `Unattached` until a VM's NIC/config references this disk?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -677,6 +926,22 @@ https://learn.microsoft.com/azure/storage/elastic-san/
 https://learn.microsoft.com/azure/databox/
 
 https://learn.microsoft.com/azure/storage-mover/
+
+## 🧪 Try it yourself
+
+**Goal:** Check Data Box availability and SKUs for your region before planning a bulk migration.
+
+```bash
+az provider show --namespace Microsoft.DataBox --query "resourceTypes[].resourceType" -o table
+az databox available-skus --resource-group <your-resource-group> --location eastus --country US --transfer-type ImportToAzure --output table
+```
+
+**👀 Expected result:** A table of supported Data Box SKUs (for example `DataBox`, `DataBoxDisk`) available in `eastus`.
+
+**✅ Checkpoint:** Is `DataBoxHeavy` listed as available in your target region?
+
+**🧹 Clean up:**
+Nothing to clean up — read-only command.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -715,6 +980,26 @@ https://learn.microsoft.com/azure/storage-mover/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-sql/
 
+## 🧪 Try it yourself
+
+**Goal:** Create a minimal serverless Azure SQL Database and confirm it's online.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az sql server create --resource-group <your-resource-group> --name <unique-sql-server> --admin-user sqladmin --admin-password '<StrongP@ssw0rd!>'
+az sql db create --resource-group <your-resource-group> --server <unique-sql-server> --name demo-db --edition GeneralPurpose --family Gen5 --capacity 1 --compute-model Serverless
+az sql db show --resource-group <your-resource-group> --server <unique-sql-server> --name demo-db --query "{status:status,sku:currentSku.name}" -o jsonc
+```
+
+**👀 Expected result:** JSON showing `status: Online` and a serverless General Purpose SKU.
+
+**✅ Checkpoint:** Does `az sql server firewall-rule list` show any rules allowing your client IP by default?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -749,6 +1034,25 @@ https://learn.microsoft.com/azure/azure-sql/
 https://learn.microsoft.com/azure/postgresql/flexible-server/
 
 https://learn.microsoft.com/azure/mysql/flexible-server/
+
+## 🧪 Try it yourself
+
+**Goal:** Create a minimal Burstable-tier PostgreSQL Flexible Server with public access disabled.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az postgres flexible-server create --resource-group <your-resource-group> --name <unique-pg-server> --sku-name Standard_B1ms --tier Burstable --storage-size 32 --admin-user pgadmin --admin-password '<StrongP@ssw0rd!>' --public-access None
+az postgres flexible-server show --resource-group <your-resource-group> --name <unique-pg-server> --query "{state:state,sku:sku.name,version:version}" -o jsonc
+```
+
+**👀 Expected result:** JSON showing `state: Ready`, `sku: Standard_B1ms`, and the server version.
+
+**✅ Checkpoint:** Does `--public-access None` leave the server reachable only via private networking or allowed firewall rules?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -786,6 +1090,26 @@ https://learn.microsoft.com/azure/mysql/flexible-server/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/cosmos-db/
 
+## 🧪 Try it yourself
+
+**Goal:** Create a serverless Cosmos DB account with a database/container and inspect its default consistency.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az cosmosdb create --resource-group <your-resource-group> --name <unique-cosmos-account> --locations regionName=eastus --capabilities EnableServerless
+az cosmosdb sql database create --resource-group <your-resource-group> --account-name <unique-cosmos-account> --name demo-db
+az cosmosdb sql container create --resource-group <your-resource-group> --account-name <unique-cosmos-account> --database-name demo-db --name demo-container --partition-key-path "/pk"
+```
+
+**👀 Expected result:** The container is created with partition key `/pk`; `az cosmosdb sql container show` confirms it.
+
+**✅ Checkpoint:** What default consistency level does `az cosmosdb show --query consistencyPolicy` report (Session)?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -819,6 +1143,26 @@ https://learn.microsoft.com/azure/cosmos-db/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/redis/
 
+## 🧪 Try it yourself
+
+**Goal:** Check available Redis SKUs, then create the smallest Basic-tier cache.
+
+```bash
+az redis list-skus --location eastus --output table
+az group create --name <your-resource-group> --location eastus
+az redis create --resource-group <your-resource-group> --name <unique-redis-name> --location eastus --sku Basic --vm-size c0
+az redis show --resource-group <your-resource-group> --name <unique-redis-name> --query "{sku:sku.name,hostName:hostName,port:sslPort}" -o jsonc
+```
+
+**👀 Expected result:** JSON showing `sku: Basic`, a `hostName`, and `port: 6380` once provisioning completes.
+
+**✅ Checkpoint:** While creating, what does `az redis show --query provisioningState` report before it reaches `Succeeded`?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -847,6 +1191,22 @@ https://learn.microsoft.com/azure/redis/
 
 ## 📚 Official Microsoft docs
 https://azure.microsoft.com/products/category/databases/
+
+## 🧪 Try it yourself
+
+**Goal:** Discover whether partner database resource providers (Oracle, MongoDB Atlas) are registered/available in your subscription and region.
+
+```bash
+az provider list --query "[?contains(namespace,'Oracle') || contains(namespace,'MongoDB')].namespace" --output table
+az vm image list-publishers --location eastus --query "[?contains(name,'oracle')]" --output table
+```
+
+**👀 Expected result:** A list of partner namespaces (if registered) and Oracle-related VM image publishers available in `eastus`.
+
+**✅ Checkpoint:** Is a partner namespace (for example `Microsoft.MongoDB` or an Oracle offer) already registered in your subscription?
+
+**🧹 Clean up:**
+Nothing to clean up — read-only command.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -886,6 +1246,26 @@ https://azure.microsoft.com/products/category/databases/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/service-bus-messaging/
 
+## 🧪 Try it yourself
+
+**Goal:** Create a Basic Service Bus namespace and queue, then check its message count.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az servicebus namespace create --name <your-sb-namespace> --resource-group <your-resource-group> --sku Basic
+az servicebus queue create --name demo-queue --namespace-name <your-sb-namespace> --resource-group <your-resource-group>
+az servicebus queue show --name demo-queue --namespace-name <your-sb-namespace> --resource-group <your-resource-group> --query messageCount
+```
+
+**👀 Expected result:** The queue is created and `messageCount` returns `0`.
+
+**✅ Checkpoint:** Can you explain why Basic SKU does not support topics/subscriptions?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -919,6 +1299,26 @@ https://learn.microsoft.com/azure/service-bus-messaging/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/event-grid/
+
+## 🧪 Try it yourself
+
+**Goal:** Create a custom Event Grid topic and inspect its endpoint/keys.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az eventgrid topic create --name <your-topic> --resource-group <your-resource-group> --location eastus
+az eventgrid topic show --name <your-topic> --resource-group <your-resource-group> --query endpoint
+az eventgrid topic key list --name <your-topic> --resource-group <your-resource-group>
+```
+
+**👀 Expected result:** A topic endpoint URL and access keys are returned.
+
+**✅ Checkpoint:** Could you publish a CloudEvents-schema payload to this endpoint using the access key?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -955,6 +1355,26 @@ https://learn.microsoft.com/azure/event-grid/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/event-hubs/
 
+## 🧪 Try it yourself
+
+**Goal:** Create an Event Hubs namespace and a 2-partition hub.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az eventhubs namespace create --name <your-eh-namespace> --resource-group <your-resource-group> --sku Basic
+az eventhubs eventhub create --name demo-hub --namespace-name <your-eh-namespace> --resource-group <your-resource-group> --partition-count 2
+az eventhubs eventhub show --name demo-hub --namespace-name <your-eh-namespace> --resource-group <your-resource-group> --query partitionCount
+```
+
+**👀 Expected result:** `partitionCount` returns `2`.
+
+**✅ Checkpoint:** Why can't you reduce partition count after the hub is created?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -985,6 +1405,26 @@ https://learn.microsoft.com/azure/event-hubs/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/storage/queues/
+
+## 🧪 Try it yourself
+
+**Goal:** Create a storage queue, enqueue a message, and view queue stats.
+
+```bash
+az storage account create --name <yourstorageacct> --resource-group <your-resource-group> --location eastus --sku Standard_LRS
+az storage queue create --name demo-queue --account-name <yourstorageacct> --auth-mode login
+az storage message put --queue-name demo-queue --account-name <yourstorageacct> --content "hello" --auth-mode login
+az storage queue stats --account-name <yourstorageacct> --auth-mode login
+```
+
+**👀 Expected result:** The message is enqueued and stats show replication/geo status.
+
+**✅ Checkpoint:** What happens to the message's visibility if a consumer reads it but never deletes it?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1020,6 +1460,25 @@ https://learn.microsoft.com/azure/storage/queues/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/logic-apps/
+
+## 🧪 Try it yourself
+
+**Goal:** Create a minimal (empty) Consumption Logic App workflow and check its state.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az logic workflow create --resource-group <your-resource-group> --location eastus --name <your-logic-app> --definition "{\"$schema\":\"https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#\",\"contentVersion\":\"1.0.0.0\",\"triggers\":{},\"actions\":{}}"
+az logic workflow show --resource-group <your-resource-group> --name <your-logic-app> --query state
+```
+
+**👀 Expected result:** `state` returns `Enabled`.
+
+**✅ Checkpoint:** Why does this empty workflow never actually run?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1058,6 +1517,22 @@ https://learn.microsoft.com/azure/logic-apps/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/api-management/
 
+## 🧪 Try it yourself
+
+**Goal:** Inspect an existing APIM instance's gateway URL and published APIs (read-only; APIM creation takes ~30+ minutes).
+
+```bash
+az apim list --output table
+az apim show --name <your-apim-instance> --resource-group <your-resource-group> --query gatewayUrl
+az apim api list --service-name <your-apim-instance> --resource-group <your-resource-group> --output table
+```
+
+**👀 Expected result:** The gateway URL and a table of APIs published on that instance.
+
+**✅ Checkpoint:** Which SKU tier is the instance running, and does it support VNet integration?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1093,6 +1568,25 @@ https://learn.microsoft.com/azure/azure-signalr/overview
 https://learn.microsoft.com/azure/azure-web-pubsub/
 
 https://learn.microsoft.com/azure/communication-services/
+
+## 🧪 Try it yourself
+
+**Goal:** Deploy a free-tier SignalR Service instance and view its hostname.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az signalr create --name <your-signalr> --resource-group <your-resource-group> --sku Free_F1 --service-mode Default
+az signalr show --name <your-signalr> --resource-group <your-resource-group> --query hostName
+```
+
+**👀 Expected result:** A hostname like `<your-signalr>.service.signalr.net` is returned.
+
+**✅ Checkpoint:** Which `--service-mode` would you pick for a serverless Azure Functions backend instead of `Default`?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1132,6 +1626,22 @@ https://learn.microsoft.com/azure/communication-services/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/entra/identity/
 
+## 🧪 Try it yourself
+
+**Goal:** Inspect your signed-in identity and look up an app registration's service principal (read-only).
+
+```bash
+az ad signed-in-user show --query userPrincipalName
+az ad app list --display-name "<your-app-name>" --query "[].{name:displayName,appId:appId}"
+az ad sp list --filter "displayName eq '<your-app-name>'" --query "[].{name:displayName,appId:appId}"
+```
+
+**👀 Expected result:** Your UPN, then the app registration and matching service principal (if any exists).
+
+**✅ Checkpoint:** Can you explain why an app registration and its enterprise application/service principal are two distinct objects?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1168,6 +1678,21 @@ https://learn.microsoft.com/entra/identity/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/role-based-access-control/overview
 
+## 🧪 Try it yourself
+
+**Goal:** List role assignments for a principal and inspect a built-in role definition (read-only).
+
+```bash
+az role assignment list --assignee <your-user-or-sp-id> --all --output table
+az role definition list --name "Reader" --query "[].{name:roleName,id:name,dataActions:permissions[0].dataActions}"
+```
+
+**👀 Expected result:** A table of assignments across scopes, then the Reader role's permission structure.
+
+**✅ Checkpoint:** Does the Reader role contain any `dataActions`? Why or why not?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1203,6 +1728,26 @@ https://learn.microsoft.com/azure/role-based-access-control/overview
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/key-vault/
 
+## 🧪 Try it yourself
+
+**Goal:** Create a Key Vault and store/retrieve a secret.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az keyvault create --name <your-keyvault> --resource-group <your-resource-group> --location eastus
+az keyvault secret set --vault-name <your-keyvault> --name demo-secret --value "hello-world"
+az keyvault secret show --vault-name <your-keyvault> --name demo-secret --query value
+```
+
+**👀 Expected result:** The command returns `"hello-world"`.
+
+**✅ Checkpoint:** What role/permission would your own identity need to run `secret set` if the vault used RBAC authorization instead of access policies?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1232,6 +1777,21 @@ https://learn.microsoft.com/azure/key-vault/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/key-vault/managed-hsm/
+
+## 🧪 Try it yourself
+
+**Goal:** Inspect existing Managed HSM pools in your subscription (read-only; HSM pools are costly and slow to provision).
+
+```bash
+az keyvault list --resource-type hsm --output table
+az keyvault show --hsm-name <your-managed-hsm> --query "{state:properties.provisioningState,sd:properties.securityDomainProperties}"
+```
+
+**👀 Expected result:** A table of HSM pools, then provisioning state and security-domain status for one.
+
+**✅ Checkpoint:** Who holds the security-domain recovery material for this HSM, and is it backed up outside Azure?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1266,6 +1826,21 @@ https://learn.microsoft.com/azure/key-vault/managed-hsm/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-monitor/
 
+## 🧪 Try it yourself
+
+**Goal:** List metrics and diagnostic settings for an existing resource (read-only).
+
+```bash
+az monitor metrics list --resource <your-resource-id> --metric "Percentage CPU" --output table
+az monitor diagnostic-settings list --resource <your-resource-id>
+```
+
+**👀 Expected result:** A time series of CPU percentage, then any configured diagnostic routing destinations.
+
+**✅ Checkpoint:** If the diagnostic settings list is empty, where is this resource's telemetry currently going?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1296,6 +1871,25 @@ https://learn.microsoft.com/azure/azure-monitor/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-workspace-overview
+
+## 🧪 Try it yourself
+
+**Goal:** Create a Log Analytics workspace and verify provisioning.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az monitor log-analytics workspace create --resource-group <your-resource-group> --workspace-name <your-law> --location eastus
+az monitor log-analytics workspace show --resource-group <your-resource-group> --workspace-name <your-law> --query provisioningState
+```
+
+**👀 Expected result:** `provisioningState` returns `Succeeded`.
+
+**✅ Checkpoint:** Which table plan (Analytics/Basic/Auxiliary) would you choose for high-volume, rarely-queried logs, and why?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1330,6 +1924,25 @@ https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-workspace-ove
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview
 
+## 🧪 Try it yourself
+
+**Goal:** Create an Application Insights component and retrieve its instrumentation/connection key.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az monitor app-insights component create --app <your-appinsights> --resource-group <your-resource-group> --location eastus --kind web --application-type web
+az monitor app-insights component show --app <your-appinsights> --resource-group <your-resource-group> --query connectionString
+```
+
+**👀 Expected result:** A connection string containing an InstrumentationKey and IngestionEndpoint is returned.
+
+**✅ Checkpoint:** Why is OpenTelemetry + connection string now preferred over the legacy instrumentation key alone?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1361,6 +1974,25 @@ https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-overview
+
+## 🧪 Try it yourself
+
+**Goal:** Create an Action Group (notification target) and confirm it registered correctly.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az monitor action-group create --resource-group <your-resource-group> --name <your-action-group> --short-name demoag
+az monitor action-group show --resource-group <your-resource-group> --name <your-action-group> --query "{name:name,enabled:enabled}"
+```
+
+**👀 Expected result:** `enabled` returns `true` for the newly created Action Group.
+
+**✅ Checkpoint:** How would you attach an email or webhook receiver to this Action Group so an alert rule can notify someone?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1395,6 +2027,20 @@ https://learn.microsoft.com/azure/service-health/overview
 
 https://learn.microsoft.com/azure/advisor/
 
+## 🧪 Try it yourself
+
+**Goal:** List current Azure Advisor recommendations for your subscription (read-only).
+
+```bash
+az advisor recommendation list --query "[].{category:category,impact:impact,problem:shortDescription.problem}" --output table
+```
+
+**👀 Expected result:** A table of cost/reliability/security/performance recommendations, if any exist.
+
+**✅ Checkpoint:** Pick one high-impact recommendation — what is the remediation action it suggests?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1426,6 +2072,25 @@ https://learn.microsoft.com/azure/advisor/
 https://learn.microsoft.com/azure/automation/
 
 https://learn.microsoft.com/azure/update-manager/
+
+## 🧪 Try it yourself
+
+**Goal:** Create an Automation Account and verify it is active.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az automation account create --name <your-automation-account> --resource-group <your-resource-group> --location eastus
+az automation account show --name <your-automation-account> --resource-group <your-resource-group> --query state
+```
+
+**👀 Expected result:** `state` returns `Ok`.
+
+**✅ Checkpoint:** What identity would you assign to this account so its runbooks can manage other Azure resources without stored credentials?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1460,6 +2125,21 @@ https://learn.microsoft.com/azure/update-manager/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/defender-for-cloud/
 
+## 🧪 Try it yourself
+
+**Goal:** Check which Defender for Cloud plans are enabled for your subscription (read-only).
+
+```bash
+az security pricing list --query "value[].{plan:name,tier:pricingTier}" --output table
+az security secure-scores list --output table
+```
+
+**👀 Expected result:** A table listing each Defender plan's pricing tier (Free/Standard), and the subscription's current secure score.
+
+**✅ Checkpoint:** Which plans are still on the `Free` tier, and is that acceptable for your workload's risk level?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1490,6 +2170,22 @@ https://learn.microsoft.com/azure/defender-for-cloud/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/sentinel/
+
+## 🧪 Try it yourself
+
+**Goal:** List Sentinel incidents and analytics rules on an existing Log Analytics workspace (read-only; requires the `sentinel` CLI extension).
+
+```bash
+az extension add --name sentinel --upgrade
+az sentinel incident list --resource-group <your-resource-group> --workspace-name <your-law> --output table
+az sentinel alert-rule list --resource-group <your-resource-group> --workspace-name <your-law> --output table
+```
+
+**👀 Expected result:** Tables of open/closed incidents and configured analytics rules, if Sentinel is enabled on the workspace.
+
+**✅ Checkpoint:** For an open incident, what automation rule or playbook (if any) is attached to it?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1528,6 +2224,26 @@ https://learn.microsoft.com/azure/web-application-firewall/
 
 https://learn.microsoft.com/azure/ddos-protection/
 
+## 🧪 Try it yourself
+
+**Goal:** Create an NSG with a rule that denies inbound RDP.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az network nsg create --resource-group <your-resource-group> --name <your-nsg>
+az network nsg rule create --resource-group <your-resource-group> --nsg-name <your-nsg> --name deny-rdp --priority 100 --direction Inbound --access Deny --protocol Tcp --destination-port-ranges 3389
+az network nsg rule list --resource-group <your-resource-group> --nsg-name <your-nsg> --output table
+```
+
+**👀 Expected result:** The rule list shows `deny-rdp` with `Deny` access at priority `100`.
+
+**✅ Checkpoint:** Why does this NSG rule alone not protect you if Azure Firewall/WAF rules are misconfigured elsewhere?
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1555,6 +2271,21 @@ https://learn.microsoft.com/azure/ddos-protection/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/confidential-computing/
+
+## 🧪 Try it yourself
+
+**Goal:** List available confidential-computing VM SKUs (DCsv3/DCasv5 families) in a region (read-only).
+
+```bash
+az vm list-skus --location eastus --size Standard_DC --output table
+az vm list-skus --location eastus --size Standard_EC --output table
+```
+
+**👀 Expected result:** A table of confidential-computing VM sizes with their restrictions/capabilities for your region.
+
+**✅ Checkpoint:** Which of these SKUs support confidential VMs vs. SGX enclave-only application isolation?
+
+**🧹 Clean up:** Nothing to clean up — read-only command.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1589,6 +2320,24 @@ https://learn.microsoft.com/azure/confidential-computing/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/backup/
 
+## 🧪 Try it yourself
+
+**Goal:** create a Recovery Services Vault and enable backup policy inspection (no VM required to see the mechanics).
+
+```bash
+az backup vault create --resource-group <your-resource-group> --name demo-rsv --location eastus
+az backup policy list --resource-group <your-resource-group> --vault-name demo-rsv
+```
+
+**👀 Expected result:** the vault is created, and the policy list shows the built-in default backup policies available for assignment.
+
+**✅ Checkpoint:** can you name the two things a backup policy controls (schedule and retention)?
+
+**🧹 Clean up:**
+```bash
+az backup vault delete --resource-group <your-resource-group> --name demo-rsv --yes
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1620,6 +2369,24 @@ https://learn.microsoft.com/azure/backup/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/site-recovery/
 
+## 🧪 Try it yourself
+
+**Goal:** inspect what a Recovery Services Vault exposes for Site Recovery without needing a full replicated VM.
+
+```bash
+az backup vault create --resource-group <your-resource-group> --name demo-asr-vault --location eastus
+az resource show --ids $(az backup vault show --resource-group <your-resource-group> --name demo-asr-vault --query id -o tsv) --query "properties"
+```
+
+**👀 Expected result:** the vault's properties are returned, confirming it is a valid Site Recovery/backup management boundary.
+
+**✅ Checkpoint:** explain in one sentence why "replication healthy" does not prove the application works after failover.
+
+**🧹 Clean up:**
+```bash
+az backup vault delete --resource-group <your-resource-group> --name demo-asr-vault --yes
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1648,6 +2415,20 @@ https://learn.microsoft.com/azure/site-recovery/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/chaos-studio/
+
+## 🧪 Try it yourself
+
+**Goal:** discover which fault capabilities Chaos Studio currently supports, without running a destructive experiment.
+
+```bash
+az provider show --namespace Microsoft.Chaos --query "resourceTypes[].resourceType" -o table
+```
+
+**👀 Expected result:** a list of Chaos Studio resource types (e.g. `experiments`, `targets`) confirming the provider is available in your subscription.
+
+**✅ Checkpoint:** name the two things every chaos experiment must define before it runs (steady-state hypothesis and stop conditions).
+
+**🧹 Clean up:** nothing to clean up — read-only command.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1684,6 +2465,26 @@ https://learn.microsoft.com/azure/chaos-studio/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-resource-manager/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy a minimal resource group via an ARM/Bicep-style declarative deployment and inspect the deployment history.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az deployment group create --resource-group <your-resource-group> --name demo-deploy \
+  --template-file <(echo '{"$schema":"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#","contentVersion":"1.0.0.0","resources":[]}')
+az deployment group list --resource-group <your-resource-group> -o table
+```
+
+**👀 Expected result:** The deployment named `demo-deploy` shows `ProvisioningState: Succeeded` in the list output.
+
+**✅ Checkpoint:** Run `az deployment group show --resource-group <your-resource-group> --name demo-deploy` and confirm the `properties.provisioningState` is `Succeeded`.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1716,6 +2517,28 @@ https://learn.microsoft.com/azure/azure-resource-manager/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/governance/policy/overview
 
+## 🧪 Try it yourself
+
+**Goal:** Assign a built-in audit policy (no Deny risk) to a resource group and check compliance.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az policy assignment create --name audit-tag-rg \
+  --scope $(az group show --name <your-resource-group> --query id -o tsv) \
+  --policy "96670d01-0a4d-4649-9c89-2d3abc0a5025"
+az policy state list --resource-group <your-resource-group> -o table
+```
+
+**👀 Expected result:** A policy assignment named `audit-tag-rg` is created, and `az policy state list` shows a compliance record for the resource group.
+
+**✅ Checkpoint:** Run `az policy assignment show --name audit-tag-rg` and confirm the `enforcementMode` is `Default` (audit, not deny).
+
+**🧹 Clean up:**
+```bash
+az policy assignment delete --name audit-tag-rg
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1746,6 +2569,25 @@ https://learn.microsoft.com/azure/governance/policy/overview
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/governance/management-groups/overview
 
+## 🧪 Try it yourself
+
+**Goal:** Create a small management group hierarchy and list it.
+
+```bash
+az account management-group create --name demo-mg --display-name "Demo MG"
+az account management-group list -o table
+az account management-group show --name demo-mg --expand --recurse
+```
+
+**👀 Expected result:** `demo-mg` appears in the management group list, and `show --expand` returns its (empty) children array.
+
+**✅ Checkpoint:** Confirm `az account management-group show --name demo-mg` returns `properties.displayName` = `Demo MG`.
+
+**🧹 Clean up:**
+```bash
+az account management-group delete --name demo-mg
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1774,6 +2616,22 @@ https://learn.microsoft.com/azure/governance/management-groups/overview
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/governance/resource-graph/
+
+## 🧪 Try it yourself
+
+**Goal:** Query all resources in your subscription grouped by type using Resource Graph.
+
+```bash
+az extension add --name resource-graph --only-show-errors
+az graph query -q "Resources | summarize count() by type | order by count_ desc"
+```
+
+**👀 Expected result:** A table listing resource types in your subscription and how many of each exist.
+
+**✅ Checkpoint:** Identify which resource type has the highest count in your subscription.
+
+**🧹 Clean up:**
+Nothing to clean up — read-only query.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1806,6 +2664,25 @@ https://learn.microsoft.com/azure/governance/resource-graph/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/cost-management-billing/
 
+## 🧪 Try it yourself
+
+**Goal:** Query actual cost for your subscription over the last 7 days.
+
+```bash
+az costmanagement query --type ActualCost \
+  --timeframe MonthToDate \
+  --scope "/subscriptions/$(az account show --query id -o tsv)" \
+  --dataset-aggregation '{"totalCost":{"name":"PreTaxCost","function":"Sum"}}' \
+  --dataset-grouping name="ResourceGroup" type="Dimension"
+```
+
+**👀 Expected result:** A JSON result with cost rows grouped by resource group for the current month.
+
+**✅ Checkpoint:** Identify which resource group is incurring the highest cost so far this month.
+
+**🧹 Clean up:**
+Nothing to clean up — read-only query.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1833,6 +2710,27 @@ https://learn.microsoft.com/azure/cost-management-billing/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-resource-manager/management/lock-resources
+
+## 🧪 Try it yourself
+
+**Goal:** Lock a resource group against deletion, verify it blocks delete, then remove the lock.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az lock create --name no-delete --resource-group <your-resource-group> --lock-type CanNotDelete
+az group delete --name <your-resource-group> --yes --no-wait
+az lock list --resource-group <your-resource-group> -o table
+```
+
+**👀 Expected result:** The `az group delete` command fails with a `ScopeLocked` error because of the `CanNotDelete` lock.
+
+**✅ Checkpoint:** Confirm `az lock list` shows the `no-delete` lock, then remove it with `az lock delete --name no-delete --resource-group <your-resource-group>` before retrying delete.
+
+**🧹 Clean up:**
+```bash
+az lock delete --name no-delete --resource-group <your-resource-group>
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1870,6 +2768,25 @@ https://learn.microsoft.com/azure/azure-resource-manager/management/lock-resourc
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/data-factory/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy the smallest possible Data Factory instance and confirm it is provisioned.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az datafactory create --resource-group <your-resource-group> --factory-name demo-adf-$RANDOM
+az datafactory list --resource-group <your-resource-group> -o table
+```
+
+**👀 Expected result:** The factory shows `provisioningState: Succeeded` in the list output, with no pipelines defined yet.
+
+**✅ Checkpoint:** Run `az datafactory show --resource-group <your-resource-group> --factory-name <name>` and confirm the factory exists.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1901,6 +2818,26 @@ https://learn.microsoft.com/azure/data-factory/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/databricks/
+
+## 🧪 Try it yourself
+
+**Goal:** Deploy a minimal Databricks workspace (standard tier, lowest cost).
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az databricks workspace create --resource-group <your-resource-group> \
+  --name demo-dbx --location eastus --sku standard
+az databricks workspace show --resource-group <your-resource-group> --name demo-dbx -o table
+```
+
+**👀 Expected result:** The workspace shows `provisioningState: Succeeded` with a generated `workspaceUrl`.
+
+**✅ Checkpoint:** Open the `workspaceUrl` value and confirm you can sign in to the Databricks workspace UI.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1934,6 +2871,27 @@ https://learn.microsoft.com/azure/databricks/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/data-explorer/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy the smallest Azure Data Explorer (Kusto) cluster and create a database.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az kusto cluster create --resource-group <your-resource-group> --name demoadx$RANDOM \
+  --sku name="Dev(No SLA)_Standard_D11_v2" tier="Basic" --location eastus
+az kusto database create --resource-group <your-resource-group> --cluster-name <cluster-name> \
+  --database-name demo-db --read-write-database location=eastus soft-delete-period=P7D
+```
+
+**👀 Expected result:** The cluster provisions in dev/test SKU (no SLA) and the database `demo-db` appears under it.
+
+**✅ Checkpoint:** Run `az kusto database list --resource-group <your-resource-group> --cluster-name <cluster-name>` and confirm `demo-db` is listed.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1965,6 +2923,28 @@ https://learn.microsoft.com/azure/data-explorer/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/synapse-analytics/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy a Synapse workspace with serverless SQL only (no dedicated SQL pool cost).
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az storage account create --name demosynstg$RANDOM --resource-group <your-resource-group> \
+  --sku Standard_LRS --kind StorageV2 --enable-hierarchical-namespace true
+az synapse workspace create --name demo-synapse$RANDOM --resource-group <your-resource-group> \
+  --storage-account <storage-account-name> --file-system synapsefs \
+  --sql-admin-login-user sqladminuser --sql-admin-login-password '<StrongP@ssw0rd!>' --location eastus
+```
+
+**👀 Expected result:** The workspace provisions successfully; only the built-in serverless SQL endpoint is available (no dedicated pool created).
+
+**✅ Checkpoint:** Run `az synapse workspace show --name <workspace-name> --resource-group <your-resource-group>` and confirm `provisioningState: Succeeded`.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -1995,6 +2975,27 @@ https://learn.microsoft.com/azure/synapse-analytics/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/stream-analytics/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy a Stream Analytics job definition (no input/output wired yet) and inspect its default state.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az stream-analytics job create --resource-group <your-resource-group> \
+  --name demo-asa-job --location eastus \
+  --output-error-policy Drop --out-of-order-policy Drop --order-max-delay 5 --arrival-max-delay 16
+az stream-analytics job show --resource-group <your-resource-group> --name demo-asa-job -o table
+```
+
+**👀 Expected result:** The job is created with `jobState: Created` (not yet started, since no input/output is configured).
+
+**✅ Checkpoint:** Confirm `jobState` is `Created` and `provisioningState` is `Succeeded` in the show output.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2022,6 +3023,22 @@ https://learn.microsoft.com/azure/stream-analytics/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/fabric/
+
+## 🧪 Try it yourself
+
+**Goal:** Fabric capacities aren't plain ARM resources everywhere yet — inspect which Fabric-related resource providers/types are registered in your subscription.
+
+```bash
+az provider show --namespace Microsoft.Fabric --query "resourceTypes[].resourceType" -o tsv
+az provider list --query "[?contains(namespace,'Fabric')].{namespace:namespace, state:registrationState}" -o table
+```
+
+**👀 Expected result:** A list of Fabric-related resource types (if the provider is registered) or an empty/unregistered result if Fabric hasn't been onboarded in this subscription.
+
+**✅ Checkpoint:** Note whether `Microsoft.Fabric` shows `Registered` — if not, you'd need `az provider register --namespace Microsoft.Fabric` before using ARM-visible Fabric capacities.
+
+**🧹 Clean up:**
+Nothing to clean up — read-only command.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2058,6 +3075,26 @@ https://learn.microsoft.com/fabric/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/ai-foundry/what-is-azure-ai-foundry
 
+## 🧪 Try it yourself
+
+**Goal:** Create a minimal Foundry resource/project and confirm it's provisioned.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az cognitiveservices account create --name demo-foundry --resource-group <your-resource-group> \
+  --kind AIServices --sku S0 --location eastus --yes
+az cognitiveservices account show --name demo-foundry --resource-group <your-resource-group> -o table
+```
+
+**👀 Expected result:** The account shows `provisioningState: Succeeded` and `kind: AIServices`.
+
+**✅ Checkpoint:** Confirm the Foundry resource appears at https://ai.azure.com under your subscription/resource group.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2089,6 +3126,26 @@ https://learn.microsoft.com/azure/ai-foundry/what-is-azure-ai-foundry
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/ai-services/openai/
+
+## 🧪 Try it yourself
+
+**Goal:** Deploy an Azure OpenAI resource and list available model deployments.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az cognitiveservices account create --name demo-aoai --resource-group <your-resource-group> \
+  --kind OpenAI --sku S0 --location eastus --yes
+az cognitiveservices account deployment list --name demo-aoai --resource-group <your-resource-group> -o table
+```
+
+**👀 Expected result:** The account is created successfully; the deployment list is empty until you add a model deployment.
+
+**✅ Checkpoint:** Run `az cognitiveservices account list-models --name demo-aoai --resource-group <your-resource-group>` and confirm it returns available model names for your region.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2124,6 +3181,26 @@ https://learn.microsoft.com/azure/ai-services/openai/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/search/
+
+## 🧪 Try it yourself
+
+**Goal:** Deploy the smallest AI Search service (Free tier) and confirm it responds.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az search service create --name demo-search$RANDOM --resource-group <your-resource-group> \
+  --sku free --location eastus
+az search service show --name <search-name> --resource-group <your-resource-group> --query status -o tsv
+```
+
+**👀 Expected result:** The service `status` returns `running`.
+
+**✅ Checkpoint:** Run `az search admin-key show --service-name <search-name> --resource-group <your-resource-group>` and confirm an admin key is returned.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2161,6 +3238,25 @@ https://learn.microsoft.com/azure/search/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/machine-learning/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy a minimal Azure Machine Learning workspace (no compute started yet).
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az ml workspace create --name demo-mlw --resource-group <your-resource-group> --location eastus
+az ml workspace show --name demo-mlw --resource-group <your-resource-group> -o table
+```
+
+**👀 Expected result:** The workspace is created with `provisioning_state: Succeeded`; no compute instance/cluster exists yet.
+
+**✅ Checkpoint:** Confirm `az ml compute list --workspace-name demo-mlw --resource-group <your-resource-group>` returns an empty list (no idle compute billing).
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2192,6 +3288,27 @@ https://learn.microsoft.com/azure/machine-learning/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/ai-services/
+
+## 🧪 Try it yourself
+
+**Goal:** Deploy a multi-service AI Services account and inspect its keys/endpoint.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az cognitiveservices account create --name demo-aiservices --resource-group <your-resource-group> \
+  --kind CognitiveServices --sku S0 --location eastus --yes
+az cognitiveservices account show --name demo-aiservices --resource-group <your-resource-group> \
+  --query properties.endpoint -o tsv
+```
+
+**👀 Expected result:** A single HTTPS endpoint is returned that can be used for multiple AI capabilities (vision/language/etc.) from one resource.
+
+**✅ Checkpoint:** Run `az cognitiveservices account keys list --name demo-aiservices --resource-group <your-resource-group>` and confirm two keys are returned.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2231,6 +3348,26 @@ https://learn.microsoft.com/azure/iot-hub/
 
 https://learn.microsoft.com/azure/iot-dps/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy a free-tier IoT Hub and register a device identity.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az iot hub create --name demo-iothub$RANDOM --resource-group <your-resource-group> --sku F1 --partition-count 2
+az iot hub device-identity create --hub-name <hub-name> --device-id demo-device-01
+az iot hub device-identity list --hub-name <hub-name> -o table
+```
+
+**👀 Expected result:** The hub provisions on the free F1 SKU (one per subscription) and `demo-device-01` appears in the device identity list.
+
+**✅ Checkpoint:** Run `az iot hub device-identity show --hub-name <hub-name> --device-id demo-device-01` and confirm `status: enabled`.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2262,6 +3399,23 @@ https://learn.microsoft.com/azure/iot-dps/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/iot-operations/
 
+## 🧪 Try it yourself
+
+**Goal:** IoT Operations needs Arc-enabled Kubernetes as a prerequisite — verify whether the required resource providers are registered before attempting a real deployment.
+
+```bash
+az provider show --namespace Microsoft.IoTOperations --query registrationState -o tsv
+az provider show --namespace Microsoft.Kubernetes --query registrationState -o tsv
+az provider register --namespace Microsoft.IoTOperations
+```
+
+**👀 Expected result:** Provider registration state moves to (or already shows) `Registered`, confirming your subscription can host IoT Operations extensions on an Arc-enabled cluster.
+
+**✅ Checkpoint:** Re-run the `show` command after a minute and confirm `registrationState` reports `Registered`.
+
+**🧹 Clean up:**
+Nothing to clean up — provider registration is non-destructive and reusable.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2291,6 +3445,25 @@ https://learn.microsoft.com/azure/iot-operations/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/digital-twins/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy a Digital Twins instance and confirm the data-plane endpoint is reachable.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az dt create --name demo-dt-$RANDOM --resource-group <your-resource-group> --location eastus
+az dt show --name <dt-name> --resource-group <your-resource-group> --query hostName -o tsv
+```
+
+**👀 Expected result:** A `hostName` such as `demo-dt-xxxx.api.eus.digitaltwins.azure.net` is returned.
+
+**✅ Checkpoint:** Run `az dt model list --dt-name <dt-name>` and confirm it returns an empty list (no models uploaded yet).
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2318,6 +3491,26 @@ https://learn.microsoft.com/azure/digital-twins/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/iot-edge/
+
+## 🧪 Try it yourself
+
+**Goal:** Register an IoT Edge-capable device identity on an IoT Hub (edge-enabled flag).
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az iot hub create --name demo-edgehub$RANDOM --resource-group <your-resource-group> --sku F1
+az iot hub device-identity create --hub-name <hub-name> --device-id demo-edge-device --edge-enabled
+az iot hub device-identity show --hub-name <hub-name> --device-id demo-edge-device --query capabilities
+```
+
+**👀 Expected result:** `capabilities.iotEdge` returns `true`, confirming the device identity is flagged for IoT Edge module hosting.
+
+**✅ Checkpoint:** Confirm the device connection string via `az iot hub device-identity connection-string show --hub-name <hub-name> --device-id demo-edge-device`.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2351,6 +3544,23 @@ https://learn.microsoft.com/azure/iot-edge/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-arc/
 
+## 🧪 Try it yourself
+
+**Goal:** List Arc-enabled resource providers and check what's already onboarded in your subscription.
+
+```bash
+az provider show --namespace Microsoft.HybridCompute --query registrationState -o tsv
+az connectedmachine list -o table
+az resource list --resource-type "Microsoft.HybridCompute/machines" -o table
+```
+
+**👀 Expected result:** Provider registration state shows `Registered` (or you register it), and the list shows any existing Arc-enabled servers in the subscription (empty if none onboarded yet).
+
+**✅ Checkpoint:** Confirm whether any machines appear; if none, note that onboarding requires running the Connected Machine agent installer on a real server.
+
+**🧹 Clean up:**
+Nothing to clean up — read-only commands.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2380,6 +3590,22 @@ https://learn.microsoft.com/azure/azure-arc/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-local/
 
+## 🧪 Try it yourself
+
+**Goal:** Azure Local requires physical/registered hardware, so inspect whether any Azure Local (Stack HCI) clusters are already registered to your subscription.
+
+```bash
+az provider show --namespace Microsoft.AzureStackHCI --query registrationState -o tsv
+az stack-hci cluster list -o table
+```
+
+**👀 Expected result:** Provider shows `Registered`; the cluster list is empty unless your organization already has on-prem hardware registered.
+
+**✅ Checkpoint:** Confirm you understand that creating a real cluster requires physical/validated hardware — this lab only verifies subscription readiness.
+
+**🧹 Clean up:**
+Nothing to clean up — read-only commands.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2408,6 +3634,22 @@ https://learn.microsoft.com/azure/azure-local/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-vmware/
+
+## 🧪 Try it yourself
+
+**Goal:** Azure VMware Solution private clouds are costly/quota-gated, so check quota/SKU availability in a region before provisioning.
+
+```bash
+az vmware location check-quota-availability --location eastus -o table
+az vmware location check-trial-availability --location eastus -o table
+```
+
+**👀 Expected result:** Quota/trial availability details (including remaining host quota) for AVS node SKUs (for example `AV36`) in the chosen region.
+
+**✅ Checkpoint:** Identify whether your subscription has any AVS host quota before planning a real private cloud deployment.
+
+**🧹 Clean up:**
+Nothing to clean up — read-only commands.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2440,6 +3682,23 @@ https://learn.microsoft.com/azure/azure-vmware/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/migrate/
 
+## 🧪 Try it yourself
+
+**Goal:** Inspect Azure Migrate project resources already discoverable in your subscription.
+
+> ⚠️ **Needs verification:** The modern `az migrate` CLI extension (preview) no longer exposes a `project create`/`project show` command — project creation is currently a Portal or ARM/Bicep (`Microsoft.Migrate/migrateProjects`) operation. Confirm the current CLI surface at `az migrate --help` before scripting this.
+
+```bash
+az provider show --namespace Microsoft.Migrate --query "resourceTypes[].resourceType" -o table
+az resource list --resource-type "Microsoft.Migrate/migrateProjects" -o table
+```
+
+**👀 Expected result:** The `Microsoft.Migrate` resource types available in your subscription, then any existing Azure Migrate projects (empty if none created yet via the Portal).
+
+**✅ Checkpoint:** If you need to create a new project, confirm the current recommended path (Portal wizard or ARM/Bicep) in the official docs rather than assuming a CLI `create` subcommand exists.
+
+**🧹 Clean up:** Nothing to clean up — read-only commands.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2468,6 +3727,26 @@ https://learn.microsoft.com/azure/migrate/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/dms/
+
+## 🧪 Try it yourself
+
+**Goal:** Deploy the smallest Database Migration Service instance (no project/task wired yet).
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az dms create --name demo-dms --resource-group <your-resource-group> \
+  --location eastus --sku-name Basic_2vCores
+az dms show --name demo-dms --resource-group <your-resource-group> -o table
+```
+
+**👀 Expected result:** The DMS instance shows `provisioningState: Succeeded`; no migration projects/tasks exist yet.
+
+**✅ Checkpoint:** Run `az dms project list --service-name demo-dms --resource-group <your-resource-group>` and confirm an empty list.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2500,6 +3779,25 @@ https://learn.microsoft.com/azure/dms/
 https://learn.microsoft.com/azure/storage-mover/
 
 https://learn.microsoft.com/azure/databox/
+
+## 🧪 Try it yourself
+
+**Goal:** Deploy a Storage Mover resource and confirm it's ready to host a migration project.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az storage-mover create --name demo-mover --resource-group <your-resource-group> --location eastus
+az storage-mover show --name demo-mover --resource-group <your-resource-group> -o table
+```
+
+**👀 Expected result:** The Storage Mover resource is created successfully with no migration projects configured yet.
+
+**✅ Checkpoint:** Run `az storage-mover project list --resource-group <your-resource-group> --mover-name demo-mover` and confirm an empty list.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2538,6 +3836,26 @@ https://learn.microsoft.com/azure/databox/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/virtual-desktop/
 
+## 🧪 Try it yourself
+
+**Goal:** Create a pooled AVD host pool and an application group (no session host VM required to see the control-plane objects).
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az desktopvirtualization hostpool create --name demo-hostpool --resource-group <your-resource-group> \
+  --location eastus --host-pool-type Pooled --load-balancer-type BreadthFirst --preferred-app-group-type Desktop
+az desktopvirtualization hostpool show --name demo-hostpool --resource-group <your-resource-group> -o table
+```
+
+**👀 Expected result:** The host pool is created with `hostPoolType: Pooled`; no session hosts are registered yet.
+
+**✅ Checkpoint:** Run `az desktopvirtualization sessionhost list --host-pool-name demo-hostpool --resource-group <your-resource-group>` and confirm an empty list.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2570,6 +3888,25 @@ https://learn.microsoft.com/azure/virtual-desktop/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-maps/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy an Azure Maps account and make a simple authenticated search request.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az maps account create --name demo-maps --resource-group <your-resource-group> --sku G2
+az maps account keys list --name demo-maps --resource-group <your-resource-group> --query primaryKey -o tsv
+```
+
+**👀 Expected result:** A primary key string is returned, usable as `subscription-key` on Azure Maps REST calls (for example a `/search/address` request).
+
+**✅ Checkpoint:** Call `curl "https://atlas.microsoft.com/search/address/json?api-version=1.0&subscription-key=<key>&query=1 Microsoft Way Redmond"` and confirm a JSON result set is returned.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2601,6 +3938,26 @@ https://learn.microsoft.com/azure/azure-maps/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/communication-services/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy a Communication Services resource and issue a short-lived client access token.
+
+```bash
+az group create --name <your-resource-group> --location global
+az communication create --name demo-acs --resource-group <your-resource-group> \
+  --location global --data-location unitedstates
+az communication identity user create --connection-string "<connection-string-from-show-command>"
+```
+
+**👀 Expected result:** The resource is created, and a new communication user identity with a GUID-style ID is returned.
+
+**✅ Checkpoint:** Run `az communication list-key --name demo-acs --resource-group <your-resource-group>` and confirm a connection string is returned for issuing tokens.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2631,6 +3988,25 @@ https://learn.microsoft.com/azure/communication-services/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/app-testing/
 
+## 🧪 Try it yourself
+
+**Goal:** Deploy an Azure Load Testing resource and confirm it's ready to accept a test definition.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az load create --name demo-loadtest --resource-group <your-resource-group> --location eastus
+az load show --name demo-loadtest --resource-group <your-resource-group> -o table
+```
+
+**👀 Expected result:** The Load Testing resource is created with a data-plane endpoint; no test runs exist yet.
+
+**✅ Checkpoint:** Run `az load test list --load-test-resource demo-loadtest --resource-group <your-resource-group>` and confirm an empty list.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2660,6 +4036,27 @@ https://learn.microsoft.com/azure/app-testing/
 
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/batch/
+
+## 🧪 Try it yourself
+
+**Goal:** Deploy a Batch account and a minimal low-priority pool for parallel task execution.
+
+```bash
+az group create --name <your-resource-group> --location eastus
+az batch account create --name demobatch$RANDOM --resource-group <your-resource-group> --location eastus
+az batch account login --name <batch-account-name> --resource-group <your-resource-group> --shared-key-auth
+az batch pool create --id demo-pool --vm-size Standard_D2s_v3 --target-dedicated-nodes 0 \
+  --target-low-priority-nodes 1 --image canonical:0001-com-ubuntu-server-jammy:22_04-lts --node-agent-sku-id "batch.node.ubuntu 22.04"
+```
+
+**👀 Expected result:** The Batch account and `demo-pool` are created; the pool allocates one low-priority node.
+
+**✅ Checkpoint:** Run `az batch pool show --pool-id demo-pool` and confirm `allocationState` reaches `steady`.
+
+**🧹 Clean up:**
+```bash
+az group delete --name <your-resource-group> --yes --no-wait
+```
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2693,6 +4090,23 @@ https://learn.microsoft.com/azure/batch/
 ## 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/service-health/service-retirement-alerting-guidance
 
+## 🧪 Try it yourself
+
+**Goal:** Run `az provider list` and check which of the retiring resource types from this section are actually in use in your subscription.
+
+```bash
+az resource list --resource-type "Microsoft.Cdn/profiles" --query "[?properties.frontDoorId!=null]" -o table
+az resource list --resource-type "Microsoft.Cache/Redis" -o table
+az resource list --resource-type "Microsoft.Blueprint/blueprintAssignments" -o table
+```
+
+**👀 Expected result:** Each command lists any live resources of that type in your subscription (likely empty in a fresh subscription), helping you spot retirement-impacted resources before a deadline.
+
+**✅ Checkpoint:** For any resource found, cross-check its retirement date against the live Microsoft retirement notice before planning migration.
+
+**🧹 Clean up:**
+Nothing to clean up — read-only inventory commands.
+
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
@@ -2723,6 +4137,22 @@ https://learn.microsoft.com/azure/service-health/service-retirement-alerting-gui
 
 ## 📚 Official Microsoft docs
 https://azure.microsoft.com/updates/
+
+## 🧪 Try it yourself
+
+**Goal:** Run `az provider list` and find which resource providers in your subscription currently expose preview-stage API versions.
+
+```bash
+az provider list --query "[].{namespace:namespace, state:registrationState}" -o table
+az provider show --namespace Microsoft.App --query "resourceTypes[].apiVersions[?contains(@,'preview')]" -o table
+```
+
+**👀 Expected result:** The first command lists all registered providers; the second shows any preview API versions (containing "preview") still exposed for a given resource type.
+
+**✅ Checkpoint:** Pick one provider you use in production and confirm whether you are pinned to a GA API version rather than a preview one.
+
+**🧹 Clean up:**
+Nothing to clean up — read-only inventory commands.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2760,6 +4190,22 @@ https://learn.microsoft.com/azure/architecture/guide/technology-choices/technolo
 https://learn.microsoft.com/azure/well-architected/
 
 https://learn.microsoft.com/azure/azure-resource-manager/
+
+## 🧪 Try it yourself
+
+**Goal:** Run `az provider list` and find which of the resource types referenced throughout this cheat sheet are actually available/registered in your subscription.
+
+```bash
+az provider list --query "[].{namespace:namespace, state:registrationState}" -o table
+az provider list --query "[?registrationState=='NotRegistered'].namespace" -o tsv
+```
+
+**👀 Expected result:** A full table of resource providers and their registration state, plus a short list of any providers not yet registered that you'd need before deploying those resource types.
+
+**✅ Checkpoint:** Pick three providers mentioned in this document (for example `Microsoft.Storage`, `Microsoft.KeyVault`, `Microsoft.CognitiveServices`) and confirm they show `Registered`.
+
+**🧹 Clean up:**
+Nothing to clean up — read-only inventory command.
 
 [⬆️ Back to resource TOC](#resource-toc)
 

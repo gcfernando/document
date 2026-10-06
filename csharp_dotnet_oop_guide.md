@@ -379,6 +379,24 @@ Not "unlikely". *Impossible.* The object enforces it for you, forever, without y
 > lambdas, records) every single day. OOP gives you the structure; functional style gives you
 > the plumbing. They are partners, not rivals.
 
+## 1.1 🧪 Hands-on exercise
+
+You do not need a C# project yet for this one — pen and paper, or any text editor, is fine.
+(If you want to run it, come back once Chapter 2 is done.)
+
+1. Write a **procedural** version of a `Balance` of 100: a bare variable plus three free-floating
+   lines of code that deposit, withdraw, and print it — with **no** function or class wrapping it.
+2. Now sabotage it on purpose: add a fourth line, anywhere, that sets the variable to a negative
+   number. Notice that nothing in your "program" stops you.
+3. Rewrite the same behaviour as a tiny `BankAccount` **class** with a `private` field, a
+   `Deposit`, a `Withdraw` that rejects overdrafts, and a way to read the balance.
+4. Try to reproduce step 2's sabotage against your class. It should now be **impossible** without
+   going through `Withdraw`.
+5. In one sentence, write down *where* the rule "balance cannot go negative" lives in each version.
+
+The point is not the code — it is noticing that version 2 only has one place the rule could live,
+and version 1 had none.
+
 > ### 🧭 In practice — deciding that a problem wants objects
 >
 > **How to use it.** Look for data that has **rules attached**. If you can finish the sentence “this value must never...”, that value and its rule belong together in a class. **Expected result:** the rule becomes impossible to break from anywhere in the program, rather than something every caller must remember.
@@ -509,6 +527,26 @@ public class Greeter
 > middle is a compiler error. On real projects, put each class in **its own file** named after
 > the class (`Greeter.cs`). See [Chapter 36](#36--naming-and-coding-conventions).
 
+## 2.6 🧪 Hands-on exercise
+
+Verify your setup actually works, end to end:
+
+1. Run `dotnet --version` and write down the number you get.
+2. Create a fresh project: `dotnet new console -n SetupCheck`, then `cd SetupCheck`.
+3. Edit `SetupCheck.csproj` so `<TargetFramework>` matches the major version from step 1,
+   and add `<Nullable>enable</Nullable>` and `<ImplicitUsings>enable</ImplicitUsings>`.
+4. Replace the contents of `Program.cs` with the `Greeter` example above, and change the
+   greeted name to your own.
+5. Run `dotnet run`. Confirm you see your own greeting, not just `Hello, World!`.
+6. Deliberately break it: add `string? name = null; Console.WriteLine(name.Length);` and run
+   again. You should get a **nullable-warning-turned-error** at build time (if you also enabled
+   `TreatWarningsAsErrors`) or a `NullReferenceException` at run time otherwise. Either way,
+   note which one you got — it tells you whether your `.csproj` is configured the way this
+   guide assumes.
+7. Remove the broken line and confirm `dotnet run` is clean again.
+
+If all seven steps worked, your lab bench is ready for the rest of the guide.
+
 > ### 🧭 In practice — setting up your practice project
 >
 > **How to use it.** Install the .NET SDK (not just the runtime — you need it to *build*), then `dotnet new console -n OopPractice`, `cd OopPractice`, `dotnet run`. Edit the `.csproj` to enable `Nullable`, `ImplicitUsings`, and — while learning — `TreatWarningsAsErrors`. **Expected result:** `Hello, World!` on screen, and a project that refuses to build when you ignore a warning.
@@ -633,8 +671,12 @@ Console.WriteLine(account.GetBalance());   // 750
 > An object is not a container for variables. It is a **guardian of rules**.
 > If your class has no rules, ask yourself whether it should be a `record` instead.
 
-🧪 **Try it** — Model a `TrafficLight`. Its data is the current colour. Its rule is that it can
-only go Green → Yellow → Red → Green. Nothing else. Try to make an illegal transition impossible.
+## 3.1 🧪 Hands-on exercise
+
+Model a `TrafficLight`. Its data is the current colour. Its rule is that it can only go
+Green → Yellow → Red → Green. Nothing else. Try to make an illegal transition impossible —
+for example, by making the "next colour" logic the only way to change state, with no public
+setter for the colour itself.
 
 > ### 🧭 In practice — modelling something as an object
 >
@@ -1929,6 +1971,19 @@ A `private` member has **none** of those problems. You can rewrite it at 3 a.m. 
 🧪 **Try it** — Take the `Thermostat` from Chapter 6. Add a `private void Recalibrate()`. Try to
 call it from `Program.cs`. Read the error. Now change it to `public`. Notice how you just made a
 promise you may not want to keep.
+
+## 9.5 🧪 Hands-on exercise
+
+Build a small `Vault` class that stores a `PIN` and a list of transactions:
+
+1. Make the PIN field `private`. Expose a `TryUnlock(string pin)` method returning `bool` —
+   there should be no way to read or compare the PIN from outside the class.
+2. Make the transaction list `private`, with a `protected` helper method `AddTransaction(string)`
+   that only a subclass can call — then write a `PremiumVault : Vault` that uses it.
+3. Add an `internal` method `ResetForTesting()` and confirm (by trying it) that it is **not**
+   visible from a second project referencing this one, only from within the same assembly.
+4. For each member you added, write one line: *"I chose `private`/`protected`/`internal`/`public`
+   here because ..."*. If you cannot finish the sentence, revisit the decision flowchart above.
 
 > ### 🧭 In practice — access modifiers
 >
@@ -5222,7 +5277,7 @@ toggles, event filters).
 int code = (int)HttpStatusCode.NotFound;              // 404
 
 // int → Enum  (⚠️ no validation!)
-HttpStatusCode status = (HttpStatusCode)404;          // Ok
+HttpStatusCode status = (HttpStatusCode)404;          // NotFound
 HttpStatusCode bad = (HttpStatusCode)9999;            // 😱 compiles, and is meaningless
 
 // ✅ Always validate when the number comes from outside:
@@ -12977,6 +13032,33 @@ of them.
 Then answer the hardest question: **for which of these ten would you NOT use a pattern**,
 and just write the simple code instead? Justify your answer.
 
+## 40.19 🧪 Hands-on exercise — a combined mini-app
+
+Patterns are rarely used one at a time in real code — a single feature usually needs two or
+three working together. Build a tiny **"Report Export"** console mini-app that combines
+**three** patterns of your choice. A coherent, already-balanced combination if you want a
+starting point:
+
+> **Scenario:** a `ReportExporter` can produce a report as PDF, CSV, or HTML (**Strategy** —
+> one interface, `IReportFormatter`, with `PdfFormatter`/`CsvFormatter`/`HtmlFormatter`).
+> Creating the right formatter from a user-supplied string (`"pdf"`, `"csv"`, `"html"`) is done
+> by a small **Factory** (`ReportFormatterFactory.Create(string kind)`) so the caller never
+> writes a `switch` on the format. Finally, wrap the chosen formatter in a **Decorator**
+> (`TimestampedFormatter`) that adds a "Generated at ..." header to whatever the inner
+> formatter produces, without either formatter knowing the decorator exists.
+
+Requirements:
+
+1. Implement the three patterns above (or three others you prefer — Observer + Builder +
+   Command is an equally valid combination for a "task runner" scenario).
+2. Write a small `Program.cs` that reads a format name, builds the exporter via the factory,
+   wraps it in the decorator, and prints the final report for a hard-coded sample dataset.
+3. Add one unit test per pattern: one proving the factory returns the right type for each input,
+   one proving each strategy produces different output for the same data, and one proving the
+   decorator's output contains both the timestamp and the inner formatter's output.
+4. Write two sentences: which pain did combining the patterns remove, and would the app have
+   been simpler *without* one of the three? Be honest if the answer is yes.
+
 > ### 🧭 In practice — design patterns
 >
 > **How to use it.** Learn the **problem** each pattern solves, then use the simplest C# feature that solves it. Strategy is often a `Func<>` or an interface parameter; Factory is often a dictionary or a DI registration; Observer is `event`; Decorator is a class implementing the same interface and wrapping another. **Expected result:** less code than the textbook version, doing the same job.
@@ -13769,12 +13851,15 @@ This is the great secret: **if something is hard to test, its design is wrong.**
 
 The classic fix — injecting the clock:
 
-> **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
+> **📄 Fragment** — two alternative designs of the same idea, shown side by side for contrast.
+> The "untestable" version is named `UntestableOrder` so it can sit in the same file as the
+> testable `Order` below without a duplicate-name error.
 
 ```csharp
 // ❌ Untestable: the result depends on when the test runs
-public class Order
+public class UntestableOrder
 {
+    public DateTime DueDate { get; init; }
     public bool IsOverdue => DateTime.UtcNow > DueDate.AddDays(30);
 }
 
@@ -14628,6 +14713,84 @@ with the consequences**. Every project below is chosen because it forces a speci
 > **Concepts exercised:** encapsulation, abstract classes, invariants, custom exceptions,
 > `IReadOnlyList<T>`, value objects (`Money`).
 
+### Starter code — Student Management System
+
+Project #1 in the beginner list above is the one most people start with. Here is a minimal,
+**runnable** skeleton — `dotnet new console -n StudentManagement`, then replace `Program.cs`:
+
+```csharp
+// Program.cs
+var school = new School();
+
+school.Enroll(new Student("Anna", 22, "A"));
+school.Enroll(new Student("Marco", 19, "B"));
+
+school.PrintRoster();
+
+Console.WriteLine();
+Console.WriteLine($"Average grade points: {school.AverageGradePoints():F2}");
+
+public class Student
+{
+    public string Name { get; }
+    public int Age { get; }
+    public string Grade { get; }
+
+    public Student(string name, int age, string grade)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name is required.", nameof(name));
+        if (age is < 0 or > 130)
+            throw new ArgumentOutOfRangeException(nameof(age));
+
+        Name = name;
+        Age = age;
+        Grade = grade;
+    }
+
+    // 🎯 A tiny, obviously-incomplete rule — extend this as you grow the project.
+    public int GradePoints() => Grade switch
+    {
+        "A" => 4,
+        "B" => 3,
+        "C" => 2,
+        _ => 0
+    };
+
+    public override string ToString() => $"{Name} (age {Age}) — grade {Grade}";
+}
+
+public class School
+{
+    private readonly List<Student> _students = new();
+
+    public void Enroll(Student student) => _students.Add(student);
+
+    public void PrintRoster()
+    {
+        foreach (var student in _students)
+            Console.WriteLine(student);
+    }
+
+    public double AverageGradePoints() =>
+        _students.Count == 0 ? 0 : _students.Average(s => s.GradePoints());
+}
+```
+
+Expected output:
+
+```text
+Anna (age 22) — grade A
+Marco (age 19) — grade B
+
+Average grade points: 3.50
+```
+
+**Extend it yourself** before moving on: add a `Remove(string name)`, make `_students` exposed
+as `IReadOnlyList<Student>` instead of printed only through `PrintRoster`, and add a custom
+`DuplicateStudentException` thrown when the same name is enrolled twice. That last change is
+exactly the kind of decision the rest of this chapter's checklist expects you to justify.
+
 ## 45.2 🟡 Intermediate projects
 
 | # | Project | Forces you to learn |
@@ -15229,6 +15392,12 @@ catch (DomainException ex)
   ❌ Gehan has reached the Regular borrow limit of 3 books.
 ```
 
+⚠️ **The due dates above will not match what you see.** The console app wires up `SystemClock`,
+so every due date is `today.AddDays(...)` against the real system clock — the `2026-09-21` shown
+is just this guide's run date plus 14 days. This is exactly why the unit tests below inject a
+`FixedClock` instead: production code can use the real clock, but anything asserting on a date
+needs a clock it controls ([§42](#42--unit-testing-oop-code)).
+
 ## 46.11 Unit tests
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
@@ -15581,6 +15750,25 @@ implement** every item.
 - [ ] I can justify every interface in my codebase
 - [ ] I can explain a design decision I **rejected**, and why
 
+## 47.8 🧪 Hands-on exercise — audit your own code
+
+This checklist is only useful once you point it at real code, not at itself.
+
+1. Pick one of your own completed pieces of work: the [capstone](#46--capstone-library-management-system),
+   one of the [hands-on projects](#45--hands-on-projects), or any small project you have lying
+   around — even a 45-minute exercise answer counts.
+2. Go through sections 47.1–47.6 item by item against **that specific code**, not from memory.
+   For each checked box, write down the file and line where it is demonstrated.
+3. For every box you cannot check, write one sentence on why — "not needed here" and "I don't
+   know how" are both valid answers, but they are different problems and need different next
+   steps.
+4. Pick the single weakest item from your list and fix **only that one** in the code before
+   moving on. Resist fixing everything at once — the point is to practise recognising one gap
+   and closing it, not to rewrite the project.
+
+If you cannot point at a concrete line for most of section 47.2 (the four pillars) in your own
+code, that is the honest signal to revisit Part 2 before going further.
+
 ---
 
 # 48. 📅 30-day learning plan
@@ -15655,6 +15843,29 @@ fully tested.
 | Read *Refactoring* (Fowler) | Turns your instincts into named techniques |
 | Read *Domain-Driven Design Distilled* (Vernon) | Deepens Chapter 41 |
 | Contribute to an open-source .NET project | Real code review is the fastest teacher |
+
+## 📝 Hands-on exercise — build your own tracker
+
+The schedule above is a template, not a prescription — your pace, your job, and your free
+evenings are not the author's. Make it yours before you start Day 1:
+
+1. Copy the four week tables above into your own notes (a plain markdown file is enough).
+2. For each day, add two empty columns: `Actual date` and `Done? (Y/N)`. Fill in `Actual date`
+   for Day 1 only — let the rest fill in as you go, since real life rarely matches a plan exactly.
+3. At the end of each week, add one reflection line answering: *"What took longer than I
+   expected, and why?"* — not "did I finish", but "where did the plan's estimate miss".
+4. If a day's deliverable genuinely doesn't apply to you (e.g. you already know Chapter 29 cold),
+   cross it out and write what you did instead — do not silently skip it unrecorded.
+5. After Day 30, re-read your four reflection lines together. They are a better record of how
+   *you* learn than the schedule itself, and worth keeping for your next technology.
+
+A minimal template for step 1/2 looks like this:
+
+```text
+| Day | Topic            | Chapters | Actual date | Done? | Notes |
+|:---:|-------------------|----------|-------------|:-----:|-------|
+|  1  | Why OOP; setup... | 1,2,3,5  | 2026-01-05  |   Y   | setup took 2h, not 1h |
+```
 
 ---
 
@@ -16393,6 +16604,22 @@ leave `Name` null despite `required`. Validate after deserialising; the annotati
 | *Domain-Driven Design* | Eric Evans | You're ready for the deep version |
 | *Implementing Domain-Driven Design* | Vaughn Vernon | You want the practical companion |
 | *The Pragmatic Programmer* | Hunt & Thomas | Any time. It's about being a professional. |
+
+## 50.4 🧪 Hands-on exercise
+
+This chapter is reference material, not a technique to practise — but a glossary only sticks
+once you've used the words, not just read them:
+
+1. From the table in 50.1, pick the **five terms you are least confident you could explain
+   out loud** to a colleague without looking anything up.
+2. For each one, write a single short C# snippet (2–6 lines) that *demonstrates* the term rather
+   than just naming it — e.g. for **Covariance**, a line showing `IEnumerable<string>` assigned
+   to an `IEnumerable<object>` variable; for **Boxing**, a line assigning an `int` to an `object`.
+3. Next to each snippet, write one sentence connecting it back to the chapter where the term was
+   first introduced (the glossary doesn't repeat the explanation, on purpose).
+
+If you can do this for all five without opening the rest of the guide, the term has actually
+become part of your vocabulary rather than something you recognise when you see it.
 
 ---
 

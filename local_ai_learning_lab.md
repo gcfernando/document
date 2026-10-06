@@ -1,5 +1,7 @@
 # Local AI Learning Lab: your first local chat app
 
+**🏷️ Difficulty:** 🟢 Beginner
+
 ## Start here
 
 Build a browser chat app with **Ollama, Qwen3.5 9B, Python, and Streamlit on Windows/PowerShell**. A local runtime runs the model; your Python app supplies messages and displays the reply. This is a chat application, not a coding agent, RAG system, or autonomous assistant.
@@ -531,6 +533,14 @@ python -m pip check
 
 The two unpinned entries in `requirements.txt` describe dependencies, not a reproducible lockfile. After successful browser verification, record the installed `ollama` and `streamlit` versions in the lab notes; use those tested versions when sharing the exercise. Do not copy another machine's complete global `pip freeze` into this project's requirements.
 
+### ✅ Checkpoint — packages installed
+
+```powershell
+pip show streamlit
+pip show ollama
+```
+
+**Expected:** both commands print a `Name`, `Version`, and `Location`, and the `Location` matches the Python interpreter confirmed earlier with `python -c "import sys; print(sys.executable)"`. Confirm the printed `Version` matches what you recorded in the lab notes.
 
 ---
 
@@ -762,6 +772,21 @@ The app limits message size and removes old completed turns. When it removes the
 
 Requests have a timeout and no automatic retry. A handled connection, Ollama, or timeout failure removes the unfinished user turn from stored history so a later submission does not repeatedly send it. Other unexpected errors remain visible in Streamlit's normal error output rather than being mistaken for a successful reply. Streaming may already have displayed partial text before an error; that partial text is not stored as a successful answer. Check the server, then submit again deliberately. Do not use this demo for shared/public access without a separate security and privacy design.
 
+## 🏋️ Exercise — make one small, deliberate change
+
+Change one small thing in `main.py`, for example:
+
+- Change `page_title="Expert Chat Assistant"` in `st.set_page_config` to a title of your own.
+- Or add a sidebar element, such as `st.sidebar.caption("My first local AI app")`, inside `render_sidebar()`.
+
+Save the file, then re-run the validation commands from 6.2:
+
+```powershell
+python -m py_compile .\main.py
+python -c "from ollama import Client, ResponseError; import streamlit; print('Imports: OK')"
+```
+
+**Expected:** both commands still succeed, and `python -m streamlit run .\main.py` shows your change in the browser.
 
 ---
 
@@ -970,6 +995,23 @@ ollama stop qwen35-9b-32k
 ```
 
 Use 32K for normal work. Test 64K only when a measured workload requires it. Update GPU drivers if the model unexpectedly runs on CPU and consult Ollama's Windows/GPU documentation for supported hardware.
+
+## 🧪 Try it yourself — deliberately break it, then fix it
+
+Quit Ollama from the system-tray menu (or stop it another way you control), then run:
+
+```powershell
+ollama ls
+```
+
+**Expected:** a connection error, matching the symptom described above in "Ollama cannot connect / API request fails". Use that section to diagnose it, restart Ollama from the Start menu, and confirm the fix:
+
+```powershell
+ollama ls
+Invoke-RestMethod http://localhost:11434/api/tags
+```
+
+**Expected:** both commands succeed again, proving you diagnosed and resolved the failure using this table rather than guessing.
 
 ---
 
@@ -1273,6 +1315,25 @@ ollama stop qwen35-9b-64k
 
 > 💡 **When should you move from 32K to 64K?** When your measured estimate and real workload need it: for example, instructions + repository context + tool output + conversation + expected answer exceed 32K. If normal chat works well at 32K, do not change it.
 
+### ✅ Checkpoint — 32K vs. 64K in practice
+
+```powershell
+ollama run qwen35-9b-32k
+```
+
+In a second PowerShell, record `CONTEXT` from `ollama ps`, then exit `/bye` and run:
+
+```powershell
+ollama run qwen35-9b-64k
+```
+
+Record `CONTEXT` from `ollama ps` again. **Expected:** you can state, from your own observed output, that `qwen35-9b-32k` shows `32768` and `qwen35-9b-64k` shows `65536`. Exit `/bye`, then stop both:
+
+```powershell
+ollama stop qwen35-9b-32k
+ollama stop qwen35-9b-64k
+```
+
 ---
 
 ---
@@ -1331,6 +1392,16 @@ For a manually started `ollama serve`, press `Ctrl+C` in the window that runs it
 
 > [!NOTE]
 > Stopping the server is different from removing models. Your model files remain installed unless you explicitly run `ollama rm`.
+
+### ✅ Checkpoint — lifecycle control verified
+
+Quit Ollama from the tray menu, confirm `ollama ls` fails to connect, then restart Ollama from the Start menu and confirm it succeeds again:
+
+```powershell
+ollama ls
+```
+
+**Expected:** a connection failure right after quitting, then a successful listing right after restarting. This proves you can deliberately stop and start the server rather than only observing it running by default.
 
 ---
 
@@ -1458,6 +1529,14 @@ The profile entries depend on the same underlying model layers. Remove profiles 
 ```powershell
 ollama run qwen35-9b-32k
 ```
+
+### ✅ Checkpoint — removal and reset verified
+
+```powershell
+ollama ls
+```
+
+**Expected:** the list matches exactly what you intended to remove or keep after working through 10.1–10.4 above; no model/profile is loaded unless you deliberately started one. If you removed the base model or profiles only for this exercise, restore the workshop state now with `ollama pull qwen3.5:9b-q4_K_M` and recreate `qwen35-9b-32k` with `ollama create qwen35-9b-32k -f .\Modelfile.32k` before continuing.
 
 ---
 
@@ -1629,6 +1708,14 @@ Temporary files
 ```
 
 To reinstall, return to [Install Ollama](#lab-build).
+
+### ✅ Checkpoint — uninstall/reset verified
+
+```powershell
+ollama --version
+```
+
+**Expected:** matches the cleanup level you deliberately performed. After a normal uninstall or full cleanup, PowerShell reports `ollama` is not recognized. If you only removed models in section E, this command still prints a version, since the application itself remains installed.
 
 ---
 

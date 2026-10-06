@@ -1,5 +1,7 @@
 # 📗 AI-Assisted Engineering Workbook: GraphQL Foundations and Existing-Service Workflows
 
+**🏷️ Difficulty:** 🔴 Advanced (assumes the coding-agent handbook and real engineering fluency)
+
 > **Bring a real engineering situation. Decide what to use. Then do the work safely.**
 >
 > This workbook is deliberately scenario-driven. It does not say “today we learn skills.” It starts with the problem and asks whether a normal prompt, brief, instruction, prompt file, skill, agent, subagent, hook, MCP, RAG, deterministic C#, or CI is actually needed.
@@ -30,6 +32,8 @@ User/task → context + applicable instructions
          → deterministic validation / CI
          → evidence, diff, tests, human decision
 ```
+
+🎓 **Predict-before-you-proceed exercise:** Read this scenario: *"A teammate asks you to add a one-line null check to an existing GraphQL resolver. The fix is isolated to a single file, there is no repeated procedure behind it, and no external system is involved."* Before reading further, write down — on paper or in a scratch note — which row of the decision card applies, what you would start with, and what (if anything) you would add only if evidence supports it. Then compare your answer against the table: this scenario matches "One small code question" → start with a normal prompt, add nothing else. If your answer named a skill, hook, agent, or MCP server, re-read the table and note what evidence would have had to be true for that to be justified.
 
 **Before any work:** record harness (Copilot Local/Agent Host, Copilot CLI, Codex CLI/IDE, Claude Code CLI/VS Code), repo root, branch, working-tree changes, task boundary, and external side effects. Do not confuse VS Code the editor with the selected harness.
 
@@ -655,6 +659,10 @@ Deliberately omit historical fixture/document reference in a disposable test. If
 
 **Use customization after repetition:** create a product-specific `legacy-change-review` skill describing characterization, caller search, public contract, and compatibility tests. Do not put one ticket’s exceptional rounding case in global instructions.
 
+## ✅ Checkpoint
+
+You pass when you have a written record of the previously undocumented rounding behavior: the observable contract (inputs, outputs, edge cases), the callers that depend on it, and the characterization tests that now encode it. If you cannot point to that documentation plus a passing characterization test, the behavior is still undocumented — go back to steps 1–3 before proposing any fix.
+
 ---
 
 # 5. ✨ Feature development: repeatable work meets team standards
@@ -691,9 +699,9 @@ each field and whether it grants tools, and list a safe verification task.
 Wait for my approval before writing.
 ```
 
-## ✅ Success measure
+## ✅ Checkpoint
 
-Compare three tasks before/after: missing auth/validation mistakes, time to first passing test, irrelevant file edits, and verification completeness. Remove the customization if it creates noise or duplicates source-of-truth documentation.
+Compare three tasks before/after: missing auth/validation mistakes, time to first passing test, irrelevant file edits, and verification completeness. You pass when the comparison is written down with real before/after values for your own repository, not estimated. Remove the customization if it creates noise or duplicates source-of-truth documentation.
 
 ---
 
@@ -731,6 +739,10 @@ In Copilot CLI, custom-agent subagents do not receive repository instructions by
 ## Verify
 
 Inspect every referenced line yourself; reproduce issues; disregard “majority vote” without evidence. Check agent/tool activity and ensure the reviewers did not edit. The actual branch-protection and required CI policies—not the agent’s review—decide whether merging is allowed.
+
+## ✅ Checkpoint
+
+You pass when you have run a real review pass against an actual diff using the review contract above (single reviewer or parallel reviewers), you personally inspected every finding's file/line and reproduced at least one, and you can state which findings are confirmed defects versus open questions, plus what scope the review did not cover.
 
 ---
 
@@ -840,6 +852,10 @@ Create a skill only in the correct product folder; do not put shell in `allowed-
 
 A checklist report with actual CI run identifiers, release notes draft, migration/rollback references, blockers, and approval state—never a claimed deployment when none occurred.
 
+## ✅ Checkpoint
+
+You pass when you hold a real checklist report for a nonproduction candidate branch, with actual CI run identifiers (not placeholders), a release notes draft, migration/rollback references, a list of blockers or none, and recorded approval state — and you stopped before any actual deployment unless separately authorized.
+
 ---
 
 # 10. 🔎 Build failure diagnosis: skill, hook, or CI?
@@ -929,6 +945,10 @@ The repository has `AGENTS.md`, `CLAUDE.md`, Copilot instructions, skills, hooks
 
 Do not treat a config file as active simply because another product reads a similar format. Especially audit `.mcp.json` vs `.vscode/mcp.json`, Claude hooks vs Copilot hook JSON, `SKILL.md` metadata/tool semantics, and `.agent.md` vs Codex TOML agent config.
 
+## ✅ Checkpoint
+
+You pass when you have produced a real audit findings list for your own repository/harness: every instruction/skill/hook/MCP artifact's exact path, owner, purpose, and discovery evidence from the table above, plus at least one duplicate/contradictory/unsafe item found (or an explicit statement that none exists) and the minimal fix proposed for each.
+
 ---
 
 # 13. ⚡ Parallel work decision workshop
@@ -969,6 +989,10 @@ One-line fix, tightly coupled edit, same test file, single database migration ex
 - **VS Code:** subagent availability depends on selected harness/session target; check current UI/docs.
 
 Do not describe manual multiple terminals or Git worktrees as built-in agent orchestration. Those are ordinary shell/Git mechanisms.
+
+## ✅ Checkpoint
+
+Using the scenario *"trace a GraphQL authorization regression, find its test coverage, and assess contract/security implications before fixing it"*, write a real parallel-work decomposition: the read-only questions you would dispatch, the scope/file ownership for each, the safe task contract fields you would specify, and which single step (if any) must remain a single controlled owner rather than parallelized. You pass when your decomposition keeps all parallel work read-only and assigns exactly one implementation owner for any mutation.
 
 ---
 
