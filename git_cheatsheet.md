@@ -191,7 +191,6 @@ git ls-remote --tags origin
 | `git count-objects` | Reports loose/packed object storage; use for repository-size diagnosis. | `git count-objects -vH` | Pair with `git maintenance run --auto` for routine local optimization. |
 | `git bugreport` | Creates a Git diagnostic report; use when filing a Git bug. | `git bugreport` | Review generated environment information before sharing. |
 | `git request-pull` | Produces a summary request for a range of commits; use in email-based workflows. | `git request-pull origin/main https://example.com/repo.git feature/api` | Verify the base reference and public URL. |
-|---|---|---|---|
 | `git ls-files` | Lists index-tracked paths; use to verify whether Git tracks a file. | `git ls-files src` | `--others --exclude-standard` lists untracked, non-ignored files. |
 | `git ls-tree` | Lists a commit/tree's paths; use to inspect a historical snapshot without checkout. | `git ls-tree -r --name-only HEAD` | `HEAD:path` addresses a specific historical path. |
 | `git show-ref` | Lists local refs and object IDs; use for ref troubleshooting. | `git show-ref --heads --tags` | Read-only inspection command. |

@@ -139,7 +139,7 @@ Each row includes a copyable example and its use; detailed flag explanations fol
 | `EXPOSE` | Documents intended ports. | `EXPOSE 8080` | It does **not** publish a port; use `-p`/Compose `ports`. |
 | `USER` | Selects the process user. | `USER 10001` | Run as non-root whenever possible. |
 | `VOLUME` | Declares a mount point. | `VOLUME ["/data"]` | Prefer explicit runtime mounts for lifecycle control. |
-| `HEALTHCHECK` | Defines container health probing. | `HEALTHCHECK CMD curl -f http://localhost:8080/health || exit 1` | Provide a lightweight, meaningful endpoint. |
+| `HEALTHCHECK` | Defines container health probing. | `HEALTHCHECK CMD curl -f http://localhost:8080/health \|\| exit 1` | Provide a lightweight, meaningful endpoint. |
 | `LABEL` | Adds metadata. | `LABEL org.opencontainers.image.source="https://example.com/repo"` | OCI labels improve traceability. |
 | `SHELL` | Changes shell form processing. | `SHELL ["powershell", "-Command"]` | Most useful for Windows containers. |
 | `STOPSIGNAL` | Sets graceful-stop signal. | `STOPSIGNAL SIGTERM` | Match application shutdown handling. |
