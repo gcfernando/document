@@ -2,6 +2,9 @@
 
 **🏷️ Difficulty:** 🟢 Beginner
 
+![Local AI](https://img.shields.io/badge/Local%20AI-Ollama%20%2B%20Streamlit-7C3AED?style=for-the-badge)
+![Level](https://img.shields.io/badge/Level-Beginner-16A34A?style=for-the-badge)
+
 ## Start here
 
 Build a browser chat app with **Ollama, Qwen3.5 9B, Python, and Streamlit on Windows/PowerShell**. A local runtime runs the model; your Python app supplies messages and displays the reply. This is a chat application, not a coding agent, RAG system, or autonomous assistant.
@@ -12,7 +15,7 @@ Follow [1–4](#lab-build): prepare the folder → install Ollama → get one ba
 
 **Commands have different destinations:** `ollama ...` and `python ...` run in PowerShell; `/bye` runs inside the Ollama chat; code goes in the named file; chat questions go in the browser. A long-running command occupies its terminal—use a second PowerShell to inspect it.
 
-This workshop deliberately uses the interpreter selected by `python`, without a virtual environment. This is an **existing-workshop exception**, not general Python project guidance: installing packages changes that interpreter's shared environment. Prefer the separate `.venv` setup in [AI Journey's optional Python route](ai_journey.md#cloud-and-python) for a new independent project. Keep using `python -m pip` and `python -m streamlit` here so all commands use the same interpreter. Do not mix these two setups halfway through the lab.
+This workshop deliberately uses the interpreter selected by `python`, without a virtual environment. This is an **existing-workshop exception**, not general Python project guidance: installing packages changes that interpreter's shared environment. For a new independent project, use a separate `.venv`. Keep using `python -m pip` and `python -m streamlit` here so all commands use the same interpreter. Do not mix these two setups halfway through the lab.
 
 **Execution status:** the application is a teaching example. Syntax checks do not prove that Ollama, the selected model, your GPU, or the browser app works on your computer. Complete the observable checkpoints yourself.
 
@@ -912,7 +915,7 @@ python -m streamlit run .\main.py
 
 Open PowerShell, return to `$HOME\LocalAI-Learning-Lab`, and start the Ollama Windows app if `ollama ls` cannot connect. If you chose 16K, set `LOCAL_AI_MODEL` again in this shell. Then run `python -m streamlit run .\main.py`. You do not need to pull the model, create the profile, or reinstall packages again. This demo does not restore yesterday's conversation.
 
-**You are done:** a browser reply appears, a follow-up uses the current session, Clear Conversation removes that context, and `ollama ps` shows the selected model. For another application capability, continue to [AI Journey's local C# bridge](ai_journey.md#local-model-call). To operate a coding assistant, use the [configuration handbook's product routes](deep-research-report.md#choose-product).
+**You are done:** a browser reply appears, a follow-up uses the current session, Clear Conversation removes that context, and `ollama ps` shows the selected model. For the next available learning routes, return to the [Knowledge Base study map](README.md#-choose-your-starting-path).
 
 
 ---
@@ -1023,9 +1026,9 @@ Invoke-RestMethod http://localhost:11434/api/tags
 
 # What to learn next
 
-Use [AI Journey](ai_journey.md#course-path) for: model call → structured result/state → guarded tool → bounded agent loop → keyword retrieval/RAG → evaluations and reliability. MCP is an optional way to connect capabilities; persistent memory is optional when retention is actually required. Neither is a prerequisite for this chat app.
+For the next available learning routes, use the [Knowledge Base study map](README.md#-choose-your-starting-path). MCP is an optional way to connect capabilities; persistent memory is optional when retention is actually required. Neither is a prerequisite for this chat app.
 
-Use the [coding-agent handbook](deep-research-report.md#choose-product) to choose one coding assistant and the [company workbook](end_to_end_ai_agent_graphql_workflow.md#workbook-path) to apply it to a ticket. This lab does not configure Codex or Claude Code or promise that they use your local Qwen model.
+This lab does not configure coding assistants or promise that they use your local Qwen model. Use the [Knowledge Base study map](README.md#-choose-your-starting-path) to choose a currently available next step.
 
 
 ---

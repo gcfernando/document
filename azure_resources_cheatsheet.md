@@ -2,6 +2,9 @@
 
 **🏷️ Difficulty:** 🟡 Intermediate → 🔴 Advanced (reference — assumes [`azure_cheatsheet.md`](./azure_cheatsheet.md)'s architecture map)
 
+![Azure](https://img.shields.io/badge/Azure-Resource%20reference-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white)
+![Format](https://img.shields.io/badge/Format-CLI%20%7C%20Bicep%20%7C%20C%23-0EA5E9?style=for-the-badge)
+
 > 🌈 **A structured, resource-by-resource Azure engineering reference**  
 > **Edition:** 2026-10-03  
 > **Companion:** [`azure_cheatsheet.md`](./azure_cheatsheet.md) helps you choose a service quickly. This file goes deeper into **what the resource contains, how it connects, where it fails, and what to verify before production**.

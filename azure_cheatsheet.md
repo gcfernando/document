@@ -2,6 +2,9 @@
 
 **🏷️ Difficulty:** 🟡 Intermediate → 🔴 Advanced (reference map — not a from-zero tutorial)
 
+![Azure](https://img.shields.io/badge/Azure-Engineering-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white)
+![Format](https://img.shields.io/badge/Format-Production%20reference-0EA5E9?style=for-the-badge)
+
 > 🌈 **Fast decisions. Fast recall. Production-aware.**  
 > **Edition:** 2026-10-03  
 > **Purpose:** A true engineering cheat sheet for choosing, connecting, operating, and troubleshooting Azure services quickly.  

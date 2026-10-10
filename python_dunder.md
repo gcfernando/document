@@ -6,6 +6,9 @@
 
 **_By Gehan Fernando_**
 
+![Python](https://img.shields.io/badge/Python-Object%20model-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Entries](https://img.shields.io/badge/Entries-145-F59E0B?style=for-the-badge)
+
 </div>
 
 ---
