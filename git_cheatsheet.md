@@ -176,6 +176,7 @@ git ls-remote --tags origin
 ## ➕ Additional Git command cards
 
 | Command | 📖 Description / 🎯 when | 💻 Usage example | 🔍 Notes |
+|---|---|---|---|
 | `git init` | Creates an empty repository or reinitializes an existing one; use when starting local version control. | `git init --initial-branch=main` | Creates `.git`; reinitializing does not erase tracked files, but run it only in the intended folder. |
 | `git mv` | Renames/moves a tracked path and stages the change; use when restructuring files. | `git mv old_name.md new_name.md` | Equivalent to move + `git add` + staged deletion. |
 | `git rm` | Removes a tracked path and stages the deletion; use when the file should leave the repository. | `git rm obsolete.txt` | `--cached` stops tracking but leaves the local file; use for accidentally tracked config. |
