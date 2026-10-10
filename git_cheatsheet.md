@@ -176,6 +176,21 @@ git ls-remote --tags origin
 ## ➕ Additional Git command cards
 
 | Command | 📖 Description / 🎯 when | 💻 Usage example | 🔍 Notes |
+| `git init` | Creates an empty repository or reinitializes an existing one; use when starting local version control. | `git init --initial-branch=main` | Creates `.git`; reinitializing does not erase tracked files, but run it only in the intended folder. |
+| `git mv` | Renames/moves a tracked path and stages the change; use when restructuring files. | `git mv old_name.md new_name.md` | Equivalent to move + `git add` + staged deletion. |
+| `git rm` | Removes a tracked path and stages the deletion; use when the file should leave the repository. | `git rm obsolete.txt` | `--cached` stops tracking but leaves the local file; use for accidentally tracked config. |
+| `git diff --check` | Finds whitespace errors; use before committing or in CI. | `git diff --check` | Reports trailing whitespace and conflict-marker issues without changing files. |
+| `git difftool` | Opens configured visual diff tool; use for complex changes. | `git difftool main...feature/api` | Configure a trusted diff tool first. |
+| `git mergetool` | Opens configured conflict-resolution tool; use after a merge/rebase conflict. | `git mergetool` | Run after Git identifies conflicts; verify and `git add` resolved paths. |
+| `git apply` | Applies a plain patch without creating commits; use for patch review or vendor changes. | `git apply fix.patch` | Run `git apply --check fix.patch` first; use `--index` to stage applied changes. |
+| `git check-ignore` | Explains why a path is ignored; use when a file does not appear in status. | `git check-ignore -v .env` | `-v` shows the matching ignore rule and source. |
+| `git check-attr` | Shows attributes assigned to paths; use to debug line-ending or diff rules. | `git check-attr -a -- src/app.cs` | Reads `.gitattributes` rules. |
+| `git hook run` | Runs a configured hook manually; use to test repository hooks. | `git hook run pre-commit` | Hook availability is version/repository dependent. |
+| `git interpret-trailers` | Adds/parses structured commit trailers; use for review or co-author metadata. | `git interpret-trailers --in-place --trailer "Reviewed-by: Name <email@example.com>" MESSAGE` | Review the message file before committing. |
+| `git credential` | Invokes configured credential helpers; use to diagnose authentication integration. | `git credential fill` | Do not echo/store real credentials in terminal history. |
+| `git count-objects` | Reports loose/packed object storage; use for repository-size diagnosis. | `git count-objects -vH` | Pair with `git maintenance run --auto` for routine local optimization. |
+| `git bugreport` | Creates a Git diagnostic report; use when filing a Git bug. | `git bugreport` | Review generated environment information before sharing. |
+| `git request-pull` | Produces a summary request for a range of commits; use in email-based workflows. | `git request-pull origin/main https://example.com/repo.git feature/api` | Verify the base reference and public URL. |
 |---|---|---|---|
 | `git ls-files` | Lists index-tracked paths; use to verify whether Git tracks a file. | `git ls-files src` | `--others --exclude-standard` lists untracked, non-ignored files. |
 | `git ls-tree` | Lists a commit/tree's paths; use to inspect a historical snapshot without checkout. | `git ls-tree -r --name-only HEAD` | `HEAD:path` addresses a specific historical path. |

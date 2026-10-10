@@ -309,3 +309,8 @@ Docker ships more command-specific flags than a static document can safely repro
 | `docker buildx prune` | **⚠️** Removes cache belonging to the active Buildx builder. | `docker buildx prune --filter until=168h` | Use `--verbose` to understand reclaimed cache. |
 | `docker plugin ls/inspect/enable/disable/rm` | Lists and manages Engine plugins; use only for approved storage/network plugins. | `docker plugin ls` | **⚠️** Disabling/removing an in-use plugin can interrupt workloads. |
 | `docker trust inspect/sign` | Inspects/signs Docker Content Trust metadata where supported. | `docker trust inspect IMAGE` | Docker Content Trust workflow support is ecosystem/version dependent; follow current registry policy. |
+| `docker checkpoint create/ls/rm` | Creates, lists, or removes CRIU checkpoints for supported containers; use for specialized state-migration testing. | `docker checkpoint create api api-checkpoint` | Requires compatible host/kernel support; validate restored application behavior. |
+| `docker image build` | Alias of `docker build`; use when scripts prefer the image command namespace. | `docker image build -t api:1.0 .` | Keep one style consistently in team documentation. |
+| `docker container ls` | Alias of `docker ps`; use when grouping scripts by resource type. | `docker container ls -a` | `-a` includes stopped containers. |
+| `docker system df` | Reports Docker disk usage; use before prune operations. | `docker system df -v` | `-v` provides per-image/container details. |
+| `docker system events` | Streams daemon events; use for lifecycle troubleshooting. | `docker system events --filter type=container` | Equivalent command family to `docker events`. |

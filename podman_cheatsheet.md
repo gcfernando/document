@@ -141,3 +141,8 @@ Use `systemctl --user daemon-reload` then `systemctl --user start api.service`; 
 | `podman network reload` | Reloads network configuration for running containers; use after approved network changes. | `podman network reload api` | Verify application connectivity afterward. |
 | `podman secret ls/inspect/rm` | Lists, inspects metadata for, or removes secrets. | `podman secret ls` | **⚠️** Removing a referenced secret breaks future container starts. |
 | `podman manifest create/add/push` | Builds and publishes a multi-architecture manifest list. | `podman manifest create quay.io/acme/api:1.0` | Add architecture-specific images before push. |
+| `podman generate kube` | Exports a pod/container definition as Kubernetes YAML; use before testing a Kubernetes-style handoff. | `podman generate kube app > app.yaml` | Review generated YAML and secret values before sharing. |
+| `podman system service` | Exposes the Podman API over a socket; use for approved remote/API clients. | `podman system service --time 0 unix:///tmp/podman.sock` | Protect the socket: API access can control containers. |
+| `podman info --debug` | Prints detailed runtime, store, and network diagnostics; use for support investigations. | `podman info --debug` | Review output before sharing because it can expose environment details. |
+| `podman container cleanup` | Cleans mounts/resources for stopped containers; use after an abnormal stop. | `podman container cleanup api` | Intended for stopped containers; inspect state first. |
+| `podman rm --depend` | Removes a container and dependent containers; use only for intentional teardown. | `podman rm --depend api` | **⚠️** Review dependencies before removal. |

@@ -1439,3 +1439,23 @@ SPECIALIZE  → analytics / AI / IoT / hybrid
 DECIDE      → tables / patterns
 VERIFY LIVE → price / limits / regions / SLA / lifecycle
 ```
+
+---
+
+# ➕ Azure CLI and Bicep operational command cards
+
+> [!IMPORTANT]
+> Run `az login`, select the intended subscription, and use `--what-if` before a production deployment. Examples use placeholder names—replace them deliberately.
+
+| Command | 📖 Description / 🎯 when | 💻 Usage example | 🔍 Safety and flags |
+|---|---|---|---|
+| `az account show/list/set` | Shows, lists, or selects a subscription; use before every deployment or destructive action. | `az account set --subscription "SUBSCRIPTION_NAME_OR_ID"` | Confirm with `az account show -o table`; CLI state is user-local. |
+| `az group show/list/tag` | Inspects, lists, or updates resource-group tags; use for inventory and governance. | `az group update --name rg-app-prod --set tags.environment=production` | Tag changes are control-plane updates; follow your organization’s required tag policy. |
+| `az resource show/list/update` | Reads, lists, or generically updates ARM resources; use when no service-specific command is needed. | `az resource list --resource-group rg-app-prod -o table` | Prefer a service-specific command when it offers safer validation. |
+| `az deployment group what-if` | Previews a resource-group Bicep/ARM deployment; use before applying changes. | `az deployment group what-if --resource-group rg-app-prod --template-file main.bicep --parameters @prod.bicepparam` | Read deletions/modifications carefully; what-if is a preview, not a guarantee of runtime success. |
+| `az deployment group create` | Deploys Bicep/ARM at resource-group scope; use after review/what-if. | `az deployment group create --name app-20261010 --resource-group rg-app-prod --template-file main.bicep --parameters @prod.bicepparam` | Use a meaningful deployment name for auditability. |
+| `az bicep build/lint` | Compiles or lints Bicep; use in local and CI validation. | `az bicep lint --file main.bicep` | `build --file main.bicep` emits ARM JSON; do not hand-edit generated output. |
+| `az lock create/list/delete` | Creates, lists, or removes resource locks; use to protect critical resources. | `az lock create --name protect-prod --lock-type CanNotDelete --resource-group rg-app-prod` | **⚠️** Locks can block emergency changes; document owners and removal procedure. |
+| `az monitor activity-log list` | Queries control-plane activity events; use for incident/change investigation. | `az monitor activity-log list --resource-group rg-app-prod --offset 24h -o table` | Activity Log is not application telemetry; use Application Insights/Log Analytics for runtime behavior. |
+| `az monitor diagnostic-settings create` | Sends platform logs/metrics to Log Analytics, storage, or Event Hubs; use when enabling observability. | `az monitor diagnostic-settings create --name send-to-law --resource RESOURCE_ID --workspace WORKSPACE_ID --logs '[{\"categoryGroup\":\"allLogs\",\"enabled\":true}]'` | Verify categories supported by the target resource; logging has cost and data-retention impact. |
+| `az keyvault secret set/show/delete` | Creates, reads, or deletes Key Vault secrets; use for secret lifecycle operations. | `az keyvault secret set --vault-name kv-app-prod --name ApiKey --file .\api-key.txt` | **⚠️** Do not print secret values in CI logs; assign data-plane RBAC before access. |
