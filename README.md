@@ -1,8 +1,10 @@
 <div align="center">
 
-# 🌈 Knowledge Base Learning Paths
+# 🌈 Knowledge Base Learning Paths — Python, C#/.NET, SQL, Azure, Docker, Podman & Git Guides
 
 ### **Build real skills, one practical guide at a time.**
+
+Beginner-to-advanced Markdown guides and cheat sheets: **Python OOP**, **Python dunder methods**, **C# and .NET OOP**, a **complete SQL guide**, an **Azure engineering cheat sheet**, **Docker**, **Podman**, and **Git command cheat sheets**, and a **local AI chat app lab with Ollama and Streamlit**.
 
 [![Study by doing](https://img.shields.io/badge/Style-Learn%20by%20doing-7C3AED?style=for-the-badge)](#-the-learning-loop)
 [![Beginner friendly](https://img.shields.io/badge/Start-Beginner%20friendly-16A34A?style=for-the-badge)](#-choose-your-starting-path)
@@ -188,6 +190,7 @@ flowchart TD
 | [🗄️ Complete SQL Guide](sql_complete_guide.md) | 🟢 → 🔴 | database design, queries, transactions, performance, and security | no database background required |
 | **🤖 AI & Learning Resources** |  |  |  |
 | [🤖 Local AI Learning Lab](local_ai_learning_lab.md) | 🟢 | a verified local chat app using Ollama, Python, and Streamlit | basic PowerShell and Python installation |
+| [🧠 AI coding CLI instructions](ai-cli/) | 🟡 | example global instruction files (`AGENTS.md`, `CLAUDE.md`, `copilot-instructions.md`, a shared `ENGINEERING.md`) and configuration samples for AI coding command-line tools | experience with at least one AI coding CLI |
 
 ---
 
@@ -231,6 +234,14 @@ Use this loop for every chapter, lesson, and lab:
 - [ ] I saw a failure or edge case and understood the fix.
 - [ ] I changed the example for a problem I care about.
 - [ ] I know what guide comes next on my chosen path.
+
+---
+
+## 🔗 Practice with real code
+
+- [🐍 Python projects](https://github.com/gcfernando/python_codes) — dozens of small, runnable Python scripts and apps to practise on after the Python OOP guide
+- [💜 C# and .NET code examples](https://github.com/gcfernando/csharp_codes) — Azure Functions, dependency injection, async, and SQL Server patterns that build on the C#/.NET and Azure guides
+- [🧰 Developer tools and guides](https://github.com/gcfernando/other_codes) — a Podman database stack, an offline Linux command reference, and an AI coding add-ons beginner's guide
 
 ---
 
