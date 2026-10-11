@@ -22,17 +22,25 @@ The complete command catalog follows; every displayed command includes its use a
 
 | Command | 📖 Purpose / 🎯 when | 💻 Example | 🔍 Note |
 |---|---|---|---|
+| `git init` | Initialize a new repository in the current folder. | `git init -b main` | Use in a project not already version-controlled. |
+| `git clone` | Copy a remote repository, including its history. | `git clone https://example.com/org/repo.git` | Replace URL with your repository. |
 | `git status` | Show staged/unstaged/untracked state. | `git status` | Run before every risky action. |
 | `git add` | Stage selected changes. | `git add src/app.cs` | Use `-p` to review hunks. |
 | `git commit` | Record staged snapshot. | `git commit -m "Add health endpoint"` | Write imperative messages. |
 | `git log` | Inspect history. | `git log --oneline --graph --all` | Great branch visualizer. |
 | `git diff` | Compare changes. | `git diff --staged` | Default is unstaged only. |
+| `git branch` | List, create, rename, or delete local branches. | `git branch -a` | `-a` includes remote-tracking branches; `-d` deletes merged local branches. |
+| `git switch` | Move to an existing branch. | `git switch main` | Use `-c NAME` to create and switch to a new branch. |
+| `git checkout` | Legacy command to switch branches or restore files. | `git checkout main` | `git checkout -- FILE` discards unstaged edits; prefer `switch` or `restore` for clarity. |
 | `git switch -c` | Create/switch branch. | `git switch -c feature/search` | Modern branch workflow. |
 | `git fetch` | Download remote refs without changing current branch. | `git fetch origin` | Safe first sync step. |
 | `git pull` | Fetch then integrate upstream. | `git pull --ff-only` | `--ff-only` avoids surprise merge commits. |
+| `git push` | Send local commits to the configured upstream branch. | `git push` | Set tracking first with `git push -u origin BRANCH` if necessary. |
 | `git push -u` | Publish/set upstream. | `git push -u origin feature/search` | Future `git push` can omit names. |
 | `git merge` | Integrate a branch. | `git merge feature/search` | Resolve conflicts then commit. |
 | `git rebase` | Replay commits on another base. | `git rebase origin/main` | Do not rewrite shared commits. |
+| `git cherry-pick` | Apply a chosen commit from another branch. | `git cherry-pick abc1234` | Resolve conflicts then use `--continue`, or cancel with `--abort`. |
+| `git reset` | Unstage changes or move a branch's HEAD. | `git reset` | Without flags, unstages paths while keeping file edits; **⚠️** `--hard` discards edits. |
 | `git restore` | Discard/unstage selected changes. | `git restore --staged app.cs` | Preserve edits while unstaging. |
 | `git revert` | Safely undo a published commit. | `git revert abc1234` | Creates a new inverse commit. |
 | `git stash` | Temporarily shelve work. | `git stash push -u -m "WIP"` | Include untracked with `-u`. |
@@ -55,12 +63,14 @@ The complete command catalog follows; every displayed command includes its use a
 | `git status/add/commit` | Inspects, stages, and commits work. | `git add -p; git commit -m "Fix validation"` | `add -p` avoids unrelated commits. |
 | `git diff/show/log` | Compares work, displays an object, or searches history. | `git log --oneline --decorate --graph --all` | `git show TAG` inspects a release/tag. |
 | `git switch/branch` | Switches/creates/lists/renames/deletes branches. | `git switch -c feature/api` | `git branch -d NAME` is safe; `-D` is **⚠️** force deletion. |
+| `git checkout` | Legacy branch switching and file checkout; useful when reading older scripts. | `git checkout -b feature/api` | Prefer `git switch -c feature/api`; **⚠️** `git checkout -- FILE` overwrites unstaged edits. |
 | `git remote` | Manages remote names/URLs. | `git remote add origin https://example.com/org/repo.git` | `git remote -v` verifies fetch/push URLs. |
 | `git fetch/pull/push` | Downloads refs, integrates upstream, publishes refs. | `git pull --ff-only origin main` | `fetch` **does not update your current branch**. |
 | `git merge` | Combines another branch into current. | `git merge --no-ff feature/api` | Fix conflict markers, `git add`, then `git commit`. |
 | `git rebase` | Replays commits on a new base. | `git rebase -i HEAD~3` | Use `--continue`, `--skip`, or `--abort`; never rebase published shared work. |
 | `git cherry-pick` | Applies selected commit(s). | `git cherry-pick abc1234` | Resolve then `--continue`; `--abort` restores pre-pick state. |
 | `git restore/reset/revert` | Discards working/index changes, moves refs, or makes a reversal commit. | `git revert abc1234` | **⚠️** `reset --hard` discards work; use `revert` for shared history. |
+| `git reset` | Removes paths from the index or moves local HEAD depending on arguments. | `git reset --mixed HEAD` | Unstages changes without deleting working edits; avoid `--hard` unless you have a backup. |
 | `git stash` | Stores/restores temporary changes. | `git stash push -u -m "WIP login"` | `list`, `show -p`, `pop`, `apply`, and `drop` manage entries. |
 | `git grep/blame/bisect` | Searches tracked text, attributes lines, or finds a bad commit. | `git grep "TODO"` | `bisect reset` ends a bisect session. |
 | `git clean` | **⚠️** Deletes untracked paths. | `git clean -nd` | Use dry-run `-n`; `-fd` removes directories too. |
@@ -169,6 +179,8 @@ git ls-remote --tags origin
 
 - [Git documentation](https://git-scm.com/docs)
 - [Git command categories](https://git-scm.com/docs/git#_git_commands_by_category)
+- [Git checkout](https://git-scm.com/docs/git-checkout)
+- [Git reset](https://git-scm.com/docs/git-reset)
 - [Git tags](https://git-scm.com/docs/git-tag)
 - [Git worktree](https://git-scm.com/docs/git-worktree)
 - [Git submodule](https://git-scm.com/docs/git-submodule)

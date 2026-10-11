@@ -26,6 +26,10 @@
 
 **Architecture:** the `docker` client asks the Docker daemon to create images, containers, networks, volumes, and (optionally) Swarm resources. An **image** is an immutable template; a **container** is its runnable instance.
 
+**Containerization:** packages an application and its dependencies into isolated processes with filesystem, process, and network boundaries. Unlike a full virtual machine, Linux containers share a Linux kernel; on macOS/Windows, Docker Desktop normally supplies that kernel inside a Linux VM.
+
+**Docker Engine:** consists of the long-running daemon (`dockerd`), APIs, and the Docker CLI. The CLI sends requests to the daemon, which coordinates image builds, container execution, storage, and networking. Check both client and server with `docker version`, then examine daemon settings with `docker info`.
+
 > [!WARNING]
 > Commands marked **⚠️ destructive** can remove data or resources. Inspect first with `docker ps -a`, `docker image ls`, `docker volume ls`, or `docker system df`. Never put credentials in an image, command history, or committed `compose.yaml`.
 
@@ -145,6 +149,10 @@ Each row includes a copyable example and its use; detailed flag explanations fol
 | `STOPSIGNAL` | Sets graceful-stop signal. | `STOPSIGNAL SIGTERM` | Match application shutdown handling. |
 | `ONBUILD` | Registers a trigger for child images. | `ONBUILD COPY . /src` | Avoid for general-purpose images; behavior is implicit. |
 
+**Docker image layers:** filesystem-changing Dockerfile instructions such as `RUN`, `COPY`, and `ADD` contribute layers that can be reused via build cache. A running container adds a writable layer over the image; do not treat it as durable storage. Inspect the image history with `docker image history IMAGE` and layers/metadata with `docker image inspect IMAGE`. Put rarely changing dependency steps before frequently changing application-source steps to improve caching.
+
+**Multi-stage builds:** use multiple `FROM` statements (for example, `FROM ... AS build`) and `COPY --from=build` to place only the needed artifacts into a smaller runtime image. The example below builds with an SDK image and runs with a separate runtime image.
+
 ### Build commands
 
 | Command | 📖 Description and 🎯 when | 💻 Example | 🔍 Flags, arguments, and 💡 tip |
@@ -228,17 +236,27 @@ secrets:
 |---|---|---|---|
 | `docker network ls` | Lists networks; use before attaching services. | `docker network ls` | The default `bridge` is not the same as a user-defined bridge. |
 | `docker network create` | Creates a network; use for service discovery/isolation. | `docker network create --driver bridge app-net` | User-defined bridge networks provide name-based DNS. |
+| `docker run --network app-net` | Runs a container on a user-defined **bridge** network; use for isolated container-to-container communication. | `docker run --rm --network app-net busybox:1.36 ping -c 1 api` | Requires an existing `app-net` and a running container named `api` attached to it; no host port needs publishing for peer traffic. |
+| `docker run --network host` | Shares the host network namespace rather than an isolated container network; use only when intentionally needed. | `docker run --rm --network host nginx:1.27-alpine` | **⚠️** Service ports bind directly on the host; `-p`/`--publish` is ignored. Mainly Linux Engine; Docker Desktop support depends on version/settings. |
 | `docker network connect/disconnect` | Attaches/detaches a running container; use for controlled network changes. | `docker network connect app-net api` | Prefer declaring networks at creation/Compose time. |
 | `docker network inspect/rm` | Inspects/removes networks; use to troubleshoot endpoints or clean unused networks. | `docker network inspect app-net` | **⚠️** `rm` fails with attached containers; disconnect them deliberately. |
 | `docker port` | Shows published mappings; use to identify host reachability. | `docker port api` | Publishing with `-p 127.0.0.1:8080:8080` limits access to the host. |
 | `docker volume create/ls/inspect` | Creates/lists/inspects managed persistent storage; use for databases. | `docker volume create db-data` | Volumes outlive containers. |
+| `docker run --mount type=volume` | Mounts Docker-managed persistent storage; use for database state and durable application data. | `docker run --rm --mount type=volume,src=db-data,dst=/data alpine:3.20 ls /data` | Docker manages the volume lifecycle and host storage location. |
+| `docker run --mount type=bind` | Mounts an existing host path into the container; use for source code or host-provided configuration. | `docker run --rm --mount type=bind,src=/absolute/host/path,dst=/workspace,readonly alpine:3.20 ls /workspace` | Replace the source with a **real absolute path** that exists on the Docker daemon host; omit `readonly` only if writes are necessary. |
 | `docker volume rm` | **⚠️** Deletes a volume and its data; use only after backup/confirmation. | `docker volume rm old-db-data` | `docker volume prune` deletes all unused volumes—review carefully. |
 | `docker volume prune` | **⚠️** Removes unused local volumes; use to reclaim disk after inspection. | `docker volume prune` | A stopped container may be your only reference to needed data. |
 
 ## 🔐 Registries, security, and Swarm
 
+**Registries:** Docker Hub is the default public registry for unqualified image names such as `nginx:1.27-alpine`. A private registry such as **Amazon ECR** uses a registry-qualified image name. You must authenticate and have push permissions, and the destination repository must exist (or be created through an appropriate configured workflow).
+
 | Command | 📖 Description and 🎯 when | 💻 Example | 🔍 Flags, arguments, and 💡 tip |
 |---|---|---|---|
+| `docker login` (Docker Hub) | Signs in to Docker Hub to pull private or publish owned images. | `docker login` | Follow the interactive authentication flow; use supported credential storage and never paste secrets into command history. |
+| `docker image tag` + `docker push` (Docker Hub) | Applies a namespace-qualified tag and uploads it to Docker Hub. | `docker image tag api:1.0 YOUR_USER/api:1.0` | Then run `docker push YOUR_USER/api:1.0`; you need permission to push to that namespace. |
+| `aws ecr get-login-password` + `docker login` | Authenticates Docker to Amazon ECR with a short-lived token from the AWS CLI. | `aws ecr get-login-password --region "$AWS_REGION" \| docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"` | Requires configured AWS credentials/IAM permission; authenticate to the correct account and Region; token lasts 12 hours. |
+| `docker image tag` + `docker push` (Amazon ECR) | Publishes a local image to an ECR repository. | `docker image tag api:1.0 "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/api:1.0"` | Then `docker push` that fully qualified tag; see the full commands below. |
 | `docker scan` | Deprecated/removed in current Docker distributions; use a supported scanner such as Docker Scout instead. | `docker scout quickview nginx:1.27-alpine` | Install/availability varies; follow current Docker Scout docs. |
 | `docker secret create` | Creates a Swarm secret from stdin/file; use for Swarm service secrets. | `Get-Content .\db_password.txt \| docker secret create db_password -` | **⚠️** Swarm-only; secrets are immutable—create a new one to rotate. |
 | `docker swarm init` | Initializes the current Engine as a manager; use only when intentionally adopting Swarm. | `docker swarm init --advertise-addr 10.0.0.10` | Protect manager access and save join tokens securely. |
@@ -248,6 +266,31 @@ secrets:
 | `docker service ls/ps/logs/inspect` | Observes service/task state; use for Swarm diagnosis. | `docker service ps web` | `docker service logs -f web` reads aggregated task logs. |
 | `docker service scale/update/rollback/rm` | Scales, changes, rolls back, or removes a service. | `docker service update --image nginx:1.27.1-alpine web` | **⚠️** Validate update policy; `rollback` returns to the prior service spec. |
 | `docker stack deploy/ls/services/rm` | Deploys and manages a Swarm stack from a Compose-format file. | `docker stack deploy -c stack.yml prod` | `docker stack rm prod` is **⚠️ destructive** to that stack's services/networks. |
+
+**Docker Hub publishing example** (replace `YOUR_USER` with your own Docker Hub namespace):
+
+```bash
+docker login
+docker image tag api:1.0 YOUR_USER/api:1.0
+docker push YOUR_USER/api:1.0
+```
+
+**Amazon ECR publishing example** (Bash; replace the sample account ID and Region; requires AWS CLI/IAM access and an existing local `api:1.0` image):
+
+```bash
+export AWS_REGION=eu-north-1
+export AWS_ACCOUNT_ID=123456789012  # Replace with your actual AWS account ID
+
+# Create the repository if it does not exist; skip if already created.
+aws ecr create-repository --repository-name api --region "$AWS_REGION"
+
+# Authenticate (valid for 12 hours), tag, and push.
+aws ecr get-login-password --region "$AWS_REGION" | \
+  docker login --username AWS --password-stdin \
+  "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+docker image tag api:1.0 "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/api:1.0"
+docker push "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/api:1.0"
+```
 
 ## 🛠️ Ten practical workflows
 
@@ -288,6 +331,9 @@ Docker ships more command-specific flags than a static document can safely repro
 
 - [Docker reference](https://docs.docker.com/reference/)
 - [Docker CLI reference](https://docs.docker.com/reference/cli/docker/)
+- [Host network driver](https://docs.docker.com/engine/network/drivers/host/)
+- [Bind mounts](https://docs.docker.com/engine/storage/bind-mounts/)
+- [Amazon ECR image push](https://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html)
 - [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
 - [Compose reference](https://docs.docker.com/compose/reference/)
 - [Buildx reference](https://docs.docker.com/buildx/working-with-buildx/)

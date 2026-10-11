@@ -1,7 +1,7 @@
 # 🦭 Podman Command Cheat Sheet
 
 [![Podman](https://img.shields.io/badge/Podman-CLI-892CA0?style=for-the-badge&logo=podman&logoColor=white)](https://docs.podman.io/)
-[![Rootless](https://img.shields.io/badge/Default-Rootless%20ready-16A34A?style=for-the-badge)](#-rootless-and-rootful)
+[![Rootless](https://img.shields.io/badge/Default-Rootless%20ready-16A34A?style=for-the-badge)](#-fundamentals)
 [![Reference](https://img.shields.io/badge/Reference-Command%20catalog-0EA5E9?style=for-the-badge)](#-command-cards)
 
 > Official reference: [docs.podman.io](https://docs.podman.io/). Podman is daemonless and Docker-CLI compatible for many—not all—commands. Run `podman COMMAND --help` for the installed version.
@@ -23,6 +23,30 @@
 > [!WARNING]
 > `podman rm -f`, `podman rmi -f`, `podman volume rm`, `podman system prune`, and `podman system reset` are destructive. Inspect first with `podman ps -a`, `podman images`, `podman volume ls`, and `podman system df`.
 
+
+**Containerization and Podman architecture:** Containerization packages an application with its dependencies as an OCI-compatible image and runs it as isolated host processes rather than a separate virtual machine. Podman uses a daemonless CLI (or optional API service), OCI runtimes such as `crun`/`runc`, local image/container storage, and registry access. Modern Podman uses Netavark for network management and Aardvark DNS on DNS-enabled networks. Images are built in layers; running containers add writable state that is not a substitute for durable storage.
+
+**Screenshot topic cross-reference** (Docker concepts translated to Podman; Docker Engine and Podman are not the same architecture):
+
+| Screenshot topic | Podman equivalent / where to start |
+|---|---|
+| Containerization | OCI images, isolated container processes, rootless operation. |
+| Docker Architecture | Podman CLI + OCI runtime + image storage + networking; no permanently running Engine daemon is required. |
+| Docker Engine | Podman runtime/CLI and optional `podman system service` API, **not** a Docker Engine daemon. |
+| Docker Images | `podman images`, `podman pull`, `podman image inspect`. |
+| Docker Containers | `podman run`, `podman ps -a`, `podman logs`, `podman exec`. |
+| Dockerfile | `Containerfile` or `Dockerfile` with `podman build`. |
+| Docker Image Layers | `podman history IMAGE`, `podman image tree IMAGE`. |
+| Docker Volumes | `podman volume create/ls/inspect/rm`; volumes persist independently of containers. |
+| Bind Mounts | `podman run --mount type=bind,...` or `-v HOST:CONTAINER`; account for SELinux/UIDs. |
+| Docker Networking | `podman network ls/create/inspect`, `podman run --network`. |
+| Docker Bridge Network | Rootful default bridge or user-defined `podman network create --driver bridge app-net`. |
+| Docker Host Network | `podman run --network host IMAGE`; reduces network isolation. |
+| Docker Compose | `podman compose` using an **installed external Compose provider**. |
+| Docker Registry | OCI-compatible registries: `podman login`, `tag`, `pull`, `push`. |
+| Docker Hub and Amazon ECR | `docker.io/YOUR_USER/IMAGE` or an account-specific ECR repository; examples below. |
+| Multi-Stage Builds | Multiple `FROM` stages in a `Containerfile`; `podman build --target`. |
+
 ## 🚀 Essential command cards
 
 The complete command catalog follows; every displayed command includes its use and copyable syntax.
@@ -39,6 +63,16 @@ The complete command catalog follows; every displayed command includes its use a
 | `podman kube play` | Create resources from Kubernetes YAML. | `podman kube play app.yaml` | Podman extension; review YAML. |
 | `podman machine init` | Create Windows/macOS VM. | `podman machine init` | Not normally needed on Linux. |
 | `podman system prune` | **⚠️** Remove unused resources. | `podman system prune` | Use `--all` only after review. |
+| `podman images` | List locally stored images and tags. | `podman images --digests` | Review image origins and digests before cleanup. |
+| `podman history` | Inspect image layers and build history. | `podman history --no-trunc localhost/api:1.0` | Layers may reveal build commands; never embed secrets. |
+| `podman volume create` | Create reusable persistent storage. | `podman volume create db-data` | Volumes outlive the containers using them. |
+| `podman run --mount` | Bind a host directory or attach a managed volume. | `podman run --rm --mount type=bind,src="$PWD",dst=/workspace,ro docker.io/library/alpine:3.20 ls /workspace` | Bash/Linux example; rootless ownership and SELinux may need attention. |
+| `podman network create` | Create a dedicated bridge network. | `podman network create --driver bridge app-net` | Use `--network app-net` when starting containers. |
+| `podman run --network host` | Share the host's network namespace. | `podman run --rm --network host docker.io/library/alpine:3.20 ip addr` | ⚠️ Reduced isolation; `-p` is not applicable. |
+| `podman compose` | Run a Compose-defined multi-container stack. | `podman compose up -d` | An external Compose provider must be installed; behavior varies by provider. |
+| `podman login` | Authenticate to a registry. | `podman login docker.io` | Use `--password-stdin` for automation. |
+| `podman push` | Upload a local image to a registry. | `podman push docker.io/YOUR_USER/api:1.0` | Tag appropriately and authenticate first. |
+| `podman build --target` | Build a named multi-stage target. | `podman build -f Containerfile --target build -t localhost/api:build .` | Use a `FROM ... AS build` stage. |
 
 ## 🧩 Command cards
 
@@ -63,6 +97,59 @@ The complete command catalog follows; every displayed command includes its use a
 | `podman volume create/ls/inspect/rm` | Manage persistent storage. | `podman volume create db-data` | **⚠️** Removing a volume deletes its data. |
 | `podman generate systemd` | Generates legacy systemd units from existing containers/pods. | `podman generate systemd --new --name api` | For new systems, prefer Quadlet. |
 | `podman system df/prune/reset` | Measure, prune, or reset local storage. | `podman system df` | `reset` is **⚠️ extremely destructive**: removes all Podman resources. |
+| `podman images` | Lists local image references; check before deleting. | `podman images --digests` | Fully qualified registry names avoid short-name ambiguity. |
+| `podman history` / `podman image history` | Displays image layer sizes and creation instructions; investigate image size and unexpected content. | `podman history --no-trunc localhost/api:1.0` | History is not a security boundary; build secrets must not be written to layers. |
+| `podman image inspect` | Shows layers, config, ports, labels, and image metadata. | `podman image inspect docker.io/library/nginx:alpine` | Use `--format` when parsing metadata in scripts. |
+| `podman build -f` | Builds OCI images from a `Containerfile` or `Dockerfile`. | `podman build -f Containerfile -t localhost/api:1.0 .` | The final `.` is the build context; exclude secrets using `.containerignore` or `.dockerignore`. |
+| `podman build --target` | Selects a stage from a multi-stage build. | `podman build --target build -t localhost/api:build .` | Final minimal stage copies required artifacts via `COPY --from=build`. |
+| `podman run --mount type=bind` | Shares host source code/config with a container; useful for development. | `podman run --rm --mount type=bind,src="$PWD",dst=/workspace,ro docker.io/library/alpine:3.20 ls /workspace` | `ro` prevents container writes; host path is on the Podman host/VM. |
+| `podman run --mount type=volume` | Mounts Podman-managed persistent data. | `podman run --rm --mount type=volume,src=db-data,dst=/data docker.io/library/alpine:3.20 ls /data` | Create with `podman volume create db-data`; back up data before deleting. |
+| `podman volume prune` | **⚠️** Deletes unused volumes and their data. | `podman volume ls` | Inspect/back up first; `podman volume prune` is destructive. |
+| `podman network create --driver bridge` | Creates a user-defined bridge network. | `podman network create --driver bridge app-net` | The default rootful bridge and rootless networking differ. |
+| `podman run --network app-net` | Attaches a new container to a named network. | `podman run -d --name web --network app-net -p 127.0.0.1:8080:80 docker.io/library/nginx:alpine` | DNS-enabled user-defined networks resolve container names. |
+| `podman run --network host` | Shares host network namespace instead of isolating it. | `podman run --rm --network host docker.io/library/alpine:3.20 ip addr` | **⚠️** Host-bound services can become reachable; port publishing flags do not apply. |
+| `podman network connect/disconnect` | Attaches/detaches an existing container from a network. | `podman network connect app-net api` | Review service reachability before detaching. |
+| `podman compose config/up/ps/logs/down` | Uses an external Compose provider to validate, start, observe, and stop stacks. | `podman compose config` | Install/configure a provider first; `down -v` **⚠️** removes project volumes. |
+| `podman login/tag/push` | Publishes images to Docker Hub, Amazon ECR, or other registries. | `podman tag localhost/api:1.0 docker.io/YOUR_USER/api:1.0` | Always choose the full target registry/repository and use approved credentials. |
+
+
+**Containerfile and image layers:** `Containerfile` and `Dockerfile` use the same Dockerfile instruction syntax (`FROM`, `WORKDIR`, `COPY`, `RUN`, `ENV`, `USER`, `EXPOSE`, `CMD`, `ENTRYPOINT`, etc.). Instructions can contribute layers and build metadata. Use a small trusted runtime stage, `.containerignore` to omit build output/secrets, and `podman history` to inspect the result.
+
+```dockerfile
+# Containerfile — example single-project ASP.NET Core API (replace Api.dll as needed)
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY . .
+RUN dotnet publish -c Release -o /out
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+COPY --from=build /out .
+USER 10001
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "Api.dll"]
+```
+
+```bash
+# Build the minimal runtime image and inspect its image layers
+podman build -f Containerfile -t localhost/api:1.0 .
+podman history localhost/api:1.0
+
+# Build only the intermediate stage for troubleshooting
+podman build -f Containerfile --target build -t localhost/api:build .
+```
+
+**Storage and networking essentials:** named volumes are managed by Podman and survive container removal; bind mounts expose existing host paths and should usually be read-only unless writes are required. On SELinux systems, `-v /host/path:/container/path:Z` relabels for private container use (`:z` for shared use); changing labels on system directories can cause host issues. On macOS/Windows, bind paths are resolved by the Linux VM/remote Podman host. `--network bridge` is typical for rootful isolated containers; recent rootless installations commonly use `pasta` by default. `--network host` removes network-namespace isolation, so avoid it unless necessary. `-p` exposes ports for supported isolated modes rather than host mode.
+
+**Compose:** `podman compose` delegates to an external provider (such as Docker Compose or podman-compose). It is not a built-in Compose implementation. Install/select a provider and validate with `podman compose config` before starting the stack:
+
+```bash
+podman compose config
+podman compose up -d
+podman compose ps
+podman compose logs --tail 100
+podman compose down       # CAUTION: down -v also deletes project volumes
+```
 
 ## 🦭 Pods, machine, kube, and Quadlet
 
@@ -115,7 +202,37 @@ Use `systemctl --user daemon-reload` then `systemctl --user start api.service`; 
 | Kubernetes handoff | `podman kube generate app > app.yaml`, review, then test with `podman kube play app.yaml`. |
 | Systemd service | Save the Quadlet above, reload systemd, start `api.service`, inspect with `systemctl --user status api.service`. |
 | Storage cleanup | `podman system df` first, then only if understood `podman system prune`. |
+| Inspect an image layer | `podman history --no-trunc localhost/api:1.0`; compare size/config with `podman image inspect localhost/api:1.0`. |
+| Bind-mount working files | Use `--mount type=bind,src="$PWD",dst=/workspace,ro` for read-only source inspection; adapt host/VM paths and SELinux policy. |
+| Custom bridge network | `podman network create --driver bridge app-net`; start a container with `--network app-net` and inspect via `podman network inspect app-net`. |
+| Host network diagnostics | Use `podman run --rm --network host IMAGE COMMAND` only for controlled debugging; it shares the host network namespace. |
+| Compose app | Install a Compose provider, run `podman compose config`, `podman compose up -d`, then `podman compose ps`. |
+| Image release to ECR | Get an ECR token with `aws ecr get-login-password`, pass it to `podman login --password-stdin`, then tag/push to the correct account/Region registry. |
 | SELinux mount failure | Use `:Z` for a private bind mount or `:z` for shared content; do not disable SELinux casually. |
+
+
+**Docker Hub publishing** (replace `YOUR_USER`, assume the local image `localhost/api:1.0` already exists):
+
+```bash
+podman login docker.io
+podman tag localhost/api:1.0 docker.io/YOUR_USER/api:1.0
+podman push docker.io/YOUR_USER/api:1.0
+```
+
+**Amazon ECR publishing** (Bash; requires AWS CLI credentials, IAM permissions, and an existing private ECR repository named `api` in the chosen Region):
+
+```bash
+AWS_REGION=eu-north-1
+AWS_ACCOUNT_ID=123456789012  # Replace with your AWS account ID
+ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+# Authenticate using a temporary ECR token; do not expose passwords in arguments.
+aws ecr get-login-password --region "$AWS_REGION" | \
+  podman login --username AWS --password-stdin "$ECR_REGISTRY"
+
+podman tag localhost/api:1.0 "$ECR_REGISTRY/api:1.0"
+podman push "$ECR_REGISTRY/api:1.0"
+```
 
 ## 🔗 Official documentation
 
@@ -124,6 +241,12 @@ Use `systemctl --user daemon-reload` then `systemctl --user start api.service`; 
 - [Pods](https://docs.podman.io/en/latest/markdown/podman-pod.1.html)
 - [Machine](https://docs.podman.io/en/latest/markdown/podman-machine.1.html)
 - [Quadlet](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html)
+- [Podman architecture and networking](https://docs.podman.io/en/latest/markdown/podman-network.1.html)
+- [Image history and layers](https://docs.podman.io/en/latest/markdown/podman-history.1.html)
+- [Containerfile builds and multi-stage options](https://docs.podman.io/en/latest/markdown/podman-build.1.html)
+- [Bind mounts, named volumes, and network modes](https://docs.podman.io/en/latest/markdown/podman-run.1.html)
+- [Compose wrapper and provider requirement](https://docs.podman.io/en/latest/markdown/podman-compose.1.html)
+- [Amazon ECR with Podman](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Podman.html)
 
 ## ➕ Additional Podman command cards
 
