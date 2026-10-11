@@ -1,6 +1,6 @@
 # ☁️ Azure Engineering Cheat Sheet
 
-**🏷️ Difficulty:** 🟡 Intermediate → 🔴 Advanced (reference map — not a from-zero tutorial)
+**🏷️ Difficulty:** 🟢 Beginner introduction → 🔴 Advanced reference (start with the first-time guide below)
 
 ![Azure](https://img.shields.io/badge/Azure-Engineering-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white)
 ![Format](https://img.shields.io/badge/Format-Production%20reference-0EA5E9?style=for-the-badge)
@@ -14,6 +14,30 @@
 > Always verify **pricing, SKUs, quotas, limits, regional availability, Availability Zone support, SLA, API versions, preview/GA status, runtime support, and retirement dates** in current Microsoft documentation before production use.
 
 ---
+
+## 👋 New to Azure? Start here
+
+Azure is Microsoft's cloud platform: instead of installing your own physical server, you create services in a Microsoft data center. **A resource** is one of those services; a **resource group** is a folder-like management container; a **subscription** is the billing and permission boundary. This file is a *reference*, so begin with the first safe steps here before trying a later lab.
+
+1. **Get permission and understand costs.** You need an Azure account with access to a subscription. Viewing resources usually requires Reader permission; creating examples generally requires Contributor or equivalent permissions. **Most created resources can incur charges**, even in short labs. Use a personal, approved test subscription with a budget and delete test resources afterward. Do not experiment in a production (real customer-facing) subscription.
+2. **Open a command terminal.** Go to [Azure Portal](https://portal.azure.com/), sign in, open **Cloud Shell** (`>_` icon), and select **Bash**. This is a terminal: a window where you type one instruction (a **command**) at a time. Cloud Shell has Azure CLI (`az`) installed; for your own computer, follow the [Azure CLI installation guide](https://learn.microsoft.com/cli/azure/install-azure-cli). These examples use **Bash, not PowerShell**. Azure Cloud Shell can request one-time storage setup.
+3. **Confirm where you are working.** Run the three *read-only* commands below, one at a time. If you have several subscriptions, check the displayed subscription before creating anything.
+
+```bash
+az --version
+az account show --query "{name:name,id:id}" --output table
+az group list --output table
+```
+
+**What the commands mean:** `az` invokes Azure CLI; `--version` displays the installed version; `account show` displays the selected subscription; `group list` shows its resource groups. `--query` selects fields and `--output table` makes them easier to read. **Check:** you should see a version and subscription name/ID. An empty resource-group table is possible and is not an error. If `az` is not found, use Bash Cloud Shell or install the CLI; if access is denied, ask your subscription administrator.
+
+**How to read the remaining examples:** Lines beginning with `#` are explanations, not commands. Run commands in order **in the same Bash session**, since later steps can use variables such as `$RG` (a named value). A word in `<angle-brackets>` is a *placeholder*, never literal text to type; replace it with a value from your own account before running. In revised lab commands, variables are assigned actual demonstration names instead. `-g`/`--resource-group` means resource group; `-n`/`--name` means name; `-l`/`--location` means Azure region; `-o`/`--output` controls display; `--sku` chooses a service tier, which can change cost. The `$(...)` syntax inserts the result of a command. `|` passes output to another command. `--yes` skips a delete confirmation, so always inspect the exact resource first. **An example demonstrates syntax; it does not guarantee that your subscription permits or supports that service.**
+
+**Glossary for the diagrams and tables:** **CLI** = command-line interface; **ARM** = Azure Resource Manager (service administration); **RBAC** = role-based access control (who may do what); **VNet** = private virtual network; **NSG** = network security group (network traffic rules); **DNS** = name-to-address lookup; **VM** = virtual machine; **PaaS** = provider-managed hosting; **SKU** = feature/capacity/pricing tier; **IaC** = infrastructure as code (repeatable deployment files); **CI/CD** = automated checks and delivery; **API** = an interface programs use to communicate. You can read a technology decision table without running any commands.
+
+> [!CAUTION]
+> **Before any lab:** read its goal, requirements, expected result, and cleanup first. Creating a resource group or service is *not read-only*. Never delete a resource group you did not create for this exercise: deleting it also deletes everything inside it. For commands that refer to existing resources, first discover their names in the Azure Portal or with the relevant `list` command. Flags, availability, quotas, and prices can change; use the linked official reference for your installed version.
+
 
 ## 🎨 Legend
 
@@ -126,12 +150,17 @@ IaC + CI/CD make changes REPEATABLE.
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Map the picture (tenant → subscription → resource group → resources) onto a real subscription.
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+
 az account show --query "{subscription:name, tenant:tenantId}" -o table
 az group list --query "[].name" -o table
-az resource list -g <your-resource-group> --query "[].{name:name,type:type}" -o table
+az resource list -g "${RG}" --query "[].{name:name,type:type}" -o table
 ```
 
 **👀 Expected result:** Your current subscription/tenant, the resource groups inside it, and the resources inside one group.
@@ -185,11 +214,13 @@ Microsoft.KeyVault/vaults
 ```bash
 az account show -o table
 az group list -o table
-az resource list -g <rg> -o table
+az resource list -g "${RG}" -o table
 az provider show --namespace Microsoft.Web --query registrationState -o tsv
 ```
 
 ## 🧪 Try it yourself
+
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
 **Goal:** Create and delete a resource group to see the lifecycle/ownership boundary in action.
 
@@ -202,7 +233,7 @@ az group show -n rg-lab-demo -o table
 
 **✅ Checkpoint:** What ARM path (`/subscriptions/.../resourceGroups/...`) does this new group live at?
 
-**🧹 Clean up:** `az group delete -n rg-lab-demo --yes --no-wait`
+**🧹 Clean up:** `az group delete -n rg-lab-demo --yes`
 
 [⬆️ Back to TOC](#toc)
 
@@ -273,18 +304,24 @@ App Service / Function / VM / Container App
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Create a user-assigned managed identity and inspect its role assignments, then clean up.
 
 ```bash
-az identity create -g <your-resource-group> -n <your-identity-name>
-az role assignment list --assignee $(az identity show -g <your-resource-group> -n <your-identity-name> --query principalId -o tsv) -o table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+IDENTITY_NAME="id-learn-r3"
+
+az identity create -g "${RG}" -n "${IDENTITY_NAME}"
+az role assignment list --assignee $(az identity show -g "${RG}" -n "${IDENTITY_NAME}" --query principalId -o tsv) -o table
 ```
 
 **👀 Expected result:** The identity is created with its own `principalId`, and the role assignment list is empty until you assign a role.
 
 **✅ Checkpoint:** Why would you use this identity on an App Service instead of storing a connection string with a key?
 
-**🧹 Clean up:** `az identity delete -g <your-resource-group> -n <your-identity-name>`
+**🧹 Clean up:** `az identity delete -g "$RG" -n "$IDENTITY_NAME"`
 
 [⬆️ Back to TOC](#toc)
 
@@ -342,18 +379,24 @@ Load balancing says WHICH healthy backend receives traffic.
 > **Private Endpoint broken?** Check in this order: `DNS → route → NSG/firewall → endpoint approval/state → RBAC/app auth`.
 
 ```bash
-nslookup <hostname>
-az network nic show-effective-route-table -g <rg> -n <nic>
-az network private-endpoint list -g <rg> -o table
+nslookup "${HOSTNAME}"
+az network nic show-effective-route-table -g "${RG}" -n "${NIC_NAME}"
+az network private-endpoint list -g "${RG}" -o table
 ```
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Walk the Private Endpoint troubleshooting order end-to-end on a real VNet/subnet.
 
 ```bash
-az network vnet list -g <your-resource-group> -o table
-az network nsg rule list -g <your-resource-group> --nsg-name <your-nsg-name> -o table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+NSG_NAME="demo-nsg"
+
+az network vnet list -g "${RG}" -o table
+az network nsg rule list -g "${RG}" --nsg-name "${NSG_NAME}" -o table
 ```
 
 **👀 Expected result:** Your VNet(s) listed, then the NSG rules controlling what traffic may pass on a given subnet.
@@ -409,14 +452,16 @@ Private Endpoint = INBOUND private access to App Service
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Apply the compute decision table to real SKUs available to you right now.
 
 ```bash
 az appservice plan list -o table
-az vm list-sizes --location swedencentral -o table | head -n 10
+az vm list-skus --location swedencentral --resource-type virtualMachines --size Standard_B --all --output table | head -n 10
 ```
 
-**👀 Expected result:** Any existing App Service plans (and their SKU), plus a list of real VM sizes available in that region.
+**👀 Expected result:** Any existing App Service plans (including their SKU, meaning tier), plus a list of VM sizes offered in the selected region. A listed SKU may still be blocked by quota or policy. The older `az vm list-sizes` command is deprecated; [Microsoft recommends `az vm list-skus`](https://learn.microsoft.com/cli/azure/vm).
 
 **✅ Checkpoint:** For "containerized app, low Kubernetes ops" from the table, which concrete Azure resource would you provision, and does it appear above?
 
@@ -471,18 +516,24 @@ Storage account keys
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Create a storage account with ZRS redundancy, verify the setting, then clean up.
 
 ```bash
-az storage account create -g <your-resource-group> -n <yourstorageacct> -l swedencentral --sku Standard_ZRS --kind StorageV2
-az storage account show -g <your-resource-group> -n <yourstorageacct> --query sku.name -o tsv
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+STORAGE_ACCOUNT="stlearn${RANDOM}${RANDOM}"
+
+az storage account create -g "${RG}" -n "${STORAGE_ACCOUNT}" -l swedencentral --sku Standard_ZRS --kind StorageV2
+az storage account show -g "${RG}" -n "${STORAGE_ACCOUNT}" --query sku.name -o tsv
 ```
 
 **👀 Expected result:** The command returns `Standard_ZRS`, confirming the account is zone-redundant.
 
 **✅ Checkpoint:** What's the practical difference between this ZRS account and if you'd chosen GRS instead?
 
-**🧹 Clean up:** `az storage account delete -g <your-resource-group> -n <yourstorageacct> --yes`
+**🧹 Clean up:** `az storage account delete -g "$RG" -n "$STORAGE_ACCOUNT" --yes`
 
 [⬆️ Back to TOC](#toc)
 
@@ -523,6 +574,8 @@ OS/full SQL control     → SQL Server on VM
 > Azure Cache for Redis is retiring. For new Azure Redis designs, start with **Azure Managed Redis** and verify the current migration/tier guidance.
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Inventory the database services already running before picking a new one.
 
@@ -574,18 +627,24 @@ az postgres flexible-server list -o table
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Create a Service Bus queue, send/peek a message, then clean up — proving queue vs DLQ mentally.
 
 ```bash
-az servicebus namespace create -g <your-resource-group> -n <your-sb-namespace> -l swedencentral --sku Basic
-az servicebus queue create -g <your-resource-group> --namespace-name <your-sb-namespace> -n demo-queue
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+SB_NS="sb-learn-${RANDOM}${RANDOM}"
+
+az servicebus namespace create -g "${RG}" -n "${SB_NS}" -l swedencentral --sku Basic
+az servicebus queue create -g "${RG}" --namespace-name "${SB_NS}" -n demo-queue
 ```
 
 **👀 Expected result:** A new Service Bus namespace and queue, visible in `az servicebus queue show`.
 
 **✅ Checkpoint:** Where would a message land if its lock expired 10 times in a row?
 
-**🧹 Clean up:** `az servicebus namespace delete -g <your-resource-group> -n <your-sb-namespace>`
+**🧹 Clean up:** `az servicebus namespace delete -g "$RG" -n "$SB_NS"`
 
 [⬆️ Back to TOC](#toc)
 
@@ -633,11 +692,16 @@ Collect **what you can act on**. “Enable every log forever” is expensive and
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Run the KQL starter query for real against your own Log Analytics workspace.
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+WORKSPACE_ID="$(az monitor log-analytics workspace show -g "$RG" -n "$LAW_NAME" --query customerId -o tsv)"
+
 az monitor log-analytics query \
-  -w <your-workspace-id> \
+  -w "${WORKSPACE_ID}" \
   --analytics-query "AppRequests | where TimeGenerated > ago(1h) | summarize Requests=count(), Failures=countif(Success==false) by bin(TimeGenerated, 5m)" \
   -o table
 ```
@@ -683,6 +747,8 @@ Identity → least privilege → secrets → network boundaries
 ✅ Patch supported runtimes/OS.
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Check real Defender for Cloud posture instead of assuming it's enabled.
 
@@ -748,11 +814,17 @@ Multi-region active/active
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Check whether backup is actually configured, not merely assumed, for a resource.
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+VAULT_NAME="vault-learn-r11"
+
 az backup vault list -o table
-az backup item list --resource-group <your-resource-group> --vault-name <your-vault-name> -o table
+az backup item list --resource-group "${RG}" --vault-name "${VAULT_NAME}" -o table
 ```
 
 **👀 Expected result:** Any Recovery Services vaults in the subscription, then the protected items inside a chosen vault.
@@ -800,6 +872,8 @@ az graph query -q "Resources | summarize count() by type | order by count_ desc"
 Example: `app-orders-prod-swc-001`
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Use Resource Graph to see your real estate instead of guessing its shape.
 
@@ -854,10 +928,12 @@ Compute runtime/capacity
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Pull real spend data instead of guessing where the cost levers are hurting you.
 
 ```bash
-az consumption usage list --start-date 2025-01-01 --end-date 2025-01-31 --query "[].{instance:instanceName,cost:pretaxCost}" -o table
+az consumption usage list --start-date 2026-09-01 --end-date 2026-09-30 --query "[].{instance:instanceName,cost:pretaxCost}" -o table
 ```
 
 **👀 Expected result:** A line-item table of costs by resource for the date range (adjust dates to a real billing period).
@@ -904,11 +980,16 @@ PR → validate/lint → what-if/plan → approval → deploy → smoke test →
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Run the safer deployment workflow's validate step on a real template.
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+
 az bicep build --file main.bicep
-az deployment group validate -g <your-resource-group> --template-file main.bicep --parameters environment=dev
+az deployment group validate -g "${RG}" --template-file main.bicep --parameters environment=dev
 ```
 
 **👀 Expected result:** `bicep build` compiles without errors; `validate` returns a success result describing what would be deployed, with no resources actually changed.
@@ -943,6 +1024,8 @@ Telemetry       → Event Hubs → ADX / analytics
 ```
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Check which analytics services are actually provisioned before you reach for a new one.
 
@@ -994,6 +1077,8 @@ User question → embed → retrieve ─┘
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Inventory the AI resources already deployed in a subscription.
 
 ```bash
@@ -1030,6 +1115,8 @@ az cognitiveservices account list --query "[].{name:name,kind:kind,location:loca
 > Migration is not modernization. A successful lift-and-shift should usually be followed by cost, reliability, security, and platform-fit review.
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** See what Arc-connected (non-Azure) machines/clusters look like from inside Azure.
 
@@ -1092,6 +1179,8 @@ az connectedk8s list -o table
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Turn the "which compute?" decision row into a real comparison of what's actually available to you.
 
 ```bash
@@ -1153,11 +1242,16 @@ Private DNS → Private Endpoint → SQL / Storage / Key Vault
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Validate a Web/API + database topology deployment without actually deploying it.
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+
 az deployment group what-if \
-  --resource-group <your-resource-group> \
+  --resource-group "${RG}" \
   --template-file main.bicep \
   --parameters appName=orders environment=dev
 ```
@@ -1179,21 +1273,21 @@ az deployment group what-if \
 # Identity / subscription
 az login
 az account show -o table
-az account set --subscription <subscription>
+az account set --subscription "${SUBSCRIPTION_ID}"
 
 # Resource groups / resources
 az group list -o table
-az resource list -g <rg> -o table
+az resource list -g "${RG}" -o table
 
 # RBAC
-az role assignment list --assignee <principal-id> --all -o table
+az role assignment list --assignee "${PRINCIPAL_ID}" --all -o table
 
 # Network
-az network vnet list -g <rg> -o table
-az network private-endpoint list -g <rg> -o table
+az network vnet list -g "${RG}" -o table
+az network private-endpoint list -g "${RG}" -o table
 
 # Web apps
-az webapp list -g <rg> -o table
+az webapp list -g "${RG}" -o table
 
 # Resource Graph
 az graph query -q "Resources | summarize count() by type"
@@ -1218,12 +1312,17 @@ az graph query -q "Resources | summarize count() by type"
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Chain several quick-reference commands into one real inventory pass.
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+
 az account show -o table
 az group list --query "[].name" -o table
-az resource list -g <your-resource-group> --query "[].{name:name,type:type}" -o table
+az resource list -g "${RG}" --query "[].{name:name,type:type}" -o table
 ```
 
 **👀 Expected result:** Your active subscription, all resource groups, then every resource and its type in one group.
@@ -1273,6 +1372,8 @@ Microsoft's Well-Architected Framework uses five pillars: **Reliability, Securit
 - [ ] Caching used only where it improves measured bottlenecks.
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Pull real recommendations against the five WAF pillars instead of guessing gaps.
 
@@ -1330,11 +1431,16 @@ nslookup hostname
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Practice the "first five checks" triage flow on a resource you own.
 
 ```bash
-az resource list -g <your-resource-group> --query "[].{name:name,changedTime:changedTime}" -o table
-az monitor activity-log list -g <your-resource-group> --offset 1d -o table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+
+az resource list -g "${RG}" --query "[].{name:name,changedTime:changedTime}" -o table
+az monitor activity-log list -g "${RG}" --offset 1d -o table
 ```
 
 **👀 Expected result:** A list of recent control-plane changes in that resource group over the last day.
@@ -1377,6 +1483,8 @@ Check Microsoft Learn retirement page
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Confirm a fact live instead of trusting memory, using quota as the example.
 
 ```bash
@@ -1412,6 +1520,8 @@ az vm list-usage --location "swedencentral" -o table
 | Microsoft Foundry | https://learn.microsoft.com/azure/ai-foundry/what-is-azure-ai-foundry |
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Practice treating Microsoft Learn as the source of truth instead of memory.
 
@@ -1449,13 +1559,13 @@ VERIFY LIVE → price / limits / regions / SLA / lifecycle
 
 | Command | 📖 Description / 🎯 when | 💻 Usage example | 🔍 Safety and flags |
 |---|---|---|---|
-| `az account show/list/set` | Shows, lists, or selects a subscription; use before every deployment or destructive action. | `az account set --subscription "SUBSCRIPTION_NAME_OR_ID"` | Confirm with `az account show -o table`; CLI state is user-local. |
-| `az group show/list/tag` | Inspects, lists, or updates resource-group tags; use for inventory and governance. | `az group update --name rg-app-prod --set tags.environment=production` | Tag changes are control-plane updates; follow your organization’s required tag policy. |
-| `az resource show/list/update` | Reads, lists, or generically updates ARM resources; use when no service-specific command is needed. | `az resource list --resource-group rg-app-prod -o table` | Prefer a service-specific command when it offers safer validation. |
+| `az account show/list/set` | Shows, lists, or selects a subscription; use before every deployment or destructive action. | `az account show -o table`<br>`az account list -o table`<br>`az account set --subscription "$(az account show --query id -o tsv)"` | Confirm with `az account show -o table`; CLI state is user-local. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
+| `az group show/list/update` | Inspects, lists, or updates resource-group tags; use for inventory and governance. | `az group show -g "$RG" -o table`<br>`az group list -o table`<br>`az group update -g "$RG" --tags environment=lab` | Tag changes are control-plane updates; follow your organization’s required tag policy. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
+| `az resource show/list/update` | Reads, lists, or generically updates ARM resources; use when no service-specific command is needed. | `az resource show --ids "$RESOURCE_ID" -o jsonc`<br>`az resource list -g "$RG" -o table`<br>`az resource update --ids "$RESOURCE_ID" --set tags.purpose=lab` | Prefer a service-specific command when it offers safer validation. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `az deployment group what-if` | Previews a resource-group Bicep/ARM deployment; use before applying changes. | `az deployment group what-if --resource-group rg-app-prod --template-file main.bicep --parameters @prod.bicepparam` | Read deletions/modifications carefully; what-if is a preview, not a guarantee of runtime success. |
 | `az deployment group create` | Deploys Bicep/ARM at resource-group scope; use after review/what-if. | `az deployment group create --name app-20261010 --resource-group rg-app-prod --template-file main.bicep --parameters @prod.bicepparam` | Use a meaningful deployment name for auditability. |
-| `az bicep build/lint` | Compiles or lints Bicep; use in local and CI validation. | `az bicep lint --file main.bicep` | `build --file main.bicep` emits ARM JSON; do not hand-edit generated output. |
-| `az lock create/list/delete` | Creates, lists, or removes resource locks; use to protect critical resources. | `az lock create --name protect-prod --lock-type CanNotDelete --resource-group rg-app-prod` | **⚠️** Locks can block emergency changes; document owners and removal procedure. |
+| `az bicep build/lint` | Compiles or lints Bicep; use in local and CI validation. | `az bicep build --file main.bicep`<br>`az bicep lint --file main.bicep` | `build --file main.bicep` emits ARM JSON; do not hand-edit generated output. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
+| `az lock create/list/delete` | Creates, lists, or removes resource locks; use to protect critical resources. | `az lock create --name protect-lab --lock-type CanNotDelete -g "$RG"`<br>`az lock list -g "$RG" -o table`<br>`az lock delete --name protect-lab -g "$RG"` | **⚠️** Locks can block emergency changes; document owners and removal procedure. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 
 | `az monitor activity-log list` | Queries control-plane activity events; use for incident/change investigation. | `az monitor activity-log list --resource-group rg-app-prod --offset 24h -o table` | Activity Log is not application telemetry; use Application Insights/Log Analytics for runtime behavior. |
-| `az monitor diagnostic-settings create` | Sends platform logs/metrics to Log Analytics, storage, or Event Hubs; use when enabling observability. | `az monitor diagnostic-settings create --name send-to-law --resource RESOURCE_ID --workspace WORKSPACE_ID --logs '[{\"categoryGroup\":\"allLogs\",\"enabled\":true}]'` | Verify categories supported by the target resource; logging has cost and data-retention impact. |
-| `az keyvault secret set/show/delete` | Creates, reads, or deletes Key Vault secrets; use for secret lifecycle operations. | `az keyvault secret set --vault-name kv-app-prod --name ApiKey --file .\api-key.txt` | **⚠️** Do not print secret values in CI logs; assign data-plane RBAC before access. |
+| `az monitor diagnostic-settings create` | Sends platform logs/metrics to Log Analytics, storage, or Event Hubs; use when enabling observability. | `az monitor diagnostic-settings create --name send-to-law --resource "$RESOURCE_ID" --workspace "$WORKSPACE_ID" --logs '[{\"categoryGroup\":\"allLogs\",\"enabled\":true}]'` | Verify categories supported by the target resource; logging has cost and data-retention impact. |
+| `az keyvault secret set/show/delete` | Creates, reads, or deletes Key Vault secrets; use for secret lifecycle operations. | `az keyvault secret set --vault-name "$VAULT_NAME" --name DemoToken --file ./token.txt`<br>`az keyvault secret show --vault-name "$VAULT_NAME" --name DemoToken --query id -o tsv`<br>`az keyvault secret delete --vault-name "$VAULT_NAME" --name DemoToken` | **⚠️** Do not print secret values in CI logs; assign data-plane RBAC before access. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 

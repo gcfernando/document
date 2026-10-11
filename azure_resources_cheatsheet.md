@@ -1,6 +1,6 @@
 # 📦 Azure Resources Deep Reference
 
-**🏷️ Difficulty:** 🟡 Intermediate → 🔴 Advanced (reference — assumes [`azure_cheatsheet.md`](./azure_cheatsheet.md)'s architecture map)
+**🏷️ Difficulty:** 🟢 Beginner start guide → 🔴 Advanced resource reference (the [Azure overview](./azure_cheatsheet.md) is helpful but optional)
 
 ![Azure](https://img.shields.io/badge/Azure-Resource%20reference-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white)
 ![Format](https://img.shields.io/badge/Format-CLI%20%7C%20Bicep%20%7C%20C%23-0EA5E9?style=for-the-badge)
@@ -11,6 +11,33 @@
 >
 > [!IMPORTANT]
 > Verify live: **pricing, SKU capabilities, quotas, limits, regions, Availability Zone support, SLA, API versions, preview/GA status, supported runtimes/models, and retirement dates**.
+
+## 👋 Beginner's first steps — read before any resource lab
+
+This is an **Azure resource reference**: each numbered section explains one family of services, then offers a small practice exercise. The sections are **independent**; do not run all of them in order. Many cost money or require paid features, a region, provider registration, specific permissions, or existing infrastructure. Treat advanced labs as optional demonstrations, not as mandatory beginner steps.
+
+1. **Open Azure Cloud Shell in Bash mode** from [portal.azure.com](https://portal.azure.com/) (the `>_` icon). Bash is the text-based program that executes the commands in each `bash` block. Azure CLI is the tool whose commands begin with `az`. On a personal machine, [install Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) and run `az login` in a terminal. In Cloud Shell you are generally already signed in.
+2. **Use a test subscription only.** Confirm you can access it using the safe commands below. You need appropriate permissions to *create* resources, and a budget/permission to incur charges. Most later examples are **not free**, and some provider names or pricing tiers may not be available to your account.
+3. **Run one exercise at a time.** Every `🧪 Try it yourself` section has a goal, a command block, an expected result, a checkpoint, and cleanup. Read all five parts first. Run its commands in **one Bash session**, so names saved in variables such as `$RG` are available to its cleanup step. If you close that terminal, you must restore the same names before deleting anything.
+
+```bash
+az --version
+az account show --query "{name:name,id:id}" --output table
+az group list --output table
+```
+
+`az --version` confirms installation; `az account show` identifies the active subscription, and `az group list` shows existing resource groups. `--query` chooses output fields; `--output table` displays a readable table. **Check:** version and subscription details should appear; an empty list is allowed. Errors about authorization require help from an administrator.
+
+**How to read example values:** `RG=rg-learn-r3-12345` creates a Bash *variable* (a remembered value); `$RG` means “use that value” and is typed literally. `$RANDOM` generates a short number to reduce naming collisions; save names if you want to return later. Names of resources created in a lab are example values, not production names. A literal `<something>` in a *diagram* indicates an illustrative placeholder and must not be sent to Azure. `-g`/`--resource-group` is a resource group; `-n`/`--name` names a resource; `-l`/`--location` selects a region; `--sku` selects a cost/features tier; `--query` filters output; `-o`/`--output` chooses its format; `--yes` bypasses a deletion prompt; and `--no-wait` returns before an operation finishes. `$(...)` runs a command and uses its output. A backslash (`\`) at the end of a line continues a Bash command on the next line. A line beginning with `#` is a comment, not a command.
+
+**Useful words:** **tenant** = an organization's identity directory; **subscription** = billing/permissions boundary; **resource group** = set of Azure resources managed together; **ARM** = Azure Resource Manager; **provider** = a resource family, e.g. `Microsoft.Storage`; **SKU** = service tier and pricing/capacity choice; **RBAC** = access roles; **VNet** = virtual network; **PaaS** = Azure manages much of the infrastructure; **API** = an interface used by software; **IaC** = deployment defined in version-controlled files; **CLI** = terminal-based control program. See the [architecture overview](./azure_cheatsheet.md) if these concepts are new.
+
+> [!WARNING]
+> **Cost and deletion:** read a section's prerequisites before running it. Some demonstrations create chargeable services or internet-facing endpoints. `az group delete` permanently deletes **all resources in that group**. Only delete a newly created, disposable lab group, and first confirm the group name and contents using `az resource list -g "$RG" -o table`. If a section is inventory-only, an example resource name may need to be replaced with one you actually own. An empty result usually means no matching resource exists, not that the command is broken.
+
+> [!NOTE]
+> Some examples need special registration, permissions, a preexisting dependent service, or a globally unique service name. A command that is syntactically correct can still be rejected due to subscription quota, policy, product retirement, or availability. **The exercises have not been run against your subscription.** Check the current Microsoft links next to the relevant service before using an expensive or security-sensitive lab.
+
 
 ## 🎨 Resource-card legend
 
@@ -179,6 +206,8 @@ https://learn.microsoft.com/azure/azure-resource-manager/management/resource-pro
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Connect this reference to a real subscription by discovering registered resource providers and resource types.
 
 ```bash
@@ -193,7 +222,7 @@ az provider show --namespace Microsoft.KeyVault --query "resourceTypes[].resourc
 **✅ Checkpoint:** Is `Microsoft.Compute` registered in your subscription?
 
 **🧹 Clean up:**
-Nothing to clean up — read-only command.
+Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -202,19 +231,19 @@ Nothing to clean up — read-only command.
 # ➕ Cross-resource Azure CLI command cards
 
 > [!TIP]
-> These commands complement the resource-specific examples above. Use `--query`, `--output table`, and `--only-show-errors` to make operational output focused and script-friendly.
+> These commands complement the resource-specific examples below. **Before using `$RESOURCE_ID`, select a real, nonproduction resource ID from `az resource list -o table`; `$WORKSPACE_ID` is the Log Analytics workspace customer ID from its Overview screen, and `$ASSIGNEE_ID` is an authorized user/service-principal object ID. These variables are not automatically set by the table.** Never run `move`, `delete`, or role-grant changes on an unreviewed resource. Use `--query`, `--output table`, and `--only-show-errors` to make operational output focused and script-friendly.
 
 | Command | 📖 Description / 🎯 when | 💻 Usage example | 🔍 Safety and flags |
 |---|---|---|---|
-| `az provider register/show` | Registers or verifies an ARM resource provider; use before deploying a service whose provider is unavailable. | `az provider register --namespace Microsoft.App` | Registration can take time; verify with `az provider show --namespace Microsoft.App --query registrationState -o tsv`. |
+| `az provider register/show` | Registers or verifies an ARM resource provider; use before deploying a service whose provider is unavailable. | `az provider register --namespace Microsoft.App`<br>`az provider show --namespace Microsoft.App --query registrationState -o tsv` | Registration can take time; verify with `az provider show --namespace Microsoft.App --query registrationState -o tsv`. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `az resource list` | Lists resources across a scope; use for inventory or before cleanup. | `az resource list --tag environment=dev -o table` | Filter narrowly before acting on results. |
-| `az resource move` | Moves supported resources between groups/subscriptions; use for planned reorganizations. | `az resource move --destination-group rg-target --ids RESOURCE_ID` | **⚠️** Check move support, dependencies, locks, RBAC, and downtime implications first. |
-| `az resource delete` | **⚠️** Deletes a generic ARM resource; use only with an approved, verified resource ID. | `az resource delete --ids RESOURCE_ID` | Prefer service-specific delete commands and locks for production safeguards. |
+| `az resource move` | Moves supported resources between groups/subscriptions; use for planned reorganizations. | `az resource move --destination-group rg-lab-target --ids "$RESOURCE_ID"` | **⚠️** Check move support, dependencies, locks, RBAC, and downtime implications first. |
+| `az resource delete` | **⚠️** Deletes a generic ARM resource; use only with an approved, verified resource ID. | `az resource delete --ids "$RESOURCE_ID"` | Prefer service-specific delete commands and locks for production safeguards. |
 | `az graph query` | Queries Azure Resource Graph across subscriptions; use for large-scale inventory. | `az graph query -q "Resources \| summarize count() by type" -o table` | Requires the Resource Graph extension where not preinstalled and adequate reader access. |
-| `az monitor metrics list` | Retrieves platform metrics for a resource; use for quick performance evidence. | `az monitor metrics list --resource RESOURCE_ID --metric Percentage CPU --interval PT1H` | Metric names and dimensions are resource-specific. |
-| `az monitor log-analytics query` | Runs KQL against a Log Analytics workspace; use for telemetry investigations. | `az monitor log-analytics query --workspace WORKSPACE_ID --analytics-query "AzureActivity \| take 20"` | Scope queries and retention-aware time ranges to control cost/performance. |
-| `az role assignment list/create/delete` | Lists, grants, or removes RBAC assignments; use to implement least privilege. | `az role assignment list --scope RESOURCE_ID -o table` | **⚠️** Grant the narrowest role and scope; deletion can break workloads. |
-| `az policy assignment list` | Lists policy assignments; use before deployments that may be denied or audited. | `az policy assignment list --scope /subscriptions/SUBSCRIPTION_ID -o table` | Policy evaluation can block deployment even when RBAC allows it. |
+| `az monitor metrics list` | Retrieves platform metrics for a resource; use for quick performance evidence. | `az monitor metrics list --resource "$RESOURCE_ID" --metric "Percentage CPU" --interval PT1H` | Metric names and dimensions are resource-specific. |
+| `az monitor log-analytics query` | Runs KQL against a Log Analytics workspace; use for telemetry investigations. | `az monitor log-analytics query --workspace "$WORKSPACE_ID" --analytics-query "AzureActivity \| take 20"` | Scope queries and retention-aware time ranges to control cost/performance. |
+| `az role assignment list/create/delete` | Lists, grants, or removes RBAC assignments; use to implement least privilege. | `az role assignment list --scope "$RESOURCE_ID" -o table`<br>`az role assignment create --assignee "$ASSIGNEE_ID" --role Reader --scope "$RESOURCE_ID"`<br>`az role assignment delete --assignee "$ASSIGNEE_ID" --role Reader --scope "$RESOURCE_ID"` | **⚠️** Grant the narrowest role and scope; deletion can break workloads. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 
+| `az policy assignment list` | Lists policy assignments; use before deployments that may be denied or audited. | `az policy assignment list --scope "/subscriptions/$(az account show --query id -o tsv)" -o table` | Policy evaluation can block deployment even when RBAC allows it. |
 | `az deployment operation group list` | Shows individual operations from a resource-group deployment; use after deployment failure. | `az deployment operation group list --resource-group rg-app-prod --name app-20261010 -o table` | Pair with `az deployment group show` to inspect error details. |
 
 # PART I — 🖥️ COMPUTE & APPLICATION HOSTING
@@ -258,22 +287,27 @@ https://learn.microsoft.com/azure/virtual-machines/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy the smallest practical Linux VM, confirm it runs, then deallocate it.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az vm create --resource-group <your-resource-group> --name demo-vm --image Ubuntu2204 --size Standard_B1s --generate-ssh-keys --public-ip-sku Standard
-az vm show --resource-group <your-resource-group> --name demo-vm --show-details --query "{power:powerState,ip:publicIps}" -o jsonc
-az vm deallocate --resource-group <your-resource-group> --name demo-vm
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r1-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az vm create --resource-group "${RG}" --name demo-vm --image Ubuntu2204 --size Standard_B1s --generate-ssh-keys --public-ip-sku Standard
+az vm show --resource-group "${RG}" --name demo-vm --show-details --query "{power:powerState,ip:publicIps}" -o jsonc
+az vm deallocate --resource-group "${RG}" --name demo-vm
 ```
 
 **👀 Expected result:** VM shows `powerState: VM running` with a public IP, then transitions to deallocated (stopped, not billed for compute) after the last command.
 
-**✅ Checkpoint:** After `az vm deallocate`, does `az vm get-instance-view` report `PowerState/deallocated`?
+**✅ Checkpoint:** Run `az vm get-instance-view -g "$RG" -n demo-vm --query "instanceView.statuses[].code" -o tsv`; check for `PowerState/deallocated`.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -319,22 +353,28 @@ https://learn.microsoft.com/azure/azure-app-configuration/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy a free-tier App Service plan and web app, then confirm it serves traffic.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az appservice plan create --name demo-plan --resource-group <your-resource-group> --sku F1 --is-linux
-az webapp create --name <unique-app-name> --resource-group <your-resource-group> --plan demo-plan --runtime "NODE:20-lts"
-az webapp show --name <unique-app-name> --resource-group <your-resource-group> --query defaultHostName -o tsv
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r2-${RANDOM}"
+APP_NAME="app-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az appservice plan create --name demo-plan --resource-group "${RG}" --sku F1 --is-linux
+az webapp create --name "${APP_NAME}" --resource-group "${RG}" --plan demo-plan --runtime "NODE:20-lts"
+az webapp show --name "${APP_NAME}" --resource-group "${RG}" --query defaultHostName -o tsv
 ```
 
-**👀 Expected result:** A hostname like `<unique-app-name>.azurewebsites.net` is printed; browsing it returns the default Node.js container welcome page (HTTP 200).
+**👀 Expected result:** A hostname ending in `.azurewebsites.net` is printed. If the runtime and plan are supported, the site should respond to HTTPS; a welcome page or initial status may depend on runtime/plan configuration.
 
-**✅ Checkpoint:** Does `curl -I https://<hostname>` return `HTTP/2 200`?
+**✅ Checkpoint:** Open `https://` followed by the hostname shown by the previous command. If a site is not yet ready, inspect App Service deployment logs and the selected runtime; HTTP versions and response codes may vary.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -383,21 +423,26 @@ https://learn.microsoft.com/azure/container-registry/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Run the smallest real container workload — a single Azure Container Instance — without standing up AKS.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az container create --resource-group <your-resource-group> --name demo-aci --image mcr.microsoft.com/azuredocs/aci-helloworld --cpu 1 --memory 1 --ports 80 --ip-address Public
-az container show --resource-group <your-resource-group> --name demo-aci --query "{ip:ipAddress.ip,state:instanceView.state}" -o jsonc
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r3-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az container create --resource-group "${RG}" --name demo-aci --image mcr.microsoft.com/azuredocs/aci-helloworld --cpu 1 --memory 1 --ports 80 --ip-address Public
+az container show --resource-group "${RG}" --name demo-aci --query "{ip:ipAddress.ip,state:instanceView.state}" -o jsonc
 ```
 
 **👀 Expected result:** `state: Running` with a public IP; browsing `http://<ip>` shows "Welcome to Azure Container Instances!".
 
-**✅ Checkpoint:** Does `curl http://<ip>` return the hello-world HTML?
+**✅ Checkpoint:** Run `IP="$(az container show -g "$RG" -n demo-aci --query ipAddress.ip -o tsv)"` to fetch the actual public IP, then `curl "http://$IP"`. You should receive the hello-world HTML if your organization allows public endpoints.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -450,12 +495,17 @@ https://learn.microsoft.com/azure/nat-gateway/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a minimal VNet/subnet and inspect its address space.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az network vnet create --resource-group <your-resource-group> --name demo-vnet --address-prefix 10.10.0.0/16 --subnet-name demo-subnet --subnet-prefix 10.10.1.0/24
-az network vnet subnet show --resource-group <your-resource-group> --vnet-name demo-vnet --name demo-subnet --query addressPrefix -o tsv
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r4-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az network vnet create --resource-group "${RG}" --name demo-vnet --address-prefix 10.10.0.0/16 --subnet-name demo-subnet --subnet-prefix 10.10.1.0/24
+az network vnet subnet show --resource-group "${RG}" --vnet-name demo-vnet --name demo-subnet --query addressPrefix -o tsv
 ```
 
 **👀 Expected result:** `10.10.1.0/24` is printed, confirming the subnet was carved out of the VNet's `/16`.
@@ -464,7 +514,7 @@ az network vnet subnet show --resource-group <your-resource-group> --vnet-name d
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -504,13 +554,19 @@ https://learn.microsoft.com/azure/dns/dns-private-resolver-overview
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a Private DNS zone, link it to a VNet, and add a record.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az network private-dns zone create --resource-group <your-resource-group> --name demo.internal
-az network private-dns link vnet create --resource-group <your-resource-group> --zone-name demo.internal --name demo-link --virtual-network <your-vnet-name> --registration-enabled false
-az network private-dns record-set a add-record --resource-group <your-resource-group> --zone-name demo.internal --record-set-name app --ipv4-address 10.10.1.4
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r5-${RANDOM}"
+VNET_NAME="demo-vnet"
+
+az group create --name "${RG}" --location eastus
+az network private-dns zone create --resource-group "${RG}" --name demo.internal
+az network private-dns link vnet create --resource-group "${RG}" --zone-name demo.internal --name demo-link --virtual-network "${VNET_NAME}" --registration-enabled false
+az network private-dns record-set a add-record --resource-group "${RG}" --zone-name demo.internal --record-set-name app --ipv4-address 10.10.1.4
 ```
 
 **👀 Expected result:** The zone, VNet link, and A record `app.demo.internal -> 10.10.1.4` are created.
@@ -519,7 +575,7 @@ az network private-dns record-set a add-record --resource-group <your-resource-g
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -564,11 +620,16 @@ https://learn.microsoft.com/azure/virtual-wan/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Inspect available ExpressRoute providers and any existing gateways without provisioning costly hybrid infrastructure.
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+
 az network express-route list-service-providers --output table
-az network vnet-gateway list --resource-group <your-resource-group> --output table
+az network vnet-gateway list --resource-group "${RG}" --output table
 az network vpn-gateway list --output table
 ```
 
@@ -577,7 +638,7 @@ az network vpn-gateway list --output table
 **✅ Checkpoint:** Which ExpressRoute providers/bandwidths are available at your nearest peering location?
 
 **🧹 Clean up:**
-Nothing to clean up — read-only command.
+Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -619,21 +680,26 @@ https://learn.microsoft.com/azure/frontdoor/
 
 ## 🧪 Try it yourself
 
-**Goal:** Create a minimal public Basic Load Balancer and inspect its frontend configuration.
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
+**Goal:** Create a minimal **Standard** Load Balancer and inspect its frontend configuration. Standard is the supported SKU; Basic was retired on September 30, 2025. See [Microsoft's SKU guidance](https://learn.microsoft.com/azure/load-balancer/skus). This configuration does not yet distribute traffic: a backend, rule, and health probe would be needed.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az network lb create --resource-group <your-resource-group> --name demo-lb --sku Basic --public-ip-address demo-pip
-az network lb show --resource-group <your-resource-group> --name demo-lb --query "frontendIPConfigurations[].publicIPAddress.id" -o tsv
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r7-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az network lb create --resource-group "${RG}" --name demo-lb --sku Standard --public-ip-address demo-pip
+az network lb show --resource-group "${RG}" --name demo-lb --query "frontendIPConfigurations[].publicIPAddress.id" -o tsv
 ```
 
 **👀 Expected result:** The resource ID of `demo-pip` is printed, confirming the LB frontend is bound to the public IP.
 
-**✅ Checkpoint:** Does `az network lb probe list --resource-group <your-resource-group> --lb-name demo-lb` return an empty list until a backend pool and probe are added?
+**✅ Checkpoint:** Does `az network lb probe list --resource-group "$RG" --lb-name demo-lb` return an empty list until a backend pool and probe are added?
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -679,13 +745,18 @@ https://learn.microsoft.com/azure/network-watcher/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create an NSG with a custom deny-all-inbound rule and compare it against the built-in default rules.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az network nsg create --resource-group <your-resource-group> --name demo-nsg
-az network nsg rule create --resource-group <your-resource-group> --nsg-name demo-nsg --name DenyAllInbound --priority 4096 --direction Inbound --access Deny --protocol "*" --source-address-prefixes "*" --destination-address-prefixes "*" --source-port-ranges "*" --destination-port-ranges "*"
-az network nsg rule list --resource-group <your-resource-group> --nsg-name demo-nsg --output table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r8-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az network nsg create --resource-group "${RG}" --name demo-nsg
+az network nsg rule create --resource-group "${RG}" --nsg-name demo-nsg --name DenyAllInbound --priority 4096 --direction Inbound --access Deny --protocol "*" --source-address-prefixes "*" --destination-address-prefixes "*" --source-port-ranges "*" --destination-port-ranges "*"
+az network nsg rule list --resource-group "${RG}" --nsg-name demo-nsg --output table
 ```
 
 **👀 Expected result:** `DenyAllInbound` appears at priority 4096, below the auto-created `AllowVnetInBound` (65000) and `DenyAllInBound` (65500) default rules.
@@ -694,7 +765,7 @@ az network nsg rule list --resource-group <your-resource-group> --nsg-name demo-
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -734,12 +805,18 @@ https://learn.microsoft.com/azure/storage/common/storage-account-overview
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a minimal Standard LRS storage account and inspect its default security settings.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az storage account create --resource-group <your-resource-group> --name <unique-storage-acct> --sku Standard_LRS --kind StorageV2
-az storage account show --resource-group <your-resource-group> --name <unique-storage-acct> --query "{sku:sku.name,kind:kind,https:enableHttpsTrafficOnly}" -o jsonc
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r9-${RANDOM}"
+STORAGE_ACCOUNT="stlearn${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az storage account create --resource-group "${RG}" --name "${STORAGE_ACCOUNT}" --sku Standard_LRS --kind StorageV2
+az storage account show --resource-group "${RG}" --name "${STORAGE_ACCOUNT}" --query "{sku:sku.name,kind:kind,https:enableHttpsTrafficOnly}" -o jsonc
 ```
 
 **👀 Expected result:** JSON showing `sku: Standard_LRS`, `kind: StorageV2`, `https: true`.
@@ -748,7 +825,7 @@ az storage account show --resource-group <your-resource-group> --name <unique-st
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -791,12 +868,20 @@ https://learn.microsoft.com/azure/storage/blobs/data-lake-storage-introduction
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates a storage account and uploads data. It requires Contributor or equivalent management permission plus **Storage Blob Data Contributor** on the storage account (or a suitable data role); a newly granted role may take a few minutes to become effective. Storage costs may apply. Only delete the group created in this exercise.
+
 **Goal:** Create a blob container, upload a test blob, and list it back.
 
 ```bash
-az storage container create --account-name <unique-storage-acct> --name demo-container --auth-mode login
-az storage blob upload --account-name <unique-storage-acct> --container-name demo-container --name hello.txt --data "hello azure" --auth-mode login
-az storage blob list --account-name <unique-storage-acct> --container-name demo-container --auth-mode login --output table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r10-${RANDOM}"
+STORAGE_ACCOUNT="stlearn${RANDOM}${RANDOM}"
+
+az group create --name "$RG" --location eastus
+az storage account create --name "$STORAGE_ACCOUNT" --resource-group "$RG" --location eastus --sku Standard_LRS --kind StorageV2
+az storage container create --account-name "${STORAGE_ACCOUNT}" --name demo-container --auth-mode login
+az storage blob upload --account-name "${STORAGE_ACCOUNT}" --container-name demo-container --name hello.txt --data "hello azure" --auth-mode login
+az storage blob list --account-name "${STORAGE_ACCOUNT}" --container-name demo-container --auth-mode login --output table
 ```
 
 **👀 Expected result:** A table listing `hello.txt` with its size, access tier and last-modified timestamp.
@@ -805,7 +890,10 @@ az storage blob list --account-name <unique-storage-acct> --container-name demo-
 
 **🧹 Clean up:**
 ```bash
-az storage container delete --account-name <unique-storage-acct> --name demo-container --auth-mode login
+az storage container delete --account-name "${STORAGE_ACCOUNT}" --name demo-container --auth-mode login
+# Check the group name and contents before removing this disposable lab group.
+az resource list -g "$RG" -o table
+az group delete -g "$RG" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -844,11 +932,19 @@ https://learn.microsoft.com/azure/azure-netapp-files/
 
 ## 🧪 Try it yourself
 
+**Before running:** Creates an empty storage account and an Azure Files share. Requires a test subscription, permissions to create resources, and budget approval. The example uses Azure Resource Manager operations (not mounting the share).
+
 **Goal:** Create a minimal Azure Files share and inspect its quota/protocol.
 
 ```bash
-az storage share-rm create --resource-group <your-resource-group> --storage-account <unique-storage-acct> --name demo-share --quota 5
-az storage share-rm show --resource-group <your-resource-group> --storage-account <unique-storage-acct> --name demo-share --query "{quota:shareQuota,protocol:enabledProtocols}" -o jsonc
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r11-${RANDOM}"
+STORAGE_ACCOUNT="stlearn${RANDOM}${RANDOM}"
+
+az group create -g "$RG" -l eastus
+az storage account create -g "$RG" -n "$STORAGE_ACCOUNT" -l eastus --sku Standard_LRS --kind StorageV2
+az storage share-rm create --resource-group "${RG}" --storage-account "${STORAGE_ACCOUNT}" --name demo-share --quota 5
+az storage share-rm show --resource-group "${RG}" --storage-account "${STORAGE_ACCOUNT}" --name demo-share --query "{quota:shareQuota,protocol:enabledProtocols}" -o jsonc
 ```
 
 **👀 Expected result:** JSON showing `quota: 5` (GiB) and `protocol: SMB`.
@@ -857,7 +953,9 @@ az storage share-rm show --resource-group <your-resource-group> --storage-accoun
 
 **🧹 Clean up:**
 ```bash
-az storage share-rm delete --resource-group <your-resource-group> --storage-account <unique-storage-acct> --name demo-share --yes
+az storage share-rm delete --resource-group "${RG}" --storage-account "${STORAGE_ACCOUNT}" --name demo-share --yes
+az resource list -g "$RG" -o table
+az group delete -g "$RG" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -898,12 +996,17 @@ https://learn.microsoft.com/azure/storage/elastic-san/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a small standalone managed disk and confirm it is unattached.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az disk create --resource-group <your-resource-group> --name demo-disk --size-gb 4 --sku Standard_LRS
-az disk show --resource-group <your-resource-group> --name demo-disk --query "{sku:sku.name,sizeGb:diskSizeGb,state:diskState}" -o jsonc
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r12-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az disk create --resource-group "${RG}" --name demo-disk --size-gb 4 --sku Standard_LRS
+az disk show --resource-group "${RG}" --name demo-disk --query "{sku:sku.name,sizeGb:diskSizeGb,state:diskState}" -o jsonc
 ```
 
 **👀 Expected result:** JSON showing `sku: Standard_LRS`, `sizeGb: 4`, `state: Unattached`.
@@ -912,7 +1015,7 @@ az disk show --resource-group <your-resource-group> --name demo-disk --query "{s
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -950,11 +1053,16 @@ https://learn.microsoft.com/azure/storage-mover/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Check Data Box availability and SKUs for your region before planning a bulk migration.
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+
 az provider show --namespace Microsoft.DataBox --query "resourceTypes[].resourceType" -o table
-az databox available-skus --resource-group <your-resource-group> --location eastus --country US --transfer-type ImportToAzure --output table
+az databox available-skus --resource-group "${RG}" --location eastus --country US --transfer-type ImportToAzure --output table
 ```
 
 **👀 Expected result:** A table of supported Data Box SKUs (for example `DataBox`, `DataBoxDisk`) available in `eastus`.
@@ -962,7 +1070,7 @@ az databox available-skus --resource-group <your-resource-group> --location east
 **✅ Checkpoint:** Is `DataBoxHeavy` listed as available in your target region?
 
 **🧹 Clean up:**
-Nothing to clean up — read-only command.
+Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1003,22 +1111,31 @@ https://learn.microsoft.com/azure/azure-sql/
 
 ## 🧪 Try it yourself
 
-**Goal:** Create a minimal serverless Azure SQL Database and confirm it's online.
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
+**Goal:** Create a test serverless Azure SQL Database and confirm it is online. **Warning:** Serverless Azure SQL is a paid service; the virtual-core limit and billing depend on the current offer.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az sql server create --resource-group <your-resource-group> --name <unique-sql-server> --admin-user sqladmin --admin-password '<StrongP@ssw0rd!>'
-az sql db create --resource-group <your-resource-group> --server <unique-sql-server> --name demo-db --edition GeneralPurpose --family Gen5 --capacity 1 --compute-model Serverless
-az sql db show --resource-group <your-resource-group> --server <unique-sql-server> --name demo-db --query "{status:status,sku:currentSku.name}" -o jsonc
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r14-${RANDOM}"
+SQL_SERVER="sql-learn-${RANDOM}${RANDOM}"
+
+read -r -s -p "Enter a strong temporary SQL admin password: " SQL_PASSWORD
+echo
+az group create --name "${RG}" --location eastus
+az sql server create --resource-group "${RG}" --name "${SQL_SERVER}" --admin-user sqladmin --admin-password "$SQL_PASSWORD"
+az sql db create --resource-group "${RG}" --server "${SQL_SERVER}" --name demo-db --edition GeneralPurpose --family Gen5 --capacity 1 --compute-model Serverless
+az sql db show --resource-group "${RG}" --server "${SQL_SERVER}" --name demo-db --query "{status:status,sku:currentSku.name}" -o jsonc
+unset SQL_PASSWORD  # Do not keep the password in this shell
 ```
 
-**👀 Expected result:** JSON showing `status: Online` and a serverless General Purpose SKU.
+**👀 Expected result:** The password prompt hides what you type. A successful deployment then produces JSON showing `status: Online` and a serverless General Purpose SKU.
 
 **✅ Checkpoint:** Does `az sql server firewall-rule list` show any rules allowing your client IP by default?
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1058,12 +1175,21 @@ https://learn.microsoft.com/azure/mysql/flexible-server/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a minimal Burstable-tier PostgreSQL Flexible Server with public access disabled.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az postgres flexible-server create --resource-group <your-resource-group> --name <unique-pg-server> --sku-name Standard_B1ms --tier Burstable --storage-size 32 --admin-user pgadmin --admin-password '<StrongP@ssw0rd!>' --public-access None
-az postgres flexible-server show --resource-group <your-resource-group> --name <unique-pg-server> --query "{state:state,sku:sku.name,version:version}" -o jsonc
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r15-${RANDOM}"
+PG_SERVER="pg-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+read -r -s -p "Enter a strong temporary PostgreSQL admin password: " PG_PASSWORD
+echo
+az postgres flexible-server create --resource-group "${RG}" --name "${PG_SERVER}" --sku-name Standard_B1ms --tier Burstable --storage-size 32 --admin-user pgadmin --admin-password "$PG_PASSWORD" --public-access None
+unset PG_PASSWORD
+az postgres flexible-server show --resource-group "${RG}" --name "${PG_SERVER}" --query "{state:state,sku:sku.name,version:version}" -o jsonc
 ```
 
 **👀 Expected result:** JSON showing `state: Ready`, `sku: Standard_B1ms`, and the server version.
@@ -1072,7 +1198,7 @@ az postgres flexible-server show --resource-group <your-resource-group> --name <
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1113,22 +1239,28 @@ https://learn.microsoft.com/azure/cosmos-db/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a serverless Cosmos DB account with a database/container and inspect its default consistency.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az cosmosdb create --resource-group <your-resource-group> --name <unique-cosmos-account> --locations regionName=eastus --capabilities EnableServerless
-az cosmosdb sql database create --resource-group <your-resource-group> --account-name <unique-cosmos-account> --name demo-db
-az cosmosdb sql container create --resource-group <your-resource-group> --account-name <unique-cosmos-account> --database-name demo-db --name demo-container --partition-key-path "/pk"
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r16-${RANDOM}"
+COSMOS_ACCOUNT="cosmos-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az cosmosdb create --resource-group "${RG}" --name "${COSMOS_ACCOUNT}" --locations regionName=eastus --capabilities EnableServerless
+az cosmosdb sql database create --resource-group "${RG}" --account-name "${COSMOS_ACCOUNT}" --name demo-db
+az cosmosdb sql container create --resource-group "${RG}" --account-name "${COSMOS_ACCOUNT}" --database-name demo-db --name demo-container --partition-key-path "/pk"
 ```
 
-**👀 Expected result:** The container is created with partition key `/pk`; `az cosmosdb sql container show` confirms it.
+**👀 Expected result:** The container is created with partition key `/pk`. Run `az cosmosdb sql container show -g "$RG" -a "$COSMOS_ACCOUNT" -d demo-db -n demo-container --query resource.partitionKey -o jsonc` to inspect it.
 
-**✅ Checkpoint:** What default consistency level does `az cosmosdb show --query consistencyPolicy` report (Session)?
+**✅ Checkpoint:** Run `az cosmosdb show -g "$RG" -n "$COSMOS_ACCOUNT" --query consistencyPolicy -o jsonc`. Which level is shown? Newly created accounts generally use Session unless changed.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1166,13 +1298,19 @@ https://learn.microsoft.com/azure/redis/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Check available Redis SKUs, then create the smallest Basic-tier cache.
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r17-${RANDOM}"
+REDIS_NAME="redis-learn-${RANDOM}${RANDOM}"
+
 az redis list-skus --location eastus --output table
-az group create --name <your-resource-group> --location eastus
-az redis create --resource-group <your-resource-group> --name <unique-redis-name> --location eastus --sku Basic --vm-size c0
-az redis show --resource-group <your-resource-group> --name <unique-redis-name> --query "{sku:sku.name,hostName:hostName,port:sslPort}" -o jsonc
+az group create --name "${RG}" --location eastus
+az redis create --resource-group "${RG}" --name "${REDIS_NAME}" --location eastus --sku Basic --vm-size c0
+az redis show --resource-group "${RG}" --name "${REDIS_NAME}" --query "{sku:sku.name,hostName:hostName,port:sslPort}" -o jsonc
 ```
 
 **👀 Expected result:** JSON showing `sku: Basic`, a `hostName`, and `port: 6380` once provisioning completes.
@@ -1181,7 +1319,7 @@ az redis show --resource-group <your-resource-group> --name <unique-redis-name> 
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1215,6 +1353,8 @@ https://azure.microsoft.com/products/category/databases/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Discover whether partner database resource providers (Oracle, MongoDB Atlas) are registered/available in your subscription and region.
 
 ```bash
@@ -1227,7 +1367,7 @@ az vm image list-publishers --location eastus --query "[?contains(name,'oracle')
 **✅ Checkpoint:** Is a partner namespace (for example `Microsoft.MongoDB` or an Oracle offer) already registered in your subscription?
 
 **🧹 Clean up:**
-Nothing to clean up — read-only command.
+Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1269,13 +1409,19 @@ https://learn.microsoft.com/azure/service-bus-messaging/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a Basic Service Bus namespace and queue, then check its message count.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az servicebus namespace create --name <your-sb-namespace> --resource-group <your-resource-group> --sku Basic
-az servicebus queue create --name demo-queue --namespace-name <your-sb-namespace> --resource-group <your-resource-group>
-az servicebus queue show --name demo-queue --namespace-name <your-sb-namespace> --resource-group <your-resource-group> --query messageCount
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r19-${RANDOM}"
+SB_NS="sb-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az servicebus namespace create --name "${SB_NS}" --resource-group "${RG}" --sku Basic
+az servicebus queue create --name demo-queue --namespace-name "${SB_NS}" --resource-group "${RG}"
+az servicebus queue show --name demo-queue --namespace-name "${SB_NS}" --resource-group "${RG}" --query messageCount
 ```
 
 **👀 Expected result:** The queue is created and `messageCount` returns `0`.
@@ -1284,7 +1430,7 @@ az servicebus queue show --name demo-queue --namespace-name <your-sb-namespace> 
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1323,13 +1469,19 @@ https://learn.microsoft.com/azure/event-grid/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a custom Event Grid topic and inspect its endpoint/keys.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az eventgrid topic create --name <your-topic> --resource-group <your-resource-group> --location eastus
-az eventgrid topic show --name <your-topic> --resource-group <your-resource-group> --query endpoint
-az eventgrid topic key list --name <your-topic> --resource-group <your-resource-group>
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r20-${RANDOM}"
+TOPIC_NAME="demo-topic"
+
+az group create --name "${RG}" --location eastus
+az eventgrid topic create --name "${TOPIC_NAME}" --resource-group "${RG}" --location eastus
+az eventgrid topic show --name "${TOPIC_NAME}" --resource-group "${RG}" --query endpoint
+az eventgrid topic key list --name "${TOPIC_NAME}" --resource-group "${RG}"
 ```
 
 **👀 Expected result:** A topic endpoint URL and access keys are returned.
@@ -1338,7 +1490,7 @@ az eventgrid topic key list --name <your-topic> --resource-group <your-resource-
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1378,13 +1530,19 @@ https://learn.microsoft.com/azure/event-hubs/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create an Event Hubs namespace and a 2-partition hub.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az eventhubs namespace create --name <your-eh-namespace> --resource-group <your-resource-group> --sku Basic
-az eventhubs eventhub create --name demo-hub --namespace-name <your-eh-namespace> --resource-group <your-resource-group> --partition-count 2
-az eventhubs eventhub show --name demo-hub --namespace-name <your-eh-namespace> --resource-group <your-resource-group> --query partitionCount
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r21-${RANDOM}"
+EH_NS="eh-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az eventhubs namespace create --name "${EH_NS}" --resource-group "${RG}" --sku Basic
+az eventhubs eventhub create --name demo-hub --namespace-name "${EH_NS}" --resource-group "${RG}" --partition-count 2
+az eventhubs eventhub show --name demo-hub --namespace-name "${EH_NS}" --resource-group "${RG}" --query partitionCount
 ```
 
 **👀 Expected result:** `partitionCount` returns `2`.
@@ -1393,7 +1551,7 @@ az eventhubs eventhub show --name demo-hub --namespace-name <your-eh-namespace> 
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1429,22 +1587,29 @@ https://learn.microsoft.com/azure/storage/queues/
 
 ## 🧪 Try it yourself
 
-**Goal:** Create a storage queue, enqueue a message, and view queue stats.
+**Before running:** This lab creates a resource group and storage account (potential charges). It requires appropriate resource-management access **and** Storage Queue Data Contributor or equivalent queue-data access. For local verification, read/peek a queue message; replication statistics would require read-access geo-redundant storage, which this example does not create.
+
+**Goal:** Create a storage queue, add a message, and verify that it can be viewed without removing it.
 
 ```bash
-az storage account create --name <yourstorageacct> --resource-group <your-resource-group> --location eastus --sku Standard_LRS
-az storage queue create --name demo-queue --account-name <yourstorageacct> --auth-mode login
-az storage message put --queue-name demo-queue --account-name <yourstorageacct> --content "hello" --auth-mode login
-az storage queue stats --account-name <yourstorageacct> --auth-mode login
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r22-${RANDOM}"
+STORAGE_ACCOUNT="stlearn${RANDOM}${RANDOM}"
+
+az group create --name "$RG" --location eastus
+az storage account create --name "${STORAGE_ACCOUNT}" --resource-group "${RG}" --location eastus --sku Standard_LRS
+az storage queue create --name demo-queue --account-name "${STORAGE_ACCOUNT}" --auth-mode login
+az storage message put --queue-name demo-queue --account-name "${STORAGE_ACCOUNT}" --content "hello" --auth-mode login
+az storage message peek --queue-name demo-queue --account-name "${STORAGE_ACCOUNT}" --auth-mode login
 ```
 
-**👀 Expected result:** The message is enqueued and stats show replication/geo status.
+**👀 Expected result:** The `peek` response includes the example message content. A missing permission error indicates that your role allows resource creation but not queue-data access.
 
-**✅ Checkpoint:** What happens to the message's visibility if a consumer reads it but never deletes it?
+**✅ Checkpoint:** Can you see `hello` in the peeked message? `peek` does not hide or delete the message.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1484,12 +1649,18 @@ https://learn.microsoft.com/azure/logic-apps/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a minimal (empty) Consumption Logic App workflow and check its state.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az logic workflow create --resource-group <your-resource-group> --location eastus --name <your-logic-app> --definition "{\"$schema\":\"https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#\",\"contentVersion\":\"1.0.0.0\",\"triggers\":{},\"actions\":{}}"
-az logic workflow show --resource-group <your-resource-group> --name <your-logic-app> --query state
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r23-${RANDOM}"
+LOGIC_APP_NAME="demo-logic-app"
+
+az group create --name "${RG}" --location eastus
+az logic workflow create --resource-group "${RG}" --location eastus --name "${LOGIC_APP_NAME}" --definition "{\"$schema\":\"https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#\",\"contentVersion\":\"1.0.0.0\",\"triggers\":{},\"actions\":{}}"
+az logic workflow show --resource-group "${RG}" --name "${LOGIC_APP_NAME}" --query state
 ```
 
 **👀 Expected result:** `state` returns `Enabled`.
@@ -1498,7 +1669,7 @@ az logic workflow show --resource-group <your-resource-group> --name <your-logic
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1540,19 +1711,25 @@ https://learn.microsoft.com/azure/api-management/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Inspect an existing APIM instance's gateway URL and published APIs (read-only; APIM creation takes ~30+ minutes).
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+APIM_NAME="apim-learn-${RANDOM}${RANDOM}"
+
 az apim list --output table
-az apim show --name <your-apim-instance> --resource-group <your-resource-group> --query gatewayUrl
-az apim api list --service-name <your-apim-instance> --resource-group <your-resource-group> --output table
+az apim show --name "${APIM_NAME}" --resource-group "${RG}" --query gatewayUrl
+az apim api list --service-name "${APIM_NAME}" --resource-group "${RG}" --output table
 ```
 
 **👀 Expected result:** The gateway URL and a table of APIs published on that instance.
 
 **✅ Checkpoint:** Which SKU tier is the instance running, and does it support VNet integration?
 
-**🧹 Clean up:** Nothing to clean up — read-only command.
+**🧹 Clean up:** Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1592,12 +1769,18 @@ https://learn.microsoft.com/azure/communication-services/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy a free-tier SignalR Service instance and view its hostname.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az signalr create --name <your-signalr> --resource-group <your-resource-group> --sku Free_F1 --service-mode Default
-az signalr show --name <your-signalr> --resource-group <your-resource-group> --query hostName
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r25-${RANDOM}"
+SIGNALR_NAME="signalr-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az signalr create --name "${SIGNALR_NAME}" --resource-group "${RG}" --sku Free_F1 --service-mode Default
+az signalr show --name "${SIGNALR_NAME}" --resource-group "${RG}" --query hostName
 ```
 
 **👀 Expected result:** A hostname like `<your-signalr>.service.signalr.net` is returned.
@@ -1606,7 +1789,7 @@ az signalr show --name <your-signalr> --resource-group <your-resource-group> --q
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1649,19 +1832,24 @@ https://learn.microsoft.com/entra/identity/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Inspect your signed-in identity and look up an app registration's service principal (read-only).
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+APP_NAME="demo-application"  # Choose a real application display name to see matching rows
+
 az ad signed-in-user show --query userPrincipalName
-az ad app list --display-name "<your-app-name>" --query "[].{name:displayName,appId:appId}"
-az ad sp list --filter "displayName eq '<your-app-name>'" --query "[].{name:displayName,appId:appId}"
+az ad app list --display-name "${APP_NAME}" --query "[].{name:displayName,appId:appId}"
+az ad sp list --filter "displayName eq '"${APP_NAME}"'" --query "[].{name:displayName,appId:appId}"
 ```
 
 **👀 Expected result:** Your UPN, then the app registration and matching service principal (if any exists).
 
 **✅ Checkpoint:** Can you explain why an app registration and its enterprise application/service principal are two distinct objects?
 
-**🧹 Clean up:** Nothing to clean up — read-only command.
+**🧹 Clean up:** Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1701,10 +1889,15 @@ https://learn.microsoft.com/azure/role-based-access-control/overview
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** List role assignments for a principal and inspect a built-in role definition (read-only).
 
 ```bash
-az role assignment list --assignee <your-user-or-sp-id> --all --output table
+# Example names for this exercise; retain them in this Bash terminal
+ASSIGNEE_ID="$(az ad signed-in-user show --query id -o tsv)"
+
+az role assignment list --assignee "${ASSIGNEE_ID}" --all --output table
 az role definition list --name "Reader" --query "[].{name:roleName,id:name,dataActions:permissions[0].dataActions}"
 ```
 
@@ -1712,7 +1905,7 @@ az role definition list --name "Reader" --query "[].{name:roleName,id:name,dataA
 
 **✅ Checkpoint:** Does the Reader role contain any `dataActions`? Why or why not?
 
-**🧹 Clean up:** Nothing to clean up — read-only command.
+**🧹 Clean up:** Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1751,13 +1944,19 @@ https://learn.microsoft.com/azure/key-vault/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a Key Vault and store/retrieve a secret.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az keyvault create --name <your-keyvault> --resource-group <your-resource-group> --location eastus
-az keyvault secret set --vault-name <your-keyvault> --name demo-secret --value "hello-world"
-az keyvault secret show --vault-name <your-keyvault> --name demo-secret --query value
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r28-${RANDOM}"
+KEYVAULT_NAME="kv-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az keyvault create --name "${KEYVAULT_NAME}" --resource-group "${RG}" --location eastus
+az keyvault secret set --vault-name "${KEYVAULT_NAME}" --name demo-secret --value "hello-world"
+az keyvault secret show --vault-name "${KEYVAULT_NAME}" --name demo-secret --query value
 ```
 
 **👀 Expected result:** The command returns `"hello-world"`.
@@ -1766,7 +1965,7 @@ az keyvault secret show --vault-name <your-keyvault> --name demo-secret --query 
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1801,18 +2000,23 @@ https://learn.microsoft.com/azure/key-vault/managed-hsm/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Inspect existing Managed HSM pools in your subscription (read-only; HSM pools are costly and slow to provision).
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+HSM_NAME="hsm-learn-${RANDOM}${RANDOM}"
+
 az keyvault list --resource-type hsm --output table
-az keyvault show --hsm-name <your-managed-hsm> --query "{state:properties.provisioningState,sd:properties.securityDomainProperties}"
+az keyvault show --hsm-name "${HSM_NAME}" --query "{state:properties.provisioningState,sd:properties.securityDomainProperties}"
 ```
 
 **👀 Expected result:** A table of HSM pools, then provisioning state and security-domain status for one.
 
 **✅ Checkpoint:** Who holds the security-domain recovery material for this HSM, and is it backed up outside Azure?
 
-**🧹 Clean up:** Nothing to clean up — read-only command.
+**🧹 Clean up:** Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1849,18 +2053,23 @@ https://learn.microsoft.com/azure/azure-monitor/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** List metrics and diagnostic settings for an existing resource (read-only).
 
 ```bash
-az monitor metrics list --resource <your-resource-id> --metric "Percentage CPU" --output table
-az monitor diagnostic-settings list --resource <your-resource-id>
+# Example names for this exercise; retain them in this Bash terminal
+RESOURCE_ID="$(az resource list --query "[0].id" -o tsv)"
+
+az monitor metrics list --resource "${RESOURCE_ID}" --metric "Percentage CPU" --output table
+az monitor diagnostic-settings list --resource "${RESOURCE_ID}"
 ```
 
 **👀 Expected result:** A time series of CPU percentage, then any configured diagnostic routing destinations.
 
 **✅ Checkpoint:** If the diagnostic settings list is empty, where is this resource's telemetry currently going?
 
-**🧹 Clean up:** Nothing to clean up — read-only command.
+**🧹 Clean up:** Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1895,12 +2104,18 @@ https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-workspace-ove
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a Log Analytics workspace and verify provisioning.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az monitor log-analytics workspace create --resource-group <your-resource-group> --workspace-name <your-law> --location eastus
-az monitor log-analytics workspace show --resource-group <your-resource-group> --workspace-name <your-law> --query provisioningState
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r31-${RANDOM}"
+LAW_NAME="law-learn-r31"
+
+az group create --name "${RG}" --location eastus
+az monitor log-analytics workspace create --resource-group "${RG}" --workspace-name "${LAW_NAME}" --location eastus
+az monitor log-analytics workspace show --resource-group "${RG}" --workspace-name "${LAW_NAME}" --query provisioningState
 ```
 
 **👀 Expected result:** `provisioningState` returns `Succeeded`.
@@ -1909,7 +2124,7 @@ az monitor log-analytics workspace show --resource-group <your-resource-group> -
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1947,12 +2162,18 @@ https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create an Application Insights component and retrieve its instrumentation/connection key.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az monitor app-insights component create --app <your-appinsights> --resource-group <your-resource-group> --location eastus --kind web --application-type web
-az monitor app-insights component show --app <your-appinsights> --resource-group <your-resource-group> --query connectionString
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r32-${RANDOM}"
+INSIGHTS_NAME="demo-insights"
+
+az group create --name "${RG}" --location eastus
+az monitor app-insights component create --app "${INSIGHTS_NAME}" --resource-group "${RG}" --location eastus --kind web --application-type web
+az monitor app-insights component show --app "${INSIGHTS_NAME}" --resource-group "${RG}" --query connectionString
 ```
 
 **👀 Expected result:** A connection string containing an InstrumentationKey and IngestionEndpoint is returned.
@@ -1961,7 +2182,7 @@ az monitor app-insights component show --app <your-appinsights> --resource-group
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -1998,12 +2219,18 @@ https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-overview
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create an Action Group (notification target) and confirm it registered correctly.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az monitor action-group create --resource-group <your-resource-group> --name <your-action-group> --short-name demoag
-az monitor action-group show --resource-group <your-resource-group> --name <your-action-group> --query "{name:name,enabled:enabled}"
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r33-${RANDOM}"
+ACTION_GROUP="demo-action-group"
+
+az group create --name "${RG}" --location eastus
+az monitor action-group create --resource-group "${RG}" --name "${ACTION_GROUP}" --short-name demoag
+az monitor action-group show --resource-group "${RG}" --name "${ACTION_GROUP}" --query "{name:name,enabled:enabled}"
 ```
 
 **👀 Expected result:** `enabled` returns `true` for the newly created Action Group.
@@ -2012,7 +2239,7 @@ az monitor action-group show --resource-group <your-resource-group> --name <your
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2050,6 +2277,8 @@ https://learn.microsoft.com/azure/advisor/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** List current Azure Advisor recommendations for your subscription (read-only).
 
 ```bash
@@ -2060,7 +2289,7 @@ az advisor recommendation list --query "[].{category:category,impact:impact,prob
 
 **✅ Checkpoint:** Pick one high-impact recommendation — what is the remediation action it suggests?
 
-**🧹 Clean up:** Nothing to clean up — read-only command.
+**🧹 Clean up:** Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2096,12 +2325,18 @@ https://learn.microsoft.com/azure/update-manager/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create an Automation Account and verify it is active.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az automation account create --name <your-automation-account> --resource-group <your-resource-group> --location eastus
-az automation account show --name <your-automation-account> --resource-group <your-resource-group> --query state
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r35-${RANDOM}"
+AUTOMATION_NAME="demo-automation"
+
+az group create --name "${RG}" --location eastus
+az automation account create --name "${AUTOMATION_NAME}" --resource-group "${RG}" --location eastus
+az automation account show --name "${AUTOMATION_NAME}" --resource-group "${RG}" --query state
 ```
 
 **👀 Expected result:** `state` returns `Ok`.
@@ -2110,7 +2345,7 @@ az automation account show --name <your-automation-account> --resource-group <yo
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2148,6 +2383,8 @@ https://learn.microsoft.com/azure/defender-for-cloud/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Check which Defender for Cloud plans are enabled for your subscription (read-only).
 
 ```bash
@@ -2159,7 +2396,7 @@ az security secure-scores list --output table
 
 **✅ Checkpoint:** Which plans are still on the `Free` tier, and is that acceptable for your workload's risk level?
 
-**🧹 Clean up:** Nothing to clean up — read-only command.
+**🧹 Clean up:** Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2194,19 +2431,25 @@ https://learn.microsoft.com/azure/sentinel/
 
 ## 🧪 Try it yourself
 
+**Before running:** You must already have a Log Analytics workspace with Sentinel enabled. `az extension add` installs or updates the optional CLI extension, so this is **not entirely read-only** on your computer. Set `RG` and `LAW_NAME` to the real names in your own subscription before listing incidents.
+
 **Goal:** List Sentinel incidents and analytics rules on an existing Log Analytics workspace (read-only; requires the `sentinel` CLI extension).
 
 ```bash
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+LAW_NAME="law-learn-r37"
+
 az extension add --name sentinel --upgrade
-az sentinel incident list --resource-group <your-resource-group> --workspace-name <your-law> --output table
-az sentinel alert-rule list --resource-group <your-resource-group> --workspace-name <your-law> --output table
+az sentinel incident list --resource-group "${RG}" --workspace-name "${LAW_NAME}" --output table
+az sentinel alert-rule list --resource-group "${RG}" --workspace-name "${LAW_NAME}" --output table
 ```
 
 **👀 Expected result:** Tables of open/closed incidents and configured analytics rules, if Sentinel is enabled on the workspace.
 
 **✅ Checkpoint:** For an open incident, what automation rule or playbook (if any) is attached to it?
 
-**🧹 Clean up:** Nothing to clean up — read-only command.
+**🧹 Clean up:** Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2247,13 +2490,19 @@ https://learn.microsoft.com/azure/ddos-protection/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create an NSG with a rule that denies inbound RDP.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az network nsg create --resource-group <your-resource-group> --name <your-nsg>
-az network nsg rule create --resource-group <your-resource-group> --nsg-name <your-nsg> --name deny-rdp --priority 100 --direction Inbound --access Deny --protocol Tcp --destination-port-ranges 3389
-az network nsg rule list --resource-group <your-resource-group> --nsg-name <your-nsg> --output table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r38-${RANDOM}"
+NSG_NAME="demo-nsg"
+
+az group create --name "${RG}" --location eastus
+az network nsg create --resource-group "${RG}" --name "${NSG_NAME}"
+az network nsg rule create --resource-group "${RG}" --nsg-name "${NSG_NAME}" --name deny-rdp --priority 100 --direction Inbound --access Deny --protocol Tcp --destination-port-ranges 3389
+az network nsg rule list --resource-group "${RG}" --nsg-name "${NSG_NAME}" --output table
 ```
 
 **👀 Expected result:** The rule list shows `deny-rdp` with `Deny` access at priority `100`.
@@ -2262,7 +2511,7 @@ az network nsg rule list --resource-group <your-resource-group> --nsg-name <your
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2295,6 +2544,8 @@ https://learn.microsoft.com/azure/confidential-computing/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** List available confidential-computing VM SKUs (DCsv3/DCasv5 families) in a region (read-only).
 
 ```bash
@@ -2306,7 +2557,7 @@ az vm list-skus --location eastus --size Standard_EC --output table
 
 **✅ Checkpoint:** Which of these SKUs support confidential VMs vs. SGX enclave-only application isolation?
 
-**🧹 Clean up:** Nothing to clean up — read-only command.
+**🧹 Clean up:** Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2343,11 +2594,16 @@ https://learn.microsoft.com/azure/backup/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** create a Recovery Services Vault and enable backup policy inspection (no VM required to see the mechanics).
 
 ```bash
-az backup vault create --resource-group <your-resource-group> --name demo-rsv --location eastus
-az backup policy list --resource-group <your-resource-group> --vault-name demo-rsv
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+
+az backup vault create --resource-group "${RG}" --name demo-rsv --location eastus
+az backup policy list --resource-group "${RG}" --vault-name demo-rsv
 ```
 
 **👀 Expected result:** the vault is created, and the policy list shows the built-in default backup policies available for assignment.
@@ -2356,7 +2612,7 @@ az backup policy list --resource-group <your-resource-group> --vault-name demo-r
 
 **🧹 Clean up:**
 ```bash
-az backup vault delete --resource-group <your-resource-group> --name demo-rsv --yes
+az backup vault delete --resource-group "${RG}" --name demo-rsv --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2392,11 +2648,16 @@ https://learn.microsoft.com/azure/site-recovery/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** inspect what a Recovery Services Vault exposes for Site Recovery without needing a full replicated VM.
 
 ```bash
-az backup vault create --resource-group <your-resource-group> --name demo-asr-vault --location eastus
-az resource show --ids $(az backup vault show --resource-group <your-resource-group> --name demo-asr-vault --query id -o tsv) --query "properties"
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-your-existing-lab"  # Change to a resource group you already have
+
+az backup vault create --resource-group "${RG}" --name demo-asr-vault --location eastus
+az resource show --ids $(az backup vault show --resource-group "${RG}" --name demo-asr-vault --query id -o tsv) --query "properties"
 ```
 
 **👀 Expected result:** the vault's properties are returned, confirming it is a valid Site Recovery/backup management boundary.
@@ -2405,7 +2666,7 @@ az resource show --ids $(az backup vault show --resource-group <your-resource-gr
 
 **🧹 Clean up:**
 ```bash
-az backup vault delete --resource-group <your-resource-group> --name demo-asr-vault --yes
+az backup vault delete --resource-group "${RG}" --name demo-asr-vault --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2438,6 +2699,8 @@ az backup vault delete --resource-group <your-resource-group> --name demo-asr-va
 https://learn.microsoft.com/azure/chaos-studio/
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** discover which fault capabilities Chaos Studio currently supports, without running a destructive experiment.
 
@@ -2488,22 +2751,27 @@ https://learn.microsoft.com/azure/azure-resource-manager/
 
 ## 🧪 Try it yourself
 
-**Goal:** Deploy a minimal resource group via an ARM/Bicep-style declarative deployment and inspect the deployment history.
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
+**Goal:** Submit a minimal **ARM JSON template** (a description of desired Azure resources) that creates nothing, and inspect the resource-group deployment history. This demonstrates a deployment without paying for a service.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az deployment group create --resource-group <your-resource-group> --name demo-deploy \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r43-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az deployment group create --resource-group "${RG}" --name demo-deploy \
   --template-file <(echo '{"$schema":"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#","contentVersion":"1.0.0.0","resources":[]}')
-az deployment group list --resource-group <your-resource-group> -o table
+az deployment group list --resource-group "${RG}" -o table
 ```
 
 **👀 Expected result:** The deployment named `demo-deploy` shows `ProvisioningState: Succeeded` in the list output.
 
-**✅ Checkpoint:** Run `az deployment group show --resource-group <your-resource-group> --name demo-deploy` and confirm the `properties.provisioningState` is `Succeeded`.
+**✅ Checkpoint:** Run `az deployment group show --resource-group "$RG" --name demo-deploy` and confirm the `properties.provisioningState` is `Succeeded`.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2540,24 +2808,29 @@ https://learn.microsoft.com/azure/governance/policy/overview
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates a test group and a policy assignment; policy assignment typically requires greater permissions than Contributor. Confirm the built-in policy ID and effect in the Azure Portal **before running**. Policies can take time to evaluate, so an empty compliance table immediately after assignment is normal.
+
 **Goal:** Assign a built-in audit policy (no Deny risk) to a resource group and check compliance.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r44-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
 az policy assignment create --name audit-tag-rg \
-  --scope $(az group show --name <your-resource-group> --query id -o tsv) \
+  --scope $(az group show --name "${RG}" --query id -o tsv) \
   --policy "96670d01-0a4d-4649-9c89-2d3abc0a5025"
-az policy state list --resource-group <your-resource-group> -o table
+az policy state list --resource-group "${RG}" -o table
 ```
 
 **👀 Expected result:** A policy assignment named `audit-tag-rg` is created, and `az policy state list` shows a compliance record for the resource group.
 
-**✅ Checkpoint:** Run `az policy assignment show --name audit-tag-rg` and confirm the `enforcementMode` is `Default` (audit, not deny).
+**✅ Checkpoint:** Run `az policy assignment show --name audit-tag-rg --scope "$(az group show -g "$RG" --query id -o tsv)"` and inspect the assignment and its policy definition. `enforcementMode: Default` means effects are enforced; it does **not** itself tell you whether the policy effect is Audit or Deny.
 
 **🧹 Clean up:**
 ```bash
-az policy assignment delete --name audit-tag-rg
-az group delete --name <your-resource-group> --yes --no-wait
+az policy assignment delete --name audit-tag-rg --scope "$(az group show -g "$RG" --query id -o tsv)"
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2591,6 +2864,8 @@ az group delete --name <your-resource-group> --yes --no-wait
 https://learn.microsoft.com/azure/governance/management-groups/overview
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Create a small management group hierarchy and list it.
 
@@ -2640,6 +2915,8 @@ https://learn.microsoft.com/azure/governance/resource-graph/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Query all resources in your subscription grouped by type using Resource Graph.
 
 ```bash
@@ -2686,6 +2963,8 @@ Nothing to clean up — read-only query.
 https://learn.microsoft.com/azure/cost-management-billing/
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Query actual cost for your subscription over the last 7 days.
 
@@ -2734,23 +3013,28 @@ https://learn.microsoft.com/azure/azure-resource-manager/management/lock-resourc
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Lock a resource group against deletion, verify it blocks delete, then remove the lock.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az lock create --name no-delete --resource-group <your-resource-group> --lock-type CanNotDelete
-az group delete --name <your-resource-group> --yes --no-wait
-az lock list --resource-group <your-resource-group> -o table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r48-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az lock create --name no-delete --resource-group "${RG}" --lock-type CanNotDelete
+az group delete --name "${RG}" --yes
+az lock list --resource-group "${RG}" -o table
 ```
 
 **👀 Expected result:** The `az group delete` command fails with a `ScopeLocked` error because of the `CanNotDelete` lock.
 
-**✅ Checkpoint:** Confirm `az lock list` shows the `no-delete` lock, then remove it with `az lock delete --name no-delete --resource-group <your-resource-group>` before retrying delete.
+**✅ Checkpoint:** Confirm `az lock list` shows the `no-delete` lock, then remove it with `az lock delete --name no-delete --resource-group "$RG"` before retrying delete.
 
 **🧹 Clean up:**
 ```bash
-az lock delete --name no-delete --resource-group <your-resource-group>
-az group delete --name <your-resource-group> --yes --no-wait
+az lock delete --name no-delete --resource-group "${RG}"
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2791,21 +3075,27 @@ https://learn.microsoft.com/azure/data-factory/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy the smallest possible Data Factory instance and confirm it is provisioned.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az datafactory create --resource-group <your-resource-group> --factory-name demo-adf-$RANDOM
-az datafactory list --resource-group <your-resource-group> -o table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r49-${RANDOM}"
+FACTORY_NAME="df-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az datafactory create --resource-group "${RG}" --factory-name "$FACTORY_NAME"
+az datafactory list --resource-group "${RG}" -o table
 ```
 
 **👀 Expected result:** The factory shows `provisioningState: Succeeded` in the list output, with no pipelines defined yet.
 
-**✅ Checkpoint:** Run `az datafactory show --resource-group <your-resource-group> --factory-name <name>` and confirm the factory exists.
+**✅ Checkpoint:** Run `az datafactory show --resource-group "$RG" --factory-name "$FACTORY_NAME"` and confirm the factory exists.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2842,13 +3132,18 @@ https://learn.microsoft.com/azure/databricks/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy a minimal Databricks workspace (standard tier, lowest cost).
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az databricks workspace create --resource-group <your-resource-group> \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r50-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az databricks workspace create --resource-group "${RG}" \
   --name demo-dbx --location eastus --sku standard
-az databricks workspace show --resource-group <your-resource-group> --name demo-dbx -o table
+az databricks workspace show --resource-group "${RG}" --name demo-dbx -o table
 ```
 
 **👀 Expected result:** The workspace shows `provisioningState: Succeeded` with a generated `workspaceUrl`.
@@ -2857,7 +3152,7 @@ az databricks workspace show --resource-group <your-resource-group> --name demo-
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2894,23 +3189,29 @@ https://learn.microsoft.com/azure/data-explorer/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy the smallest Azure Data Explorer (Kusto) cluster and create a database.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az kusto cluster create --resource-group <your-resource-group> --name demoadx$RANDOM \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r51-${RANDOM}"
+CLUSTER_NAME="demoadx${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az kusto cluster create --resource-group "${RG}" --name "$CLUSTER_NAME" \
   --sku name="Dev(No SLA)_Standard_D11_v2" tier="Basic" --location eastus
-az kusto database create --resource-group <your-resource-group> --cluster-name <cluster-name> \
+az kusto database create --resource-group "${RG}" --cluster-name "${CLUSTER_NAME}" \
   --database-name demo-db --read-write-database location=eastus soft-delete-period=P7D
 ```
 
 **👀 Expected result:** The cluster provisions in dev/test SKU (no SLA) and the database `demo-db` appears under it.
 
-**✅ Checkpoint:** Run `az kusto database list --resource-group <your-resource-group> --cluster-name <cluster-name>` and confirm `demo-db` is listed.
+**✅ Checkpoint:** Run `az kusto database list --resource-group "$RG" --cluster-name "$CLUSTER_NAME"` and confirm `demo-db` is listed.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2946,24 +3247,35 @@ https://learn.microsoft.com/azure/synapse-analytics/
 
 ## 🧪 Try it yourself
 
+**Before running:** Synapse is a paid, region-dependent advanced service. This demonstration additionally needs **Storage Blob Data Contributor** on the new storage account to create its filesystem using login authentication. It may require workspace-managed-identity storage permissions. Check account quota and service prerequisites first.
+
 **Goal:** Deploy a Synapse workspace with serverless SQL only (no dedicated SQL pool cost).
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az storage account create --name demosynstg$RANDOM --resource-group <your-resource-group> \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r52-${RANDOM}"
+STORAGE_ACCOUNT="stlearn${RANDOM}${RANDOM}"
+SYNAPSE_NAME="synapse-learn-${RANDOM}${RANDOM}"
+
+read -r -s -p "Enter a strong temporary Synapse SQL admin password: " SQL_PASSWORD
+echo
+az group create --name "${RG}" --location eastus
+az storage account create --name "$STORAGE_ACCOUNT" --resource-group "${RG}" \
   --sku Standard_LRS --kind StorageV2 --enable-hierarchical-namespace true
-az synapse workspace create --name demo-synapse$RANDOM --resource-group <your-resource-group> \
-  --storage-account <storage-account-name> --file-system synapsefs \
-  --sql-admin-login-user sqladminuser --sql-admin-login-password '<StrongP@ssw0rd!>' --location eastus
+az storage fs create --account-name "$STORAGE_ACCOUNT" --name synapsefs --auth-mode login
+az synapse workspace create --name "$SYNAPSE_NAME" --resource-group "${RG}" \
+  --storage-account "${STORAGE_ACCOUNT}" --file-system synapsefs \
+  --sql-admin-login-user sqladminuser --sql-admin-login-password "$SQL_PASSWORD" --location eastus
+unset SQL_PASSWORD
 ```
 
 **👀 Expected result:** The workspace provisions successfully; only the built-in serverless SQL endpoint is available (no dedicated pool created).
 
-**✅ Checkpoint:** Run `az synapse workspace show --name <workspace-name> --resource-group <your-resource-group>` and confirm `provisioningState: Succeeded`.
+**✅ Checkpoint:** Run `az synapse workspace show --name "$SYNAPSE_NAME" --resource-group "$RG"` and confirm `provisioningState: Succeeded`.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -2998,14 +3310,19 @@ https://learn.microsoft.com/azure/stream-analytics/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy a Stream Analytics job definition (no input/output wired yet) and inspect its default state.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az stream-analytics job create --resource-group <your-resource-group> \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r53-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az stream-analytics job create --resource-group "${RG}" \
   --name demo-asa-job --location eastus \
   --output-error-policy Drop --out-of-order-policy Drop --order-max-delay 5 --arrival-max-delay 16
-az stream-analytics job show --resource-group <your-resource-group> --name demo-asa-job -o table
+az stream-analytics job show --resource-group "${RG}" --name demo-asa-job -o table
 ```
 
 **👀 Expected result:** The job is created with `jobState: Created` (not yet started, since no input/output is configured).
@@ -3014,7 +3331,7 @@ az stream-analytics job show --resource-group <your-resource-group> --name demo-
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3047,6 +3364,8 @@ https://learn.microsoft.com/fabric/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Fabric capacities aren't plain ARM resources everywhere yet — inspect which Fabric-related resource providers/types are registered in your subscription.
 
 ```bash
@@ -3059,7 +3378,7 @@ az provider list --query "[?contains(namespace,'Fabric')].{namespace:namespace, 
 **✅ Checkpoint:** Note whether `Microsoft.Fabric` shows `Registered` — if not, you'd need `az provider register --namespace Microsoft.Fabric` before using ARM-visible Fabric capacities.
 
 **🧹 Clean up:**
-Nothing to clean up — read-only command.
+Nothing to clean up — all commands in this exercise only read information.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -3098,13 +3417,18 @@ https://learn.microsoft.com/azure/ai-foundry/what-is-azure-ai-foundry
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a minimal Foundry resource/project and confirm it's provisioned.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az cognitiveservices account create --name demo-foundry --resource-group <your-resource-group> \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r55-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az cognitiveservices account create --name demo-foundry --resource-group "${RG}" \
   --kind AIServices --sku S0 --location eastus --yes
-az cognitiveservices account show --name demo-foundry --resource-group <your-resource-group> -o table
+az cognitiveservices account show --name demo-foundry --resource-group "${RG}" -o table
 ```
 
 **👀 Expected result:** The account shows `provisioningState: Succeeded` and `kind: AIServices`.
@@ -3113,7 +3437,7 @@ az cognitiveservices account show --name demo-foundry --resource-group <your-res
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3150,22 +3474,27 @@ https://learn.microsoft.com/azure/ai-services/openai/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy an Azure OpenAI resource and list available model deployments.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az cognitiveservices account create --name demo-aoai --resource-group <your-resource-group> \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r56-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az cognitiveservices account create --name demo-aoai --resource-group "${RG}" \
   --kind OpenAI --sku S0 --location eastus --yes
-az cognitiveservices account deployment list --name demo-aoai --resource-group <your-resource-group> -o table
+az cognitiveservices account deployment list --name demo-aoai --resource-group "${RG}" -o table
 ```
 
 **👀 Expected result:** The account is created successfully; the deployment list is empty until you add a model deployment.
 
-**✅ Checkpoint:** Run `az cognitiveservices account list-models --name demo-aoai --resource-group <your-resource-group>` and confirm it returns available model names for your region.
+**✅ Checkpoint:** Run `az cognitiveservices account list-models --name demo-aoai --resource-group "$RG"` and confirm it returns available model names for your region.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3205,22 +3534,28 @@ https://learn.microsoft.com/azure/search/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy the smallest AI Search service (Free tier) and confirm it responds.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az search service create --name demo-search$RANDOM --resource-group <your-resource-group> \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r57-${RANDOM}"
+SEARCH_NAME="search-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az search service create --name "$SEARCH_NAME" --resource-group "${RG}" \
   --sku free --location eastus
-az search service show --name <search-name> --resource-group <your-resource-group> --query status -o tsv
+az search service show --name "${SEARCH_NAME}" --resource-group "${RG}" --query status -o tsv
 ```
 
 **👀 Expected result:** The service `status` returns `running`.
 
-**✅ Checkpoint:** Run `az search admin-key show --service-name <search-name> --resource-group <your-resource-group>` and confirm an admin key is returned.
+**✅ Checkpoint:** Run `az search admin-key show --service-name "$SEARCH_NAME" --resource-group "$RG"` and confirm an admin key is returned.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3261,21 +3596,26 @@ https://learn.microsoft.com/azure/machine-learning/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy a minimal Azure Machine Learning workspace (no compute started yet).
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az ml workspace create --name demo-mlw --resource-group <your-resource-group> --location eastus
-az ml workspace show --name demo-mlw --resource-group <your-resource-group> -o table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r58-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az ml workspace create --name demo-mlw --resource-group "${RG}" --location eastus
+az ml workspace show --name demo-mlw --resource-group "${RG}" -o table
 ```
 
 **👀 Expected result:** The workspace is created with `provisioning_state: Succeeded`; no compute instance/cluster exists yet.
 
-**✅ Checkpoint:** Confirm `az ml compute list --workspace-name demo-mlw --resource-group <your-resource-group>` returns an empty list (no idle compute billing).
+**✅ Checkpoint:** Confirm `az ml compute list --workspace-name demo-mlw --resource-group "$RG"` returns an empty list (no idle compute billing).
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3312,23 +3652,28 @@ https://learn.microsoft.com/azure/ai-services/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy a multi-service AI Services account and inspect its keys/endpoint.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az cognitiveservices account create --name demo-aiservices --resource-group <your-resource-group> \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r59-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az cognitiveservices account create --name demo-aiservices --resource-group "${RG}" \
   --kind CognitiveServices --sku S0 --location eastus --yes
-az cognitiveservices account show --name demo-aiservices --resource-group <your-resource-group> \
+az cognitiveservices account show --name demo-aiservices --resource-group "${RG}" \
   --query properties.endpoint -o tsv
 ```
 
 **👀 Expected result:** A single HTTPS endpoint is returned that can be used for multiple AI capabilities (vision/language/etc.) from one resource.
 
-**✅ Checkpoint:** Run `az cognitiveservices account keys list --name demo-aiservices --resource-group <your-resource-group>` and confirm two keys are returned.
+**✅ Checkpoint:** Run `az cognitiveservices account keys list --name demo-aiservices --resource-group "$RG"` and confirm two keys are returned.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3371,22 +3716,28 @@ https://learn.microsoft.com/azure/iot-dps/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy a free-tier IoT Hub and register a device identity.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az iot hub create --name demo-iothub$RANDOM --resource-group <your-resource-group> --sku F1 --partition-count 2
-az iot hub device-identity create --hub-name <hub-name> --device-id demo-device-01
-az iot hub device-identity list --hub-name <hub-name> -o table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r60-${RANDOM}"
+HUB_NAME="iothub-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az iot hub create --name "$HUB_NAME" --resource-group "${RG}" --sku F1 --partition-count 2
+az iot hub device-identity create --hub-name "${HUB_NAME}" --device-id demo-device-01
+az iot hub device-identity list --hub-name "${HUB_NAME}" -o table
 ```
 
 **👀 Expected result:** The hub provisions on the free F1 SKU (one per subscription) and `demo-device-01` appears in the device identity list.
 
-**✅ Checkpoint:** Run `az iot hub device-identity show --hub-name <hub-name> --device-id demo-device-01` and confirm `status: enabled`.
+**✅ Checkpoint:** Run `az iot hub device-identity show --hub-name "$HUB_NAME" --device-id demo-device-01` and confirm `status: enabled`.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3421,6 +3772,8 @@ az group delete --name <your-resource-group> --yes --no-wait
 https://learn.microsoft.com/azure/iot-operations/
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** IoT Operations needs Arc-enabled Kubernetes as a prerequisite — verify whether the required resource providers are registered before attempting a real deployment.
 
@@ -3468,21 +3821,27 @@ https://learn.microsoft.com/azure/digital-twins/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy a Digital Twins instance and confirm the data-plane endpoint is reachable.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az dt create --name demo-dt-$RANDOM --resource-group <your-resource-group> --location eastus
-az dt show --name <dt-name> --resource-group <your-resource-group> --query hostName -o tsv
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r62-${RANDOM}"
+DT_NAME="dt-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az dt create --name "$DT_NAME" --resource-group "${RG}" --location eastus
+az dt show --name "${DT_NAME}" --resource-group "${RG}" --query hostName -o tsv
 ```
 
 **👀 Expected result:** A `hostName` such as `demo-dt-xxxx.api.eus.digitaltwins.azure.net` is returned.
 
-**✅ Checkpoint:** Run `az dt model list --dt-name <dt-name>` and confirm it returns an empty list (no models uploaded yet).
+**✅ Checkpoint:** Run `az dt model list --dt-name "$DT_NAME"` and confirm it returns an empty list (no models uploaded yet).
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3515,22 +3874,28 @@ https://learn.microsoft.com/azure/iot-edge/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Register an IoT Edge-capable device identity on an IoT Hub (edge-enabled flag).
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az iot hub create --name demo-edgehub$RANDOM --resource-group <your-resource-group> --sku F1
-az iot hub device-identity create --hub-name <hub-name> --device-id demo-edge-device --edge-enabled
-az iot hub device-identity show --hub-name <hub-name> --device-id demo-edge-device --query capabilities
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r63-${RANDOM}"
+HUB_NAME="iothub-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az iot hub create --name "$HUB_NAME" --resource-group "${RG}" --sku F1
+az iot hub device-identity create --hub-name "${HUB_NAME}" --device-id demo-edge-device --edge-enabled
+az iot hub device-identity show --hub-name "${HUB_NAME}" --device-id demo-edge-device --query capabilities
 ```
 
 **👀 Expected result:** `capabilities.iotEdge` returns `true`, confirming the device identity is flagged for IoT Edge module hosting.
 
-**✅ Checkpoint:** Confirm the device connection string via `az iot hub device-identity connection-string show --hub-name <hub-name> --device-id demo-edge-device`.
+**✅ Checkpoint:** Confirm the device connection string via `az iot hub device-identity connection-string show --hub-name "$HUB_NAME" --device-id demo-edge-device`.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3566,6 +3931,8 @@ az group delete --name <your-resource-group> --yes --no-wait
 https://learn.microsoft.com/azure/azure-arc/
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** List Arc-enabled resource providers and check what's already onboarded in your subscription.
 
@@ -3613,6 +3980,8 @@ https://learn.microsoft.com/azure/azure-local/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Azure Local requires physical/registered hardware, so inspect whether any Azure Local (Stack HCI) clusters are already registered to your subscription.
 
 ```bash
@@ -3657,6 +4026,8 @@ Nothing to clean up — read-only commands.
 https://learn.microsoft.com/azure/azure-vmware/
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Azure VMware Solution private clouds are costly/quota-gated, so check quota/SKU availability in a region before provisioning.
 
@@ -3705,6 +4076,8 @@ https://learn.microsoft.com/azure/migrate/
 
 ## 🧪 Try it yourself
 
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+
 **Goal:** Inspect Azure Migrate project resources already discoverable in your subscription.
 
 > ⚠️ **Needs verification:** The modern `az migrate` CLI extension (preview) no longer exposes a `project create`/`project show` command — project creation is currently a Portal or ARM/Bicep (`Microsoft.Migrate/migrateProjects`) operation. Confirm the current CLI surface at `az migrate --help` before scripting this.
@@ -3751,22 +4124,27 @@ https://learn.microsoft.com/azure/dms/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy the smallest Database Migration Service instance (no project/task wired yet).
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az dms create --name demo-dms --resource-group <your-resource-group> \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r68-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az dms create --name demo-dms --resource-group "${RG}" \
   --location eastus --sku-name Basic_2vCores
-az dms show --name demo-dms --resource-group <your-resource-group> -o table
+az dms show --name demo-dms --resource-group "${RG}" -o table
 ```
 
 **👀 Expected result:** The DMS instance shows `provisioningState: Succeeded`; no migration projects/tasks exist yet.
 
-**✅ Checkpoint:** Run `az dms project list --service-name demo-dms --resource-group <your-resource-group>` and confirm an empty list.
+**✅ Checkpoint:** Run `az dms project list --service-name demo-dms --resource-group "$RG"` and confirm an empty list.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3803,21 +4181,26 @@ https://learn.microsoft.com/azure/databox/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy a Storage Mover resource and confirm it's ready to host a migration project.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az storage-mover create --name demo-mover --resource-group <your-resource-group> --location eastus
-az storage-mover show --name demo-mover --resource-group <your-resource-group> -o table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r69-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az storage-mover create --name demo-mover --resource-group "${RG}" --location eastus
+az storage-mover show --name demo-mover --resource-group "${RG}" -o table
 ```
 
 **👀 Expected result:** The Storage Mover resource is created successfully with no migration projects configured yet.
 
-**✅ Checkpoint:** Run `az storage-mover project list --resource-group <your-resource-group> --mover-name demo-mover` and confirm an empty list.
+**✅ Checkpoint:** Run `az storage-mover project list --resource-group "$RG" --mover-name demo-mover` and confirm an empty list.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3859,22 +4242,27 @@ https://learn.microsoft.com/azure/virtual-desktop/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Create a pooled AVD host pool and an application group (no session host VM required to see the control-plane objects).
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az desktopvirtualization hostpool create --name demo-hostpool --resource-group <your-resource-group> \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r70-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az desktopvirtualization hostpool create --name demo-hostpool --resource-group "${RG}" \
   --location eastus --host-pool-type Pooled --load-balancer-type BreadthFirst --preferred-app-group-type Desktop
-az desktopvirtualization hostpool show --name demo-hostpool --resource-group <your-resource-group> -o table
+az desktopvirtualization hostpool show --name demo-hostpool --resource-group "${RG}" -o table
 ```
 
 **👀 Expected result:** The host pool is created with `hostPoolType: Pooled`; no session hosts are registered yet.
 
-**✅ Checkpoint:** Run `az desktopvirtualization sessionhost list --host-pool-name demo-hostpool --resource-group <your-resource-group>` and confirm an empty list.
+**✅ Checkpoint:** Run `az desktopvirtualization sessionhost list --host-pool-name demo-hostpool --resource-group "$RG"` and confirm an empty list.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3911,12 +4299,17 @@ https://learn.microsoft.com/azure/azure-maps/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy an Azure Maps account and make a simple authenticated search request.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az maps account create --name demo-maps --resource-group <your-resource-group> --sku G2
-az maps account keys list --name demo-maps --resource-group <your-resource-group> --query primaryKey -o tsv
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r71-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az maps account create --name demo-maps --resource-group "${RG}" --sku G2
+az maps account keys list --name demo-maps --resource-group "${RG}" --query primaryKey -o tsv
 ```
 
 **👀 Expected result:** A primary key string is returned, usable as `subscription-key` on Azure Maps REST calls (for example a `/search/address` request).
@@ -3925,7 +4318,7 @@ az maps account keys list --name demo-maps --resource-group <your-resource-group
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -3961,22 +4354,29 @@ https://learn.microsoft.com/azure/communication-services/
 
 ## 🧪 Try it yourself
 
-**Goal:** Deploy a Communication Services resource and issue a short-lived client access token.
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
+**Goal:** Create a Communication Services resource and a *user identity*. This command does **not** issue a client access token; token issuance is a separate API/CLI operation.
 
 ```bash
-az group create --name <your-resource-group> --location global
-az communication create --name demo-acs --resource-group <your-resource-group> \
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r72-${RANDOM}"
+ACS_NAME="acs-learn-${RANDOM}${RANDOM}"
+az group create --name "${RG}" --location eastus
+az communication create --name "$ACS_NAME" --resource-group "${RG}" \
   --location global --data-location unitedstates
-az communication identity user create --connection-string "<connection-string-from-show-command>"
+CONNECTION_STRING="$(az communication list-key --name "$ACS_NAME" --resource-group "$RG" --query primaryConnectionString -o tsv)"
+az communication identity user create --connection-string "$CONNECTION_STRING"
+unset CONNECTION_STRING  # The connection string is a credential; do not print it
 ```
 
 **👀 Expected result:** The resource is created, and a new communication user identity with a GUID-style ID is returned.
 
-**✅ Checkpoint:** Run `az communication list-key --name demo-acs --resource-group <your-resource-group>` and confirm a connection string is returned for issuing tokens.
+**✅ Checkpoint:** Confirm an identity ID was returned from the create command. **Never print or paste the connection string into logs or a chat.** The `az communication identity user` group is deprecated in favor of `az communication user-identity user`; verify extension support on your CLI.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -4011,21 +4411,26 @@ https://learn.microsoft.com/azure/app-testing/
 
 ## 🧪 Try it yourself
 
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
 **Goal:** Deploy an Azure Load Testing resource and confirm it's ready to accept a test definition.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az load create --name demo-loadtest --resource-group <your-resource-group> --location eastus
-az load show --name demo-loadtest --resource-group <your-resource-group> -o table
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r73-${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az load create --name demo-loadtest --resource-group "${RG}" --location eastus
+az load show --name demo-loadtest --resource-group "${RG}" -o table
 ```
 
 **👀 Expected result:** The Load Testing resource is created with a data-plane endpoint; no test runs exist yet.
 
-**✅ Checkpoint:** Run `az load test list --load-test-resource demo-loadtest --resource-group <your-resource-group>` and confirm an empty list.
+**✅ Checkpoint:** Run `az load test list --load-test-resource demo-loadtest --resource-group "$RG"` and confirm an empty list.
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -4060,12 +4465,18 @@ https://learn.microsoft.com/azure/batch/
 
 ## 🧪 Try it yourself
 
-**Goal:** Deploy a Batch account and a minimal low-priority pool for parallel task execution.
+**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+
+**Goal:** Create a Batch account, then (if your quotas and required images support it) request a small Spot/low-priority pool. **This is a paid, advanced lab**; a pool may not allocate nodes if regional quota or image compatibility is insufficient.
 
 ```bash
-az group create --name <your-resource-group> --location eastus
-az batch account create --name demobatch$RANDOM --resource-group <your-resource-group> --location eastus
-az batch account login --name <batch-account-name> --resource-group <your-resource-group> --shared-key-auth
+# Example names for this exercise; retain them in this Bash terminal
+RG="rg-learn-r74-${RANDOM}"
+BATCH_NAME="batch-learn-${RANDOM}${RANDOM}"
+
+az group create --name "${RG}" --location eastus
+az batch account create --name "$BATCH_NAME" --resource-group "${RG}" --location eastus
+az batch account login --name "${BATCH_NAME}" --resource-group "${RG}" --shared-key-auth
 az batch pool create --id demo-pool --vm-size Standard_D2s_v3 --target-dedicated-nodes 0 \
   --target-low-priority-nodes 1 --image canonical:0001-com-ubuntu-server-jammy:22_04-lts --node-agent-sku-id "batch.node.ubuntu 22.04"
 ```
@@ -4076,7 +4487,7 @@ az batch pool create --id demo-pool --vm-size Standard_D2s_v3 --target-dedicated
 
 **🧹 Clean up:**
 ```bash
-az group delete --name <your-resource-group> --yes --no-wait
+az group delete --name "${RG}" --yes
 ```
 
 [⬆️ Back to resource TOC](#resource-toc)
@@ -4112,6 +4523,8 @@ az group delete --name <your-resource-group> --yes --no-wait
 https://learn.microsoft.com/azure/service-health/service-retirement-alerting-guidance
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Run `az provider list` and check which of the retiring resource types from this section are actually in use in your subscription.
 
@@ -4160,6 +4573,8 @@ Nothing to clean up — read-only inventory commands.
 https://azure.microsoft.com/updates/
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Run `az provider list` and find which resource providers in your subscription currently expose preview-stage API versions.
 
@@ -4213,6 +4628,8 @@ https://learn.microsoft.com/azure/well-architected/
 https://learn.microsoft.com/azure/azure-resource-manager/
 
 ## 🧪 Try it yourself
+
+**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
 **Goal:** Run `az provider list` and find which of the resource types referenced throughout this cheat sheet are actually available/registered in your subscription.
 

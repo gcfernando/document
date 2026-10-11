@@ -5,7 +5,7 @@
 [![Safety](https://img.shields.io/badge/Safety-Review%20destructive%20commands-F59E0B?style=for-the-badge)](#-safety-first)
 [![Reference](https://img.shields.io/badge/Reference-Command%20catalog-0EA5E9?style=for-the-badge)](#-command-catalog)
 
-> **Scope:** Docker Engine CLI, Compose, Buildx, registries, security, and Swarm. Syntax is verified against the [official Docker reference](https://docs.docker.com/reference/). Docker Desktop bundles the client and Engine on Windows/macOS; Linux normally installs Engine separately.
+> **Scope:** Docker Engine CLI, Compose, Buildx, registries, security, and Swarm. Use the [official Docker reference](https://docs.docker.com/reference/) to check syntax against your installed version; examples here were not executed against your own Docker Engine. Docker Desktop bundles the client and Engine on Windows/macOS; Linux normally installs Engine separately.
 
 > [!TIP]
 > **🎨 Visual legend:** 🟢 beginner-friendly · 🟡 intermediate operations · 🔴 advanced/production · 💻 copyable command · 🔍 flags and behavior · 💡 practical advice · ⚠️ destructive or security-sensitive action.
@@ -32,6 +32,22 @@
 
 > [!WARNING]
 > Commands marked **⚠️ destructive** can remove data or resources. Inspect first with `docker ps -a`, `docker image ls`, `docker volume ls`, or `docker system df`. Never put credentials in an image, command history, or committed `compose.yaml`.
+
+### 👋 Your first five minutes (no prior container knowledge required)
+
+A **terminal** is a window in which you type commands. A **command-line interface (CLI)** is a program you control by typing commands. Install [Docker Desktop](https://docs.docker.com/get-started/get-docker/) on Windows/macOS or [Docker Engine](https://docs.docker.com/engine/install/) on Linux, and start Docker. Open **PowerShell** on Windows, or **Terminal/Bash** on macOS/Linux. Most examples work in all three unless specifically marked Bash or PowerShell.
+
+An **image** is a downloaded application template; a **container** is a running or stopped copy of it. A **registry** is a website/service that stores images. A **port** is a numbered network doorway such as `8080`. A **volume** is Docker-managed storage that can outlive a container. **Compose** reads a `compose.yaml` file to start several services together. A **Dockerfile** is a recipe for building an image.
+
+1. Enter `docker --version` to check that the command is installed; this prints a client version.
+2. Enter `docker info` to check that the Docker Engine is available. If it cannot connect, start Docker Desktop/the Engine first.
+3. Enter `docker run --rm hello-world` to download a small test image and run it. You should see **“Hello from Docker!”**. `run` creates and starts a container; `--rm` deletes that container automatically when it finishes. The downloaded image remains.
+4. Enter `docker ps -a` to see all your containers (the `-a` includes stopped ones). The hello-world container should **not** be listed because `--rm` cleaned it up.
+
+**Where and when:** run normal `docker` commands in a terminal; run `docker build ... .` from the folder containing your Dockerfile, and `docker compose ...` from the folder containing `compose.yaml`. `-d` runs in the background; `--name web` names a container; `-p 127.0.0.1:8080:80` makes container port 80 accessible **only on your computer** at port 8080; `-it` starts an interactive terminal; `--rm` removes the stopped container; `-f` often means “follow logs” but depends on the command. `NAME`, `IMAGE`, `TAG`, `REGISTRY`, and `YOUR_USER` in a description are **placeholders**, not literal values: use names you have created or account names you own. A full command in the **Example** column demonstrates the syntax, but many rows deliberately assume that a `web`, `api`, or `demo:1.0` resource exists; create it first in a relevant workflow.
+
+**Check commands safely:** `docker ps -a` verifies containers, `docker image ls` images, `docker network ls` networks, `docker volume ls` volumes, and `docker compose ps` services in the current project. For `docker push` you must own and authenticate to the registry destination; for `rm`, `prune`, and other destructive commands, list and inspect resources first. Never paste examples that refer to a production context without verifying `docker context show`.
+
 
 ## 🚀 Essential command cards
 
@@ -74,7 +90,7 @@ Each row includes a copyable example and its use; detailed flag explanations fol
 | `docker <command> --help` | Opens supported syntax for one command; use it before relying on a version-specific flag. | `docker run --help` | This is the safest source for the installed CLI version. |
 | `docker context ls` | Lists daemon endpoints; use when switching local, SSH, or cloud daemons. | `docker context ls` | The `*` marks the active context. |
 | `docker context use NAME` | Selects a saved daemon endpoint; use before targeting a remote Engine. | `docker context use default` | Verify with `docker context show`; remote actions affect that endpoint. |
-| `docker context create` | Saves an endpoint configuration; use for an SSH-accessible Engine. | `docker context create prod --docker "host=ssh://ops@example.com"` | Use SSH keys/least privilege; do not embed passwords. |
+| `docker context create` | Saves an endpoint configuration; use for an SSH-accessible Engine. | `docker context create lab-remote --docker "host=ssh://ops@docker-host.example.org"` | Use SSH keys/least privilege; do not embed passwords. |
 | `docker context rm NAME` | **⚠️** Removes a local context definition, not remote resources. | `docker context rm old-lab` | Switch away first; `default` cannot be removed. |
 
 ### 🟢 📦 Images and registries
@@ -100,16 +116,16 @@ Each row includes a copyable example and its use; detailed flag explanations fol
 | Command | 📖 Description and 🎯 when | 💻 Example | 🔍 Flags, arguments, and 💡 tip |
 |---|---|---|---|
 | `docker create` | Creates a stopped container; use when creation and start must be separate. | `docker create --name web -p 8080:80 nginx:1.27-alpine` | Start it later with `docker start web`. |
-| `docker run` | Creates and starts a container; use for a new workload. | `docker run -d --name web -p 8080:80 --restart unless-stopped nginx:1.27-alpine` | `-d` detaches, `--name` names, `-p HOST:CONTAINER` publishes, and restart policy recovers after daemon restart. |
+| `docker run` | Creates and starts a container; use for a new workload. | `docker run -d --name web -p 127.0.0.1:8080:80 --restart unless-stopped nginx:1.27-alpine` | `-d` detaches, `--name` names, `-p HOST:CONTAINER` publishes, and restart policy recovers after daemon restart. |
 | `docker run --rm` | Removes the container on exit; use for one-off tools/tests. | `docker run --rm alpine:3.20 echo "hello"` | Do not use when you need post-exit logs/files from its writable layer. |
 | `docker run -it` | Allocates stdin and a terminal; use for interactive shells. | `docker run --rm -it ubuntu:24.04 bash` | `-i` keeps input open; `-t` allocates a pseudo-TTY. |
-| `docker run --env/-e` | Sets runtime environment variables; use for non-secret configuration. | `docker run --rm -e LOG_LEVEL=info demo:1.0` | Prefer `--env-file .env` for local non-secret values; never commit secrets. |
+| `docker run --env/-e` | Sets runtime environment variables; use for non-secret configuration. | `docker run --rm --env LOG_LEVEL=info alpine:3.20 env`<br>`docker run --rm -e LOG_LEVEL=info alpine:3.20 env` | Prefer `--env-file .env` for local non-secret values; never commit secrets. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `docker run --mount` | Attaches a volume/bind/tmpfs with explicit syntax; use for durable or host data. | `docker run --rm --mount type=volume,src=db-data,dst=/var/lib/postgresql/data postgres:16` | Prefer `--mount` over short `-v` in documentation because fields are explicit. |
 | `docker run --read-only` | Makes the root filesystem read-only; use to limit writes. | `docker run --read-only --tmpfs /tmp nginx:1.27-alpine` | Supply writable tmpfs/volumes for legitimate writes. |
 | `docker ps` | Lists running containers; use for a fast health/status view. | `docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'` | `-a` includes exited containers; `-q` outputs IDs for scripts; `--no-trunc` shows full fields. |
-| `docker start/stop/restart` | Starts, gracefully stops, or restarts existing containers; use for lifecycle changes. | `docker stop -t 30 api` | `-t 30` allows 30 seconds before kill; `docker start -ai job` attaches to an interactive job. |
+| `docker start/stop/restart` | Starts, gracefully stops, or restarts existing containers; use for lifecycle changes. | `docker start web`<br>`docker stop web`<br>`docker restart web` | `-t 30` allows 30 seconds before kill; `docker start -ai job` attaches to an interactive job. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `docker kill` | **⚠️** Sends a signal immediately; use only when graceful stop fails. | `docker kill --signal SIGKILL hung-api` | Default is `SIGKILL`; prefer `stop` first. |
-| `docker pause/unpause` | Freezes/unfreezes processes; use for a short diagnostic experiment. | `docker pause api` | This is not a graceful maintenance stop. |
+| `docker pause/unpause` | Freezes/unfreezes processes; use for a short diagnostic experiment. | `docker pause web`<br>`docker unpause web` | This is not a graceful maintenance stop. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `docker rm` | **⚠️** Removes stopped containers; use after logs/data are no longer needed. | `docker rm old-api` | `-v` removes anonymous volumes too; `-f` stops then removes—both require review. |
 | `docker rename` | Renames a container; use to free a name or clarify ownership. | `docker rename web web-old` | Network DNS aliases are not automatically rewritten. |
 | `docker logs` | Reads container stdout/stderr; use first for startup errors. | `docker logs --tail 100 --timestamps -f api` | `-f` follows output; `--since 10m` narrows incident investigation. |
@@ -161,7 +177,7 @@ Each row includes a copyable example and its use; detailed flag explanations fol
 | `docker build --target` | Stops at a named multi-stage target; use for test/debug stages. | `docker build --target test -t api:test .` | Keep production artifacts in a final minimal stage. |
 | `docker build --no-cache` | Rebuilds without cached layers; use to rule out stale cache. | `docker build --no-cache -t api:debug .` | Slower; use selectively. |
 | `docker build --secret` | Makes a BuildKit secret available only during a `RUN --mount=type=secret`; use for private dependency access. | `docker build --secret id=npmrc,src=$HOME/.npmrc -t api:1.0 .` | Requires Dockerfile secret mount; secret must not be copied into a layer. |
-| `docker buildx create/use/ls` | Creates/selects/lists BuildKit builders; use for multi-platform or isolated builds. | `docker buildx create --name multi --use` | Confirm active builder with `docker buildx ls`. |
+| `docker buildx create/use/ls` | Creates/selects/lists BuildKit builders; use for multi-platform or isolated builds. | `docker buildx create --name labbuilder`<br>`docker buildx use labbuilder`<br>`docker buildx ls` | Confirm active builder with `docker buildx ls`. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `docker buildx build` | Builds with BuildKit features; use for multi-platform output. | `docker buildx build --platform linux/amd64,linux/arm64 -t registry.example.com/team/api:1.0 --push .` | `--push` publishes a multi-platform manifest; use `--load` only for a single local platform. |
 
 ```dockerfile
@@ -192,9 +208,9 @@ ENTRYPOINT ["dotnet", "Api.dll"]
 | `docker compose logs` | Displays project logs; use during local incidents. | `docker compose logs -f --tail 100 api` | Target one service to reduce noise. |
 | `docker compose exec` | Runs a command in an existing service container. | `docker compose exec api sh` | Unlike `run`, it uses the running service container. |
 | `docker compose run` | Runs a one-off service container; use for migrations/tests. | `docker compose run --rm api dotnet ef database update` | `--rm` removes the one-off container; ports are not published by default. |
-| `docker compose restart/stop/start` | Changes lifecycle without recreating definitions; use for local maintenance. | `docker compose restart api` | Use `up --force-recreate` when configuration changes require recreation. |
+| `docker compose restart/stop/start` | Changes lifecycle without recreating definitions; use for local maintenance. | `docker compose restart web`<br>`docker compose stop web`<br>`docker compose start web` | Use `up --force-recreate` when configuration changes require recreation. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `docker compose down` | **⚠️** Stops/removes project containers/networks; use to reset a stack. | `docker compose down` | `-v` also deletes named volumes; `--rmi local` removes locally built images. |
-| `docker compose pull/push` | Pulls/pushes service images; use in image-based delivery. | `docker compose pull --policy always` | Ensure service `image:` names point to the intended registry. |
+| `docker compose pull/push` | Pulls/pushes service images; use in image-based delivery. | `docker compose pull`<br>`docker compose push` | Ensure service `image:` names point to the intended registry. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 
 | `docker compose watch` | Watches configured files and syncs/rebuilds; use for development. | `docker compose watch` | Requires `develop.watch` configuration and a recent Compose version. |
 
 ```yaml
@@ -238,10 +254,10 @@ secrets:
 | `docker network create` | Creates a network; use for service discovery/isolation. | `docker network create --driver bridge app-net` | User-defined bridge networks provide name-based DNS. |
 | `docker run --network app-net` | Runs a container on a user-defined **bridge** network; use for isolated container-to-container communication. | `docker run --rm --network app-net busybox:1.36 ping -c 1 api` | Requires an existing `app-net` and a running container named `api` attached to it; no host port needs publishing for peer traffic. |
 | `docker run --network host` | Shares the host network namespace rather than an isolated container network; use only when intentionally needed. | `docker run --rm --network host nginx:1.27-alpine` | **⚠️** Service ports bind directly on the host; `-p`/`--publish` is ignored. Mainly Linux Engine; Docker Desktop support depends on version/settings. |
-| `docker network connect/disconnect` | Attaches/detaches a running container; use for controlled network changes. | `docker network connect app-net api` | Prefer declaring networks at creation/Compose time. |
-| `docker network inspect/rm` | Inspects/removes networks; use to troubleshoot endpoints or clean unused networks. | `docker network inspect app-net` | **⚠️** `rm` fails with attached containers; disconnect them deliberately. |
+| `docker network connect/disconnect` | Attaches/detaches a running container; use for controlled network changes. | `docker network connect app-net web`<br>`docker network disconnect app-net web` | Prefer declaring networks at creation/Compose time. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
+| `docker network inspect/rm` | Inspects/removes networks; use to troubleshoot endpoints or clean unused networks. | `docker network inspect app-net`<br>`docker network rm app-net` | **⚠️** `rm` fails with attached containers; disconnect them deliberately. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 
 | `docker port` | Shows published mappings; use to identify host reachability. | `docker port api` | Publishing with `-p 127.0.0.1:8080:8080` limits access to the host. |
-| `docker volume create/ls/inspect` | Creates/lists/inspects managed persistent storage; use for databases. | `docker volume create db-data` | Volumes outlive containers. |
+| `docker volume create/ls/inspect` | Creates/lists/inspects managed persistent storage; use for databases. | `docker volume create db-data`<br>`docker volume ls`<br>`docker volume inspect db-data` | Volumes outlive containers. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `docker run --mount type=volume` | Mounts Docker-managed persistent storage; use for database state and durable application data. | `docker run --rm --mount type=volume,src=db-data,dst=/data alpine:3.20 ls /data` | Docker manages the volume lifecycle and host storage location. |
 | `docker run --mount type=bind` | Mounts an existing host path into the container; use for source code or host-provided configuration. | `docker run --rm --mount type=bind,src=/absolute/host/path,dst=/workspace,readonly alpine:3.20 ls /workspace` | Replace the source with a **real absolute path** that exists on the Docker daemon host; omit `readonly` only if writes are necessary. |
 | `docker volume rm` | **⚠️** Deletes a volume and its data; use only after backup/confirmation. | `docker volume rm old-db-data` | `docker volume prune` deletes all unused volumes—review carefully. |
@@ -258,14 +274,14 @@ secrets:
 | `aws ecr get-login-password` + `docker login` | Authenticates Docker to Amazon ECR with a short-lived token from the AWS CLI. | `aws ecr get-login-password --region "$AWS_REGION" \| docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"` | Requires configured AWS credentials/IAM permission; authenticate to the correct account and Region; token lasts 12 hours. |
 | `docker image tag` + `docker push` (Amazon ECR) | Publishes a local image to an ECR repository. | `docker image tag api:1.0 "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/api:1.0"` | Then `docker push` that fully qualified tag; see the full commands below. |
 | `docker scan` | Deprecated/removed in current Docker distributions; use a supported scanner such as Docker Scout instead. | `docker scout quickview nginx:1.27-alpine` | Install/availability varies; follow current Docker Scout docs. |
-| `docker secret create` | Creates a Swarm secret from stdin/file; use for Swarm service secrets. | `Get-Content .\db_password.txt \| docker secret create db_password -` | **⚠️** Swarm-only; secrets are immutable—create a new one to rotate. |
+| `docker secret create` | Creates a Swarm secret from stdin/file; use for Swarm service secrets. | `printf "non-secret-demo-value" \| docker secret create demo_password -` | **⚠️** Bash example; initialize an approved Swarm first. The supplied text is only harmless practice data, not a real password. Secrets are immutable—create a new one to rotate. |
 | `docker swarm init` | Initializes the current Engine as a manager; use only when intentionally adopting Swarm. | `docker swarm init --advertise-addr 10.0.0.10` | Protect manager access and save join tokens securely. |
 | `docker swarm join-token` | Prints a worker/manager join command; use when adding a node. | `docker swarm join-token worker` | **⚠️** Treat output as sensitive until rotated. |
-| `docker node ls/inspect/update` | Lists, inspects, or changes Swarm node availability/labels. | `docker node update --availability drain worker-1` | Drain before maintenance; manager-only commands require a manager. |
+| `docker node ls/inspect/update` | Lists, inspects, or changes Swarm node availability/labels. | `docker node ls`<br>`docker node inspect self`<br>`docker node update --availability drain worker-1` | Drain before maintenance; manager-only commands require a manager. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `docker service create` | Creates a replicated/global Swarm workload. | `docker service create --name web --replicas 3 -p 8080:80 nginx:1.27-alpine` | Use `--limit-cpu`, `--limit-memory`, update/rollback policy, and health-aware app design. |
-| `docker service ls/ps/logs/inspect` | Observes service/task state; use for Swarm diagnosis. | `docker service ps web` | `docker service logs -f web` reads aggregated task logs. |
-| `docker service scale/update/rollback/rm` | Scales, changes, rolls back, or removes a service. | `docker service update --image nginx:1.27.1-alpine web` | **⚠️** Validate update policy; `rollback` returns to the prior service spec. |
-| `docker stack deploy/ls/services/rm` | Deploys and manages a Swarm stack from a Compose-format file. | `docker stack deploy -c stack.yml prod` | `docker stack rm prod` is **⚠️ destructive** to that stack's services/networks. |
+| `docker service ls/ps/logs/inspect` | Observes service/task state; use for Swarm diagnosis. | `docker service ls`<br>`docker service ps web`<br>`docker service logs web`<br>`docker service inspect web` | `docker service logs -f web` reads aggregated task logs. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
+| `docker service scale/update/rollback/rm` | Scales, changes, rolls back, or removes a service. | `docker service scale web=2`<br>`docker service update --replicas 3 web`<br>`docker service rollback web`<br>`docker service rm web` | **⚠️** Validate update policy; `rollback` returns to the prior service spec. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 
+| `docker stack deploy/ls/services/rm` | Deploys and manages a Swarm stack from a Compose-format file. | `docker stack deploy -c stack.yml demo`<br>`docker stack ls`<br>`docker stack services demo`<br>`docker stack rm demo` | `docker stack rm prod` is **⚠️ destructive** to that stack's services/networks. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 
 
 **Docker Hub publishing example** (replace `YOUR_USER` with your own Docker Hub namespace):
 
@@ -299,7 +315,7 @@ docker push "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/api:1.0"
 | 1. Verify installation | Run `docker --version` (client version), `docker info` (daemon health), then `docker run --rm hello-world` (create/run/remove a test container). |
 | 2. Find an app that exited | Run `docker ps -a` (include stopped containers), `docker logs --tail 100 NAME` (read error), then `docker inspect NAME` (check exit state/config). |
 | 3. Debug a running app | Run `docker exec -it NAME sh` (shell), `docker top NAME` (processes), and `docker stats --no-stream NAME` (one resource snapshot). |
-| 4. Publish a local service safely | Use `docker run -d --name api -p 127.0.0.1:8080:8080 IMAGE` (bind only localhost) and `docker port api` (confirm mapping). |
+| 4. Publish a local service safely | Use `docker run -d --name web -p 127.0.0.1:8080:80 nginx:1.27-alpine` (bind only localhost) and `docker port api` (confirm mapping). |
 | 5. Persist database data | Create `docker volume create db-data`, mount with `--mount type=volume,src=db-data,dst=/var/lib/postgresql/data`, then inspect with `docker volume inspect db-data`. |
 | 6. Move an image offline | Use `docker image save -o app.tar IMAGE` (export), transfer securely, then `docker image load -i app.tar` (import). |
 | 7. Build/release an image | Run `docker build -t registry.example.com/team/api:1.0 .`, `docker login registry.example.com`, then `docker push registry.example.com/team/api:1.0`. |
@@ -353,9 +369,9 @@ Docker ships more command-specific flags than a static document can safely repro
 | `docker network prune` | **⚠️** Removes unused networks; use only after checking active stacks. | `docker network prune` | Docker-managed default networks are retained. |
 | `docker builder prune` | **⚠️** Removes build cache; use when disk is constrained. | `docker builder prune --filter until=168h` | `-a` removes all unused cache and causes slower rebuilds. |
 | `docker buildx prune` | **⚠️** Removes cache belonging to the active Buildx builder. | `docker buildx prune --filter until=168h` | Use `--verbose` to understand reclaimed cache. |
-| `docker plugin ls/inspect/enable/disable/rm` | Lists and manages Engine plugins; use only for approved storage/network plugins. | `docker plugin ls` | **⚠️** Disabling/removing an in-use plugin can interrupt workloads. |
-| `docker trust inspect/sign` | Inspects/signs Docker Content Trust metadata where supported. | `docker trust inspect IMAGE` | Docker Content Trust workflow support is ecosystem/version dependent; follow current registry policy. |
-| `docker checkpoint create/ls/rm` | Creates, lists, or removes CRIU checkpoints for supported containers; use for specialized state-migration testing. | `docker checkpoint create api api-checkpoint` | Requires compatible host/kernel support; validate restored application behavior. |
+| `docker plugin ls/inspect/enable/disable/rm` | Lists and manages Engine plugins; use only for approved storage/network plugins. | `docker plugin ls`<br>`docker plugin inspect vieux/sshfs:latest`<br>`docker plugin enable vieux/sshfs:latest`<br>`docker plugin disable vieux/sshfs:latest`<br>`docker plugin rm vieux/sshfs:latest` | **⚠️** Disabling/removing an in-use plugin can interrupt workloads. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 
+| `docker trust inspect/sign` | Inspects/signs Docker Content Trust metadata where supported. | `docker trust inspect registry.example.com/team/api:1.0`<br>`docker trust sign registry.example.com/team/api:1.0` | Docker Content Trust workflow support is ecosystem/version dependent; follow current registry policy. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 
+| `docker checkpoint create/ls/rm` | Creates, lists, or removes CRIU checkpoints for supported containers; use for specialized state-migration testing. | `docker checkpoint create api checkpoint-1`<br>`docker checkpoint ls api`<br>`docker checkpoint rm api checkpoint-1` | Requires compatible host/kernel support; validate restored application behavior. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 
 | `docker image build` | Alias of `docker build`; use when scripts prefer the image command namespace. | `docker image build -t api:1.0 .` | Keep one style consistently in team documentation. |
 | `docker container ls` | Alias of `docker ps`; use when grouping scripts by resource type. | `docker container ls -a` | `-a` includes stopped containers. |
 | `docker system df` | Reports Docker disk usage; use before prune operations. | `docker system df -v` | `-v` provides per-image/container details. |
