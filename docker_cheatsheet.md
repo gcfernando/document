@@ -1,3 +1,4 @@
+<!-- {% raw %} -->
 # 🐳 Docker Command Cheat Sheet
 
 [![Docker](https://img.shields.io/badge/Docker-CLI-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docs.docker.com/reference/)
@@ -376,3 +377,4 @@ Docker ships more command-specific flags than a static document can safely repro
 | `docker container ls` | Alias of `docker ps`; use when grouping scripts by resource type. | `docker container ls -a` | `-a` includes stopped containers. |
 | `docker system df` | Reports Docker disk usage; use before prune operations. | `docker system df -v` | `-v` provides per-image/container details. |
 | `docker system events` | Streams daemon events; use for lifecycle troubleshooting. | `docker system events --filter type=container` | Equivalent command family to `docker events`. |
+<!-- {% endraw %} -->

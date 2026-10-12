@@ -190,7 +190,7 @@ flowchart TD
 | [🗄️ Complete SQL Guide](sql_complete_guide.md) | 🟢 → 🔴 | database design, queries, transactions, performance, and security | no database background required |
 | **🤖 AI & Learning Resources** |  |  |  |
 | [🤖 Local AI Learning Lab](local_ai_learning_lab.md) | 🟢 | a verified local chat app using Ollama, Python, and Streamlit | basic PowerShell and Python installation |
-| [🧠 AI coding CLI instructions](ai-cli/) | 🟡 | example global instruction files (`AGENTS.md`, `CLAUDE.md`, `copilot-instructions.md`, a shared `ENGINEERING.md`) and configuration samples for AI coding command-line tools | experience with at least one AI coding CLI |
+| [🧠 AI coding CLI instructions](https://github.com/gcfernando/document/tree/main/ai-cli) | 🟡 | example global instruction files (`AGENTS.md`, `CLAUDE.md`, `copilot-instructions.md`, a shared `ENGINEERING.md`) and configuration samples for AI coding command-line tools | experience with at least one AI coding CLI |
 
 ---
 

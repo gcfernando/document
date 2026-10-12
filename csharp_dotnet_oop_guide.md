@@ -1,3 +1,4 @@
+<!-- {% raw %} -->
 <div align="center">
 
 # 🏛️ Complete Object-Oriented Programming with C# and .NET
@@ -16661,3 +16662,4 @@ Now close the guide and go build something. 🚀
 *Read it once. Use it forever. Break things on purpose.*
 
 </div>
+<!-- {% endraw %} -->

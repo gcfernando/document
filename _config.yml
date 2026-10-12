@@ -1,0 +1,75 @@
+# GitHub Pages documentation site; does not configure application deployment.
+url: "https://gcfernando.github.io"
+baseurl: "/document"
+title: "Developer Knowledge Base"
+description: "Learning paths and guides for Python, C# and .NET, SQL, Azure, Docker, Podman, Git and local AI applications."
+lang: "en"
+plugins:
+  - jekyll-sitemap
+exclude:
+  - packages
+  - bin
+  - obj
+  - node_modules
+  - vendor
+  - tests
+  - .claude
+  - .agents
+  - .codex
+  - ai-cli
+defaults:
+  - scope:
+      path: "azure_cheatsheet.md"
+    values:
+      title: "☁️ Azure Engineering Cheat Sheet"
+      description: "Azure is Microsoft's cloud platform: instead of installing your own physical server, you create services in a Microsoft data center. A resource is one of those services; a resource group…"
+  - scope:
+      path: "azure_resources_cheatsheet.md"
+    values:
+      title: "📦 Azure Resources Deep Reference"
+      description: "This is an Azure resource reference: each numbered section explains one family of services, then offers a small practice exercise. The sections are independent; do not run all of them in…"
+  - scope:
+      path: "csharp_dotnet_oop_guide.md"
+    values:
+      title: "🏛️ Complete Object-Oriented Programming with C# and .NET"
+      description: "Learn object-oriented programming with C# and .NET through a chapter-based guide, examples and a day-by-day study plan."
+  - scope:
+      path: "docker_cheatsheet.md"
+    values:
+      title: "🐳 Docker Command Cheat Sheet"
+      description: "A terminal is a window in which you type commands. A command-line interface (CLI) is a program you control by typing commands. Install Docker Desktop on Windows/macOS or Docker Engine on…"
+  - scope:
+      path: "git_cheatsheet.md"
+    values:
+      title: "🌿 Git Command Cheat Sheet"
+      description: "A Git command cheat sheet with explanations and practice examples for repositories, commits, branches and everyday version-control workflows."
+  - scope:
+      path: "local_ai_learning_lab.md"
+    values:
+      title: "Local AI Learning Lab: your first local chat app"
+      description: "Build a browser chat app with Ollama, Qwen3.5 9B, Python, and Streamlit on Windows/PowerShell. A local runtime runs the model; your Python app supplies messages and displays the reply.…"
+  - scope:
+      path: "podman_cheatsheet.md"
+    values:
+      title: "🦭 Podman Command Cheat Sheet"
+      description: "A terminal is the app for typing commands. Install Podman first. On Linux, open a normal user terminal (rootless means you do not use administrator privileges). On Windows/macOS, start…"
+  - scope:
+      path: "python_dunder.md"
+    values:
+      title: "Python Dunder Methods Guide"
+      description: "A guide to Python special methods and their role in object-oriented programming."
+  - scope:
+      path: "python_oop_guide.md"
+    values:
+      title: "🐍 Complete Object-Oriented Programming with Python"
+      description: "By the end, you should be able to design, implement, test, and refactor object-oriented Python applications using modern Python practices. 🚀"
+  - scope:
+      path: "README.md"
+    values:
+      title: "🌈 Knowledge Base Learning Paths — Python, C#/.NET, SQL, Azure, Docker, Podman & Git Guides"
+      description: "Learning paths and guides for Python, C# and .NET, SQL, Azure, Docker, Podman, Git and local AI applications."
+  - scope:
+      path: "sql_complete_guide.md"
+    values:
+      title: "🗄️ The Complete SQL Guide — MSSQL & MySQL"
+      description: "Learn SQL with a complete guide covering Microsoft SQL Server and MySQL, including beginner exercises and database examples."
