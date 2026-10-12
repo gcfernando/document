@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center" markdown="1">
 
 # 🗄️ The Complete SQL Guide — MSSQL & MySQL
 
@@ -266,7 +266,7 @@ SELECT * FROM customers LIMIT 5;
 
 ## 📚 Table of contents
 
-<details>
+<details markdown="1">
 <summary><b>📂 Click to expand the full 66-chapter map</b></summary>
 
 ### 🌱 Part 1 — Foundations (start here if you know nothing)
@@ -6181,7 +6181,7 @@ ORDER BY yr, mth;
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — after Chapter 27 · you can query one table
 
@@ -6210,7 +6210,7 @@ ORDER BY yr, mth;
 5. You are about to run `DELETE FROM orders WHERE status = 'cancelled'`. What do you do first?
 6. Why is `DECIMAL(10,2)` the right type for money and `FLOAT` the wrong one?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **Because `WHERE` runs at step 2 and `SELECT` at step 5.** When `WHERE` is evaluated the alias does not exist yet; by the time `ORDER BY` runs at step 7 it does. The two fixes are to repeat the expression, or to compute it first in a subquery or CTE. See [§5.3](#53--three-mysteries-this-instantly-solves).
@@ -8393,7 +8393,7 @@ EXEC sp_executesql @sql;
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — after Chapter 35 · you can answer real business questions
 
@@ -8421,7 +8421,7 @@ EXEC sp_executesql @sql;
 5. Your “top product per category” query returns more rows than there are categories. What is the likely cause?
 6. Total revenue jumped when you joined `orders` to `order_items`. Why?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **`LEFT JOIN` from `customers` to `orders`, then `WHERE o.order_id IS NULL`.** The outer join keeps every customer and fills the order columns with `NULL` when there is no match, so testing for `NULL` isolates exactly the non-matches. `NOT EXISTS` is the other idiomatic way. This pattern answers every “things without a matching thing” question.
@@ -11183,7 +11183,7 @@ END;
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — after Chapter 45 · you can keep data correct under load
 
@@ -11211,7 +11211,7 @@ END;
 5. What does “idempotent” mean for a nightly import, and how do you test it?
 6. Your application logs deadlocks nightly. Is that a bug to eliminate?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **Because it touches several tables and a partial result is a wrong result.** Inserting the order, inserting its lines, and decrementing stock must all happen or none of them. Without atomicity a crash between steps leaves an order for goods nobody reserved — discovered days later by the warehouse.
@@ -13303,7 +13303,7 @@ Because `fact_sales` stores the **`customer_key`** (not `customer_id`), every hi
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — after Chapter 53 · you can make it fast, and design it properly
 
@@ -13332,7 +13332,7 @@ Because `fact_sales` stores the **`customer_key`** (not `customer_id`), every hi
 5. Is storing the price on the order line a normalization mistake?
 6. When is denormalization the right answer, and what do you owe the reader when you do it?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **Every index must be updated on every insert, update, and delete, and it consumes storage.** So an index is a tax on writes paid to make reads faster. It is not worth it on a small table (scanning 18 rows beats traversing a tree), on a column that is rarely filtered, or when it duplicates the leading columns of an index you already have.
@@ -17047,7 +17047,7 @@ var recent = await db.Orders
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — after Chapter 65 · you can run it in production
 
@@ -17076,7 +17076,7 @@ var recent = await db.Orders
 5. Why should you never edit a migration that has already been applied?
 6. Your application connects as `sa`. Name two concrete things that go wrong.
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **Parameterise every value — pass input as a parameter, never concatenate it into the SQL string.** Escaping is an incomplete defence: it depends on getting every character class, every encoding, and every context right, and attackers are better at finding the gap than defenders are at closing it. Parameterisation removes the category of bug, because the value is never parsed as code. Note that identifiers cannot be parameterised, so those need an allow-list.
@@ -17282,7 +17282,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 ## 66.3 🧠 The interview question bank
 
-<details>
+<details markdown="1">
 <summary><b>🌱 Beginner — click to expand</b></summary>
 
 1. What is the difference between `WHERE` and `HAVING`?
@@ -17303,7 +17303,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>🚀 Intermediate — click to expand</b></summary>
 
 16. Explain the logical order of query execution and one bug it explains.
@@ -17329,7 +17329,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>🏆 Advanced — click to expand</b></summary>
 
 36. What is SARGability? Give three non-SARGable patterns and their fixes.
@@ -17369,7 +17369,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 ## 66.4 🏋️ 40 practice exercises on ShopDB
 
-<details>
+<details markdown="1">
 <summary><b>Level 1 — Basics (1-10)</b></summary>
 
 1. List all products, most expensive first.
@@ -17385,7 +17385,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>Level 2 — Joins and aggregation (11-20)</b></summary>
 
 11. Show every order with its customer name and sales rep name.
@@ -17401,7 +17401,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>Level 3 — Subqueries, CTEs, windows (21-30)</b></summary>
 
 21. Find products priced above their own category's average.
@@ -17417,7 +17417,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>Level 4 — Advanced (31-40)</b></summary>
 
 31. Build a monthly revenue pivot with categories as columns.
@@ -17448,7 +17448,7 @@ The MySQL variants are given where the syntax differs, but were **not executed**
 **Before you start:** rebuild ShopDB (§4.3 → §4.5 → §4.6) so your data matches these answers. Earlier
 chapters add and drop columns, and a leftover change will shift the numbers.
 
-<details>
+<details markdown="1">
 <summary><b>Level 1 — Basics (1–10)</b></summary>
 
 **1. List all products, most expensive first.**
@@ -17666,7 +17666,7 @@ moment nulls appear, and the difference is a common source of wrong totals ([§2
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>Level 2 — Joins and aggregation (11–20)</b></summary>
 
 **11. Every order with its customer name and sales rep name.**
@@ -17933,7 +17933,7 @@ do not exist until the grouping has happened ([§26](#26-group-by-and-having)).
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>Level 3 — Subqueries, CTEs, window functions (21–30)</b></summary>
 
 **21. Products priced above their own category's average.**
@@ -18361,7 +18361,7 @@ check the execution plan ([§47](#47-execution-plans)).
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>Level 4 — Advanced (31–40)</b></summary>
 
 These ten are **build exercises** rather than single queries: each asks you to design a procedure, a
@@ -18633,7 +18633,7 @@ A city library needs a database. The requirements:
 
 **Print this. Run through it before any schema goes to production.**
 
-<details>
+<details markdown="1">
 <summary><b>📐 Design</b></summary>
 
 - ☐ Every table has a primary key
@@ -18652,7 +18652,7 @@ A city library needs a database. The requirements:
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>✍️ Queries</b></summary>
 
 - ☐ No `SELECT *` in application code
@@ -18670,7 +18670,7 @@ A city library needs a database. The requirements:
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>⚡ Performance</b></summary>
 
 - ☐ Slow queries identified from real measurements, not guesswork
@@ -18685,7 +18685,7 @@ A city library needs a database. The requirements:
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>🛡️ Security and operations</b></summary>
 
 - ☐ Every query parameterized
@@ -18705,7 +18705,7 @@ A city library needs a database. The requirements:
 
 </details>
 
-<details>
+<details markdown="1">
 <summary><b>🚚 Delivery</b></summary>
 
 - ☐ Every schema change is a versioned script in Git
@@ -18720,7 +18720,7 @@ A city library needs a database. The requirements:
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## 🎓 You made it
 
@@ -18746,7 +18746,7 @@ Now close the guide, open a query window, and go build something. 🚀
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 **The Complete SQL Guide — MSSQL & MySQL**
 *By Gehan Fernando*
@@ -18754,3 +18754,9 @@ Now close the guide, open a query window, and go build something. 🚀
 *Read it once. Use it forever. Break things on purpose.*
 
 </div>
+
+---
+
+## Documentation links
+
+[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

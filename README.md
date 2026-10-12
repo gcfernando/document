@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center" markdown="1">
 
 # 🌈 Knowledge Base Learning Paths — Python, C#/.NET, SQL, Azure, Docker, Podman & Git Guides
 
@@ -245,10 +245,16 @@ Use this loop for every chapter, lesson, and lab:
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## 🌟 Start small. Stay curious. Build every day.
 
 **Choose one path above, open its first guide, and run your first example today.**
 
 </div>
+
+---
+
+## Documentation links
+
+[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center" markdown="1">
 
 # 🐍 Complete Object-Oriented Programming with Python
 
@@ -185,7 +185,7 @@ The 39 sections are grouped into five parts. Each part ends with a ✅ **Checkpo
 | 🔴 **4 · Professional design** | 27–33 | Apply SOLID and dependency injection *and name what each one costs* |
 | 🟡 **5 · Practice and reference** | 34–39 | Build a complete application, and look things up afterwards |
 
-<details>
+<details markdown="1">
 <summary><b>Click to expand the full 39-topic map</b></summary>
 
 **🟢 Part 1 — Foundations**
@@ -246,7 +246,7 @@ The 39 sections are grouped into five parts. Each part ends with a ✅ **Checkpo
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🟢 PART 1 — FOUNDATIONS
 
@@ -355,7 +355,7 @@ Set up a real Python playground and prove it works.
 
 **Expected result:** running the script prints a line starting with your installed Python version, and `pip list` inside the activated environment shows only `pytest` (plus its own dependencies) — not packages from any other project.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```bash
@@ -706,6 +706,7 @@ The `yaer` typo did not raise anything. It created a brand-new attribute and lef
 
 This is the "level 1 / level 2 / level 3" distinction from the [enforcement section](#-pythons-three-levels-of-enforcement-read-this-before-section-5), showing up for the first time.
 
+<a id="44--object-creation-with-keyword-arguments"></a>
 ## 4.4 🏷️ Object creation with keyword arguments
 
 Keyword arguments name each value at the call site, which makes the code readable and makes a whole class of mistakes impossible.
@@ -869,7 +870,7 @@ Grade: A
 > **Write it before you open the solution.** You need `__init__` with three parameters, three
 > assignments to `self`, and one method that prints three lines. Everything you need is in §4.1–4.4.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -958,6 +959,7 @@ print(product.price)
 
 > 🎯 **When to use plain public attributes:** when there are no rules to enforce — any value is acceptable.
 
+<a id="53--property-with-validation"></a>
 ## 5.3 🛡️ Property with validation
 
 Use `@property` when you need validation or computed behavior.
@@ -1130,7 +1132,7 @@ Build a `Temperature` class that:
 
 **Verify it yourself:** `Temperature(25).fahrenheit` should be `77.0`, and both an impossible Celsius value and a direct assignment to `fahrenheit` should raise.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -1387,7 +1389,7 @@ Create a `BankAccount` with:
 an opening balance below the minimum, refuse a non-positive deposit or withdrawal, refuse a
 withdrawal that would breach the minimum, and refuse to let anyone assign to `balance` directly.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 This uses §6.4 (constructor validation), §5.5 (read-only property with a private setter style), and
@@ -1575,7 +1577,7 @@ Write a `Thermostat` class with a public `target_temperature` attribute, an inte
 
 **Verify it yourself:** confirm `dir(instance)` lists the mangled name as `_Thermostat__calibration_key`, not `__calibration_key`.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -1727,6 +1729,7 @@ with report_writer("report.txt") as file:
 
 > 🎯 **When to use which:** the `@contextmanager` decorator is quicker for simple cases; a full class is better when the resource needs extra methods or state.
 
+<a id="87--destructors-with-__del__"></a>
 ## 8.7 ⚰️ Destructors with `__del__`
 
 `__del__` is rarely needed and can be unpredictable (you can't reliably know *when* it runs).
@@ -1750,7 +1753,7 @@ Write a custom context manager class `TemporaryCounter` that:
 
 **Verify it yourself:** deliberately raise an exception inside the `with` block and confirm `__exit__` still runs and prints the count *before* the exception propagates.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -1813,7 +1816,7 @@ Caught after exit: boom
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — Part 1: Foundations
 
@@ -1842,7 +1845,7 @@ For each idea, answer the same four questions: **What is it? Why does it matter?
 5. Why is `with open(...) as f:` preferred over calling `f.close()` yourself — and why is `__del__` not a substitute?
 6. `Car("Corolla", "Toyota", 2024)` swaps the brand and model. Why does neither Python nor `mypy` catch it, and what change makes the mistake impossible?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **It keeps the data and the rules about that data in one place, and makes that pairing reusable.** You can stamp out as many independent copies as you need, and every one of them carries its own values *and* the same rules. Loose variables have no rules attached, so every piece of code that touches them has to remember to check — and one day, one of them forgets.
@@ -1865,7 +1868,7 @@ Describe a **vending machine** as an object. Name its data, its behaviour, its r
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🟣 PART 2 — THE FOUR PILLARS, IN DEPTH
 
@@ -1989,7 +1992,7 @@ Build a `StockItem` class that:
 
 **Verify it yourself:** try to force the quantity negative two different ways — direct assignment, and `remove` beyond what's in stock — and confirm both are refused.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -2175,7 +2178,7 @@ Then build two subclasses: `ConsoleReportGenerator`, and `UppercaseReportGenerat
 
 **Verify it yourself:** confirm `ReportGenerator()` itself cannot be instantiated.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -2463,7 +2466,7 @@ Model a small employee hierarchy:
 
 **Verify it yourself:** confirm `isinstance(executive, Employee)` is `True`, and that `calculate_pay()` correctly stacks the amounts from every level.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -2656,7 +2659,7 @@ Build three unrelated classes — `Dog`, `Duck`, `Robot` — each with a `make_s
 
 **Verify it yourself:** confirm `chorus` works unchanged for all three types, and that adding a fourth class (`Cat`) requires zero changes to `chorus`.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -2910,7 +2913,7 @@ Define a `Notifier` protocol with one method, `notify(message: str) -> None`. Wr
 
 **Verify it yourself:** make the protocol `@runtime_checkable` and confirm `isinstance(RecordingNotifier(), Notifier)` is `True` even though it never declared the relationship.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -3031,6 +3034,7 @@ class EmailSender(Protocol):
 | Invoice **can be** printed | 📐 Protocol |
 | Dog **is an** Animal | 🏛️ ABC / base class |
 
+<a id="144--avoid-unnecessary-abstractions"></a>
 ## 14.4 ⚠️ Avoid unnecessary abstractions
 
 > [!WARNING]
@@ -3053,7 +3057,7 @@ Two features need an abstraction. Decide ABC vs protocol for each, then write it
 
 **Verify it yourself:** confirm a `Smartphone` can be passed to a function typed `Trackable` without inheriting from `Vehicle`.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -3272,7 +3276,7 @@ Build a `Car` that **has an** `Engine` (composition, injected via the constructo
 
 **Verify it yourself:** prove that swapping the engine changes the car's behaviour without touching the `Car` class at all.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -3330,7 +3334,7 @@ Car ready to drive.
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — Part 2: The four pillars
 
@@ -3359,7 +3363,7 @@ Car ready to drive.
 5. When does an abstract base class beat a protocol?
 6. You find `if customer_type == "regular": ... elif "premium": ...` repeated in three files. What is the refactoring, and when should you *not* do it?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **An invariant is a rule that must be true for an object at all times** — a balance never below its minimum, an order never completed while empty. Protecting it inside the object means the rule lives in exactly **one** place, so it cannot be skipped. Scatter the checks and you have as many chances to forget as you have call sites, and no way to prove the rule holds. See [§9.4](#94--invariants).
@@ -3382,7 +3386,7 @@ Model a **coffee machine** twice: once with inheritance (`EspressoMachine(Coffee
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🟠 PART 3 — BUILDING REAL TYPES
 
@@ -3706,7 +3710,7 @@ Build:
 
 Then use the **same** repository for both `Product` and `Customer`.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 The key decision is `TypeVar("TEntity", bound=Entity)`. The **bound** is what lets the repository
@@ -4173,7 +4177,7 @@ orders = [
 
 Using comprehensions and built-ins (no manual accumulation loops), produce: (1) a `dict[int, Order]` keyed by id, (2) the total value of all **shipped** orders, (3) the single most expensive order, (4) orders grouped by status.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -4266,6 +4270,7 @@ class Product:
         return hash(self.id)
 ```
 
+<a id="183--why-__hash__-matters"></a>
 ## 18.3 #️⃣ Why `__hash__` matters
 
 `set` and `dict` use **hash values** to organize items quickly.
@@ -4320,7 +4325,7 @@ Build a `Coordinate` class (plain, not a dataclass) with `x` and `y`, implementi
 
 **Verify it yourself:** put duplicate coordinates in a `set` both ways and confirm the duplicates collapse.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -4511,7 +4516,7 @@ For each scenario, pick and implement the right shape from §19 (plain class, da
 
 **Verify it yourself:** confirm the frozen type raises when you try to mutate it directly, and that `dataclasses.replace` produces a changed copy instead.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -4670,6 +4675,7 @@ error: Argument 1 to "len" has incompatible type "str | None"; expected "Sized"
 
 That message is the payoff for writing the hint in the first place: a crash that would have happened in production, reported before the program ran.
 
+<a id="203--default-value"></a>
 ## 20.3 🎚️ Default value
 
 ```python
@@ -4814,7 +4820,7 @@ Write `find_discount_code(codes: dict[str, float], name: str) -> float | None` t
 
 **Verify it yourself:** show the exact input where the `or` version gives the wrong answer.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -4906,6 +4912,7 @@ class BankAccount:
         self._balance -= amount
 ```
 
+<a id="213--custom-exception"></a>
 ## 21.3 🏷️ Custom exception
 
 Make errors specific and meaningful.
@@ -4969,6 +4976,7 @@ A custom exception that only carries a message is barely better than `ValueError
 
 > ⚠️ **Inherit from the closest built-in that fits.** `InsufficientBalanceError` could reasonably subclass `ValueError`, so that code catching `ValueError` still works. Subclass `Exception` directly only when no built-in category applies.
 
+<a id="214--domain-exception"></a>
 ## 21.4 🏛️ Domain exception
 
 A shared base class for all your business-rule errors, so callers can catch *your* failures as a group without also swallowing bugs.
@@ -5088,7 +5096,7 @@ Build a small validation pipeline: a `DomainError` base class, an `InvalidAgeErr
 
 **Verify it yourself:** catch the exception, print its message and the carried attribute, and print the cause's type to confirm the original error is preserved.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -5286,7 +5294,7 @@ Build a `Product` class that:
 
 **Verify it yourself:** create three products and confirm the counter reads `3`, independent of any single instance.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -5452,7 +5460,7 @@ Build a `StockTicker` that fires a `PriceChangedEvent(symbol, new_price)` to any
 
 **Verify it yourself:** confirm the unsubscribed handler stops receiving events after removal, while the other keeps receiving them.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -5728,7 +5736,7 @@ Add an "is a square" capability **without modifying `Rectangle`**, two ways: (1)
 
 **Verify it yourself:** confirm neither approach touched `Rectangle`'s source, and both work correctly.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -5940,7 +5948,7 @@ Build a `Vector2D` class with `x` and `y` that supports `+` (`__add__`), equalit
 
 **Verify it yourself:** add two vectors and check the result; print a `Vector2D` directly (uses `__str__`) and print a list containing one (uses `__repr__`).
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -6133,7 +6141,7 @@ Design a package layout for a small "todo list" app with a `domain` module (a `T
 
 **Verify it yourself:** confirm none of your imports use `import *`, and that `domain` imports nothing from `application` or `cli` — dependencies point one way, inward.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```text
@@ -6212,7 +6220,7 @@ service.complete("Write guide")
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — Part 3: Building real types
 
@@ -6242,7 +6250,7 @@ service.complete("Write guide")
 5. A custom exception carries only a message string. What has it bought you over `ValueError("...")`?
 6. A generator expression works the first time you loop over it and yields nothing the second time. Is that a bug?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **You could add a `Cat` to a `list[Dog]`.** If `animals = dogs` were allowed, `animals` is typed `list[Animal]`, so appending a `Cat` to it is legal — and now the `list[Dog]` that other code is reading contains a cat. Mutable containers are therefore **invariant**. See [§16.10](#1610--invariance).
@@ -6265,7 +6273,7 @@ Design a `Money` value object in your head: frozen, validated, with value equali
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🔴 PART 4 — PROFESSIONAL DESIGN
 
@@ -6566,7 +6574,7 @@ Split it into three single-responsibility classes (`ReportCalculator`, `ReportFi
 
 **Verify it yourself:** confirm each new class has exactly one public method/reason to change, and that adding `VipDiscountPolicy` required zero edits elsewhere.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -6734,7 +6742,7 @@ Build a `SignupService` that depends on an `EmailSender` protocol, injected thro
 
 **Verify it yourself:** call `SignupService` with the fake and assert the message was recorded, without any real email being sent.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -6891,6 +6899,7 @@ class CheckoutService:
 
 > 🌍 **Analogy:** Choosing "standard" vs "express" shipping at checkout — same checkout, swappable strategy.
 
+<a id="293--repository"></a>
 ## 29.3 🗃️ Repository
 
 Abstracts data access so business code doesn't care where data lives.
@@ -7089,7 +7098,7 @@ Implement the **Strategy** pattern for shipping cost (one class per method: `Sta
 
 **Verify it yourself:** confirm the factory raises a clear error for an unknown method name, and that the builder's chained calls produce a correctly assembled object.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -7352,7 +7361,7 @@ Model a tiny `ShoppingCart` **aggregate**: an `Entity` base class with an `id`, 
 
 **Verify it yourself:** confirm adding an invalid quantity is refused, and `total()` returns a correct `Money` value.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -7581,7 +7590,7 @@ Write three `pytest` test functions, following Arrange/Act/Assert: one for a suc
 
 **Verify it yourself:** run `pytest` and confirm all three pass.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -7781,7 +7790,7 @@ First, write one test that pins its current behaviour. Then apply **Extract Func
 
 **Verify it yourself:** the test must pass both before and after — identical behaviour, better structure.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -7972,6 +7981,7 @@ Do not hide *all* rules inside SQL, stored procedures, or external services if y
 
 Use type hints, explicit validation, and tests (see [Section 20](#20-none-safety-and-optional-values)).
 
+<a id="3311--mutable-default-arguments"></a>
 ## 33.11 ⚠️ Mutable default arguments
 
 > [!WARNING]
@@ -8173,7 +8183,7 @@ class Order:
 
 **Verify it yourself:** create two `Order` instances, add an item to only one, and confirm the other's `items` stays empty.
 
-<details>
+<details markdown="1">
 <summary><b>🔑 Solution</b></summary>
 
 ```python
@@ -8242,7 +8252,7 @@ print(order_b.items)
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — Part 4: Professional design
 
@@ -8271,7 +8281,7 @@ print(order_b.items)
 5. Your test asserts that `OrderService` called `email_sender.send`. Is that a good test?
 6. Name one concrete cost of introducing a protocol for a class that has exactly one implementation.
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **A chef who is handed the ingredients can cook whatever you bring; a chef who insists on growing their own vegetables can only ever make one dish.** Handing things in from outside is what makes the chef reusable — and what lets you hand them plastic vegetables to rehearse with.
@@ -8294,7 +8304,7 @@ Take the `OrderService` from §28 and describe, in plain words, what changes in 
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🟡 PART 5 — PRACTICE AND REFERENCE
 
@@ -8932,7 +8942,7 @@ Ready for more? Add:
 ---
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — the whole guide
 
@@ -8959,7 +8969,7 @@ Explain each of these to a colleague who does not write Python, in one or two se
 3. Which single Python feature, learned properly, prevents the largest number of bugs for a beginner?
 4. You have inherited a 900-line class with fourteen dependencies. What is your first move?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **It confuses the tool with the goal.** Python gives you modules, functions, dataclasses, and
@@ -9050,7 +9060,7 @@ three answers come easily, this guide has done its job.
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## 🎯 Final advice
 
@@ -9072,7 +9082,7 @@ Good Python OOP means:
 > The goal is not to write the most object-oriented code possible.
 > **The goal is to write code that is clear, safe, flexible, and easy to change.** 🚀
 
-<div align="center">
+<div align="center" markdown="1">
 
 ---
 
@@ -9082,7 +9092,7 @@ Good Python OOP means:
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 **Complete Object-Oriented Programming with Python**
 *By Gehan Fernando*
@@ -9090,3 +9100,9 @@ Good Python OOP means:
 *Read it once. Use it forever. Break things on purpose.*
 
 </div>
+
+---
+
+## Documentation links
+
+[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

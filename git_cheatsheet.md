@@ -243,3 +243,9 @@ git ls-remote --tags origin
 | `git notes add` | Adds non-commit metadata; use for local/review annotations. | `git notes add -m "Reviewed" HEAD` | Notes are separate refs and must be pushed explicitly. |
 | `git replace` | Locally substitutes object ancestry; use for advanced history experiments. | `git replace "$(git rev-parse HEAD~1)" "$(git rev-parse HEAD)"` | **⚠️** Expert-only; replacements affect local history views. |
 | `git maintenance run` | Performs configured repository maintenance; use for large active repos. | `git maintenance run --auto` | Modern alternative to manually scheduling common maintenance. |
+
+---
+
+## Documentation links
+
+[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

@@ -4648,3 +4648,9 @@ Nothing to clean up — read-only inventory command.
 [⬆️ Back to resource TOC](#resource-toc)
 
 ---
+
+---
+
+## Documentation links
+
+[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

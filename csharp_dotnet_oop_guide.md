@@ -1,5 +1,5 @@
 <!-- {% raw %} -->
-<div align="center">
+<div align="center" markdown="1">
 
 # 🏛️ Complete Object-Oriented Programming with C# and .NET
 
@@ -265,7 +265,7 @@ Everything here targets **.NET 8 or later** unless stated otherwise.
 ---
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🟢 PART 0 — START HERE
 
@@ -565,7 +565,7 @@ If all seven steps worked, your lab bench is ready for the rest of the guide.
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🔵 PART 1 — FOUNDATIONS
 
@@ -718,7 +718,7 @@ Imagine a **washing machine**.
 
 That is all four pillars, in one appliance. The rest of this chapter is the same idea in code.
 
-<div align="center">
+<div align="center" markdown="1">
 
 | 🛡️ | 🎭 | 🧬 | 🔀 |
 |:---:|:---:|:---:|:---:|
@@ -2688,7 +2688,7 @@ still deleted.
 > **Best practices.** Remember the layering this chapter draws: **`IDisposable` is a framework interface, not a runtime guarantee** — nothing forces anyone to call `Dispose()`, and `using` is a *language* feature that generates the call. So a type that holds a disposable must itself be disposable, and must be disposed by its owner. Implement the standard dispose pattern rather than inventing one.
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — Part 1: Foundations (Chapters 3–12)
 
@@ -2717,7 +2717,7 @@ still deleted.
 5. What does `IDisposable` actually guarantee?
 6. Name one thing `Total => Price * Qty` prevents that a stored `Total` property does not.
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **Because it has no validation, cannot be part of an interface, and cannot later gain a rule without breaking every caller.** A property with an auto-implemented body costs nothing today and leaves the door open to add a check tomorrow *without changing a single call site* — which is the entire reason properties exist in the language.
@@ -2741,7 +2741,7 @@ Describe a vending machine as an object: its data, its behaviour, its rules, and
 ---
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🟣 PART 2 — THE FOUR PILLARS, IN DEPTH
 
@@ -4653,7 +4653,7 @@ justification for each.
 > **Best practices.** The reliable division is **abstract classes model identity, interfaces model capability**. Prefer interfaces at boundaries, because they impose no inheritance relationship and are trivially mockable. When both would work, the interface is usually the more flexible choice — and you can always add an abstract base class implementing it later.
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — Part 2: The four pillars in depth (Chapters 13–18)
 
@@ -4682,7 +4682,7 @@ justification for each.
 5. You expose a collection as `IReadOnlyList<T>`. What have you *not* protected?
 6. A subclass throws `NotSupportedException` from an inherited method. Which principle does that break, and what is the symptom?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **An invariant is a rule that must be true of the object at all times** — a balance never below its minimum, an order never shipped twice. Keeping it inside the object means there is exactly **one** place it lives, so it cannot be skipped. Scatter the checks and you have as many chances to forget as you have call sites, and no way to prove the rule holds.
@@ -4706,7 +4706,7 @@ Model a coffee machine twice — once with inheritance (`EspressoMachine : Coffe
 ---
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🟠 PART 3 — BUILDING REAL TYPES
 
@@ -10456,7 +10456,7 @@ Build a tiny validation framework:
 > **Best practices.** Prefer source generators, compiled expressions, or plain interfaces to run-time reflection where you have the choice — you keep the flexibility and lose the cost. Cache reflection results (`MethodInfo`, `PropertyInfo`) rather than re-resolving them per call. And remember reflection can reach `private` members, which is the clearest proof that access modifiers are a **design** boundary and not a security one.
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — Part 3: Building real types (Chapters 19–34)
 
@@ -10486,7 +10486,7 @@ Build a tiny validation framework:
 5. Why is `.Result` on a `Task` dangerous?
 6. When is a `struct` the wrong choice despite “avoiding an allocation”?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **Nothing.** `string?` and `string` compile to exactly the same IL; the annotation is a *language* feature that drives compiler warnings, and the CLR performs no check. That is why it cannot validate untrusted input, and why a value arriving from deserialization or a non-annotated library can be null in a variable the compiler believes is not. It is the most misunderstood feature in modern C#.
@@ -10510,7 +10510,7 @@ Describe a `Money` type you would ship: which of `class`, `struct`, or `record`,
 ---
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🔴 PART 4 — PROFESSIONAL DESIGN
 
@@ -10980,7 +10980,7 @@ Then answer:
 SOLID is five rules that make code **easy to change**. That's the whole point. Not "elegant",
 not "clever" — **changeable**, because requirements always change.
 
-<div align="center">
+<div align="center" markdown="1">
 
 | **S** | **O** | **L** | **I** | **D** |
 |:---:|:---:|:---:|:---:|:---:|
@@ -12136,7 +12136,7 @@ here"* instead of describing five classes.
 > Do **not** memorise patterns and then hunt for places to use them. That produces terrible code.
 > Learn the **problem** each pattern solves. When you meet that problem, you'll recognise it.
 
-<div align="center">
+<div align="center" markdown="1">
 
 | 🏭 Creational | 🏗️ Structural | 🎭 Behavioural |
 |---|---|---|
@@ -14644,7 +14644,7 @@ That exercise teaches more than any tutorial.
 > **Best practices.** The most damaging one on the list is the **empty catch block**: it converts a loud failure into silent wrong behaviour, and the resulting bug report arrives months later with no stack trace. If you cannot handle an exception, let it propagate. Second most damaging is static mutable state, because it makes tests interfere and failures depend on ordering.
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — Part 4: Professional design (Chapters 35–44)
 
@@ -14673,7 +14673,7 @@ That exercise teaches more than any tutorial.
 5. What is the difference between an entity and a value object, and which should be a `record`?
 6. Your test asserts that `OrderService` called `_emailSender.Send(...)`. Is that a good test?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **A chef who is handed the ingredients can cook whatever you bring; a chef who insists on growing their own vegetables can only ever make one dish.** Handing things in from outside is what makes the chef reusable — and what lets you hand them plastic vegetables to rehearse with.
@@ -14697,7 +14697,7 @@ Take a class from your own code that constructs its own database or HTTP client.
 ---
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🟡 PART 5 — PRACTICE AND REFERENCE
 
@@ -15630,7 +15630,7 @@ That is the reward for a clean domain model.
 > **Best practices.** Notice where the concepts converge — an abstract base supplying shared behaviour, an interface enabling substitution, encapsulation behind a read-only collection, and a rule enforced in one method. That convergence is what professional design looks like. When it runs, extend it: adding a notification interface will teach you more than re-reading the chapter.
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 ## ✅ Checkpoint — Part 5: Practice and reference (Chapters 45–50)
 
@@ -15654,7 +15654,7 @@ That is the reward for a clean domain model.
 3. Someone says their design is “SOLID”. What would you ask to check?
 4. What is the one habit from this guide most worth keeping?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Sample answers</b></summary>
 
 1. **Try to add a new storage mechanism — a file, a database, a fake — and count the lines you change in the domain project.** If the answer is zero, the dependency rule is real and enforced by project references. If it is more than zero, the layering exists in the folder names only.
@@ -16654,7 +16654,7 @@ become part of your vocabulary rather than something you recognise when you see 
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 # 🎓 Final professor note
 
@@ -16684,7 +16684,7 @@ Now close the guide and go build something. 🚀
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 **Complete Object-Oriented Programming with C# and .NET**
 *By Gehan Fernando*
@@ -16693,3 +16693,9 @@ Now close the guide and go build something. 🚀
 
 </div>
 <!-- {% endraw %} -->
+
+---
+
+## Documentation links
+
+[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

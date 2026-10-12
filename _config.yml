@@ -73,3 +73,9 @@ defaults:
     values:
       title: "🗄️ The Complete SQL Guide — MSSQL & MySQL"
       description: "Learn SQL with a complete guide covering Microsoft SQL Server and MySQL, including beginner exercises and database examples."
+
+# Public documentation navigation and presentation.
+repository: gcfernando/document
+theme: jekyll-theme-primer
+projects_hub: https://gcfernando.github.io/gcfernando/projects/
+project_category: "Learn & reference"

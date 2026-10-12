@@ -287,3 +287,9 @@ podman push "$ECR_REGISTRY/api:1.0"
 | `podman info --debug` | Prints detailed runtime, store, and network diagnostics; use for support investigations. | `podman info --debug` | Review output before sharing because it can expose environment details. |
 | `podman container cleanup` | Cleans mounts/resources for stopped containers; use after an abnormal stop. | `podman container cleanup api` | Intended for stopped containers; inspect state first. |
 | `podman rm --depend` | Removes a container and dependent containers; use only for intentional teardown. | `podman rm --depend api` | **⚠️** Review dependencies before removal. |
+
+---
+
+## Documentation links
+
+[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

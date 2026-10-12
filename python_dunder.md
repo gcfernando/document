@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center" markdown="1">
 
 # 📖 The Complete Bible of Python Dunder Methods
 
@@ -914,7 +914,7 @@ That last row is a genuine gotcha: attaching a descriptor to an existing class a
 2. You define `__init__` and it returns `self`. What happens?
 3. When is `__init_subclass__` a better choice than a metaclass?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Answers</b></summary>
 
 1. Because `__new__` and `__init__` are separate steps. Python calls `__init__` on whatever object `__new__` returns — including a cached one — so the initialiser re-runs and overwrites the state. Guard it with a flag, or use a module-level value instead.
@@ -1328,7 +1328,7 @@ Think of it like converting a letter into Morse code before sending it over tele
 1. A class defines only `__repr__`. What does `print(obj)` show?
 2. Why does a list of your objects ignore `__str__`?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Answers</b></summary>
 
 1. The `__repr__` output. `str()` falls back to `__repr__` when `__str__` is absent — which is exactly why `__repr__` is the one to write first.
@@ -2179,7 +2179,7 @@ Then verify that `{Coordinate(1.0, 2.0): "home"}[Coordinate(1.0, 2.0)]` returns 
 1. You add `__eq__` to a class and `set()` suddenly raises `TypeError: unhashable type`. Why?
 2. Why should `__eq__` return `NotImplemented` rather than `False` for a foreign type?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Answers</b></summary>
 
 1. Defining `__eq__` sets `__hash__` to `None`, because Python cannot assume your equality and the default identity hash agree. Define `__hash__` explicitly over the same fields, or use `@dataclass(frozen=True)`.
@@ -2783,7 +2783,7 @@ print(c)   # Counter(13)
 1. Why does `2 * my_vector` need `__rmul__` when `my_vector * 2` only needs `__mul__`?
 2. What is the difference between returning `NotImplemented` and raising `NotImplementedError`?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Answers</b></summary>
 
 1. Python tries the left operand first. `int.__mul__(2, my_vector)` returns `NotImplemented` because `int` has never heard of your class, so Python then tries the reflected call `my_vector.__rmul__(2)`. Without it, the expression raises `TypeError`.
@@ -4223,7 +4223,7 @@ Define `__reversed__` explicitly when going backwards can be done more efficient
 2. What happens if `__getitem__` raises `KeyError` instead of `IndexError` for an out-of-range index?
 3. A class defines `__len__` returning 0 and nothing else. Is `if instance:` true or false?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Answers</b></summary>
 
 1. Because an iterator holds a *position*. If `__iter__` returns `self`, the position is shared: the object can be iterated only once, and nested or repeated loops silently consume each other's progress. Making `__iter__` a generator function gives each caller its own independent cursor.
@@ -4610,7 +4610,7 @@ asyncio.run(main())
 1. Your context manager's `__exit__` ends with `return True`. What have you just done?
 2. Why is a context manager better than a `try`/`finally` written by each caller?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Answers</b></summary>
 
 1. Silently swallowed every exception raised inside the `with` block. The code continues as if nothing failed, and the error disappears with no traceback. Return `None` unless you are deliberately suppressing a specific exception, and check the exception type before doing so.
@@ -5246,7 +5246,7 @@ This is how form-validation libraries and database ORMs (like Django's models) e
 1. Why does `self.value = x` inside `__setattr__` hang or crash?
 2. What is the difference between `__getattr__` and `__getattribute__`?
 
-<details>
+<details markdown="1">
 <summary><b>📝 Answers</b></summary>
 
 1. Because the assignment calls `__setattr__` again, which assigns again, forever — infinite recursion. Use `object.__setattr__(self, 'value', x)` or `super().__setattr__(...)` to reach the real machinery.
@@ -8831,7 +8831,7 @@ Come back to this guide whenever you need it. Bookmark the sections you use most
 
 ---
 
-<div align="center">
+<div align="center" markdown="1">
 
 **The Complete Bible of Python Dunder Methods**
 *By Gehan Fernando*
@@ -8839,3 +8839,9 @@ Come back to this guide whenever you need it. Bookmark the sections you use most
 *Read it once. Use it forever. Break things on purpose.*
 
 </div>
+
+---
+
+## Documentation links
+
+[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
