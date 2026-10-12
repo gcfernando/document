@@ -413,6 +413,8 @@ and version 1 had none.
 
 ---
 
+<a id="2--prerequisites-and-setup"></a>
+
 # 2. 🛠️ Prerequisites and setup
 
 **Level: ⭐ Beginner**
@@ -694,6 +696,8 @@ setter for the colour itself.
 
 ---
 
+<a id="4--the-four-pillars-of-oop"></a>
+
 # 4. 🏛️ The four pillars of OOP
 
 **Level: ⭐ Beginner**
@@ -847,6 +851,8 @@ that is the whole point of it.
 
 
 ---
+
+<a id="5--classes-and-objects"></a>
 
 # 5. 🏗️ Classes and objects
 
@@ -1336,6 +1342,8 @@ Then try to break it from the outside. You should not be able to.
 
 
 ---
+
+<a id="7--method-parameters-in-depth"></a>
 
 # 7. 🎛️ Method parameters in depth
 
@@ -2177,6 +2185,8 @@ That is a whole chapter: [Chapter 24](#24--equality-comparison-sorting-and-copyi
 
 ---
 
+<a id="11--value-types-vs-reference-types"></a>
+
 # 11. ⚖️ Value types vs reference types
 
 **Level: ⭐⭐ Intermediate**
@@ -2371,6 +2381,8 @@ for (int i = 0; i < 1_000_000; i++)
 
 
 ---
+
+<a id="12--object-lifecycle-and-resource-management"></a>
 
 # 12. ♻️ Object lifecycle and resource management
 
@@ -2738,6 +2750,8 @@ Describe a vending machine as an object: its data, its behaviour, its rules, and
 </div>
 
 ---
+
+<a id="13--encapsulation"></a>
 
 # 13. 🛡️ Encapsulation
 
@@ -4385,6 +4399,8 @@ Design a small notification system:
 
 ---
 
+<a id="18--abstract-classes-vs-interfaces"></a>
+
 # 18. ⚖️ Abstract classes vs interfaces
 
 **Level: ⭐⭐ Intermediate**
@@ -5091,6 +5107,8 @@ Then implement it, and make it **impossible** to create a `Topping` that isn't a
 
 
 ---
+
+<a id="20--enums-and-type-safe-choices"></a>
 
 # 20. 🎚️ Enums and type-safe choices
 
@@ -6393,6 +6411,8 @@ await foreach (Order order in StreamOrdersAsync())
 
 ---
 
+<a id="24--equality-comparison-sorting-and-copying"></a>
+
 # 24. ⚖️ Equality, comparison, sorting, and copying
 
 **Level: ⭐⭐ Intermediate**
@@ -7654,6 +7674,8 @@ Write a `TransactionDescriber` that takes an `object` and returns a description,
 
 
 ---
+
+<a id="27--nullable-reference-types-and-null-safety"></a>
 
 # 27. 🛡️ Nullable reference types and null safety
 
@@ -10185,6 +10207,8 @@ Build an async `WeatherService`:
 
 ---
 
+<a id="34--attributes-and-reflection"></a>
+
 # 34. 🏷️ Attributes and reflection
 
 **Level: ⭐⭐⭐ Advanced**
@@ -10707,6 +10731,8 @@ Read the error. That error is your architecture defending itself.
 
 
 ---
+
+<a id="36--naming-and-coding-conventions"></a>
 
 # 36. ✍️ Naming and coding conventions
 
@@ -13075,6 +13101,8 @@ Requirements:
 
 ---
 
+<a id="41--domain-modeling-and-architecture"></a>
+
 # 41. 🏛️ Domain modeling and architecture
 
 **Level: ⭐⭐⭐ Advanced**
@@ -14678,6 +14706,8 @@ Take a class from your own code that constructs its own database or HTTP client.
 </div>
 
 ---
+
+<a id="45--hands-on-projects"></a>
 
 # 45. 🛠️ Hands-on projects
 

@@ -3,7 +3,7 @@
 
 [![Docker](https://img.shields.io/badge/Docker-CLI-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docs.docker.com/reference/)
 [![Level](https://img.shields.io/badge/Level-Beginner%20%E2%86%92%20Expert-16A34A?style=for-the-badge)](#-command-catalog)
-[![Safety](https://img.shields.io/badge/Safety-Review%20destructive%20commands-F59E0B?style=for-the-badge)](#-safety-first)
+[![Safety](https://img.shields.io/badge/Safety-Review%20destructive%20commands-F59E0B?style=for-the-badge)](#-start-safely)
 [![Reference](https://img.shields.io/badge/Reference-Command%20catalog-0EA5E9?style=for-the-badge)](#-command-catalog)
 
 > **Scope:** Docker Engine CLI, Compose, Buildx, registries, security, and Swarm. Use the [official Docker reference](https://docs.docker.com/reference/) to check syntax against your installed version; examples here were not executed against your own Docker Engine. Docker Desktop bundles the client and Engine on Windows/macOS; Linux normally installs Engine separately.

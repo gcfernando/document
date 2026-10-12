@@ -1,7 +1,7 @@
 # 🌿 Git Command Cheat Sheet
 
 [![Git](https://img.shields.io/badge/Git-Version%20control-F05032?style=for-the-badge&logo=git&logoColor=white)](https://git-scm.com/docs)
-[![Safety](https://img.shields.io/badge/Safety-Recover%20before%20resetting-F59E0B?style=for-the-badge)](#-safety)
+[![Safety](https://img.shields.io/badge/Safety-Recover%20before%20resetting-F59E0B?style=for-the-badge)](#-collaboration-and-recovery)
 [![Reference](https://img.shields.io/badge/Reference-Command%20catalog-0EA5E9?style=for-the-badge)](#-everyday-command-cards)
 
 > Official command reference: [git-scm.com/docs](https://git-scm.com/docs). Git has a working tree, staging area (index), commits, refs, and remotes. Prefer `git switch`/`git restore` over legacy `git checkout` for everyday branch/file operations.

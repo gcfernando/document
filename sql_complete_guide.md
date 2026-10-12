@@ -456,6 +456,8 @@ A spreadsheet breaks the moment your shop becomes real. Here is exactly where it
 
 > 🌍 **Analogy for a foreign key:** In a school, the class register does not repeat every student's home address. It writes the **student number**, and the address lives once in the student file. If the family moves, you update **one** place. That student number in the register is a foreign key.
 
+<a id="14--what-relational-means"></a>
+
 ## 1.4 🏛️ What "relational" means
 
 The **R** in RDBMS means *relational*. It simply means: **split your data into small, focused tables and connect them by keys**, instead of one giant table that repeats itself.
@@ -487,6 +489,8 @@ Look at row 1003. The email has a typo. Now Amara exists **twice** in your syste
 | 1003 | 7 | 2026-03-09 |
 
 Now the email exists **once**. Fix it once, and all three orders are correct. That is the entire point of a relational database, and everything in [Chapter 51](#51-normalization-1nf-to-bcnf) is this same idea, explained step by step.
+
+<a id="15--types-of-databases-so-you-know-what-you-are-not-learning"></a>
 
 ## 1.5 🗂️ Types of databases (so you know what you are *not* learning)
 
@@ -5261,6 +5265,8 @@ WHERE customer_code REGEXP '^[0-9]+$';       -- only genuinely numeric rows
 
 > [!TIP]
 > 💡 **`TRY_CAST` is a data-cleaning superpower in MSSQL.** After loading a CSV file, you can find every badly formatted value in one query, instead of discovering them one error at a time.
+
+<a id="233--implicit-conversion--the-silent-performance-killer"></a>
 
 ## 23.3 ⚠️ Implicit conversion — the silent performance killer
 
@@ -13577,6 +13583,8 @@ ALTER ROLE app_role ADD MEMBER shop_app;
 
 > [!TIP]
 > 💡 **The single most valuable security pattern: grant `EXECUTE` on stored procedures and nothing else.** The application cannot run arbitrary SQL, cannot read tables it was not meant to, and cannot be exploited into a `DROP TABLE` — because it has no table permissions at all. It works through **ownership chaining**: when a procedure and the tables it touches have the same owner, SQL Server checks permission on the procedure only. That is why many large companies require procedure-only access.
+
+<a id="546--row-level-security--filtering-rows-per-user-automatically"></a>
 
 ## 54.6 🛡️ Row-Level Security — filtering rows per user, automatically
 

@@ -3488,6 +3488,8 @@ class InMemoryRepository(Generic[TEntity]):
 
 > 🎯 **When to use a generic repository:** when you need the *same* storage logic (add / get / list) for many entity types without copy-pasting it per type.
 
+<a id="166--typevar-constraints-and-bounds"></a>
+
 ## 16.6 🎚️ TypeVar constraints and bounds
 
 A plain `TypeVar` accepts *any* type. A **bound** and a **constraint** are the two ways to narrow that, and they mean different things.
@@ -4078,6 +4080,8 @@ print(dict(d))           # {'ghost': []}
 1
 {'ghost': []}
 ```
+
+<a id="178--expose-collections-safely"></a>
 
 ## 17.8 🛡️ Expose collections safely
 
@@ -5248,6 +5252,8 @@ print(square(5))
 > [!IMPORTANT]
 > **Professional rule:** Do not create classes just to organize functions. A *module* may already be the right container.
 
+<a id="226--mutable-class-attribute-warning"></a>
+
 ## 22.6 ⚠️ Mutable class attribute warning
 
 > [!WARNING]
@@ -5854,6 +5860,8 @@ total = Money(10, "USD") + Money(15, "USD")
 
 > 🎯 **When to use:** when `+`, `-`, `==` etc. have a *natural, obvious* meaning for your type (money, vectors, dates). Don't overload operators to do surprising things.
 
+<a id="253--string-representation"></a>
+
 ## 25.3 🖊️ String representation
 
 ```python
@@ -6057,6 +6065,8 @@ dependencies = []
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 ```
+
+<a id="265--recommended-structure"></a>
 
 ## 26.5 🏗️ Recommended structure
 
@@ -7443,6 +7453,8 @@ ValueError: Quantity must be positive.
 
 Python commonly uses `pytest` or the built-in `unittest` module.
 
+<a id="311--create-a-test-project"></a>
+
 ## 31.1 🏗️ Create a test project
 
 ```bash
@@ -8380,6 +8392,8 @@ Build a console app with:
 - 🧬 Inheritance
 - 🧩 Composition
 - 🧪 Unit tests
+
+<a id="352--create-project"></a>
 
 ## 35.2 🏗️ Create project
 
