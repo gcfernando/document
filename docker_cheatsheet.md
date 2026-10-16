@@ -1,3 +1,8 @@
+---
+title: "Docker Command Cheat Sheet: Containers, Images and Compose"
+description: "Find Docker commands for images, containers, Dockerfiles, Compose, networking and troubleshooting, with explanations and practical examples."
+---
+
 <!-- {% raw %} -->
 # 🐳 Docker Command Cheat Sheet
 

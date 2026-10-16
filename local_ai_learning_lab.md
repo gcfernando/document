@@ -1,3 +1,8 @@
+---
+title: "Local AI Chat App with Ollama and Streamlit on Windows"
+description: "Build a local Python chat app on Windows with Ollama and Streamlit. Follow model setup, context configuration, verification and troubleshooting steps."
+---
+
 # Local AI Learning Lab: your first local chat app
 
 **🏷️ Difficulty:** 🟢 Beginner
@@ -37,7 +42,7 @@ This workshop deliberately uses the interpreter selected by `python`, without a 
 
 ---
 
-# 1. Prepare your workspace
+## 1. Prepare your workspace
 
 ```text
 Windows
@@ -72,9 +77,11 @@ additional physical disk space consumed by each profile.
 
 ---
 
-## Before you start
+### Before you start
 
-### 2.1 Confirm PowerShell and your working folder
+<a id="21-confirm-powershell-and-your-working-folder"></a>
+
+#### 1.1 Confirm PowerShell and your working folder
 
 Open **PowerShell**. Commands in this guide are PowerShell commands unless stated otherwise.
 
@@ -92,7 +99,9 @@ Get-Location
 
 **Verify:** the final command prints a path ending in `LocalAI-Learning-Lab`.
 
-### 2.2 Check Python
+<a id="22-check-python"></a>
+
+#### 1.2 Check Python
 
 ```powershell
 python --version
@@ -108,7 +117,9 @@ python -c "import sys; print(sys.executable)"
 3. Run both commands again.
 4. In VS Code, select this same interpreter with **Python: Select Interpreter**.
 
-### 2.3 Check machine resources before choosing a larger context
+<a id="23-check-machine-resources-before-choosing-a-larger-context"></a>
+
+#### 1.3 Check machine resources before choosing a larger context
 
 This does **not** decide a context size for you. It gives you information for the later test.
 
@@ -131,11 +142,13 @@ Get-CimInstance Win32_VideoController | Select-Object Name, AdapterRAM
 
 ---
 
-# 2. Install and check Ollama
+## 2. Install and check Ollama
 
 Ollama's normal Windows installer installs for your user account, adds the CLI to your user PATH, runs the application in the background, and serves the local API at `http://localhost:11434`.
 
-## 3.1 Check whether Ollama already exists
+<a id="31-check-whether-ollama-already-exists"></a>
+
+### 2.1 Check whether Ollama already exists
 
 ```powershell
 ollama --version
@@ -145,7 +158,9 @@ ollama --version
 
 **If PowerShell says that `ollama` is not recognized:** it is not installed or this terminal has an old PATH. Continue to the next step.
 
-## 3.2 Install with the official Windows installer
+<a id="32-install-with-the-official-windows-installer"></a>
+
+### 2.2 Install with the official Windows installer
 
 1. Open [Ollama for Windows](https://ollama.com/download/windows).
 2. Download and run the official `OllamaSetup.exe`.
@@ -155,11 +170,15 @@ This workshop recommends the GUI installer. It is the official, simplest Windows
 
 > 💡 **Why not use `ollama serve` now?** The normal Windows application starts its own background server. `ollama serve` is mainly for an explicit/manual server process or standalone CLI setup.
 
-## 3.3 Close and reopen PowerShell
+<a id="33-close-and-reopen-powershell"></a>
+
+### 2.3 Close and reopen PowerShell
 
 Close the terminal window and open a **new** PowerShell. A terminal already open during installation may not see the PATH change.
 
-## 3.4 Verify the installation and local server
+<a id="34-verify-the-installation-and-local-server"></a>
+
+### 2.4 Verify the installation and local server
 
 ```powershell
 ollama --version
@@ -180,7 +199,7 @@ Invoke-RestMethod http://localhost:11434/api/tags
 3. Wait a few seconds and retry all three commands.
 4. If it still fails, see [Troubleshooting](#troubleshooting-the-essential-path).
 
-### ✅ Checkpoint — Ollama ready
+#### ✅ Checkpoint — Ollama ready
 
 Do not continue until these both work:
 
@@ -193,9 +212,11 @@ ollama ls
 
 ---
 
-# 3. Download and test the base model
+## 3. Download and test the base model
 
-## 5.1 Select the workshop model
+<a id="51-select-the-workshop-model"></a>
+
+### 3.1 Select the workshop model
 
 This workshop uses the model selected for this project:
 
@@ -205,7 +226,9 @@ qwen3.5:9b-q4_K_M
 
 Find model details and current package information in the official [Ollama model library](https://ollama.com/library/qwen3.5:9b-q4_K_M). Do not substitute a similar-looking name unless you deliberately want a different model.
 
-## 5.2 Download it
+<a id="52-download-it"></a>
+
+### 3.2 Download it
 
 **Ollama must be running.**
 
@@ -223,7 +246,9 @@ ollama pull qwen3.5:9b-q4_K_M
 4. Retry the same command; Ollama can reuse already downloaded layers.
 5. Check `server.log` at `%LOCALAPPDATA%\Ollama` if the failure persists.
 
-## 5.3 Verify the download
+<a id="53-verify-the-download"></a>
+
+### 3.3 Verify the download
 
 ```powershell
 ollama ls
@@ -231,7 +256,9 @@ ollama ls
 
 **Expected:** a row named `qwen3.5:9b-q4_K_M`.
 
-## 5.4 Run the base model before creating any profile
+<a id="54-run-the-base-model-before-creating-any-profile"></a>
+
+### 3.4 Run the base model before creating any profile
 
 ```powershell
 ollama run qwen3.5:9b-q4_K_M
@@ -245,7 +272,7 @@ Reply with exactly: Base model is working.
 
 **Expected:** Qwen produces that sentence or an equivalent answer.
 
-### Deliberate failure — wrong model name
+#### Deliberate failure — wrong model name
 
 In a separate PowerShell, try a name that does not exist:
 
@@ -257,7 +284,9 @@ ollama run qwen35-9b-32k
 
 Return to the base-model chat after this test.
 
-## 5.5 Exit chat vs. stop the loaded model
+<a id="55-exit-chat-vs-stop-the-loaded-model"></a>
+
+### 3.5 Exit chat vs. stop the loaded model
 
 In the base-model chat:
 
@@ -282,7 +311,7 @@ ollama ps
 
 **Expected:** after the stop command, the model no longer appears in `ollama ps`.
 
-### ✅ Checkpoint — base model ready
+#### ✅ Checkpoint — base model ready
 
 You can now:
 
@@ -306,15 +335,15 @@ to unload it.
 
 ---
 
-# 4. Create the profile used by this app
+## 4. Create the profile used by this app
 
 A profile is optional for Ollama in general, but **required for the bundled app's default model name**. A profile saves runtime settings; it does not train a model. This route uses `qwen35-9b-32k`. If the computer cannot run it responsively, use the separate 16K profile below rather than changing a 32K-named profile to 16K.
 
-## 4.1 What is a Modelfile?
+### 4.1 What is a Modelfile?
 
 A **Modelfile** is a small blueprint that tells Ollama how to create a customized model entry. Here, it says: “use the existing Qwen base model and run it with a 32,768-token context.”
 
-## 4.2 Confirm the project folder and prevent a path mistake
+### 4.2 Confirm the project folder and prevent a path mistake
 
 ```powershell
 Get-Location
@@ -327,7 +356,7 @@ Get-ChildItem
 Set-Location "$HOME\LocalAI-Learning-Lab"
 ```
 
-## 4.3 Create `Modelfile.32k` in VS Code
+### 4.3 Create `Modelfile.32k` in VS Code
 
 1. Open the lab folder in VS Code.
 2. Create a file named exactly:
@@ -343,7 +372,7 @@ FROM qwen3.5:9b-q4_K_M
 PARAMETER num_ctx 32768
 ```
 
-## 4.4 Or create it from PowerShell
+### 4.4 Or create it from PowerShell
 
 Run this only from the lab folder:
 
@@ -354,7 +383,7 @@ PARAMETER num_ctx 32768
 '@ | Set-Content -Encoding ascii .\Modelfile.32k
 ```
 
-## 4.5 Verify the Modelfile before using it
+### 4.5 Verify the Modelfile before using it
 
 ```powershell
 Get-Content .\Modelfile.32k
@@ -370,7 +399,7 @@ PARAMETER num_ctx 32768
 
 **Expected filename:** exactly `Modelfile.32k`.
 
-### Deliberate failure — accidental `.txt` extension
+#### Deliberate failure — accidental `.txt` extension
 
 If the second command shows `Modelfile.32k.txt`, Windows/your editor added an extension. Rename it:
 
@@ -385,7 +414,7 @@ If both files exist, inspect both with `Get-Content`, keep the correct one, and 
 Remove-Item -LiteralPath .\Modelfile.32k.txt
 ```
 
-## 4.6 Create the profile
+### 4.6 Create the profile
 
 **Ollama must be running and the base model must exist.**
 
@@ -402,7 +431,7 @@ ollama create qwen35-9b-32k -f .\Modelfile.32k
 3. Run `ollama ls` and confirm `qwen3.5:9b-q4_K_M` exists.
 4. Run `ollama ls` to confirm the server is running.
 
-## 4.7 Verify the profile configuration
+### 4.7 Verify the profile configuration
 
 ```powershell
 ollama ls
@@ -418,7 +447,7 @@ qwen35-9b-32k
 
 `ollama show --modelfile` prints the generated definition. Look for `PARAMETER num_ctx 32768` or an equivalent generated configuration. This verifies what Ollama saved.
 
-## 4.8 Run and prove the 32K context
+### 4.8 Run and prove the 32K context
 
 In the first PowerShell:
 
@@ -455,7 +484,7 @@ ollama ps
 
 **Expected:** the custom profile no longer appears in `ollama ps`.
 
-## Resource-limited alternative: a separate 16K profile
+### Resource-limited alternative: a separate 16K profile
 
 In the lab folder, save `Modelfile.16k` with these two lines:
 
@@ -480,7 +509,7 @@ While this profile runs, inspect `ollama ps` in another PowerShell; expect `CONT
 
 ---
 
-# 5. Install packages for this app
+## 5. Install packages for this app
 
 Return to the lab folder:
 
@@ -551,11 +580,11 @@ pip show ollama
 
 ---
 
-# 6. Create the Streamlit local chat app
+## 6. Create the Streamlit local chat app
 
 The app uses the verified 32K profile. Complete the profile checkpoint before continuing.
 
-## 6.1 Create `main.py`
+### 6.1 Create `main.py`
 
 Create `main.py` in VS Code and paste this complete teaching application:
 
@@ -751,7 +780,7 @@ if __name__ == "__main__":
 
 > 💡 **Why does the app use `keep_alive="10m"`?** It keeps this model loaded for up to ten minutes after a request to make nearby requests faster. Stop it explicitly with `ollama stop qwen35-9b-32k` when you need to free memory.
 
-## 6.2 Validate before starting the app
+### 6.2 Validate before starting the app
 
 ```powershell
 python -m py_compile .\main.py
@@ -767,7 +796,7 @@ ollama ls
 
 ---
 
-### What the app remembers and how it fails
+#### What the app remembers and how it fails
 
 `st.session_state` stores this browser session's completed messages. It is not a database or durable model memory. Reloading the browser or losing its WebSocket resets the session; see [Streamlit Session State](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state). Clear Conversation removes the supplied chat history.
 
@@ -775,7 +804,7 @@ The app limits message size and removes old completed turns. When it removes the
 
 Requests have a timeout and no automatic retry. A handled connection, Ollama, or timeout failure removes the unfinished user turn from stored history so a later submission does not repeatedly send it. Other unexpected errors remain visible in Streamlit's normal error output rather than being mistaken for a successful reply. Streaming may already have displayed partial text before an error; that partial text is not stored as a successful answer. Check the server, then submit again deliberately. Do not use this demo for shared/public access without a separate security and privacy design.
 
-## 🏋️ Exercise — make one small, deliberate change
+### 🏋️ Exercise — make one small, deliberate change
 
 Change one small thing in `main.py`, for example:
 
@@ -793,9 +822,9 @@ python -c "from ollama import Client, ResponseError; import streamlit; print('Im
 
 ---
 
-# 7. Run and test Streamlit
+## 7. Run and test Streamlit
 
-## 7.1 Start the application correctly
+### 7.1 Start the application correctly
 
 **Wrong:**
 
@@ -815,7 +844,7 @@ python -m streamlit run .\main.py
 
 > 💡 **Why this command?** `python -m streamlit` guarantees that Streamlit comes from the exact interpreter used for `python -m pip install`.
 
-## 7.2 Test the application
+### 7.2 Test the application
 
 | Test | Do this | Expected |
 |---|---|---|
@@ -826,7 +855,7 @@ python -m streamlit run .\main.py
 
 `Clear Conversation` clears only Streamlit's browser session history. It does not delete the model, profile, or Ollama files.
 
-## 7.3 Stop the application and model
+### 7.3 Stop the application and model
 
 1. Return to the terminal running Streamlit.
 2. Press `Ctrl+C`.
@@ -846,7 +875,7 @@ ollama ps
 
 ---
 
-# 8. Verify, stop, and resume
+## 8. Verify, stop, and resume
 
 Run these one at a time after completing the workshop:
 
@@ -911,7 +940,7 @@ python -m streamlit run .\main.py
 
 ---
 
-## Resume tomorrow
+### Resume tomorrow
 
 Open PowerShell, return to `$HOME\LocalAI-Learning-Lab`, and start the Ollama Windows app if `ollama ls` cannot connect. If you chose 16K, set `LOCAL_AI_MODEL` again in this shell. Then run `python -m streamlit run .\main.py`. You do not need to pull the model, create the profile, or reinstall packages again. This demo does not restore yesterday's conversation.
 
@@ -920,9 +949,9 @@ Open PowerShell, return to `$HOME\LocalAI-Learning-Lab`, and start the Ollama Wi
 
 ---
 
-# Troubleshooting the essential path
+## Troubleshooting the essential path
 
-## `ollama` is not recognized
+### `ollama` is not recognized
 
 Close and reopen PowerShell. If it remains unavailable, reinstall using the official Windows installer and verify:
 
@@ -930,7 +959,7 @@ Close and reopen PowerShell. If it remains unavailable, reinstall using the offi
 ollama --version
 ```
 
-## Ollama cannot connect / API request fails
+### Ollama cannot connect / API request fails
 
 ```powershell
 ollama ls
@@ -939,7 +968,7 @@ Invoke-RestMethod http://localhost:11434/api/tags
 
 Start Ollama from the Start menu if both fail. If the app appears to be running but failures continue, quit it from the tray menu, start it again, and retry. Inspect `%LOCALAPPDATA%\Ollama\server.log` for server errors.
 
-## A profile is missing
+### A profile is missing
 
 ```powershell
 ollama ls
@@ -951,7 +980,7 @@ ollama create qwen35-9b-32k -f .\Modelfile.32k
 
 The first command tells you whether the profile exists. The next commands prove you are in the folder containing the correct Modelfile.
 
-## `CONTEXT` is not what you expected
+### `CONTEXT` is not what you expected
 
 Do not infer context from the profile name. Run the profile, keep it loaded, then inspect:
 
@@ -967,7 +996,7 @@ ollama show --modelfile qwen35-9b-32k
 
 Correct `Modelfile.32k`, recreate the named profile with `ollama create`, then repeat the live test.
 
-## Python package was installed but cannot be imported
+### Python package was installed but cannot be imported
 
 ```powershell
 python -c "import sys; print(sys.executable)"
@@ -977,7 +1006,7 @@ python -m pip install --upgrade ollama streamlit
 
 The first two commands must point to the same Python installation.
 
-## `missing ScriptRunContext`
+### `missing ScriptRunContext`
 
 You started the app with `python main.py`. Stop it and use:
 
@@ -985,7 +1014,7 @@ You started the app with `python main.py`. Stop it and use:
 python -m streamlit run .\main.py
 ```
 
-## The computer is slow
+### The computer is slow
 
 ```powershell
 ollama ps
@@ -999,7 +1028,7 @@ ollama stop qwen35-9b-32k
 
 Use 32K for normal work. Test 64K only when a measured workload requires it. Update GPU drivers if the model unexpectedly runs on CPU and consult Ollama's Windows/GPU documentation for supported hardware.
 
-## 🧪 Try it yourself — deliberately break it, then fix it
+### 🧪 Try it yourself — deliberately break it, then fix it
 
 Quit Ollama from the system-tray menu (or stop it another way you control), then run:
 
@@ -1024,7 +1053,7 @@ Invoke-RestMethod http://localhost:11434/api/tags
 
 ---
 
-# What to learn next
+## What to learn next
 
 For the next available learning routes, use the [Knowledge Base study map](README.md#-choose-your-starting-path). MCP is an optional way to connect capabilities; persistent memory is optional when retention is actually required. Neither is a prerequisite for this chat app.
 
@@ -1035,16 +1064,18 @@ This lab does not configure coding assistants or promise that they use your loca
 
 <a id="lab-reference"></a>
 
-# Optional operations and reference
+## Optional operations and reference
 
 Stop the essential path at the working browser app. Everything below is optional. Removal exercises change installed entries; uninstall removes the runtime/data. Before returning to the app, recheck the server, recreate the app's selected profile if removed, and repeat the package/import/model checks. Run deletion only when you intentionally want that specific data removed.
 
 
 ---
 
-## A. Context and profile reference
+### A. Context and profile reference
 
-## 6.1 What is context?
+<a id="61-what-is-context"></a>
+
+#### A.1 What is context?
 
 **Context** is the model's temporary working space for:
 
@@ -1065,7 +1096,9 @@ It is not permanent memory and it does not make the model more intelligent.
 
 “94K” is **not** the conventional value next to 96K. Use `96K` only when you actually mean 98,304 tokens. An unusual value may be a hardware-limited calculation, but should not be chosen merely because it looks large.
 
-## 6.2 Do I really need an Ollama profile?
+<a id="62-do-i-really-need-an-ollama-profile"></a>
+
+#### A.2 Do I really need an Ollama profile?
 
 **No.** You can run the downloaded base model directly:
 
@@ -1082,7 +1115,9 @@ A profile is useful when you want a saved, reusable configuration:
 
 It is unnecessary when your application/API always supplies the required runtime options and you do not need a persistent reusable setting. Ollama can also set context at runtime through its app, interactive `/set parameter num_ctx ...`, API options, or the server default. This lab uses a profile to make the setting visible, repeatable, and easy to verify.
 
-## 6.3 The four different context values
+<a id="63-the-four-different-context-values"></a>
+
+#### A.3 The four different context values
 
 The official Ollama library lists **Qwen3.5 9B** with a **256K-token maximum context**: `262,144` tokens. This is a model capability, not a recommended starting setting.
 
@@ -1095,7 +1130,9 @@ Workshop profile                          = 32,768 tokens (32K)
 
 > 💡 **Why this matters:** a model may support 256K while your machine should run 32K, and your normal chat may only need 32K. This workshop starts at 32K because it is a practical, measurable baseline with less memory pressure. Increase only for a real workload that needs more working space.
 
-## 6.4 What happens without a profile?
+<a id="64-what-happens-without-a-profile"></a>
+
+#### A.4 What happens without a profile?
 
 Yes, Ollama chooses a default context when you run the base model without a custom profile:
 
@@ -1150,7 +1187,9 @@ ollama stop qwen3.5:9b-q4_K_M
 
 > 💡 **Why inspect with `ollama ps`?** It proves the allocated context and shows whether the model runs on GPU, CPU, or both. A configuration file alone does not prove the running process used it.
 
-## 6.5 Why start with 32K?
+<a id="65-why-start-with-32k"></a>
+
+#### A.5 Why start with 32K?
 
 `32K` is the **starting profile for this workshop**, not a universal recommendation.
 
@@ -1162,7 +1201,9 @@ ollama stop qwen3.5:9b-q4_K_M
 
 Ollama's current documentation says its default context can vary with available VRAM and that large-context work such as agents, web search, and coding tools should use at least 64,000 tokens. That is a workload guideline, not a reason to make 64K the default for every chat.
 
-## 6.6 How to choose a context size
+<a id="66-how-to-choose-a-context-size"></a>
+
+#### A.6 How to choose a context size
 
 Use this as an **estimation method**, not an exact hardware formula:
 
@@ -1177,7 +1218,7 @@ required context =
 + safety margin
 ```
 
-### Example: normal local chat
+##### Example: normal local chat
 
 ```text
 System prompt                 2K
@@ -1192,7 +1233,7 @@ Estimated need               28K
 
 Choose **32K**.
 
-### Example: coding-agent workload
+##### Example: coding-agent workload
 
 ```text
 System and tool definitions   8K
@@ -1224,11 +1265,11 @@ The selected Qwen3.5 9B model has a 256K maximum, but that does not mean 256K is
 
 ---
 
-## B. Optional base-model/profile comparison
+### B. Optional base-model/profile comparison
 
 This experiment gives evidence instead of relying on a written claim.
 
-## Experiment A — base model
+#### Experiment A — base model
 
 ```powershell
 ollama run qwen3.5:9b-q4_K_M
@@ -1246,7 +1287,7 @@ Record the result, then exit `/bye` and unload:
 ollama stop qwen3.5:9b-q4_K_M
 ```
 
-## Experiment B — 32K profile
+#### Experiment B — 32K profile
 
 ```powershell
 ollama run qwen35-9b-32k
@@ -1264,7 +1305,7 @@ Record the result, then exit `/bye` and unload:
 ollama stop qwen35-9b-32k
 ```
 
-## Compare your observations
+#### Compare your observations
 
 | Test | Base model | `qwen35-9b-32k` profile |
 |---|---|---|
@@ -1281,7 +1322,7 @@ ollama stop qwen35-9b-32k
 
 ---
 
-## C. Optional 64K profile
+### C. Optional 64K profile
 
 Create a separate profile rather than overwriting 32K. Clear names make comparison and cleanup safe.
 
@@ -1318,7 +1359,7 @@ ollama stop qwen35-9b-64k
 
 > 💡 **When should you move from 32K to 64K?** When your measured estimate and real workload need it: for example, instructions + repository context + tool output + conversation + expected answer exceed 32K. If normal chat works well at 32K, do not change it.
 
-### ✅ Checkpoint — 32K vs. 64K in practice
+#### ✅ Checkpoint — 32K vs. 64K in practice
 
 ```powershell
 ollama run qwen35-9b-32k
@@ -1341,9 +1382,9 @@ ollama stop qwen35-9b-64k
 
 ---
 
-## D. Ollama lifecycle reference
+### D. Ollama lifecycle reference
 
-## What normally happens on Windows
+#### What normally happens on Windows
 
 The standard Windows app normally runs in the background after installation. You usually **do not** need to start a server manually before running `ollama pull`, `ollama run`, or the Streamlit app.
 
@@ -1356,7 +1397,9 @@ The standard Windows app normally runs in the background after installation. You
 
 Ollama normally keeps a recently used model in memory for a short time (by default, five minutes). Therefore, leaving chat with `/bye` does not guarantee the model is unloaded.
 
-## 4.1 Check that the server is running
+<a id="41-check-that-the-server-is-running"></a>
+
+#### D.1 Check that the server is running
 
 ```powershell
 ollama ls
@@ -1365,7 +1408,9 @@ Invoke-RestMethod http://localhost:11434/api/tags
 
 **Expected:** both succeed. `ollama ls` is the everyday check; the API call proves that the local server answers HTTP requests.
 
-## 4.2 Start it when it is not running
+<a id="42-start-it-when-it-is-not-running"></a>
+
+#### D.2 Start it when it is not running
 
 **Recommended normal Windows method:** open **Ollama** from the Start menu, then repeat the checks above.
 
@@ -1377,7 +1422,9 @@ ollama serve
 
 Keep that window open. A running server prints logs and keeps the terminal occupied. Open a **second** PowerShell for `ollama ls`, `ollama pull`, and other commands.
 
-## 4.3 Stop the Ollama server/application
+<a id="43-stop-the-ollama-serverapplication"></a>
+
+#### D.3 Stop the Ollama server/application
 
 For the normal Windows app:
 
@@ -1396,7 +1443,7 @@ For a manually started `ollama serve`, press `Ctrl+C` in the window that runs it
 > [!NOTE]
 > Stopping the server is different from removing models. Your model files remain installed unless you explicitly run `ollama rm`.
 
-### ✅ Checkpoint — lifecycle control verified
+##### ✅ Checkpoint — lifecycle control verified
 
 Quit Ollama from the tray menu, confirm `ollama ls` fails to connect, then restart Ollama from the Start menu and confirm it succeeds again:
 
@@ -1410,11 +1457,13 @@ ollama ls
 
 ---
 
-## E. Deliberate model removal and reset
+### E. Deliberate model removal and reset
 
 Run `ollama ls` before and after every removal. `ollama rm` removes the **named entry**, not every similarly named model.
 
-## 10.1 Reset only the loaded state
+<a id="101-reset-only-the-loaded-state"></a>
+
+#### E.1 Reset only the loaded state
 
 This keeps all downloaded models and profiles.
 
@@ -1428,7 +1477,9 @@ ollama ps
 
 If a named model is not loaded, `ollama stop` can report that it is not found; that is fine. `ollama ps` is the final proof that no model remains loaded.
 
-## 10.2 Remove only custom profiles
+<a id="102-remove-only-custom-profiles"></a>
+
+#### E.2 Remove only custom profiles
 
 This preserves the base download:
 
@@ -1441,7 +1492,9 @@ ollama ls
 
 Only run the command for a profile that actually exists. Afterward, `ollama ls` should still show `qwen3.5:9b-q4_K_M` and should not show the removed profile.
 
-## 10.3 Experiment — remove the base-model entry while keeping the profile
+<a id="103-experiment--remove-the-base-model-entry-while-keeping-the-profile"></a>
+
+#### E.3 Experiment — remove the base-model entry while keeping the profile
 
 > 💡 **Why this matters:** model/profile names are entries (manifests), while Ollama can share model layers between entries. This experiment proves why users must use `ollama ls` rather than guessing what is still available.
 
@@ -1496,7 +1549,7 @@ ollama stop qwen35-9b-32k
 
 The profile has its own manifest that still references the shared layers, so removing the base entry does not necessarily delete those shared layers immediately. Ollama manages referenced and unreferenced blobs itself. **Do not manually delete individual blobs** inside `.ollama`.
 
-### Restore the normal workshop state
+##### Restore the normal workshop state
 
 Pull the base entry again:
 
@@ -1509,7 +1562,9 @@ ollama ls
 
 **If it fails:** do not delete blobs. Confirm `ollama ls` can contact the server, then rerun the `ollama pull` command. If the profile is missing too, recreate it from `Modelfile.32k` with `ollama create qwen35-9b-32k -f .\Modelfile.32k`.
 
-## 10.4 Remove the base model too
+<a id="104-remove-the-base-model-too"></a>
+
+#### E.4 Remove the base model too
 
 First remove every profile based on it that you no longer need, then remove the base entry:
 
@@ -1533,7 +1588,7 @@ The profile entries depend on the same underlying model layers. Remove profiles 
 ollama run qwen35-9b-32k
 ```
 
-### ✅ Checkpoint — removal and reset verified
+##### ✅ Checkpoint — removal and reset verified
 
 ```powershell
 ollama ls
@@ -1545,7 +1600,7 @@ ollama ls
 
 ---
 
-## F. Deliberate uninstall
+### F. Deliberate uninstall
 
 Use this section only for a deliberate full reset or removal. It distinguishes uninstalling the application from removing models and data.
 
@@ -1555,7 +1610,9 @@ Use this section only for a deliberate full reset or removal. It distinguishes u
 | Windows **Uninstall** | Ollama application/binaries |
 | Full cleanup below | Application files, model/configuration data, logs, and chosen model location |
 
-## 11.1 Normal uninstall
+<a id="111-normal-uninstall"></a>
+
+#### F.1 Normal uninstall
 
 1. Stop loaded models with `ollama ps` and `ollama stop <model>`.
 2. Quit Ollama from the system-tray menu.
@@ -1564,11 +1621,13 @@ Use this section only for a deliberate full reset or removal. It distinguishes u
 
 **Important:** if `OLLAMA_MODELS` was configured to store models elsewhere, the installer does not remove that separate location.
 
-## 11.2 Full cleanup/reset
+<a id="112-full-cleanupreset"></a>
+
+#### F.2 Full cleanup/reset
 
 This permanently deletes Ollama models, configuration, logs, and files in the listed locations. Back up anything you need first.
 
-### A. Check whether a custom model location was used
+##### A. Check whether a custom model location was used
 
 ```powershell
 [Environment]::GetEnvironmentVariable('OLLAMA_MODELS', 'User')
@@ -1577,7 +1636,7 @@ This permanently deletes Ollama models, configuration, logs, and files in the li
 
 If either prints a path, write it down. It may hold downloaded models outside the default folder.
 
-### B. Uninstall and then inspect official Windows locations
+##### B. Uninstall and then inspect official Windows locations
 
 After completing the normal uninstall, run:
 
@@ -1592,7 +1651,7 @@ $paths | ForEach-Object { [PSCustomObject]@{ Path = $_; Exists = Test-Path -Lite
 
 **Expected:** the command lists each known location and whether it remains. These are the locations documented by Ollama for logs/update data, binaries, and models/configuration.
 
-### C. Delete only confirmed leftover locations
+##### C. Delete only confirmed leftover locations
 
 Run each command **only if the inspection says `Exists : True`** and you want to delete that data:
 
@@ -1614,7 +1673,7 @@ Then delete only that confirmed folder, replacing the example path yourself:
 Remove-Item -LiteralPath 'C:\replace-with-your-confirmed-model-folder' -Recurse -Force
 ```
 
-### D. Verify the persistent locations are gone
+##### D. Verify the persistent locations are gone
 
 Run the same inspection again:
 
@@ -1645,7 +1704,7 @@ Get-ChildItem -LiteralPath 'C:\replace-with-the-path-that-still-exists' -Force
 
 Do not delete a location merely because its name looks similar to Ollama. Delete only a confirmed official Ollama location or your own confirmed `OLLAMA_MODELS` location.
 
-### E. Inspect temporary Ollama files separately
+##### E. Inspect temporary Ollama files separately
 
 Ollama documents temporary executable files in one or more `ollama*` directories under `%TEMP%`. These are separate from persistent models/configuration. **Inspect them; do not use a wildcard delete command.**
 
@@ -1662,7 +1721,7 @@ Get-ChildItem -LiteralPath 'C:\replace-with-one-confirmed-TEMP-path' -Force
 
 Only then decide whether that one specific path is safe to remove. Do not delete all `%TEMP%` contents and do not use `Remove-Item "$env:TEMP\ollama*"` or another wildcard removal command.
 
-### F. Inspect custom Ollama environment variables
+##### F. Inspect custom Ollama environment variables
 
 Ollama on Windows inherits user and system environment variables. Inspect variables that may affect its location, host, context, or model lifetime:
 
@@ -1686,7 +1745,7 @@ Only remove a variable that **you deliberately created** and no longer need. For
 
 Close and reopen PowerShell after changing variables. Do not remove a machine-scoped variable unless you know who configured it and why.
 
-### G. Verify the application is gone
+##### G. Verify the application is gone
 
 ```powershell
 ollama --version
@@ -1694,7 +1753,7 @@ ollama --version
 
 **Expected after a complete uninstall:** PowerShell says `ollama` is not recognized. If it still prints a version, the app/path remains installed; revisit the normal uninstall and inspect the binary location above.
 
-### The three cleanup levels
+##### The three cleanup levels
 
 ```text
 Normal uninstall
@@ -1712,7 +1771,7 @@ Temporary files
 
 To reinstall, return to [Install Ollama](#lab-build).
 
-### ✅ Checkpoint — uninstall/reset verified
+##### ✅ Checkpoint — uninstall/reset verified
 
 ```powershell
 ollama --version
@@ -1724,7 +1783,7 @@ ollama --version
 
 ---
 
-## G. Lifecycle cheat sheet
+### G. Lifecycle cheat sheet
 
 | Task | Command or action |
 |---|---|
@@ -1750,7 +1809,7 @@ ollama --version
 
 ---
 
-## 📚 Official References
+### 📚 Official References
 
 - [Ollama for Windows](https://docs.ollama.com/windows)
 - [Ollama CLI reference](https://docs.ollama.com/cli)
@@ -1764,6 +1823,6 @@ ollama --version
 
 ---
 
-## Documentation links
+### Documentation links
 
 [Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

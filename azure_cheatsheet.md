@@ -1,3 +1,8 @@
+---
+title: "Azure Engineering Cheat Sheet: Services, CLI and Architecture"
+description: "Compare Azure services and review identity, networking, storage, compute and operations with explanations, Azure CLI examples and practice exercises."
+---
+
 # ☁️ Azure Engineering Cheat Sheet
 
 **🏷️ Difficulty:** 🟢 Beginner introduction → 🔴 Advanced reference (start with the first-time guide below)
@@ -59,7 +64,7 @@ az group list --output table
 ---
 
 <a id="toc"></a>
-# 🗺️ Table of Contents
+## 🗺️ Table of Contents
 
 1. [🧠 Azure Mental Model & Global Infrastructure](#s1)
 2. [🏗️ Resource Organization & ARM](#s2)
@@ -89,9 +94,9 @@ az group list --output table
 ---
 
 <a id="s1"></a>
-# 1. 🧠 Azure Mental Model & Global Infrastructure
+## 1. 🧠 Azure Mental Model & Global Infrastructure
 
-## Azure in one picture
+### Azure in one picture
 
 ```mermaid
 flowchart TB
@@ -106,7 +111,7 @@ flowchart TB
     R --> O[Observability]
 ```
 
-### 🧠 Remember this
+#### 🧠 Remember this
 
 ```text
 Identity decides WHO.
@@ -120,7 +125,7 @@ Observability tells you WHAT HAPPENED.
 IaC + CI/CD make changes REPEATABLE.
 ```
 
-## Cloud service models
+### Cloud service models
 
 | Model | You manage most | Azure examples | Default thought |
 |---|---|---|---|
@@ -129,7 +134,7 @@ IaC + CI/CD make changes REPEATABLE.
 | ⚡ **Serverless** | Code/config | Functions, Container Apps consumption | Event-driven / elastic |
 | ☁️ **SaaS** | Usage/config only | Microsoft 365 | Consume, don't operate |
 
-## Geography / region / zone
+### Geography / region / zone
 
 - **Geography** → data residency / market grouping.
 - **Region** → Azure deployment location such as Sweden Central or West Europe.
@@ -141,14 +146,14 @@ IaC + CI/CD make changes REPEATABLE.
 > [!WARNING]
 > A region having Availability Zones does **not** mean every Azure service or SKU supports zone redundancy there.
 
-## Control plane vs data plane
+### Control plane vs data plane
 
 | Plane | Example | Main auth concept |
 |---|---|---|
 | 🛠️ Control plane | Create VM, change firewall, assign role | ARM + Azure RBAC |
 | 📦 Data plane | Read blob, query SQL, fetch secret | Service-specific data RBAC/auth |
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -174,7 +179,7 @@ az resource list -g "${RG}" --query "[].{name:name,type:type}" -o table
 ---
 
 <a id="s2"></a>
-# 2. 🏗️ Resource Organization & Azure Resource Manager
+## 2. 🏗️ Resource Organization & Azure Resource Manager
 
 ```text
 Tenant
@@ -218,7 +223,7 @@ az resource list -g "${RG}" -o table
 az provider show --namespace Microsoft.Web --query registrationState -o tsv
 ```
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -240,9 +245,9 @@ az group show -n rg-lab-demo -o table
 ---
 
 <a id="s3"></a>
-# 3. 👤 Identity, Authentication, Authorization & Secrets
+## 3. 👤 Identity, Authentication, Authorization & Secrets
 
-## The identity equation
+### The identity equation
 
 ```text
 Authentication = Who are you?
@@ -251,7 +256,7 @@ Authorization  = What may you do?
 Azure RBAC assignment = Principal + Role + Scope
 ```
 
-### Core objects
+#### Core objects
 
 | Object | Purpose |
 |---|---|
@@ -261,7 +266,7 @@ Azure RBAC assignment = Principal + Role + Scope
 | Managed Identity | Azure-managed workload identity |
 | Workload Identity Federation | OIDC/federated identity without stored secret |
 
-### Managed Identity
+#### Managed Identity
 
 | Type | Use when |
 |---|---|
@@ -276,7 +281,7 @@ App Service / Function / VM / Container App
      Key Vault / SQL / Storage / Service Bus
 ```
 
-### Common RBAC roles
+#### Common RBAC roles
 
 | Role | Meaning |
 |---|---|
@@ -287,7 +292,7 @@ App Service / Function / VM / Container App
 | Key Vault Secrets User | Read secrets |
 | Service Bus Data Sender/Receiver | Data-plane messaging permissions |
 
-### 🔐 Good defaults
+#### 🔐 Good defaults
 
 ✅ Managed identity over connection-string secrets.  
 ✅ OIDC/workload federation for CI/CD.  
@@ -295,14 +300,14 @@ App Service / Function / VM / Container App
 ✅ PIM for privileged human access.  
 ✅ Key Vault for secrets/keys/certificates.
 
-### ⚠️ Traps
+#### ⚠️ Traps
 
 - Correct RBAC does **not** fix blocked networking.
 - `Contributor` cannot normally grant roles.
 - Management-plane `Owner` does not guarantee every data-plane permission.
 - Don't create a client secret just so the app can fetch another secret.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -328,9 +333,9 @@ az role assignment list --assignee $(az identity show -g "${RG}" -n "${IDENTITY_
 ---
 
 <a id="s4"></a>
-# 4. 🌐 Networking & Application Delivery
+## 4. 🌐 Networking & Application Delivery
 
-## Network mental model
+### Network mental model
 
 ```text
 DNS says WHERE a name points.
@@ -339,7 +344,7 @@ NSG/Firewall says WHETHER packets may pass.
 Load balancing says WHICH healthy backend receives traffic.
 ```
 
-### Core network resources
+#### Core network resources
 
 | Need | Azure resource |
 |---|---|
@@ -357,7 +362,7 @@ Load balancing says WHICH healthy backend receives traffic.
 | Central network firewall | Azure Firewall |
 | VM admin without public RDP/SSH | Bastion |
 
-### Private Endpoint vs Service Endpoint
+#### Private Endpoint vs Service Endpoint
 
 | | Private Endpoint | Service Endpoint |
 |---|---|---|
@@ -366,7 +371,7 @@ Load balancing says WHICH healthy backend receives traffic.
 | DNS work required | Usually ✅ | Usually simpler |
 | Modern production default | Often | Legacy/specific scenarios |
 
-### Application delivery
+#### Application delivery
 
 | Service | Layer | Scope | Best for |
 |---|---:|---|---|
@@ -384,7 +389,7 @@ az network nic show-effective-route-table -g "${RG}" -n "${NIC_NAME}"
 az network private-endpoint list -g "${RG}" -o table
 ```
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -410,9 +415,9 @@ az network nsg rule list -g "${RG}" --nsg-name "${NSG_NAME}" -o table
 ---
 
 <a id="s5"></a>
-# 5. 🖥️ Compute, Application Hosting & Containers
+## 5. 🖥️ Compute, Application Hosting & Containers
 
-## Compute decision table
+### Compute decision table
 
 | Requirement | Start with |
 |---|---|
@@ -426,7 +431,7 @@ az network nsg rule list -g "${RG}" --nsg-name "${NSG_NAME}" -o table
 | Private container registry | **ACR** |
 | Large parallel jobs | **Azure Batch** |
 
-### Simple rule
+#### Simple rule
 
 ```text
 Need full OS?              → VM
@@ -436,21 +441,21 @@ Event-driven code?         → Functions
 Normal web/API?            → App Service
 ```
 
-### App Service networking memory trick
+#### App Service networking memory trick
 
 ```text
 VNet Integration = OUTBOUND from App Service to private network
 Private Endpoint = INBOUND private access to App Service
 ```
 
-### Container rule
+#### Container rule
 
 - **ACR** stores images.
 - **Container Apps / AKS / ACI / App Service** run images.
 - Use **managed identity** for ACR pulls where supported.
 - Prefer immutable image digests/tags for production.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -472,7 +477,7 @@ az vm list-skus --location swedencentral --resource-type virtualMachines --size 
 ---
 
 <a id="s6"></a>
-# 6. 💾 Storage
+## 6. 💾 Storage
 
 | Need | Start with |
 |---|---|
@@ -514,7 +519,7 @@ Storage account keys
 ⚠️ Replication is **not backup**.  
 ⚠️ A Private Endpoint may need separate `blob`, `file`, `dfs`, etc. DNS/subresources depending on what you use.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -540,9 +545,9 @@ az storage account show -g "${RG}" -n "${STORAGE_ACCOUNT}" --query sku.name -o t
 ---
 
 <a id="s7"></a>
-# 7. 🗄️ Databases, Caching & Search
+## 7. 🗄️ Databases, Caching & Search
 
-## Start from the data model
+### Start from the data model
 
 | Need | Start with |
 |---|---|
@@ -555,7 +560,7 @@ az storage account show -g "${RG}" -n "${STORAGE_ACCOUNT}" --query sku.name -o t
 | In-memory cache | Azure Managed Redis |
 | Full-text/vector/hybrid search | Azure AI Search |
 
-### SQL choice
+#### SQL choice
 
 ```text
 New cloud app           → Azure SQL Database
@@ -563,7 +568,7 @@ Instance-level features → Managed Instance
 OS/full SQL control     → SQL Server on VM
 ```
 
-### Cosmos DB memory points
+#### Cosmos DB memory points
 
 - **Partition key** determines scale and hot-partition risk.
 - **RU/s** or current alternative compute model drives throughput/cost depending on API/offering.
@@ -573,7 +578,7 @@ OS/full SQL control     → SQL Server on VM
 > [!WARNING]
 > Azure Cache for Redis is retiring. For new Azure Redis designs, start with **Azure Managed Redis** and verify the current migration/tier guidance.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -596,9 +601,9 @@ az postgres flexible-server list -o table
 ---
 
 <a id="s8"></a>
-# 8. 📨 Messaging, Events, APIs & Integration
+## 8. 📨 Messaging, Events, APIs & Integration
 
-## The three services everyone confuses
+### The three services everyone confuses
 
 | Intent | Service | Memory phrase |
 |---|---|---|
@@ -606,7 +611,7 @@ az postgres flexible-server list -o table
 | Discrete event notification | **Event Grid** | “Something happened” |
 | High-volume event stream | **Event Hubs** | “Here is the stream” |
 
-### Service Bus
+#### Service Bus
 
 - Queue = one logical work stream / competing consumers.
 - Topic + subscriptions = pub/sub.
@@ -614,7 +619,7 @@ az postgres flexible-server list -o table
 - Sessions = ordered/grouped message handling.
 - Make consumers **idempotent**.
 
-### Integration
+#### Integration
 
 | Need | Service |
 |---|---|
@@ -625,7 +630,7 @@ az postgres flexible-server list -o table
 
 ⚠️ Never assume “exactly once end-to-end.” Design retries + idempotency + deduplication where business correctness requires it.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -651,7 +656,7 @@ az servicebus queue create -g "${RG}" --namespace-name "${SB_NS}" -n demo-queue
 ---
 
 <a id="s9"></a>
-# 9. 📊 Observability, Monitoring & Operations
+## 9. 📊 Observability, Monitoring & Operations
 
 ```text
 Application telemetry → Application Insights
@@ -690,7 +695,7 @@ AppRequests
 
 Collect **what you can act on**. “Enable every log forever” is expensive and often useless.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -717,7 +722,7 @@ az monitor log-analytics query \
 ---
 
 <a id="s10"></a>
-# 10. 🛡️ Security & Threat Protection
+## 10. 🛡️ Security & Threat Protection
 
 ### Security layers
 
@@ -746,7 +751,7 @@ Identity → least privilege → secrets → network boundaries
 ✅ Separate admin and workload identities.  
 ✅ Patch supported runtimes/OS.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -768,7 +773,7 @@ az security secure-scores list -o table
 ---
 
 <a id="s11"></a>
-# 11. 🧯 Reliability, Availability, Backup & Disaster Recovery
+## 11. 🧯 Reliability, Availability, Backup & Disaster Recovery
 
 | Term | Meaning |
 |---|---|
@@ -812,7 +817,7 @@ Multi-region active/active
 > [!TIP]
 > A DR plan is only real after a **test failover/restore** proves applications, DNS, identities, networks, secrets, and dependencies all work.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -838,7 +843,7 @@ az backup item list --resource-group "${RG}" --vault-name "${VAULT_NAME}" -o tab
 ---
 
 <a id="s12"></a>
-# 12. 🏛️ Governance, Landing Zones & Estate Management
+## 12. 🏛️ Governance, Landing Zones & Estate Management
 
 ```text
 RBAC   = WHO may do it?
@@ -871,7 +876,7 @@ az graph query -q "Resources | summarize count() by type | order by count_ desc"
 
 Example: `app-orders-prod-swc-001`
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -893,7 +898,7 @@ az policy state list --query "[?complianceState=='NonCompliant'].{resource:resou
 ---
 
 <a id="s13"></a>
-# 13. 💰 Cost Management & FinOps
+## 13. 💰 Cost Management & FinOps
 
 ### Main cost levers
 
@@ -926,7 +931,7 @@ Compute runtime/capacity
 - Cross-region egress nobody modeled.
 - Premium SKUs selected for features not actually used.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -947,7 +952,7 @@ az consumption usage list --start-date 2026-09-01 --end-date 2026-09-30 --query 
 ---
 
 <a id="s14"></a>
-# 14. 🚀 Developer Tooling, Infrastructure as Code & CI/CD
+## 14. 🚀 Developer Tooling, Infrastructure as Code & CI/CD
 
 | Tool | Best use |
 |---|---|
@@ -978,7 +983,7 @@ PR → validate/lint → what-if/plan → approval → deploy → smoke test →
 ✅ CI/CD identity = workload federation/OIDC where possible.  
 ❌ Long-lived client secrets in pipeline variables.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1003,7 +1008,7 @@ az deployment group validate -g "${RG}" --template-file main.bicep --parameters 
 ---
 
 <a id="s15"></a>
-# 15. 📈 Data & Analytics — Quick Map
+## 15. 📈 Data & Analytics — Quick Map
 
 | Need | Start with |
 |---|---|
@@ -1023,7 +1028,7 @@ Batch pipelines → Data Factory / Databricks
 Telemetry       → Event Hubs → ADX / analytics
 ```
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1046,7 +1051,7 @@ az kusto cluster list -o table
 ---
 
 <a id="s16"></a>
-# 16. 🤖 AI & Machine Learning — Quick Map
+## 16. 🤖 AI & Machine Learning — Quick Map
 
 > [!IMPORTANT]
 > Current Microsoft platform naming is **Microsoft Foundry**. Older material may say Azure AI Studio / Azure AI Foundry.
@@ -1075,7 +1080,7 @@ User question → embed → retrieve ─┘
 🔐 Treat tool calls as privileged operations.  
 ⚠️ Prompt injection is an authorization/security problem, not just a prompting problem.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1096,7 +1101,7 @@ az cognitiveservices account list --query "[].{name:name,kind:kind,location:loca
 ---
 
 <a id="s17"></a>
-# 17. 🔀 Hybrid, Multicloud, Edge, IoT & Migration
+## 17. 🔀 Hybrid, Multicloud, Edge, IoT & Migration
 
 | Need | Service |
 |---|---|
@@ -1114,7 +1119,7 @@ az cognitiveservices account list --query "[].{name:name,kind:kind,location:loca
 > [!TIP]
 > Migration is not modernization. A successful lift-and-shift should usually be followed by cost, reliability, security, and platform-fit review.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1136,9 +1141,9 @@ az connectedk8s list -o table
 ---
 
 <a id="s18"></a>
-# 18. ⚡ Technology Decision Tables
+## 18. ⚡ Technology Decision Tables
 
-## Which compute?
+### Which compute?
 
 | If... | Choose... |
 |---|---|
@@ -1148,7 +1153,7 @@ az connectedk8s list -o table
 | Containers without K8s | Container Apps |
 | Need Kubernetes | AKS |
 
-## Which messaging?
+### Which messaging?
 
 | If... | Choose... |
 |---|---|
@@ -1157,7 +1162,7 @@ az connectedk8s list -o table
 | Telemetry/event stream | Event Hubs |
 | Simple storage-backed queue | Queue Storage |
 
-## Which load balancing?
+### Which load balancing?
 
 | If... | Choose... |
 |---|---|
@@ -1166,7 +1171,7 @@ az connectedk8s list -o table
 | Global HTTP/S edge | Front Door |
 | DNS-only global routing | Traffic Manager |
 
-## Which database?
+### Which database?
 
 | If... | Choose... |
 |---|---|
@@ -1177,7 +1182,7 @@ az connectedk8s list -o table
 | Distributed NoSQL | Cosmos DB |
 | Cache | Azure Managed Redis |
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1199,9 +1204,9 @@ az vm list-skus --location swedencentral --size Standard_D --output table | head
 ---
 
 <a id="s19"></a>
-# 19. 🧩 Architecture Patterns & Reference Topologies
+## 19. 🧩 Architecture Patterns & Reference Topologies
 
-## Web/API + database
+### Web/API + database
 
 ```mermaid
 flowchart LR
@@ -1212,7 +1217,7 @@ flowchart LR
     APP --> AI[Application Insights]
 ```
 
-## Web-queue-worker
+### Web-queue-worker
 
 ```text
 API → Service Bus Queue → Worker
@@ -1220,7 +1225,7 @@ API → Service Bus Queue → Worker
           └→ DLQ
 ```
 
-## Private PaaS
+### Private PaaS
 
 ```text
 Application
@@ -1230,7 +1235,7 @@ Application
 Private DNS → Private Endpoint → SQL / Storage / Key Vault
 ```
 
-## Patterns to remember
+### Patterns to remember
 
 - Retry with exponential backoff + jitter.
 - Circuit breaker for repeatedly failing dependency.
@@ -1240,7 +1245,7 @@ Private DNS → Private Endpoint → SQL / Storage / Key Vault
 - Publisher/subscriber.
 - Health endpoint that checks meaningful readiness, not merely “process alive”.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1267,7 +1272,7 @@ az deployment group what-if \
 ---
 
 <a id="s20"></a>
-# 20. ⌨️ Operational Quick Reference
+## 20. ⌨️ Operational Quick Reference
 
 ```bash
 # Identity / subscription
@@ -1310,7 +1315,7 @@ az graph query -q "Resources | summarize count() by type"
 | Log Analytics | `log` |
 | Application Insights | `appi` |
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1336,7 +1341,7 @@ az resource list -g "${RG}" --query "[].{name:name,type:type}" -o table
 ---
 
 <a id="s21"></a>
-# 21. ✅ Production Readiness Checklist
+## 21. ✅ Production Readiness Checklist
 
 Microsoft's Well-Architected Framework uses five pillars: **Reliability, Security, Cost Optimization, Operational Excellence, Performance Efficiency**.
 
@@ -1371,7 +1376,7 @@ Microsoft's Well-Architected Framework uses five pillars: **Reliability, Securit
 - [ ] DB/storage/VM throughput limits understood.
 - [ ] Caching used only where it improves measured bottlenecks.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1392,9 +1397,9 @@ az advisor recommendation list --query "[].{category:category,impact:impact,prob
 ---
 
 <a id="s22"></a>
-# 22. 🧭 Troubleshooting & Incident Triage
+## 22. 🧭 Troubleshooting & Incident Triage
 
-## First five checks
+### First five checks
 
 ```text
 1. What changed?
@@ -1404,12 +1409,12 @@ az advisor recommendation list --query "[].{category:category,impact:impact,prob
 5. What do metrics/logs/traces say?
 ```
 
-### Authentication vs authorization
+#### Authentication vs authorization
 
 - `401` → identity/token/authentication issue.
 - `403` → authenticated but not allowed, or resource/network policy denies.
 
-### Private connectivity
+#### Private connectivity
 
 ```text
 nslookup hostname
@@ -1421,7 +1426,7 @@ nslookup hostname
 → RBAC/data auth correct?
 ```
 
-### Platform incident
+#### Platform incident
 
 1. Application telemetry.
 2. Resource Health.
@@ -1429,7 +1434,7 @@ nslookup hostname
 4. Azure Status for broad context.
 5. Support ticket if needed.
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1454,7 +1459,7 @@ az monitor activity-log list -g "${RG}" --offset 1d -o table
 ---
 
 <a id="s23"></a>
-# 23. 🔄 Facts You Must Verify Live
+## 23. 🔄 Facts You Must Verify Live
 
 Never hardcode confidence in these:
 
@@ -1481,7 +1486,7 @@ Check Microsoft Learn retirement page
 → Remove old resource only after verification
 ```
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1502,7 +1507,7 @@ az vm list-usage --location "swedencentral" -o table
 ---
 
 <a id="s24"></a>
-# 24. 📚 Official Microsoft Source Map
+## 24. 📚 Official Microsoft Source Map
 
 | Topic | Official source |
 |---|---|
@@ -1519,7 +1524,7 @@ az vm list-usage --location "swedencentral" -o table
 | Bicep | https://learn.microsoft.com/azure/azure-resource-manager/bicep/ |
 | Microsoft Foundry | https://learn.microsoft.com/azure/ai-foundry/what-is-azure-ai-foundry |
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1537,7 +1542,7 @@ az provider show --namespace Microsoft.Web --query "resourceTypes[?resourceType=
 
 ---
 
-# 🌟 Final memory map
+## 🌟 Final memory map
 
 ```text
 FOUNDATIONS → tenant / subscription / resource / region
@@ -1552,7 +1557,7 @@ VERIFY LIVE → price / limits / regions / SLA / lifecycle
 
 ---
 
-# ➕ Azure CLI and Bicep operational command cards
+## ➕ Azure CLI and Bicep operational command cards
 
 > [!IMPORTANT]
 > Run `az login`, select the intended subscription, and use `--what-if` before a production deployment. Examples use placeholder names—replace them deliberately.
@@ -1572,6 +1577,6 @@ VERIFY LIVE → price / limits / regions / SLA / lifecycle
 
 ---
 
-## Documentation links
+### Documentation links
 
 [Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

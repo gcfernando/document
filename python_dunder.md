@@ -1,8 +1,17 @@
+---
+title: "Python Dunder Methods Reference: Special Methods and Attributes"
+description: "Understand Python special methods and attributes for object creation, operators, containers, descriptors, async behavior and serialization."
+---
+
 <div align="center" markdown="1">
 
-# 📖 The Complete Bible of Python Dunder Methods
+<a id="-the-complete-bible-of-python-dunder-methods"></a>
 
-### *Every special method and special attribute Python offers — explained from first principles, with runnable examples.*
+# Python Dunder Methods Reference — Special Methods and Attributes
+
+<a id="every-special-method-and-special-attribute-python-offers--explained-from-first-principles-with-runnable-examples"></a>
+
+*Python special methods and attributes explained through contracts, examples and exercises.*
 
 **_By Gehan Fernando_**
 
@@ -163,7 +172,7 @@ Honesty about verification matters more than a reassuring claim, so here is exac
 
 "Dunder" is short for **d**ouble **under**score. These are names with two underscores at the start and two at the end:
 
-```
+```text
 __init__      __add__      __str__      __call__
 ```
 
@@ -237,7 +246,7 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 42
 TypeError: object of type 'Greeter' has no len()
 ```
@@ -297,7 +306,7 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 Money(15)
 TypeError: unsupported operand type(s) for +: 'Money' and 'int'
 ```
@@ -377,24 +386,24 @@ Try these before moving on. Solutions are in the [Exercise Solutions](#-exercise
 
 ---
 
-# 📦 PART A: Object Creation and Destruction
+## 📦 PART A: Object Creation and Destruction
 
 *Everything that happens when your object is born, lives, and dies.*
 
 ---
 
-## 1. `__new__` — The Object Creator
+### 1. `__new__` — The Object Creator
 
-### 🎨 The story
+#### 🎨 The story
 Imagine a cake factory. Before anyone can decorate a cake, someone has to actually *bake* the cake first. `__new__` is the baker — it creates the raw, empty object that others will later customize.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Almost never. Beginners can safely skip this for years. You would only use it for advanced tricks like:
 - **Singletons** — making sure only one instance of a class ever exists
 - **Immutable classes** — customizing how tuples or strings are created
 - **Metaclass magic** — very advanced stuff
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -404,7 +413,7 @@ Almost never. Beginners can safely skip this for years. You would only use it fo
 | **If it returns something else** | `__init__` is **skipped** entirely |
 | **Implicitly** | A `staticmethod`, even though the first parameter is named `cls`. You do not write `@staticmethod` |
 
-### 💻 How to use it
+#### 💻 How to use it
 
 **Objective:** make a class that only ever produces one object, however many times you call it.
 
@@ -425,11 +434,11 @@ print(a is b)   # True — they are literally the same object
 
 **Expected output:**
 
-```
+```text
 True
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 Normally, `Singleton()` creates a brand-new object every time you call it. This code says: *"Only make an object the very first time. After that, always give back the same one."*
 
 - `cls` means "the class itself" (like passing `Singleton` around as a variable).
@@ -438,7 +447,7 @@ Normally, `Singleton()` creates a brand-new object every time you call it. This 
 - `is` asks "are these the exact same object in memory?", which is different from `==` ("do these hold equal values?"). Part C covers that difference in detail.
 - Result: `a` and `b` are **the same object**, not two equal ones.
 
-### ⚠️ The trap that catches everyone: `__init__` still runs every time
+#### ⚠️ The trap that catches everyone: `__init__` still runs every time
 
 This is the single most common `__new__` bug. `__new__` controls *creation*; it does not control *initialisation*. If you add an `__init__`, Python calls it after **every** `Singleton()` call — including the ones that returned the cached object.
 
@@ -463,7 +472,7 @@ print(a.value)      # 2     — but the second call OVERWROTE the data!
 
 **Expected output:**
 
-```
+```text
 __init__ running with value=1
 __init__ running with value=2
 True
@@ -498,7 +507,7 @@ print(a.value)      # 1 — the first call wins, later calls are ignored
 
 **Expected output:**
 
-```
+```text
 1
 ```
 
@@ -517,26 +526,26 @@ print(CONFIG.path)   # app.ini
 
 **Expected output:**
 
-```
+```text
 app.ini
 ```
 
 Python modules are only executed once per process, so a module-level object is naturally shared. This is the idiomatic Python answer to the problem the Singleton pattern solves in other languages.
 
-### ⚠️ Tip
+#### ⚠️ Tip
 If you are just starting out, skip `__new__`. The situations that genuinely require it are: subclassing an **immutable** built-in (`int`, `str`, `tuple`), where there is no mutable object yet for `__init__` to fill in; and a handful of metaclass techniques. Everything else is better served by `__init__`.
 
 ---
 
-## 2. `__init__` — The Setup Ceremony
+### 2. `__init__` — The Setup Ceremony
 
-### 🎨 The story
+#### 🎨 The story
 Think of the moment you get a new phone. The instant you unbox it, you set your name, choose a wallpaper, and add your Wi-Fi password. All that setup happens once, at the very start. That is what `__init__` does for your Python objects.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 **Almost every class you write.** This is the most common dunder method. Use it whenever your object needs starting information.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Dog:
@@ -552,14 +561,14 @@ print(buddy.age)    # 3
 
 **Expected output:**
 
-```
+```text
 Buddy
 3
 ```
 
 You never call `__init__` yourself. Python calls it automatically when you write `Dog(...)`.
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -568,7 +577,7 @@ You never call `__init__` yourself. Python calls it automatically when you write
 | **Must return** | `None`. Returning anything else raises `TypeError` |
 | **Its job** | Fill in the object's attributes. Not to create the object — `__new__` already did that |
 
-### ⚠️ It must return `None`
+#### ⚠️ It must return `None`
 
 A surprisingly common beginner instinct is to `return self` from `__init__`. Python rejects it:
 
@@ -587,13 +596,13 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 TypeError: __init__() should return None, not 'Broken'
 ```
 
 **Why:** `__init__` is an *initialiser*, not a constructor. The object already exists by the time it runs; its only job is to set up state. The value of `Dog(...)` comes from `__new__`, not from `__init__`, so returning anything would be ambiguous. A bare `return` (to exit early) is fine — that returns `None`.
 
-### 💡 Related: `__init__` is the right place for validation
+#### 💡 Related: `__init__` is the right place for validation
 
 Because `__init__` runs before anyone can use the object, it is where you reject impossible values — this is the "fail fast" habit:
 
@@ -616,7 +625,7 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 3
 ValueError: age must be >= 0, got -1
 ```
@@ -625,15 +634,15 @@ Raising inside `__init__` means the half-built object never escapes into your pr
 
 ---
 
-## 3. `__del__` — The Farewell
+### 3. `__del__` — The Farewell
 
-### 🎨 The story
+#### 🎨 The story
 When you leave a hotel room, housekeeping comes in to clean up. `__del__` is the housekeeping — it runs when Python is about to remove your object from memory.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Rarely. Python cleans up most things automatically. Only use `__del__` when your object holds an external resource (like a file or network connection) that must be released — and even then, `__enter__`/`__exit__` (context managers) are usually a better choice.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class FileWatcher:
@@ -650,12 +659,12 @@ del watcher   # Stopped watching app.log
 
 **Expected output:**
 
-```
+```text
 Started watching app.log
 Stopped watching app.log
 ```
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -664,7 +673,7 @@ Stopped watching app.log
 | **Must return** | `None` (its return value is discarded) |
 | **Guarantees** | **None worth relying on.** See below |
 
-### ⚠️ Why `__del__` is unreliable — the specifics
+#### ⚠️ Why `__del__` is unreliable — the specifics
 
 The warning "don't rely on it" is repeated everywhere but rarely explained. Here is what actually goes wrong.
 
@@ -685,7 +694,7 @@ print("after del b")
 
 **Expected output:**
 
-```
+```text
 after del a
 __del__ ran
 after del b
@@ -701,7 +710,7 @@ Notice `__del__` ran between the two `print` calls, not at `del a`.
 
 **5. At interpreter shutdown, module globals may already be `None`.** A `__del__` that calls `open()` or a logger during shutdown can fail in confusing ways.
 
-### ✅ What to do instead
+#### ✅ What to do instead
 
 For anything that genuinely must be released — files, sockets, locks, database connections — use a **context manager** (Part M), which guarantees cleanup at a precise, visible point in your code:
 
@@ -724,7 +733,7 @@ with FileWatcher("app.log") as w:
 
 **Expected output:**
 
-```
+```text
 Started watching app.log
 doing work
 Stopped watching app.log
@@ -736,15 +745,15 @@ The cleanup point is now the closing of the `with` block — a place you can see
 
 ---
 
-## 4. `__init_subclass__` — The Class Family Registrar
+### 4. `__init_subclass__` — The Class Family Registrar
 
-### 🎨 The story
+#### 🎨 The story
 Imagine you run a private school. Every time a new student enrolls, they automatically get a uniform and a school ID. `__init_subclass__` is that automatic enrollment — it runs whenever a new class inherits from yours.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you build a framework or library where all subclasses need automatic setup, like being registered in a list.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Plugin:
@@ -766,7 +775,7 @@ print(Plugin.plugins)
 
 **Expected output:**
 
-```
+```text
 Registered plugin: EmailPlugin
 Registered plugin: SMSPlugin
 [<class '__main__.EmailPlugin'>, <class '__main__.SMSPlugin'>]
@@ -776,7 +785,7 @@ Note the `__main__.` prefix in the class repr: that is the module the classes we
 
 Note also **when** those lines appear. The two "Registered plugin" messages print while Python is still reading the `class` statements — before `print(Plugin.plugins)` is reached. Registration happens at class-definition time, not when anyone creates an instance.
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 First, some vocabulary:
 - **Inheritance** — when one class is "built on top of" another, like a child inheriting traits from a parent. `class EmailPlugin(Plugin):` means "EmailPlugin is a special kind of Plugin."
 - **`cls`** — refers to the child class that is being created (`EmailPlugin`, then `SMSPlugin`). Note it is *not* `self`: no instance exists here, only a new class.
@@ -788,7 +797,7 @@ What this code does:
 
 Real-world use: plugin systems where every new plugin registers itself just by existing, with no manual registration list to keep in sync.
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -798,7 +807,7 @@ Real-world use: plugin systems where every new plugin registers itself just by e
 | **Implicitly** | A `classmethod`. Python applies `@classmethod` for you, so do **not** write it yourself |
 | **Not called for** | The class that defines it. `Plugin` itself is not registered — only its subclasses |
 
-### ⚠️ Three things that trip people up
+#### ⚠️ Three things that trip people up
 
 **1. It is implicitly a `classmethod`.** You write it with `cls` as the first parameter and no decorator. Adding `@classmethod` yourself is harmless but redundant; adding `@staticmethod` breaks it.
 
@@ -824,7 +833,7 @@ print(sorted(Plugin.registry))     # ['email', 'smsplugin']
 
 **Expected output:**
 
-```
+```text
 ['email', 'smsplugin']
 ```
 
@@ -834,15 +843,15 @@ Here `name="email"` in the class header is not a base class — Python routes an
 
 ---
 
-## 5. `__set_name__` — The Descriptor's Name Tag
+### 5. `__set_name__` — The Descriptor's Name Tag
 
-### 🎨 The story
+#### 🎨 The story
 When a new employee joins a company, they get a name tag with their name on it. `__set_name__` gives your special class attributes a name tag automatically when they are assigned inside a class.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When building custom descriptors (advanced) that need to know what name they were given inside their parent class.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class LoggedAttribute:
@@ -867,7 +876,7 @@ print(u.username)
 
 **Expected output:**
 
-```
+```text
 Setting username = alice
 Reading username
 alice
@@ -875,7 +884,7 @@ alice
 
 Three lines, not two: `print(u.username)` first triggers `__get__`, which prints `Reading username`, and only then does `print` output the returned value `alice`.
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 This is advanced — feel free to skip on your first read. It is included here because it is the one piece that makes **descriptors** (Part O) usable, and Part O refers back to it.
 
 The idea: when you write `username = LoggedAttribute()` inside the `User` class body, the `LoggedAttribute` object has no idea what name it was assigned to. It is just an object sitting in a class namespace. Python then calls `__set_name__` to tell it: *"you are being stored under the name `username`."*
@@ -884,7 +893,7 @@ Storing that name matters because the descriptor uses it as the key in each inst
 
 **Before `__set_name__` existed** (Python 3.6 added it), descriptor authors had to repeat the name by hand — `username = LoggedAttribute("username")` — which meant a typo silently produced a descriptor writing to the wrong key.
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -908,7 +917,7 @@ That last row is a genuine gotcha: attaching a descriptor to an existing class a
 >
 > **Best practices.** `__init__` must return `None` — returning anything else raises `TypeError`. Validate in `__init__` so an invalid object never exists. For resource cleanup use a **context manager** (Part M), not `__del__`; treat `__del__` as a last-resort safety net whose exceptions are silently swallowed.
 
-### 🧪 Check your understanding
+#### 🧪 Check your understanding
 
 1. Why can a singleton implemented with `__new__` still have its state reset on every call?
 2. You define `__init__` and it returns `self`. What happens?
@@ -928,21 +937,21 @@ That last row is a genuine gotcha: attaching a descriptor to an existing class a
 
 ---
 
-# 📝 PART B: String Representation
+## 📝 PART B: String Representation
 
 *How your object describes itself to the world.*
 
 ---
 
-## 6. `__str__` — The Friendly Introduction
+### 6. `__str__` — The Friendly Introduction
 
-### 🎨 The story
+#### 🎨 The story
 At a networking event, when someone asks who you are, you say something friendly: *"I'm Sarah, I work in marketing."* You do not recite your passport number. That friendly answer is `__str__`.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Whenever you want `print(your_object)` to show something readable.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Book:
@@ -959,11 +968,11 @@ print(my_book)   # 'The Alchemist' by Paulo Coelho
 
 **Expected output:**
 
-```
+```text
 'The Alchemist' by Paulo Coelho
 ```
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -973,7 +982,7 @@ print(my_book)   # 'The Alchemist' by Paulo Coelho
 | **If absent** | Python falls back to `__repr__` |
 | **Inherited default** | `object.__str__` simply calls `__repr__` |
 
-### ⚠️ It must return a string, not print one
+#### ⚠️ It must return a string, not print one
 
 The most common beginner mistake here is using `print` instead of `return`:
 
@@ -991,14 +1000,14 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 hello
 TypeError: __str__ returned non-string (type NoneType)
 ```
 
 Notice that `hello` *is* printed — the method body ran — and then Python rejected the `None` it returned. Seeing your text appear followed by a `TypeError` is the signature of this bug.
 
-### 💡 `__str__` vs `__repr__` — which to write
+#### 💡 `__str__` vs `__repr__` — which to write
 
 If you write only one, write `__repr__` (next entry). The fallback goes one way only:
 
@@ -1015,15 +1024,15 @@ Defining only `__str__` leaves you with useless debugger and list output, which 
 
 ---
 
-## 7. `__repr__` — The Technical Description
+### 7. `__repr__` — The Technical Description
 
-### 🎨 The story
+#### 🎨 The story
 If `__str__` is you introducing yourself at a party, `__repr__` is your ID card — precise, detailed, meant for professionals. Ideally, it looks like the code that would recreate the object.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 **Always.** Every class deserves a `__repr__` for debugging. If you write only one description method, write this one — Python falls back to it when `__str__` is missing.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Book:
@@ -1040,11 +1049,11 @@ print(repr(my_book))   # Book(title='The Alchemist', author='Paulo Coelho')
 
 **Expected output:**
 
-```
+```text
 Book(title='The Alchemist', author='Paulo Coelho')
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 Notice the `!r` inside `{self.title!r}`. This is a **conversion flag**: it tells the f-string to call `repr()` on the value instead of `str()`. For a string, `repr()` adds the quotes. Without `!r` you would get `title=The Alchemist`; with it, `title='The Alchemist'` — which you could paste straight back into Python.
 
 `!r` matters more than it looks. Compare these two reprs of a value that is a *string containing a number*:
@@ -1057,14 +1066,14 @@ print(f"count={value!r}")   # count='42' — unmistakably a string
 
 **Expected output:**
 
-```
+```text
 count=42
 count='42'
 ```
 
 When you are debugging a type confusion, that pair of quotes is the whole answer.
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -1074,7 +1083,7 @@ When you are debugging a type confusion, that pair of quotes is the whole answer
 | **If absent** | Python uses `object.__repr__`, giving `<__main__.Book object at 0x...>` |
 | **Goal** | Ideally, valid Python that would recreate the object. Where that is impossible, an unambiguous `<...>` description |
 
-### 💡 Why `__repr__` is the one to write: containers ignore `__str__`
+#### 💡 Why `__repr__` is the one to write: containers ignore `__str__`
 
 This is the argument that convinces most people. Printing a *list* of your objects calls `__repr__` on each element, never `__str__`:
 
@@ -1094,7 +1103,7 @@ print([WithRepr()])           # [WithRepr()]
 
 **Expected output** (the hex address varies every run):
 
-```
+```text
 friendly
 [<__main__.WithStrOnly object at 0x000001B2C3D40E50>]
 [WithRepr()]
@@ -1104,7 +1113,7 @@ friendly
 
 So a class with only `__str__` looks fine alone and useless in every collection, dictionary value, and traceback. That is the reverse of what you want.
 
-### 💡 The two shapes of a good `__repr__`
+#### 💡 The two shapes of a good `__repr__`
 
 **Shape 1 — evaluable**, for simple data-holding classes. `eval(repr(x))` would reconstruct it:
 
@@ -1123,7 +1132,7 @@ print(eval(repr(p)).x)             # 1 — it really does reconstruct
 
 **Expected output:**
 
-```
+```text
 Point(1, 2)
 1
 ```
@@ -1147,7 +1156,7 @@ print(repr(Connection("db.internal", 5432)))
 
 **Expected output:**
 
-```
+```text
 <Connection db.internal:5432 [open]>
 ```
 
@@ -1155,15 +1164,15 @@ Both shapes satisfy the real goal: someone reading this in a traceback learns wh
 
 ---
 
-## 8. `__format__` — Custom Formatting
+### 8. `__format__` — Custom Formatting
 
-### 🎨 The story
+#### 🎨 The story
 Think of a chef preparing the same dish in different ways — plated for a fine restaurant, wrapped for takeaway, or arranged for a buffet. `__format__` lets your object present itself differently depending on the format string requested.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you want your object to work nicely with `format()` and f-strings using format specifiers.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Money:
@@ -1185,16 +1194,16 @@ print(f"{price}")         # 50
 
 **Expected output:**
 
-```
+```text
 $50
 50 US dollars
 50
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 In f-strings you can add a colon and a "format specification" like `f"{price:short}"`. Python passes everything after the colon to your `__format__` method as a plain string. Your method inspects it and returns the version the caller asked for. It is like telling a photo printer *"give me the wallet-size version"* or *"the poster-size version."*
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -1221,14 +1230,14 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 plain
 TypeError: unsupported format string passed to Plain.__format__
 ```
 
 **Why:** alignment and padding specs like `>10` are not universal — they are implemented by each type's `__format__`. `object` refuses to guess.
 
-### ⚠️ Handle the empty spec, and consider delegating the rest
+#### ⚠️ Handle the empty spec, and consider delegating the rest
 
 The `Money` example above returns a bare number for an unrecognised spec, which quietly swallows typos: `f"{price:shrot}"` silently prints `50` instead of reporting the mistake. A more helpful version handles its own specs, delegates standard numeric specs to the underlying value, and rejects the rest:
 
@@ -1256,7 +1265,7 @@ print(f"{price:>12,.2f}")   # '    1,234.50' padded to width 12
 
 **Expected output:**
 
-```
+```text
 $1234.50
 $1234
 1234.50 US dollars
@@ -1267,15 +1276,15 @@ $1234
 
 ---
 
-## 9. `__bytes__` — Raw Bytes Representation
+### 9. `__bytes__` — Raw Bytes Representation
 
-### 🎨 The story
+#### 🎨 The story
 Sometimes you need to send your object over a network or save it to a file — situations that need raw bytes, not friendly text. `__bytes__` provides that raw form.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When your object needs to be converted to `bytes` for network transmission, file storage, or low-level protocols.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Message:
@@ -1291,11 +1300,11 @@ print(bytes(msg))   # b'Hello'
 
 **Expected output:**
 
-```
+```text
 b'Hello'
 ```
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -1304,7 +1313,7 @@ b'Hello'
 | **Must return** | A `bytes` object. Returning `str` raises `TypeError` |
 | **If absent** | `bytes(x)` falls back to the buffer protocol, then to treating `x` as an iterable of ints, then raises `TypeError` |
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 - **Text** vs **bytes**: humans read text ("Hello"). Computers, networks, and files store **bytes** — sequences of 0s and 1s.
 - **`.encode("utf-8")`** translates text into bytes using the standard "UTF-8" encoding rules.
 - **`b'Hello'`** is how Python prints bytes — the `b` in front just means "these are bytes, not text."
@@ -1323,7 +1332,7 @@ Think of it like converting a letter into Morse code before sending it over tele
 >
 > **Best practices.** If you write only one, write `__repr__` — `str()` falls back to it, but not the other way round. Both **must return a string**, not print one; returning `None` raises `TypeError`. Prefer the `ClassName(field=value)` shape so the output doubles as documentation. Handle an empty format spec in `__format__` and delegate the rest.
 
-### 🧪 Check your understanding
+#### 🧪 Check your understanding
 
 1. A class defines only `__repr__`. What does `print(obj)` show?
 2. Why does a list of your objects ignore `__str__`?
@@ -1337,7 +1346,7 @@ Think of it like converting a letter into Morse code before sending it over tele
 
 </details>
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a `Resource` class that ties together construction and representation:
 
@@ -1370,23 +1379,23 @@ except ValueError as e:
 
 ---
 
-# ⚖️ PART C: Comparison Operators
+## ⚖️ PART C: Comparison Operators
 
 *Teaching Python how to compare your objects.*
 
 ---
 
-## 10. `__eq__` — Are We Equal? 🟢
+### 10. `__eq__` — Are We Equal? 🟢
 
-### 🎨 The story
+#### 🎨 The story
 Two twins can look identical. But are they *the same person*? `__eq__` decides what counts as "equal" for your objects.
 
 **Where the analogy is precise:** you are drawing a line between *identical* and *the same*. Python already has a separate operator for "the same one" — `is` — and `__eq__` is how you define the other question.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Whenever your object has a meaningful notion of equality — two products with the same ID, two dates on the same day, two coordinates at the same location.
 
-### First: `==` and `is` are different questions
+#### First: `==` and `is` are different questions
 
 Before writing `__eq__`, be clear about what you are changing:
 
@@ -1402,7 +1411,7 @@ print(a is c)   # True  — c is another name for the very same object
 
 **Expected output:**
 
-```
+```text
 True
 False
 True
@@ -1412,7 +1421,7 @@ True
 
 **The default:** if you do not define `__eq__`, `object.__eq__` treats `==` as identity — two separately built objects are never equal, even with identical data. That default is why `Point(1, 2) == Point(1, 2)` is `False` until you write the method.
 
-### 💻 How to use it — the smallest version
+#### 💻 How to use it — the smallest version
 
 **Objective:** make two points with the same coordinates compare equal.
 
@@ -1431,14 +1440,14 @@ print(Point(1, 2) == Point(3, 4))   # False
 
 **Expected output:**
 
-```
+```text
 True
 False
 ```
 
 This isolates the idea, and it has **two defects** that matter in real code. Both are worth understanding, because both produce confusing bugs.
 
-### ⚠️ Defect 1: it crashes on foreign types
+#### ⚠️ Defect 1: it crashes on foreign types
 
 ```python
 class Point:
@@ -1457,7 +1466,7 @@ except AttributeError as e:
 
 **Expected output:**
 
-```
+```text
 AttributeError: 'str' object has no attribute 'x'
 ```
 
@@ -1483,7 +1492,7 @@ print(Point(1, 2) in [Point(0, 0), Point(1, 2)])   # True
 
 **Expected output:**
 
-```
+```text
 True
 False
 True
@@ -1492,7 +1501,7 @@ True
 
 **Why returning `NotImplemented` yields `False` here:** Python tries the reflected comparison, `"not a point".__eq__(Point(1, 2))`, which also returns `NotImplemented`. With both sides declining, Python falls back to its last resort for `==` — identity comparison — which is `False`. Unlike arithmetic, `==` never raises `TypeError`; it always produces an answer.
 
-### ⚠️ Defect 2: defining `__eq__` silently makes your object unhashable
+#### ⚠️ Defect 2: defining `__eq__` silently makes your object unhashable
 
 This one surprises nearly everyone, and the error message arrives far from the cause.
 
@@ -1518,7 +1527,7 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 None
 TypeError: unhashable type: 'Point'
 ```
@@ -1531,7 +1540,7 @@ TypeError: unhashable type: 'Point'
 
 **When you do *not* need `__hash__`:** if the object is mutable and never belongs in a set, leaving it unhashable is the correct, safe outcome — not something to work around.
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -1542,7 +1551,7 @@ TypeError: unhashable type: 'Point'
 | **Gives you `!=` free** | Python derives `!=` by negating `__eq__` |
 | **Inherited default** | Identity comparison (`self is other`) |
 
-### 💡 The shortcut: let `@dataclass` write it
+#### 💡 The shortcut: let `@dataclass` write it
 
 For classes that mainly hold data, you rarely need to write any of this by hand:
 
@@ -1562,7 +1571,7 @@ print(Point(1, 2))                     # Point(x=1, y=2)
 
 **Expected output:**
 
-```
+```text
 True
 False
 1
@@ -1575,15 +1584,15 @@ Point(x=1, y=2)
 
 ---
 
-## 11. `__ne__` — Are We Not Equal? 🔴
+### 11. `__ne__` — Are We Not Equal? 🔴
 
-### 🎨 The story
+#### 🎨 The story
 The opposite of `__eq__` — and in Python 3, you almost never write it, because Python derives it for you.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 **Almost never.** Define `__eq__` and stop. This entry exists mainly so you can recognise `__ne__` in older code and know why it is usually redundant.
 
-### 💻 Demonstration: `!=` works without you writing anything
+#### 💻 Demonstration: `!=` works without you writing anything
 
 **Objective:** confirm that `__eq__` alone gives you a correct `!=`.
 
@@ -1604,7 +1613,7 @@ print(Point(1, 2) != "banana")       # True
 
 **Expected output:**
 
-```
+```text
 False
 True
 True
@@ -1612,7 +1621,7 @@ True
 
 No `__ne__` anywhere, yet `!=` behaves correctly on all three — including the foreign type.
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -1623,7 +1632,7 @@ No `__ne__` anywhere, yet `!=` behaves correctly on all three — including the 
 
 That last detail is the reason the default is better than most hand-written versions: it preserves `NotImplemented` so the reflected operand still gets its turn.
 
-### ⚠️ Why the hand-written version is usually a bug
+#### ⚠️ Why the hand-written version is usually a bug
 
 The `__ne__` in older code typically looks like the one this entry used to show:
 
@@ -1651,14 +1660,14 @@ except AttributeError as e:
 
 **Expected output:**
 
-```
+```text
 True
 AttributeError: 'str' object has no attribute 'x'
 ```
 
 Adding `__ne__` here **broke** a case that worked when only `__eq__` existed. Hand-writing `__ne__` gives you a second place to forget the type guard, and a second place for the two definitions to drift apart — a class where `a == b` and `a != b` are both `True` is a genuinely nasty bug to track down.
 
-### 📜 Historical note
+#### 📜 Historical note
 
 In **Python 2**, `!=` did *not* fall back to `__eq__`, so defining both was mandatory. Code that still defines `__ne__` is usually a Python 2 habit, or was written to run on both. In Python 3 it is redundant. If you find one in code you maintain, deleting it is normally a safe improvement — verify first that it is a plain negation and not deliberately asymmetric.
 
@@ -1666,15 +1675,15 @@ In **Python 2**, `!=` did *not* fall back to `__eq__`, so defining both was mand
 
 ---
 
-## 12. `__lt__` — Less Than (`<`) 🟢
+### 12. `__lt__` — Less Than (`<`) 🟢
 
-### 🎨 The story
+#### 🎨 The story
 A teacher lining up students by height needs to compare any two and decide who goes first. `__lt__` is that comparison.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When your objects have a natural ordering. `__lt__` is the most valuable of the four ordering methods because `sorted()`, `min()`, `max()`, `list.sort()`, and `heapq` are all built on it alone — they never call `__gt__`.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 **Objective:** sort a list of students by score, ascending.
 
@@ -1696,7 +1705,7 @@ print(sorted(students))   # [Carol(78), Alice(85), Bob(92)]
 
 **Expected output:**
 
-```
+```text
 [Carol(78), Alice(85), Bob(92)]
 ```
 
@@ -1704,7 +1713,7 @@ print(sorted(students))   # [Carol(78), Alice(85), Bob(92)]
 
 **Why sorting works from `__lt__` alone:** Python's sort only ever asks "does this one come before that one?" It never needs `>`, `<=`, or `>=`. One method buys you the whole sorting toolkit.
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -1714,7 +1723,7 @@ print(sorted(students))   # [Carol(78), Alice(85), Bob(92)]
 | **Reflected as** | `b > a` — Python tries `__gt__` on the other operand when yours declines |
 | **Inherited default** | None. Without it, `a < b` raises `TypeError` |
 
-### ⚠️ Ordering methods should return `NotImplemented`, not crash
+#### ⚠️ Ordering methods should return `NotImplemented`, not crash
 
 Unlike `==`, an unorderable comparison *should* raise `TypeError` — and returning `NotImplemented` is what produces the right one:
 
@@ -1739,14 +1748,14 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 True
 TypeError: '<' not supported between instances of 'Student' and 'int'
 ```
 
 That message names both types and the operator — exactly what a user needs. Compare it with the `AttributeError: 'int' object has no attribute 'score'` you would get without the guard.
 
-### 💡 Often you do not need `__lt__` at all
+#### 💡 Often you do not need `__lt__` at all
 
 If you only want to sort one particular way, `sorted(key=...)` is simpler and does not commit your class to a single "natural" order:
 
@@ -1767,7 +1776,7 @@ print(sorted(students, key=lambda s: -s.score))         # by score, descending
 
 **Expected output:**
 
-```
+```text
 [Carol(78), Alice(85), Bob(92)]
 [Alice(85), Bob(92), Carol(78)]
 [Bob(92), Alice(85), Carol(78)]
@@ -1792,21 +1801,21 @@ print(sorted(students, key=lambda s: (-s.score, s.name)))
 
 **Expected output:**
 
-```
+```text
 [Alice(85), Bob(85), Carol(78)]
 ```
 
 ---
 
-## 13. `__le__` — Less Than or Equal (`<=`) 🟡
+### 13. `__le__` — Less Than or Equal (`<=`) 🟡
 
-### 🎨 The story
+#### 🎨 The story
 A theme park height sign: *"You must be **this tall or shorter** to enter the kids' zone."* `__le__` decides when your object counts as "less than or equal to" another.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Whenever you need `<=` comparisons — filtering items up to a threshold, checking eligibility bands, sorting with ties.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Version:
@@ -1822,15 +1831,15 @@ print(Version(3) <= Version(3))   # True
 
 ---
 
-## 14. `__gt__` — Greater Than (`>`) 🟡
+### 14. `__gt__` — Greater Than (`>`) 🟡
 
-### 🎨 The story
+#### 🎨 The story
 A gym's leaderboard: *"Who lifted more than 100 kg today?"* `__gt__` powers those "greater than" comparisons.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Whenever `>` should work on your objects — leaderboards, thresholds, filtering the top performers.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Score:
@@ -1845,15 +1854,15 @@ print(Score(90) > Score(70))   # True
 
 ---
 
-## 15. `__ge__` — Greater Than or Equal (`>=`) 🟡
+### 15. `__ge__` — Greater Than or Equal (`>=`) 🟡
 
-### 🎨 The story
+#### 🎨 The story
 A voting-age check: *"You must be **18 or older** to vote."* `__ge__` handles the "at least this much" comparisons.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Whenever your object needs `>=` — age checks, minimum-requirement filters, "meets or exceeds" logic.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Age:
@@ -1867,7 +1876,7 @@ print(Age(21) >= Age(18))   # True
 print(Age(17) >= Age(18))   # False
 ```
 
-### 🧾 The contract for all four ordering methods
+#### 🧾 The contract for all four ordering methods
 
 | Method | Operator | Reflected partner |
 |---|---|---|
@@ -1880,7 +1889,7 @@ All four take `(self, other)`, should return a boolean or `NotImplemented`, and 
 
 **The reflection column is why `__gt__` is often unnecessary.** Given only `__lt__`, the expression `a > b` makes Python try `a.__gt__(b)` (absent), then the reflected `b.__lt__(a)` — which exists. So `>` frequently works between two objects of *your* type from `__lt__` alone. Define `__gt__` explicitly only when comparing against a *different* type that does not know yours.
 
-### ⚠️ Time-saving tip: `functools.total_ordering`
+#### ⚠️ Time-saving tip: `functools.total_ordering`
 
 Writing all four ordering methods by hand is repetitive and easy to get subtly inconsistent. `functools.total_ordering` fills in the rest from `__eq__` plus **any one** of the four:
 
@@ -1918,7 +1927,7 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 True True False False
 True
 TypeError: '<' not supported between instances of 'Product' and 'int'
@@ -1950,7 +1959,7 @@ print(max(Version(1, 0, 0), Version(1, 0, 1))) # Version(major=1, minor=0, patch
 
 **Expected output:**
 
-```
+```text
 True
 [Version(major=1, minor=9, patch=9), Version(major=2, minor=0, patch=0)]
 Version(major=1, minor=0, patch=1)
@@ -1966,7 +1975,7 @@ Note `Version(1, 2, 3) < Version(1, 10, 0)` is `True`: fields compare as a tuple
 | Ordering is a custom rule, and you want all four operators | `@total_ordering` + `__eq__` + `__lt__` |
 | You only need sorting, not the operators | `sorted(key=...)` — no dunder at all |
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a `Task` class with `priority` (int, higher = more urgent) and `name` (str) that supports full ordering:
 
@@ -1988,9 +1997,9 @@ Then write the same class a second way using `@dataclass(order=True)` with `prio
 
 ---
 
-## 16. `__hash__` — The Object's Fingerprint 🟢
+### 16. `__hash__` — The Object's Fingerprint 🟢
 
-### 🎨 The story
+#### 🎨 The story
 A library shelves books by the first letter of the title. To find *Dune*, you go straight to the D shelf instead of walking the whole library — then read the few spines there to find the exact book.
 
 `__hash__` is the "which shelf" calculation. `__eq__` is reading the spines. That two-step is exactly how `set` and `dict` work, and it is why the two methods must agree.
@@ -1999,10 +2008,10 @@ A library shelves books by the first letter of the title. To find *Dune*, you go
 
 **Where it misleads:** a hash is not an *identifier*. Two different objects may legitimately hash the same. It narrows the search; it does not answer it.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Whenever you define `__eq__` and want the object usable in a `set` or as a `dict` key. If your object is mutable and never needs to be, leave it unhashable.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 **Objective:** make equal points collapse to a single entry in a set.
 
@@ -2027,14 +2036,14 @@ print(Point(1, 2) in points)               # True — lookup by value
 
 **Expected output:**
 
-```
+```text
 2
 True
 ```
 
 **The `hash((self.x, self.y))` idiom** is the standard way to write `__hash__`: build a tuple of exactly the fields `__eq__` compares, and hand it to the built-in `hash()`. Tuples hash from their contents, so equal field values always produce equal hashes. You get correctness for free and never invent your own arithmetic.
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -2045,7 +2054,7 @@ True
 | **Must be** | Constant for the object's lifetime |
 | **Inherited default** | Derived from the object's identity — set to `None` if you define `__eq__` |
 
-### ⚠️ Golden rule 1: equal objects must hash equal
+#### ⚠️ Golden rule 1: equal objects must hash equal
 
 If two objects are equal but hash differently, they land on different shelves and the container never discovers they are duplicates:
 
@@ -2069,7 +2078,7 @@ print(a in {b})                  # False — lookup fails
 
 **Expected output:**
 
-```
+```text
 True
 False
 2
@@ -2080,7 +2089,7 @@ A set containing two equal elements is a corrupt data structure, and nothing rai
 
 **The reverse is allowed.** Unequal objects *may* share a hash — that is a collision, and Python resolves it with `__eq__`. Only the one-way implication is required.
 
-### ⚠️ Golden rule 2: never hash on mutable state
+#### ⚠️ Golden rule 2: never hash on mutable state
 
 This is the subtler failure, and it loses data silently:
 
@@ -2107,7 +2116,7 @@ print(len(bucket))          # 1
 
 **Expected output** (the hex address varies):
 
-```
+```text
 True
 False
 [<__main__.Tag object at 0x000001F0B2A10D10>]
@@ -2137,20 +2146,20 @@ except Exception as e:
 
 **Expected output:**
 
-```
+```text
 True
 FrozenInstanceError: cannot assign to field 'name'
 ```
 
 The mutation is now rejected at the moment it is attempted, instead of corrupting a set somewhere later.
 
-### 💡 Why `hash()` of a string changes between runs
+#### 💡 Why `hash()` of a string changes between runs
 
 Run `python -c "print(hash('abc'))"` twice and you will usually get two different numbers. That is deliberate: Python randomises string hashing per process to defend against a denial-of-service attack in which crafted keys all collide and degrade dict performance. Set `PYTHONHASHSEED=0` to disable it.
 
 **The practical consequence:** never persist a hash value to a file or database, and never assume set or dict iteration order reflects hashes. Within a single run everything is consistent, which is all the contract promises. For a stable fingerprint across runs, use `hashlib` (`hashlib.sha256(b"abc").hexdigest()`) — that is a different tool for a different job.
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a `Coordinate` class holding `lat` and `lon` that:
 
@@ -2174,7 +2183,7 @@ Then verify that `{Coordinate(1.0, 2.0): "home"}[Coordinate(1.0, 2.0)]` returns 
 >
 > **Best practices.** Remember that **defining `__eq__` silently sets `__hash__` to `None`**, making the class unhashable — one of the most confusing surprises in Python. Define both together, or use a frozen dataclass and get both for free. Always return `NotImplemented` (do not raise) for unknown operand types, so Python can try the reflected operation and then produce a clear `TypeError`.
 
-### 🧪 Check your understanding
+#### 🧪 Check your understanding
 
 1. You add `__eq__` to a class and `set()` suddenly raises `TypeError: unhashable type`. Why?
 2. Why should `__eq__` return `NotImplemented` rather than `False` for a foreign type?
@@ -2191,7 +2200,7 @@ Then verify that `{Coordinate(1.0, 2.0): "home"}[Coordinate(1.0, 2.0)]` returns 
 
 ---
 
-# ➕ PART D: Arithmetic Operators
+## ➕ PART D: Arithmetic Operators
 
 *Making your objects do math.*
 
@@ -2229,7 +2238,7 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 Distance(8)
 TypeError: unsupported operand type(s) for +: 'Distance' and 'str'
 ```
@@ -2250,7 +2259,7 @@ print(Decimal("0.1") + Decimal("0.2") == Decimal("0.3"))   # True
 
 **Expected output:**
 
-```
+```text
 0.30000000000000004
 False
 0.3
@@ -2261,15 +2270,15 @@ That first line is not a Python quirk — it is the IEEE 754 binary floating-poi
 
 ---
 
-## 17. `__add__` — Addition (`+`)
+### 17. `__add__` — Addition (`+`)
 
-### 🎨 The story
+#### 🎨 The story
 Two piggy banks — one with $50, one with $30. Pour them together and you get $80. `__add__` lets your objects combine using the `+` sign.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When "adding" two of your objects has a natural meaning — money, distances, times, coordinates.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Money:
@@ -2288,9 +2297,9 @@ print(wallet)   # $80
 
 ---
 
-## 18. `__sub__` — Subtraction (`-`)
+### 18. `__sub__` — Subtraction (`-`)
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Money:
@@ -2308,9 +2317,9 @@ print(Money(100) - Money(30))   # $70
 
 ---
 
-## 19. `__mul__` — Multiplication (`*`)
+### 19. `__mul__` — Multiplication (`*`)
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Money:
@@ -2328,12 +2337,12 @@ print(Money(10) * 5)   # $50
 
 ---
 
-## 20. `__truediv__` — True Division (`/`)
+### 20. `__truediv__` — True Division (`/`)
 
-### 🎨 The story
+#### 🎨 The story
 Splitting a $100 restaurant bill among 4 friends. Each pays $25. That is `__truediv__`.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Money:
@@ -2351,12 +2360,12 @@ print(Money(100) / 4)   # $25.0
 
 ---
 
-## 21. `__floordiv__` — Floor Division (`//`)
+### 21. `__floordiv__` — Floor Division (`//`)
 
-### 🎨 The story
+#### 🎨 The story
 Dividing 10 candies among 3 kids. Each kid gets 3 (with 1 candy left over). `__floordiv__` gives the whole-number result without the leftover.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Candy:
@@ -2374,12 +2383,12 @@ print(Candy(10) // 3)   # 3 candies
 
 ---
 
-## 22. `__mod__` — Modulo / Remainder (`%`)
+### 22. `__mod__` — Modulo / Remainder (`%`)
 
-### 🎨 The story
+#### 🎨 The story
 After splitting 10 candies among 3 kids, 1 candy is left over. `__mod__` gives you that remainder.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Candy:
@@ -2398,11 +2407,11 @@ print(Candy(10) % 3)   # 1 candy
 
 **Expected output:**
 
-```
+```text
 1 candy
 ```
 
-### 💡 The pair `//` and `%` always belong together
+#### 💡 The pair `//` and `%` always belong together
 
 `10 // 3` is `3` and `10 % 3` is `1`, and those two answers reconstruct the original: `3 * 3 + 1 == 10`. Python guarantees this identity for integers, which is why the next entry, `__divmod__`, exists — it returns both at once so you compute the division only once.
 
@@ -2414,7 +2423,7 @@ print(each * 3 + leftover)          # 10 — the identity holds
 
 **Expected output:**
 
-```
+```text
 3 1
 10
 ```
@@ -2429,7 +2438,7 @@ print(-4 * 3 + 2)             # -10 — Python's identity still holds
 
 **Expected output:**
 
-```
+```text
 -4 2
 -10
 ```
@@ -2438,12 +2447,12 @@ Python chose this because `x % n` then always lands in `0..n-1`, which is what y
 
 ---
 
-## 23. `__divmod__` — Divide and Get Remainder Together
+### 23. `__divmod__` — Divide and Get Remainder Together
 
-### 🎨 The story
+#### 🎨 The story
 Sometimes you want both answers at once — how many each kid gets, *and* how many are left over. That is `divmod()`.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Candy:
@@ -2459,12 +2468,12 @@ print(divmod(Candy(10), 3))   # (3, 1)
 
 ---
 
-## 24. `__pow__` — Power (`**`)
+### 24. `__pow__` — Power (`**`)
 
-### 🎨 The story
+#### 🎨 The story
 Raising a number to a power — 2 to the 3rd is 8. `__pow__` handles the `**` operator.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Number:
@@ -2482,12 +2491,12 @@ print(Number(2) ** 3)   # 8
 
 ---
 
-## 25. `__matmul__` — Matrix Multiplication (`@`)
+### 25. `__matmul__` — Matrix Multiplication (`@`)
 
-### 🎨 The story
+#### 🎨 The story
 Used in scientific computing (like NumPy) for matrix multiplication. `@` is a special operator for this.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Matrix:
@@ -2504,7 +2513,7 @@ print(a @ b)   # A @ B
 
 ---
 
-# ↔️ PART E: Reflected Arithmetic (Right-Hand Side)
+## ↔️ PART E: Reflected Arithmetic (Right-Hand Side)
 
 *When your object appears on the RIGHT of the operator.*
 
@@ -2550,7 +2559,7 @@ print(3 - Length(10))     # Length(-7)  -> 3 - 10
 
 **Expected output:**
 
-```
+```text
 Length(7)
 Length(-7)
 ```
@@ -2559,7 +2568,7 @@ Writing `__rsub__` as `return self.__sub__(other)` would have produced `Length(7
 
 ---
 
-## 26–33. The Full Reflected Family
+### 26–33. The Full Reflected Family
 
 | Method | Handles |
 |--------|---------|
@@ -2573,10 +2582,10 @@ Writing `__rsub__` as `return self.__sub__(other)` would have produced `Length(7
 | `__rpow__` | `other ** self` |
 | `__rmatmul__` | `other @ self` |
 
-### 🔍 When to use them
+#### 🔍 When to use them
 Whenever you want your object to work with primitive types on either side.
 
-### 💻 How to use them
+#### 💻 How to use them
 
 ```python
 class Money:
@@ -2603,7 +2612,7 @@ print(3 * Money(20))    # $60  (uses __rmul__)
 
 ---
 
-# 🔄 PART F: In-Place Operators (`+=`, `-=`, etc.)
+## 🔄 PART F: In-Place Operators (`+=`, `-=`, etc.)
 
 *Modifying an object instead of creating a new one.*
 
@@ -2643,7 +2652,7 @@ print(type(c))        # <class 'NoneType'>
 
 **Expected output:**
 
-```
+```text
 None
 <class 'NoneType'>
 ```
@@ -2668,7 +2677,7 @@ print(c, d)          # [1, 2, 3] [1, 2]     — d did not
 
 **Expected output:**
 
-```
+```text
 [1, 2, 3] [1, 2, 3]
 [1, 2, 3] [1, 2]
 ```
@@ -2690,7 +2699,7 @@ print(t[0])          # [1, 2, 3] — the append SUCCEEDED anyway
 
 **Expected output:**
 
-```
+```text
 TypeError: 'tuple' object does not support item assignment
 [1, 2, 3]
 ```
@@ -2723,13 +2732,13 @@ print(acc)            # Accumulator([1, 2, 3, 4, 5])
 
 **Expected output:**
 
-```
+```text
 Accumulator([1, 2, 3, 4, 5])
 ```
 
 ---
 
-## 34–41. The Full In-Place Family
+### 34–41. The Full In-Place Family
 
 | Method | Handles |
 |--------|---------|
@@ -2742,7 +2751,7 @@ Accumulator([1, 2, 3, 4, 5])
 | `__ipow__` | `**=` |
 | `__imatmul__` | `@=` |
 
-### 💻 How to use them
+#### 💻 How to use them
 
 ```python
 class Counter:
@@ -2778,7 +2787,7 @@ print(c)   # Counter(13)
 >
 > **Best practices.** Always return `NotImplemented` for operand types you do not handle, never raise — that is what lets Python try the reflected method and then produce a clear `TypeError` naming both types. The famous list-versus-tuple `+=` surprise comes straight from this: `__iadd__` mutates in place, and when it is absent Python rebinds the name instead, which fails on a tuple *after* having already mutated the inner list.
 
-### 🧪 Check your understanding
+#### 🧪 Check your understanding
 
 1. Why does `2 * my_vector` need `__rmul__` when `my_vector * 2` only needs `__mul__`?
 2. What is the difference between returning `NotImplemented` and raising `NotImplementedError`?
@@ -2795,18 +2804,18 @@ print(c)   # Counter(13)
 
 ---
 
-# ➖ PART G: Unary and Sign Operators
+## ➖ PART G: Unary and Sign Operators
 
 *Operators that work on a single value.*
 
 ---
 
-## 42. `__neg__` — Negation (`-x`)
+### 42. `__neg__` — Negation (`-x`)
 
-### 🎨 The story
+#### 🎨 The story
 Turning something positive into negative — like flipping a coin. If you owe $100 (debt of -100), negating gives you a credit of +100.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Balance:
@@ -2825,19 +2834,19 @@ print(-b)   # $-100
 
 ---
 
-## 43. `__pos__` — Unary Plus (`+x`) 🔴
+### 43. `__pos__` — Unary Plus (`+x`) 🔴
 
-### 🎨 The story
+#### 🎨 The story
 The `+` in front of a single value, as in `+x`. On ordinary numbers it does nothing visible: `+5` is `5` and `+(-5)` is `-5`. It is the least-used operator in Python, and it exists mainly so that `+x` is not a syntax error.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Rarely. The correct default is to return the object unchanged (or an equal copy). There is one well-known case where it does real work — see below.
 
-### ⚠️ Do not make `+x` mean "absolute value"
+#### ⚠️ Do not make `+x` mean "absolute value"
 
 A tempting but wrong implementation is `return Number(abs(self.value))`. That makes `+x` silently discard the sign, which no reader expects — `+` and `abs()` are different operations, and Python provides `__abs__` for the second. Writing it this way means `+x != x` for every negative value, quietly breaking anyone's assumption that unary plus is a no-op.
 
-### 💻 How to use it — the conventional version
+#### 💻 How to use it — the conventional version
 
 ```python
 class Number:
@@ -2864,13 +2873,13 @@ print(abs(n))    # Number(5)
 
 **Expected output:**
 
-```
+```text
 Number(-5)
 Number(5)
 Number(5)
 ```
 
-### 💡 The one place `+x` genuinely does something
+#### 💡 The one place `+x` genuinely does something
 
 In the standard library, `decimal.Decimal` uses unary plus to apply the current precision context — the idiomatic way to round a value to the active precision:
 
@@ -2886,14 +2895,14 @@ with localcontext() as ctx:
 
 **Expected output:**
 
-```
+```text
 1.23456
 1.23
 ```
 
 This is the pattern to imitate if you ever need `__pos__`: a *normalisation* that leaves the value conceptually the same. If your `+x` changes what the value means, use a named method instead.
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -2904,12 +2913,12 @@ This is the pattern to imitate if you ever need `__pos__`: a *normalisation* tha
 
 ---
 
-## 44. `__abs__` — Absolute Value (`abs()`)
+### 44. `__abs__` — Absolute Value (`abs()`)
 
-### 🎨 The story
+#### 🎨 The story
 Distance from zero. Whether it is -5 or +5, the *magnitude* is 5. `abs()` gives you that magnitude.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Vector:
@@ -2925,15 +2934,15 @@ print(abs(Vector(3, 4)))   # 5.0
 
 ---
 
-## 45. `__invert__` — Bitwise NOT (`~x`)
+### 45. `__invert__` — Bitwise NOT (`~x`)
 
-### 🎨 The story
+#### 🎨 The story
 The `~` operator flips every bit in a number (0s become 1s and vice versa). Think of it as **inverting a photo negative** — everything swaps to its opposite.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Rare in everyday code — mostly for bit manipulation or building custom permission systems.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Flag:
@@ -2948,14 +2957,14 @@ inverted = ~f
 print(inverted.value)   # -6
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 Why does `~5` give `-6`? Because of how computers store numbers using bits. The math shortcut is: `~x` always equals `-(x + 1)`. So `~5 = -6`, `~10 = -11`, and so on. Unless you're doing low-level bit tricks, you can safely ignore this one.
 
 ---
 
-## 46. `__round__` — Rounding (`round()`)
+### 46. `__round__` — Rounding (`round()`)
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Price:
@@ -2974,12 +2983,12 @@ print(round(p, 2))   # $19.88
 
 ---
 
-## 47. `__trunc__` — Chop Off the Decimals
+### 47. `__trunc__` — Chop Off the Decimals
 
-### 🎨 The story
+#### 🎨 The story
 Cutting off everything after the decimal point — like slicing off the fractional part with scissors. `3.7` becomes `3`, and `-3.7` becomes `-3`.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import math
@@ -2997,12 +3006,12 @@ print(math.trunc(Number(-3.7)))   # -3
 
 ---
 
-## 48. `__floor__` — Round Down
+### 48. `__floor__` — Round Down
 
-### 🎨 The story
+#### 🎨 The story
 Always rounds **down** to the nearest whole number. Whether you have `3.2` or `3.9`, both become `3`. Different from `trunc` when it comes to negative numbers.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import math
@@ -3020,12 +3029,12 @@ print(math.floor(Number(3.2)))   # 3
 
 ---
 
-## 49. `__ceil__` — Round Up
+### 49. `__ceil__` — Round Up
 
-### 🎨 The story
+#### 🎨 The story
 Ordering pizzas for 13 people (3 per pizza). You can't buy 4.33 pizzas — you round **up** to 5. `math.ceil()` always rounds up.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import math
@@ -3041,12 +3050,12 @@ print(math.ceil(Number(3.2)))   # 4
 print(math.ceil(Number(3.9)))   # 4
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 Both `3.2` and `3.9` round **up** to `4` — that's what "ceiling" means. Whereas floor rounds down, ceiling rounds up.
 
 ---
 
-# 🔀 PART H: Bitwise Operators
+## 🔀 PART H: Bitwise Operators
 
 *Working with individual bits — used in permissions, flags, low-level code.*
 
@@ -3058,7 +3067,7 @@ In Python code, binary numbers are written with a `0b` prefix, so `0b1100` means
 
 Bitwise operators work on each bit individually:
 
-```
+```text
   1100    (12 in binary)
 & 1010    (10 in binary)  <- the & operator
 ------
@@ -3071,12 +3080,12 @@ If you never plan to build a permissions system or write low-level code, you can
 
 ---
 
-## 50. `__and__` — Bitwise AND (`&`)
+### 50. `__and__` — Bitwise AND (`&`)
 
-### 🎨 The story
+#### 🎨 The story
 Two people can only enter a room if **both** have keys. AND is true only when both sides are true.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Permission:
@@ -3093,17 +3102,17 @@ result = Permission(0b1100) & Permission(0b1010)
 print(result)   # 0b1000
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 Bit by bit: `1&1=1`, but `1&0=0` and `0&0=0`. Only where **both** have 1 does the result get a 1. Useful for checking "does this user have both permissions?"
 
 ---
 
-## 51. `__or__` — Bitwise OR (`|`)
+### 51. `__or__` — Bitwise OR (`|`)
 
-### 🎨 The story
+#### 🎨 The story
 Anyone with *either* key can enter. OR is true if either side is true.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Permission:
@@ -3121,12 +3130,12 @@ print(Permission(0b1100) | Permission(0b1010))   # 0b1110
 
 ---
 
-## 52. `__xor__` — Exclusive OR (`^`)
+### 52. `__xor__` — Exclusive OR (`^`)
 
-### 🎨 The story
+#### 🎨 The story
 "Either one but not both." XOR is true when the two sides differ.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Bits:
@@ -3144,12 +3153,12 @@ print(Bits(0b1100) ^ Bits(0b1010))   # 0b110
 
 ---
 
-## 53. `__lshift__` — Left Shift (`<<`)
+### 53. `__lshift__` — Left Shift (`<<`)
 
-### 🎨 The story
+#### 🎨 The story
 Shifting bits to the left is like **multiplying by powers of 2**. `x << 1` doubles it. `x << 2` multiplies by 4. `x << 3` multiplies by 8.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Number:
@@ -3168,12 +3177,12 @@ print(Number(3) << 3)   # 24  (3 * 8)
 
 ---
 
-## 54. `__rshift__` — Right Shift (`>>`)
+### 54. `__rshift__` — Right Shift (`>>`)
 
-### 🎨 The story
+#### 🎨 The story
 The opposite — shifting right is like **dividing by powers of 2** (throwing away any remainder). `x >> 1` halves it. `x >> 2` divides by 4.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Number:
@@ -3192,14 +3201,14 @@ print(Number(20) >> 1)   # 10 (20 / 2)
 
 ---
 
-## 55–60. Reflected and In-Place Bitwise Operators
+### 55–60. Reflected and In-Place Bitwise Operators
 
 Just like arithmetic, bitwise operations have reflected and in-place versions:
 
 - `__rand__`, `__ror__`, `__rxor__`, `__rlshift__`, `__rrshift__` — for right-side operations
 - `__iand__`, `__ior__`, `__ixor__`, `__ilshift__`, `__irshift__` — for `&=`, `|=`, `^=`, `<<=`, `>>=`
 
-### 💻 Example
+#### 💻 Example
 
 ```python
 class Flags:
@@ -3230,7 +3239,7 @@ print(f)   # 0b1011
 >
 > **Best practices.** Keep these operators **pure**: readers assume arithmetic has no side effects. If a rounding method is defined, make sure it agrees with the type's other numeric behaviour. For flag-like types, prefer the standard library's `enum.Flag` over hand-rolled bitwise classes — it gives you the operators, the naming, and a sensible `repr` for free.
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a `Vector2D` class holding `x` and `y` (floats) that exercises the full numeric-operator family:
 
@@ -3262,21 +3271,21 @@ except TypeError as e:
 
 ---
 
-# 🔢 PART I: Type Conversion
+## 🔢 PART I: Type Conversion
 
 *Turning your object into other basic types.*
 
 ---
 
-## 61. `__bool__` — True or False?
+### 61. `__bool__` — True or False?
 
-### 🎨 The story
+#### 🎨 The story
 A bouncer at a club asking, "Are you *something* or *nothing*?" `__bool__` answers.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Whenever `if my_object:` should behave in a special way (like "an empty cart is falsy").
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class ShoppingCart:
@@ -3295,11 +3304,11 @@ else:
 
 **Expected output:**
 
-```
+```text
 Cart is empty.
 ```
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -3309,7 +3318,7 @@ Cart is empty.
 | **If absent** | Python tries `__len__` — zero is falsy, non-zero truthy |
 | **If both absent** | The object is always truthy |
 
-### 💡 You usually do not need to write it
+#### 💡 You usually do not need to write it
 
 That fourth row is the useful one. If your class already has `__len__`, emptiness-based truthiness comes free:
 
@@ -3328,7 +3337,7 @@ print(not Playlist())                # True
 
 **Expected output:**
 
-```
+```text
 False
 True
 True
@@ -3336,7 +3345,7 @@ True
 
 Write `__bool__` explicitly only when truthiness is **not** the same as "non-empty" — for example a `Temperature` where `0` degrees is a perfectly valid, truthy reading, or a `Result` object that is falsy when it carries an error even though it has contents.
 
-### ⚠️ It must return a real `bool`
+#### ⚠️ It must return a real `bool`
 
 ```python
 class Sloppy:
@@ -3352,13 +3361,13 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 TypeError: __bool__ should return bool, returned int
 ```
 
 The fix is to wrap the expression: `return bool(self.count)` rather than `return self.count`. Note that a *comparison* such as `return len(self.items) > 0` already produces a real `bool`, which is why the `ShoppingCart` example above is correct.
 
-### ⚠️ The default is "always true" — and that hides bugs
+#### ⚠️ The default is "always true" — and that hides bugs
 
 A class with neither `__bool__` nor `__len__` is truthy even when it is conceptually empty:
 
@@ -3374,7 +3383,7 @@ if empty:
 
 **Expected output:**
 
-```
+```text
 Python thinks this box is non-empty
 ```
 
@@ -3382,9 +3391,9 @@ Python thinks this box is non-empty
 
 ---
 
-## 62. `__int__` — Convert to Integer
+### 62. `__int__` — Convert to Integer
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Temperature:
@@ -3399,9 +3408,9 @@ print(int(Temperature(36.6)))   # 36
 
 ---
 
-## 63. `__float__` — Convert to Float
+### 63. `__float__` — Convert to Float
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Distance:
@@ -3416,12 +3425,12 @@ print(float(Distance(5)))   # 5.0
 
 ---
 
-## 64. `__complex__` — Convert to Complex Number
+### 64. `__complex__` — Convert to Complex Number
 
-### 🎨 The story
+#### 🎨 The story
 A **complex number** is a number with two parts: a "real" part and an "imaginary" part (used in engineering, physics, and signal processing). In Python, `3+4j` means "3 real plus 4 imaginary." Ignore this if you don't do math-heavy work.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Point:
@@ -3435,17 +3444,17 @@ class Point:
 print(complex(Point(3, 4)))   # (3+4j)
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 Very few people ever need this. Skip unless you work with signal processing, electrical engineering, or advanced math.
 
 ---
 
-## 65. `__index__` — Use as an Index
+### 65. `__index__` — Use as an Index
 
-### 🎨 The story
+#### 🎨 The story
 Only integers can be used as list indices. `__index__` tells Python, "Treat me as an integer for indexing purposes."
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Position:
@@ -3461,11 +3470,11 @@ print(items[Position(2)])   # c
 
 **Expected output:**
 
-```
+```text
 c
 ```
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -3474,7 +3483,7 @@ c
 | **Must return** | An `int` — exactly. Returning a `float` raises `TypeError` |
 | **Bonus** | Defining it also makes `int(x)` work, even without `__int__` |
 
-### 💡 `__index__` vs `__int__` — a distinction with real consequences
+#### 💡 `__index__` vs `__int__` — a distinction with real consequences
 
 They look interchangeable and are not:
 
@@ -3499,7 +3508,7 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 2
 TypeError: list indices must be integers or slices, not float
 ```
@@ -3523,18 +3532,18 @@ TypeError: list indices must be integers or slices, not float
 
 ---
 
-# 📦 PART J: Container Behavior (Making Objects Act Like Lists)
+## 📦 PART J: Container Behavior (Making Objects Act Like Lists)
 
 *The methods that turn your object into a collection.*
 
 ---
 
-## 66. `__len__` — How Big Am I?
+### 66. `__len__` — How Big Am I?
 
-### 🎨 The story
+#### 🎨 The story
 Counting items in a shopping basket. `len()` uses this method.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Playlist:
@@ -3555,11 +3564,11 @@ print(len(p))   # 2
 
 **Expected output:**
 
-```
+```text
 2
 ```
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -3568,7 +3577,7 @@ print(len(p))   # 2
 | **Must return** | A **non-negative** `int` |
 | **If absent** | `len(x)` raises `TypeError: object of type 'X' has no len()` |
 
-### ⚠️ Two constraints Python enforces
+#### ⚠️ Two constraints Python enforces
 
 ```python
 class Negative:
@@ -3590,28 +3599,28 @@ for cls in (Negative, Floaty):
 
 **Expected output:**
 
-```
+```text
 ValueError: __len__() should return >= 0
 TypeError: 'float' object cannot be interpreted as an integer
 ```
 
 If your size is computed (`return self.end - self.start`), clamp it: `return max(0, self.end - self.start)`.
 
-### 💡 `__len__` should be cheap
+#### 💡 `__len__` should be cheap
 
 Callers assume `len()` is effectively instant, because it is for every built-in container. If computing your length means walking a linked list or querying a database, either cache the count or do not define `__len__` at all — a named `count()` method signals the cost honestly. A `len()` that performs a network round-trip will be called inside loops by people who have no idea.
 
 ---
 
-## 67. `__length_hint__` — An Educated Guess
+### 67. `__length_hint__` — An Educated Guess
 
-### 🎨 The story
+#### 🎨 The story
 Imagine you're delivering a truckload of items, but you don't know the exact count — you can estimate *"about 1,000."* That estimate helps the receiver prepare the right size of storage. `__length_hint__` is that estimate, used when Python doesn't know the exact size but a rough number helps.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Very rare. Used for custom streams or generators where the exact count is unknown but Python can benefit from a hint (for example, when converting to a list, Python can pre-allocate the right size).
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class MyStream:
@@ -3624,12 +3633,12 @@ print(operator.length_hint(MyStream()))   # 1000
 
 ---
 
-## 68. `__getitem__` — Reading by Key or Index
+### 68. `__getitem__` — Reading by Key or Index
 
-### 🎨 The story
+#### 🎨 The story
 Picking a specific book from a shelf by its position or its title. `__getitem__` handles `obj[key]`.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Playlist:
@@ -3650,11 +3659,11 @@ print(p[0])   # Song A
 
 **Expected output:**
 
-```
+```text
 Song A
 ```
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -3663,7 +3672,7 @@ Song A
 | **Should return** | The value, or raise `IndexError` (sequences) / `KeyError` (mappings) |
 | **If absent** | `x[key]` raises `TypeError: 'X' object is not subscriptable` |
 
-### 💡 You get slicing free here — but not always
+#### 💡 You get slicing free here — but not always
 
 The example above delegates to `self.songs[index]`, so slices already work, because `list` handles them:
 
@@ -3683,7 +3692,7 @@ print(p[::-1])      # ['D', 'C', 'B', 'A']
 
 **Expected output:**
 
-```
+```text
 A
 ['B', 'C']
 ['D', 'C', 'B', 'A']
@@ -3713,14 +3722,14 @@ print(p[1:3])       # Playlist(['B', 'C'])
 
 **Expected output:**
 
-```
+```text
 B
 Playlist(['B', 'C'])
 ```
 
 This is the pattern every well-behaved sequence follows: slicing a `list` gives a `list`, slicing a `str` gives a `str`. Returning a bare list from a `Playlist` slice would break method chaining for anyone using your class.
 
-### ⚠️ Raise `IndexError`, not something else — iteration depends on it
+#### ⚠️ Raise `IndexError`, not something else — iteration depends on it
 
 If you do not define `__iter__`, Python falls back to calling `__getitem__` with `0, 1, 2, …` and stops when it sees `IndexError`. Raise the wrong exception and the loop never terminates cleanly:
 
@@ -3742,7 +3751,7 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 a
 b
 ValueError escaped the loop: out of range
@@ -3752,9 +3761,9 @@ The two items print, then the `ValueError` escapes instead of ending the loop. C
 
 ---
 
-## 69. `__setitem__` — Writing by Key or Index
+### 69. `__setitem__` — Writing by Key or Index
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Playlist:
@@ -3778,9 +3787,9 @@ print(p[0])   # New Song
 
 ---
 
-## 70. `__delitem__` — Deleting by Key or Index
+### 70. `__delitem__` — Deleting by Key or Index
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Playlist:
@@ -3797,15 +3806,15 @@ print(p.songs)   # ['A', 'C']
 
 ---
 
-## 71. `__missing__` — Handling Missing Dictionary Keys
+### 71. `__missing__` — Handling Missing Dictionary Keys
 
-### 🎨 The story
+#### 🎨 The story
 When you look up a word in a paper dictionary and it isn't there, most people just close the book. But some dictionaries add a note: *"See related word instead."* `__missing__` lets you decide what happens when someone looks up a key you don't have — you can return a default instead of raising an error.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you want a dictionary-like object with smart defaults, fallbacks, or auto-generated values.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class SmartDict(dict):
@@ -3818,7 +3827,7 @@ print(d["hello"])     # hi
 print(d["missing"])   # 'missing' not found
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 - **`class SmartDict(dict):`** means "SmartDict is a **special kind of** regular dict." It gets all the normal dict behavior for free, then adds `__missing__` on top.
 - Normally, doing `d["missing"]` on a dictionary crashes with a `KeyError`. But now, thanks to `__missing__`, it politely returns a friendly message instead.
 
@@ -3826,9 +3835,9 @@ Real-world use: word counters that start at 0, cache lookups with defaults, conf
 
 ---
 
-## 72. `__contains__` — The `in` Operator
+### 72. `__contains__` — The `in` Operator
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Playlist:
@@ -3845,12 +3854,12 @@ print("Z" in p)   # False
 
 **Expected output:**
 
-```
+```text
 True
 False
 ```
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -3860,7 +3869,7 @@ False
 | **If absent** | Python iterates via `__iter__` comparing each element with `==`; failing that, indexes via `__getitem__` |
 | **`not in`** | Derived automatically — never define a separate method |
 
-### 💡 So why define it at all?
+#### 💡 So why define it at all?
 
 Because the fallback is a linear scan. Define `__contains__` when you can answer faster, or when membership means something other than "an element equals this":
 
@@ -3879,14 +3888,14 @@ print(2_000_000 in r)    # False
 
 **Expected output:**
 
-```
+```text
 True
 False
 ```
 
 Without `__contains__`, answering this would require generating a million values. This is exactly how the built-in `range` behaves: `999_999 in range(1_000_000)` is instant, because `range.__contains__` does arithmetic instead of iterating.
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a `Playlist` class wrapping a list of song titles that exercises conversion and the container protocol together:
 
@@ -3914,20 +3923,20 @@ print(p[TrackNumber(1)])      # Yesterday — TrackNumber used as an index
 
 ---
 
-# 🔁 PART K: Iteration
+## 🔁 PART K: Iteration
 
 *Making your object usable in `for` loops.*
 
 ---
 
-## 73. `__iter__` — Start of the Journey 🟢
+### 73. `__iter__` — Start of the Journey 🟢
 
-## 74. `__next__` — The Next Item 🟡
+### 74. `__next__` — The Next Item 🟡
 
-### 🎨 The story
+#### 🎨 The story
 A Pez dispenser. `__iter__` is picking it up and getting ready; `__next__` is clicking out one candy. When the dispenser is empty, it says so — and that "I'm empty" signal is `StopIteration`.
 
-### First: iterable vs iterator — the distinction everything rests on
+#### First: iterable vs iterator — the distinction everything rests on
 
 These two words are used interchangeably in casual speech and they are not the same thing.
 
@@ -3960,7 +3969,7 @@ except StopIteration:
 
 **Expected output:**
 
-```
+```text
 True
 False
 list_iterator
@@ -3983,7 +3992,7 @@ doing the looping, and it remembers *where it has got to*. `for x in thing:` cal
 to get an iterator, then calls `next()` on it until `StopIteration`. A list is iterable but is *not*
 its own iterator — which is exactly why you can loop over the same list twice.
 
-### ⚠️ The classic bug: an object that is its own iterator
+#### ⚠️ The classic bug: an object that is its own iterator
 
 The tempting shortcut is `__iter__` returning `self`. It works for one loop and then quietly fails:
 
@@ -4013,7 +4022,7 @@ print(pairs)          # 3 pairs, not the 9 you expected
 
 **Expected output:**
 
-```
+```text
 [3, 2, 1]
 [3, 2, 1]
 [(3, 3), (3, 2), (3, 1)]
@@ -4033,7 +4042,7 @@ So the outer loop ran exactly **once** instead of three times, and the result is
 nobody checked. The same failure hits `zip(c, c)`, passing the object to two functions, and any
 library that iterates its argument twice.
 
-### ✅ The fix: make `__iter__` return a *fresh* iterator
+#### ✅ The fix: make `__iter__` return a *fresh* iterator
 
 **Objective:** a countdown that can be iterated any number of times, including nested.
 
@@ -4057,7 +4066,7 @@ print([(a, b) for a in c for b in c])
 
 **Expected output:**
 
-```
+```text
 [3, 2, 1]
 [3, 2, 1]
 [(3, 3), (3, 2), (3, 1), (2, 3), (2, 2), (2, 1), (1, 3), (1, 2), (1, 1)]
@@ -4067,7 +4076,7 @@ Nine pairs, as expected. Each `for` calls `__iter__`, and each call produces an 
 
 **Why `yield` is the idiomatic answer.** A function containing `yield` is a **generator function**: calling it returns a new generator object that already implements `__iter__` and `__next__`, remembers its position between calls, and raises `StopIteration` when the function body ends. You get the whole iterator protocol from one keyword, with no shared-state bug available to write.
 
-### 💻 When you *should* write `__next__` by hand
+#### 💻 When you *should* write `__next__` by hand
 
 Two cases justify the longer form:
 
@@ -4098,7 +4107,7 @@ print(list(cur))     # []  — correctly exhausted, like a real cursor
 
 **Expected output:**
 
-```
+```text
 ['row1', 'row2']
 []
 ```
@@ -4109,7 +4118,7 @@ The empty second result is now *intended* behaviour, matching how files and data
 
 Otherwise, use `yield`.
 
-### 🧾 The contracts
+#### 🧾 The contracts
 
 **`__iter__`**
 
@@ -4128,7 +4137,7 @@ Otherwise, use `yield`.
 | **Must raise** | `StopIteration` when exhausted — and keep raising it on every later call |
 | **Note** | Inside a generator, `return value` raises `StopIteration(value)` automatically |
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a `Fibonacci` class taking a `limit`, iterable **any number of times**, yielding Fibonacci numbers below that limit.
 
@@ -4142,9 +4151,9 @@ print(list(fib))    # the same list again — not []
 
 ---
 
-## 75. `__reversed__` — Iterate Backward
+### 75. `__reversed__` — Iterate Backward
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Deck:
@@ -4160,14 +4169,14 @@ for card in reversed(Deck()):
 
 **Expected output:**
 
-```
+```text
 J
 Q
 K
 A
 ```
 
-### 🧾 The contract
+#### 🧾 The contract
 
 | | |
 |---|---|
@@ -4177,7 +4186,7 @@ A
 | **If absent** | Python uses `__len__` + `__getitem__`, counting down from `len(x) - 1` |
 | **If neither** | `TypeError: argument to reversed() must be a sequence` |
 
-### 💡 You often do not need it
+#### 💡 You often do not need it
 
 If your class already has `__len__` and integer `__getitem__`, `reversed()` works with no extra code:
 
@@ -4197,7 +4206,7 @@ print(list(reversed(Deck())))     # ['J', 'Q', 'K', 'A']
 
 **Expected output:**
 
-```
+```text
 ['J', 'Q', 'K', 'A']
 ```
 
@@ -4217,7 +4226,7 @@ Define `__reversed__` explicitly when going backwards can be done more efficient
 >
 > **Best practices.** Make `__iter__` a generator function so each call produces an independent iterator. `__getitem__` **must raise `IndexError`** when an index is out of range — the old iteration protocol depends on it, and raising the wrong exception turns a `for` loop into an infinite one or a crash. `__len__` must return a non-negative `int`. If you implement several of these, consider inheriting from `collections.abc.Sequence`, which derives the rest for you.
 
-### 🧪 Check your understanding
+#### 🧪 Check your understanding
 
 1. Why must `__iter__` return a fresh iterator rather than `self`?
 2. What happens if `__getitem__` raises `KeyError` instead of `IndexError` for an out-of-range index?
@@ -4237,18 +4246,18 @@ Define `__reversed__` explicitly when going backwards can be done more efficient
 
 ---
 
-# ⚡ PART L: Callable Objects
+## ⚡ PART L: Callable Objects
 
 *Making your objects usable like functions.*
 
 ---
 
-## 76. `__call__` — Object as a Function
+### 76. `__call__` — Object as a Function
 
-### 🎨 The story
+#### 🎨 The story
 A Swiss Army knife is an object — but you can also *use* it directly for tasks. `__call__` gives your objects that same double life.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Multiplier:
@@ -4264,23 +4273,23 @@ print(double(10))   # 20
 print(triple(10))   # 30
 ```
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you need a function-like thing that also remembers state — counters, configurable tools, machine learning models.
 
 ---
 
-# 🚪 PART M: Context Managers (`with` Statement)
+## 🚪 PART M: Context Managers (`with` Statement)
 
 *Automatic setup and cleanup.*
 
 ---
 
-## 77. `__enter__` — Setting Up
+### 77. `__enter__` — Setting Up
 
-### 🎨 The story
+#### 🎨 The story
 Checking into a hotel room. Lights turn on, keycard given.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class DatabaseConnection:
@@ -4301,12 +4310,12 @@ with DatabaseConnection() as db:
 
 ---
 
-## 78. `__exit__` — Cleaning Up 🟢
+### 78. `__exit__` — Cleaning Up 🟢
 
-### 🔍 When to use it
+#### 🔍 When to use it
 For anything that needs guaranteed cleanup — files, connections, locks, temporary state.
 
-### 🧾 The contract — read the return-value row carefully
+#### 🧾 The contract — read the return-value row carefully
 
 | | |
 |---|---|
@@ -4318,7 +4327,7 @@ For anything that needs guaranteed cleanup — files, connections, locks, tempor
 
 That last row is the part most guides omit, and it is the one that causes silent data loss.
 
-### ⚠️ Returning a truthy value from `__exit__` swallows exceptions
+#### ⚠️ Returning a truthy value from `__exit__` swallows exceptions
 
 ```python
 class Swallower:
@@ -4337,7 +4346,7 @@ print("execution continues as if nothing happened")
 
 **Expected output:**
 
-```
+```text
 __exit__ saw: ValueError
 execution continues as if nothing happened
 ```
@@ -4366,14 +4375,14 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 cleaning up
 caught outside: boom
 ```
 
 Cleanup still happened — that is the guarantee — but the error reached the caller.
 
-### 💡 Deliberate suppression: return `True` *selectively*
+#### 💡 Deliberate suppression: return `True` *selectively*
 
 Suppressing is occasionally exactly right. The rule is to suppress one specific exception type, never everything:
 
@@ -4403,7 +4412,7 @@ except PermissionError as e:
 
 **Expected output:**
 
-```
+```text
 missing config ignored, using defaults
 PermissionError still propagates: access denied
 ```
@@ -4420,11 +4429,11 @@ print("reached")
 
 **Expected output:**
 
-```
+```text
 reached
 ```
 
-### 💡 The three arguments let you react to failure
+#### 💡 The three arguments let you react to failure
 
 Because `__exit__` is told *why* the block ended, a context manager can commit on success and roll back on error — the pattern behind every database transaction:
 
@@ -4464,14 +4473,14 @@ print(t2.log)
 
 **Expected output:**
 
-```
+```text
 ['BEGIN', 'WRITE alice', 'COMMIT']
 ['BEGIN', 'WRITE bob', 'ROLLBACK (RuntimeError: disk full)']
 ```
 
 Returning `False` is deliberate: the transaction rolls back **and** the caller still learns it failed.
 
-### 💡 The shortcut: `@contextlib.contextmanager`
+#### 💡 The shortcut: `@contextlib.contextmanager`
 
 For a context manager with no other methods, the decorator form is shorter and harder to get wrong:
 
@@ -4499,7 +4508,7 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 Opening users
 Using users
 Closing users
@@ -4519,7 +4528,7 @@ The connection closes in both cases. **The `try`/`finally` is mandatory** — wi
 | You need to inspect or selectively suppress the exception | `__enter__`/`__exit__` |
 | Cleanup for an existing object with a `close()` method | `contextlib.closing` |
 
-### ⚠️ `__enter__` need not return `self`
+#### ⚠️ `__enter__` need not return `self`
 
 A common misreading is that `with X() as x` always binds the object itself. It binds whatever `__enter__` returns:
 
@@ -4538,7 +4547,7 @@ with Opener() as value:
 
 **Expected output:**
 
-```
+```text
 the payload
 <class 'str'>
 ```
@@ -4547,7 +4556,7 @@ This is why `with open("f.txt") as f` gives you a file object, and why `with loc
 
 **The related trap:** an `__enter__` with no `return` binds `None`, so `with MyThing() as t:` leaves `t` as `None` and the next line fails with `AttributeError: 'NoneType' object has no attribute ...`. If you see that, check for a missing `return self`.
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a `Timer` context manager that prints the elapsed time on exit, reporting whether the block succeeded or raised — and that never hides an exception.
 
@@ -4568,12 +4577,12 @@ except ValueError:
 
 ---
 
-## 79. `__aenter__` and 80. `__aexit__` — Async Context Managers
+### 79. `__aenter__` and 80. `__aexit__` — Async Context Managers
 
-### 🎨 The story
+#### 🎨 The story
 The same idea, but for asynchronous code (running things in parallel without blocking).
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import asyncio
@@ -4605,7 +4614,7 @@ asyncio.run(main())
 >
 > **Best practices.** The critical rule is the **return value of `__exit__`**: returning a truthy value **swallows the exception**, which is almost never what you want and produces failures that vanish without trace. Return `None` (or `False`) unless you are deliberately suppressing a specific exception type, and then do it selectively. Note that `__enter__` need not return `self` — returning the underlying resource is often more useful.
 
-### 🧪 Check your understanding
+#### 🧪 Check your understanding
 
 1. Your context manager's `__exit__` ends with `return True`. What have you just done?
 2. Why is a context manager better than a `try`/`finally` written by each caller?
@@ -4619,7 +4628,7 @@ asyncio.run(main())
 
 </details>
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a `RateLimiter` that combines `__call__` with an **async** context manager:
 
@@ -4657,21 +4666,21 @@ asyncio.run(main())
 
 ---
 
-# 🔍 PART N: Attribute Access
+## 🔍 PART N: Attribute Access
 
 *Controlling what happens when someone reads or writes attributes.*
 
 ---
 
-## 81. `__getattr__` — When Attribute Is Missing
+### 81. `__getattr__` — When Attribute Is Missing
 
-### 🎨 The story
+#### 🎨 The story
 A helpful receptionist who, when asked about something the office does not have, provides a friendly default instead of a rude error.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you want to provide fallback behavior for missing attributes.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Flexible:
@@ -4684,11 +4693,11 @@ print(f.anything)   # 'anything' is not set
 
 **Expected output:**
 
-```
+```text
 'anything' is not set
 ```
 
-### 🧾 The contract — and the crucial word "missing"
+#### 🧾 The contract — and the crucial word "missing"
 
 | | |
 |---|---|
@@ -4723,13 +4732,13 @@ print(d.missing)          # <fallback for 'missing'>         — fallback runs
 
 **Expected output:**
 
-```
+```text
 I am a real class attribute
 I am a real instance attribute
 <fallback for 'missing'>
 ```
 
-### ⚠️ Trap 1: always raise `AttributeError` for names you cannot supply
+#### ⚠️ Trap 1: always raise `AttributeError` for names you cannot supply
 
 The `Flexible` example returns a string for *every* name, including dunders Python probes internally. That breaks `copy`, `pickle`, `hasattr`, and interactive completion, because those tests rely on a missing attribute actually being missing:
 
@@ -4746,7 +4755,7 @@ print(t.__deepcopy__)                     # 'not set' — confuses copy.deepcopy
 
 **Expected output:**
 
-```
+```text
 True
 True
 '__deepcopy__' is not set
@@ -4785,7 +4794,7 @@ except AttributeError as e:
 
 **Expected output:**
 
-```
+```text
 localhost
 True
 False
@@ -4794,7 +4803,7 @@ AttributeError: 'Config' object has no attribute 'nonsense'
 
 **Two details worth naming.** `hasattr` is literally "try the lookup, return `False` if it raises `AttributeError`" — so raising correctly is what makes `hasattr` truthful. And `raise ... from None` suppresses the chained "During handling of the above exception" `KeyError`, which would otherwise leak your storage mechanism into the traceback.
 
-### ⚠️ Trap 2: infinite recursion via `self.something`
+#### ⚠️ Trap 2: infinite recursion via `self.something`
 
 If `__getattr__` touches an attribute that does not exist yet, it calls itself:
 
@@ -4812,7 +4821,7 @@ except RecursionError:
 
 **Expected output:**
 
-```
+```text
 RecursionError: __getattr__ called itself until the stack ran out
 ```
 
@@ -4837,21 +4846,21 @@ except AttributeError as e:
 
 **Expected output:**
 
-```
+```text
 AttributeError: anything
 ```
 
 ---
 
-## 82. `__getattribute__` — Every Attribute Read
+### 82. `__getattribute__` — Every Attribute Read
 
-### 🎨 The story
+#### 🎨 The story
 Every single time someone reads any attribute — even `obj.x` — this method runs. It's like a **security camera** watching every access. Powerful, but easy to break.
 
-### ⚠️ Warning
+#### ⚠️ Warning
 This runs for **every** attribute access, not just missing ones. Very easy to create infinite loops.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Logged:
@@ -4868,7 +4877,7 @@ print(obj.x)
 # 10
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 - **`super().__getattribute__(name)`** means: *"Let Python's normal machinery do the actual lookup — I just want to add my log message before it happens."*
 - Why `super()`? Because if you tried to write `return self.x` inside `__getattribute__`, that would trigger `__getattribute__` again... which would trigger it again... infinite loop! Using `super()` is the safe way to escape.
 
@@ -4876,12 +4885,12 @@ Think of it like sneaking a note into someone else's process without breaking th
 
 ---
 
-## 83. `__setattr__` — Every Attribute Write
+### 83. `__setattr__` — Every Attribute Write
 
-### 🎨 The story
+#### 🎨 The story
 Every time someone writes to an attribute (`obj.x = 5`), this method runs first. Perfect for **logging, validation, or blocking** certain writes.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Logged:
@@ -4893,20 +4902,20 @@ obj = Logged()
 obj.x = 5   # Setting x = 5
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 Same trap as `__getattribute__` — if you write `self.name = value` directly inside `__setattr__`, it triggers itself in an infinite loop. `super().__setattr__(name, value)` is the safe way to actually store the value.
 
 ---
 
-## 84. `__delattr__` — Deleting Attributes
+### 84. `__delattr__` — Deleting Attributes
 
-### 🎨 The story
+#### 🎨 The story
 Runs whenever someone uses `del obj.x`. Lets you block or log deletions.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you want to protect certain attributes from being deleted, or log deletions.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Protected:
@@ -4921,15 +4930,15 @@ del p.x   # Deleting x
 
 ---
 
-## 85. `__dir__` — Custom `dir()` Output
+### 85. `__dir__` — Custom `dir()` Output
 
-### 🎨 The story
+#### 🎨 The story
 `dir(obj)` normally lists all methods and attributes of an object — useful for exploration. `__dir__` lets you customize that list, showing only what you want users to see.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When building objects with many "hidden" attributes and you want `dir()` to show only the public ones.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Custom:
@@ -4941,22 +4950,22 @@ print(dir(Custom()))   # ['attributes', 'custom', 'only']
 
 ---
 
-## 86. `__slots__` — Limiting Attributes 🟡
+### 86. `__slots__` — Limiting Attributes 🟡
 
 > **Note on category:** `__slots__` is a **special class attribute you assign**, not a special method you define. It appears in this part because it changes how attribute access works, but you never write `def __slots__`.
 
-### 🎨 The story
+#### 🎨 The story
 A normal Python object carries a drawer (`__dict__`) that can hold anything you toss in, at any time. `__slots__` replaces the drawer with a small rack of **labelled, fixed slots** — one per declared name. Nothing else fits.
 
 **Where the analogy holds:** the space is allocated up front, and unlisted names are refused.
 
 **Where it misleads:** the saving is not just the space of the extra names. Removing `__dict__` removes a whole dictionary object per instance, which is why the effect is large and why it only matters when instance *count* is large.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - You create very large numbers of small objects and memory is measurably a problem.
 - You want typos like `p.xyz = 5` to raise instead of silently creating a useless attribute.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Point:
@@ -4978,15 +4987,15 @@ except AttributeError as e:
 
 **Expected output:**
 
-```
+```text
 1 2
 AttributeError: 'Point' object has no attribute 'z'
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 Normally Python lets you attach **any** new attribute to an object at any time, because each object carries its own dictionary. `__slots__` says: *"only these names, and no dictionary."* That is both stricter and smaller.
 
-### 💻 Measure the saving yourself
+#### 💻 Measure the saving yourself
 
 Do not take the memory claim on faith — this is measurable in a few lines:
 
@@ -5017,7 +5026,7 @@ print(f"has __dict__: {hasattr(a, '__dict__')} / {hasattr(b, '__dict__')}")
 
 **Measured output on CPython 3.12.10, 64-bit Windows:**
 
-```
+```text
 with __dict__: 48 + 296 = 344 bytes
 with __slots__: 48 bytes
 saved per instance: 296 bytes
@@ -5034,7 +5043,7 @@ What *does* generalise is the shape of the result: the per-instance dictionary d
 
 Note also that `sys.getsizeof` does not count the *contents* — the ints, strings, or lists the attributes point to are shared and counted separately. `__slots__` shrinks the container, not the data.
 
-### ⚠️ Five things `__slots__` breaks
+#### ⚠️ Five things `__slots__` breaks
 
 **1. A subclass without its own `__slots__` gets a `__dict__` back**, silently undoing the benefit:
 
@@ -5052,7 +5061,7 @@ print(hasattr(c, "__dict__"))     # True
 
 **Expected output:**
 
-```
+```text
 True
 ```
 
@@ -5072,7 +5081,7 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 ValueError: 'x' in __slots__ conflicts with class variable
 ```
 
@@ -5097,7 +5106,7 @@ print(weakref.ref(CanRef()) is not None)   # True
 
 **Expected output:**
 
-```
+```text
 TypeError: cannot create weak reference to 'NoRef' object
 True
 ```
@@ -5121,7 +5130,7 @@ except AttributeError as e:
 
 **Expected output:**
 
-```
+```text
 xy
 1
 AttributeError: 'Oops' object has no attribute 'x'
@@ -5133,7 +5142,7 @@ CPython special-cases a plain string here rather than iterating it, so `__slots_
 
 **5. Multiple inheritance from two slotted classes fails** if both define non-empty slots — Python cannot lay out two independent slot tables. `__slots__ = ()` on a mixin is the workaround.
 
-### 💡 Compare with `@dataclass(slots=True)` — Python 3.10+
+#### 💡 Compare with `@dataclass(slots=True)` — Python 3.10+
 
 Since 3.10, dataclasses can generate the slots for you, which avoids the repetition and the single-string trap:
 
@@ -5158,7 +5167,7 @@ except AttributeError as e:
 
 **Expected output:**
 
-```
+```text
 Point(x=1, y=2)
 False
 ('x', 'y')
@@ -5169,7 +5178,7 @@ This is the form to prefer for new code: you get `__init__`, `__repr__`, `__eq__
 
 ---
 
-# 🧬 PART O: Descriptors
+## 🧬 PART O: Descriptors
 
 *Advanced: controlling attribute behavior at the class level.*
 
@@ -5181,19 +5190,19 @@ This is the form to prefer for new code: you get `__init__`, `__repr__`, `__eq__
 
 ---
 
-## 87. `__get__` — Custom Attribute Reading
+### 87. `__get__` — Custom Attribute Reading
 
-## 88. `__set__` — Custom Attribute Writing
+### 88. `__set__` — Custom Attribute Writing
 
-## 89. `__delete__` — Custom Attribute Deletion
+### 89. `__delete__` — Custom Attribute Deletion
 
-### 🎨 The story
+#### 🎨 The story
 Think of a smart meter on your electricity supply. Every time electricity flows in or out, the meter records it. Descriptors are like smart meters for attributes — they intercept every read and write.
 
-### 🔍 When to use them
+#### 🔍 When to use them
 When building frameworks. In everyday code, you'll almost never need them.
 
-### 💻 How to use them
+#### 💻 How to use them
 
 ```python
 class Positive:
@@ -5222,7 +5231,7 @@ print(p.price, p.stock)   # 10 5
 # p.price = -1   # ValueError: price must be positive
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 - We create a `Positive` guard that only allows positive numbers.
 - Inside `Product`, we say `price = Positive()` and `stock = Positive()` — meaning both `price` and `stock` are guarded.
 - Now, `p.price = -1` gets **rejected** because the guard says no.
@@ -5241,7 +5250,7 @@ This is how form-validation libraries and database ORMs (like Django's models) e
 >
 > **Best practices.** Inside `__getattr__` or `__setattr__`, never touch `self.something` directly — that re-enters the same hook and recurses until the stack overflows. Use `object.__setattr__(self, name, value)` or `super().__getattr__`. Always raise `AttributeError` (not `KeyError`) for names you cannot supply, because `hasattr`, `copy`, and `pickle` all depend on that. Prefer `property` to a hand-written descriptor unless the logic is genuinely reused.
 
-### 🧪 Check your understanding
+#### 🧪 Check your understanding
 
 1. Why does `self.value = x` inside `__setattr__` hang or crash?
 2. What is the difference between `__getattr__` and `__getattribute__`?
@@ -5255,7 +5264,7 @@ This is how form-validation libraries and database ORMs (like Django's models) e
 
 </details>
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a `PositiveNumber` descriptor and a `Sensor` class that uses it, exercising both descriptors and the attribute-access hooks:
 
@@ -5283,7 +5292,7 @@ print(type(Sensor.reading).__name__)    # PositiveNumber — class access return
 
 ---
 
-# 🏛️ PART P: Class and Metaclass Magic
+## 🏛️ PART P: Class and Metaclass Magic
 
 *Advanced customization of classes themselves.*
 
@@ -5297,15 +5306,15 @@ print(type(Sensor.reading).__name__)    # PositiveNumber — class access return
 
 ---
 
-## 90. `__instancecheck__` — Custom `isinstance()`
+### 90. `__instancecheck__` — Custom `isinstance()`
 
-### 🎨 The story
+#### 🎨 The story
 Normally, `isinstance(x, Dog)` asks: *"Is `x` a Dog?"* With `__instancecheck__`, you can **redefine what counts as being a certain type** — regardless of actual inheritance.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When building abstract type systems that don't rely on real inheritance (like `abc.ABC`).
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class EvenMeta(type):
@@ -5319,17 +5328,17 @@ print(isinstance(4, Even))   # True
 print(isinstance(5, Even))   # False
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 We built a fake class called `Even` that answers *"yes, I'm an instance of Even"* only for even numbers. Now `isinstance(4, Even)` is `True` and `isinstance(5, Even)` is `False` — even though `4` and `5` are plain integers with no relationship to `Even`. Weird, powerful, and almost never needed in normal code.
 
 ---
 
-## 91. `__subclasscheck__` — Custom `issubclass()`
+### 91. `__subclasscheck__` — Custom `issubclass()`
 
-### 🎨 The story
+#### 🎨 The story
 Same idea as `__instancecheck__`, but for `issubclass()` — you can control what counts as being a **subclass**.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class MyMeta(type):
@@ -5343,20 +5352,20 @@ print(issubclass(str, Universal))   # True
 print(issubclass(int, Universal))   # True
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 This example is silly on purpose — `Universal` claims **everything** is a subclass of it. In real code, you'd write specific rules, like "accept it as a subclass if it has certain methods."
 
 ---
 
-## 92. `__subclasshook__` — Duck-Typing Hook
+### 92. `__subclasshook__` — Duck-Typing Hook
 
-### 🎨 The story
+#### 🎨 The story
 "If it walks like a duck and quacks like a duck, it's a duck." `__subclasshook__` lets an abstract class say: *"I don't care about inheritance — just check if the object has the right methods."*
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When building abstract base classes (ABCs) that identify types by capability, not by inheritance.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 from abc import ABC
@@ -5374,20 +5383,20 @@ print(issubclass(str, Sized))     # True — str has __len__
 print(issubclass(int, Sized))     # False — int doesn't
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 We're saying: *"Any class that has a `__len__` method counts as `Sized`, no matter what its family tree looks like."* This is Python's way of doing type-checking based on **capability** instead of **ancestry**.
 
 ---
 
-## 93. `__class_getitem__` — Generic Class Syntax
+### 93. `__class_getitem__` — Generic Class Syntax
 
-### 🎨 The story
+#### 🎨 The story
 Ever seen `list[int]` or `dict[str, int]` in type hints? That square-bracket syntax is powered by `__class_getitem__`. It lets your class accept parameters inside brackets, like a template.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When building generic containers or type hint systems.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Container:
@@ -5398,17 +5407,17 @@ print(Container[int])   # Container of <class 'int'>
 print(Container[str])   # Container of <class 'str'>
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 Normally `MyClass[X]` would be an error. But if you define `__class_getitem__`, Python calls it when someone uses that syntax. This is how `list[int]` (meaning "a list of ints") became valid Python.
 
 ---
 
-## 94. `__mro_entries__` — Custom MRO Entries
+### 94. `__mro_entries__` — Custom MRO Entries
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Rare — used when a class is not a proper class but should still work in an inheritance list. Safe to skip.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class GenericAlias:
@@ -5430,7 +5439,7 @@ print(isinstance(Config(), dict))
 
 **Expected output:**
 
-```
+```text
 (<class '__main__.Config'>, <class 'dict'>, <class 'object'>)
 True
 ```
@@ -5439,12 +5448,12 @@ This is exactly the mechanism behind `typing.Generic[T]`: `Generic[T]` is not a 
 
 ---
 
-## 95. `__prepare__` — Metaclass Namespace Preparation
+### 95. `__prepare__` — Metaclass Namespace Preparation
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Very advanced. Used inside metaclasses to control how the class body's namespace is built. Almost no one writes this. Safe to skip.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class RecordingMeta(type):
@@ -5464,7 +5473,7 @@ class Thing(metaclass=RecordingMeta):
 
 **Expected output** (Python 3.13+ also injects `__firstlineno__` and `__static_attributes__` into every class namespace, so the exact key list is version-dependent; `'a'` and `'b'` are always there):
 
-```
+```text
 preparing namespace for Thing
 namespace keys: ['__module__', '__qualname__', 'a', 'b']
 ```
@@ -5486,7 +5495,7 @@ namespace keys: ['__module__', '__qualname__', 'a', 'b']
 
 ---
 
-# ⏳ PART Q: Async / Await
+## ⏳ PART Q: Async / Await
 
 *For asynchronous programming.*
 
@@ -5500,15 +5509,15 @@ Async is used heavily in **web servers, APIs, and network apps**. If you don't w
 
 ---
 
-## 96. `__await__` — Making Objects Awaitable
+### 96. `__await__` — Making Objects Awaitable
 
-### 🎨 The story
+#### 🎨 The story
 `await` is the keyword you put in front of something to say *"wait for this to finish, but let other work happen in the meantime."* `__await__` is what makes your object usable with `await`.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Almost never directly — most people use `async def` functions instead, which handle `__await__` automatically. Only used when building async libraries.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class MyAwaitable:
@@ -5520,10 +5529,10 @@ class MyAwaitable:
 # result = await MyAwaitable()
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 Very advanced. In everyday async code, you'd just write `async def my_task():` and use `await`. Only library authors define `__await__` themselves.
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a small duck-typed "shape" plugin system that exercises the class/metaclass family:
 
@@ -5562,17 +5571,17 @@ asyncio.run(main())                     # pong
 
 ---
 
-## 97. `__aiter__` — Async Iteration Start
+### 97. `__aiter__` — Async Iteration Start
 
-## 98. `__anext__` — Async Next Item
+### 98. `__anext__` — Async Next Item
 
-### 🎨 The story
+#### 🎨 The story
 Just like `__iter__` and `__next__` power regular `for` loops, `__aiter__` and `__anext__` power `async for` loops — where each step might involve waiting (like fetching pages from a website).
 
-### 🔍 When to use them
+#### 🔍 When to use them
 When building an async data source — reading rows from a database one at a time, streaming API results, following a live feed.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import asyncio
@@ -5602,7 +5611,7 @@ asyncio.run(main())
 # 3
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 This is a counter that "waits 0.1 seconds" between each number — imitating a real-world async task like fetching data over the internet. `async for` walks through the counter, pausing at each step without blocking other work.
 
 > ### 🧭 In practice — async and await
@@ -5620,7 +5629,7 @@ This is a counter that "waits 0.1 seconds" between each number — imitating a r
 
 ---
 
-# 💾 PART R: Copying and Pickling
+## 💾 PART R: Copying and Pickling
 
 *Saving, loading, and duplicating objects.*
 
@@ -5650,7 +5659,7 @@ pickle.loads(payload)
 
 **Expected output:**
 
-```
+```text
 payload built; nothing has run yet
 this ran during pickle.loads, not during dumps
 ```
@@ -5675,15 +5684,15 @@ The rest of this part explains how the pickling hooks work, which you need for t
 
 ---
 
-## 99. `__copy__` — Shallow Copy
+### 99. `__copy__` — Shallow Copy
 
-### 🎨 The story
+#### 🎨 The story
 Making a **duplicate** of an object. A "shallow" copy makes a new outer box but the items inside are still shared with the original. Like photocopying a folder — you get a new folder, but the photos inside are the same photos.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you want to control how your objects are duplicated by `copy.copy()`.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import copy
@@ -5702,15 +5711,15 @@ print(b2.items)   # [1, 2, 3]
 
 ---
 
-## 100. `__deepcopy__` — Deep Copy
+### 100. `__deepcopy__` — Deep Copy
 
-### 🎨 The story
+#### 🎨 The story
 A "deep" copy duplicates **everything** — the outer box AND everything inside, recursively. Nothing is shared with the original.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you have nested data (lists of lists, dicts of objects) and need a fully independent duplicate.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import copy
@@ -5729,22 +5738,22 @@ print(b1.items)   # [[1, 2], [3, 4]]  — original unaffected
 print(b2.items)   # [[1, 2, 99], [3, 4]]
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 The `memo` argument is Python's way of tracking which objects have already been copied (to handle circular references). You just pass it along — you rarely need to think about it.
 
 ---
 
-## 101. `__getstate__` — What to Save
+### 101. `__getstate__` — What to Save
 
-## 102. `__setstate__` — How to Restore
+### 102. `__setstate__` — How to Restore
 
-### 🎨 The story
+#### 🎨 The story
 When Python saves your object with `pickle`, `__getstate__` decides **what** to save. `__setstate__` decides **how to rebuild** the object from that saved data. Together, they're like a snapshot-and-restore pair.
 
-### 🔍 When to use them
+#### 🔍 When to use them
 When your object has data you **don't want saved** (temporary caches, open network connections, passwords).
 
-### 💻 How to use them
+#### 💻 How to use them
 
 ```python
 import pickle
@@ -5773,17 +5782,17 @@ print(loaded.temp_cache)   # None
 
 ---
 
-## 103. `__reduce__` — Custom Pickling
+### 103. `__reduce__` — Custom Pickling
 
-## 104. `__reduce_ex__` — Version-Aware Custom Pickling
+### 104. `__reduce_ex__` — Version-Aware Custom Pickling
 
-### 🎨 The story
+#### 🎨 The story
 The advanced version of `__getstate__`/`__setstate__`. Gives you full control over exactly how pickle recreates your object.
 
-### 🔍 When to use them
+#### 🔍 When to use them
 Very rarely. Only when the default pickling behavior can't handle your object (like objects with unusual construction).
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import pickle
@@ -5814,7 +5823,7 @@ print(v.value)
 
 **Expected output:**
 
-```
+```text
 3 4
 42
 ```
@@ -5823,19 +5832,19 @@ print(v.value)
 
 ---
 
-# 🗂️ PART S: Path-Like Objects
+## 🗂️ PART S: Path-Like Objects
 
 ---
 
-## 105. `__fspath__` — File System Path Protocol
+### 105. `__fspath__` — File System Path Protocol
 
-### 🎨 The story
+#### 🎨 The story
 Python has many functions that expect a file path (like `open()`, `os.listdir()`). If you build a custom class to represent a path, `__fspath__` lets it work with ALL of those functions automatically — no conversion needed.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you build a custom path class (like `pathlib.Path` does).
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import os
@@ -5855,7 +5864,7 @@ print(os.fspath(p))   # /tmp/file.txt
 # os.listdir(MyPath("/tmp"))  →  works!
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 Without `__fspath__`, you'd have to write `open(p.path)`. With it, you can just write `open(p)` and Python figures it out. Same idea as when your object learns to speak Python's native language.
 
 > ### 🧭 In practice — copying, pickling, and path-like objects (Parts R–S)
@@ -5870,7 +5879,7 @@ Without `__fspath__`, you'd have to write `open(p.path)`. With it, you can just 
 >
 > **Best practices.** Know the difference between shallow and deep copying and be explicit about which your type needs: a shallow copy **shares** the nested objects, which is very often not what “copy” meant to the caller. Prefer `__fspath__` to a `str()` conversion, because it is the protocol the whole standard library actually checks for.
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a `Deck` class (a mutable list of `cards`) that exercises async iteration, copying, pickling, and the path protocol together:
 
@@ -5907,7 +5916,7 @@ print(restored.shuffle_rng is not None)  # True — rebuilt fresh, not the pickl
 
 ---
 
-# 🎁 PART T: The Grand Finale — A Complete Example
+## 🎁 PART T: The Grand Finale — A Complete Example
 
 This part brings the whole guide together in one class. Unlike the short examples earlier — which stripped away guards to keep a single idea visible — **this is the production-quality form**, with every type check, every `NotImplemented`, and every contract honoured.
 
@@ -6089,7 +6098,7 @@ print(bool(a))               # True
 
 **Expected output:**
 
-```
+```text
 (4, 6)
 (2, 2)
 (6, 8)
@@ -6134,7 +6143,7 @@ for description, thunk in [
 
 **Expected output:**
 
-```
+```text
 add a string         -> TypeError: unsupported operand type(s) for +: 'Vector' and 'str'
 multiply by vector   -> TypeError: unsupported operand type(s) for *: 'Vector' and 'Vector'
 divide by zero       -> ZeroDivisionError: cannot divide a Vector by zero
@@ -6204,7 +6213,7 @@ That gives you `__init__`, `__repr__`, `__eq__`, and `__hash__` — which is gen
 
 ---
 
-# 📦 PART U: Package & Module Dunders
+## 📦 PART U: Package & Module Dunders
 
 *Everything you have learned so far lives inside classes. But Python has another whole family of dunders that live at the **module** and **package** level — the code files and folders themselves.*
 
@@ -6221,17 +6230,17 @@ Let's meet each one.
 
 ---
 
-## 106. `__name__` — Who Am I?
+### 106. `__name__` — Who Am I?
 
-### 🎨 The story
+#### 🎨 The story
 When you introduce yourself, you say your name. `__name__` is your module's name. But here is the magical twist: when you **run a file directly**, its `__name__` becomes the special string `"__main__"`. When the **same file is imported** by another file, `__name__` becomes the module's actual name.
 
 This is how Python knows whether your file is being used as a **script** (run directly) or as a **library** (imported by other code).
 
-### 🔍 When to use it
+#### 🔍 When to use it
 In almost every Python script. It is the standard way to write code that runs only when the file is executed directly — the famous `if __name__ == "__main__":` block.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 # File: greetings.py
@@ -6253,20 +6262,20 @@ Now:
 - Running `python greetings.py` directly → prints both messages.
 - Doing `import greetings` from another file → nothing is printed, but the functions are available.
 
-### ⚠️ Why this matters
+#### ⚠️ Why this matters
 This pattern lets you write files that work as both a runnable script and a reusable library. It is one of the most important patterns in Python.
 
 ---
 
-## 107. `__doc__` — The Module's Description
+### 107. `__doc__` — The Module's Description
 
-### 🎨 The story
+#### 🎨 The story
 The blurb on the back of a book. When you write a docstring at the very top of a file or package, it becomes `__doc__`.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Every module and package deserves a docstring. It helps users (and future you) understand what the code is for.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 # File: auth.py
@@ -6283,15 +6292,15 @@ The docstring is also what `help(auth)` shows.
 
 ---
 
-## 108. `__file__` — Where Do I Live?
+### 108. `__file__` — Where Do I Live?
 
-### 🎨 The story
+#### 🎨 The story
 The address of the module — where it physically lives on your computer's disk.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you need to find the location of the current module — often to load data files stored alongside your code.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 # File: my_module.py
@@ -6309,12 +6318,12 @@ print(data_file)
 
 ---
 
-## 109. `__dict__` — The Module's Contents
+### 109. `__dict__` — The Module's Contents
 
-### 🎨 The story
+#### 🎨 The story
 The table of contents of a book — a dictionary containing everything the module defines (functions, classes, variables).
 
-### ⚠️ `__dict__` is not a plain name inside your own module
+#### ⚠️ `__dict__` is not a plain name inside your own module
 
 This is a real trap, because `__name__`, `__doc__`, and `__file__` *are* available as bare names, so `__dict__` looks like it should be too. It is not:
 
@@ -6330,13 +6339,13 @@ except NameError as e:
 
 **Expected output:**
 
-```
+```text
 NameError: name '__dict__' is not defined
 ```
 
 **Why:** `__dict__` is an attribute **of the module object**, not a variable inside the module's namespace. `__name__` and friends are genuinely injected as globals; `__dict__` is not, because it *is* the globals — putting it inside itself would be circular.
 
-### 💻 How to use it — the three working forms
+#### 💻 How to use it — the three working forms
 
 ```python
 import sys
@@ -6362,7 +6371,7 @@ print("path" in sys.__dict__)
 
 **Expected output:**
 
-```
+```text
 ['sys', 'APP_NAME', 'start', 'Config']
 True
 True
@@ -6374,16 +6383,16 @@ Useful for introspection tools and plugin discovery, but you rarely need it dire
 
 ---
 
-## 110. `__package__` — Which Family Do I Belong To?
+### 110. `__package__` — Which Family Do I Belong To?
 
-### 🎨 The story
+#### 🎨 The story
 Your family surname. It tells you which package a module belongs to. For a top-level module, it is an empty string.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 **📄 Fragment** — this depends on the file living inside a package, so it cannot be run as a standalone script.
 
-```
+```text
 myapp/
     __init__.py
     utils/
@@ -6398,13 +6407,13 @@ print(__package__)
 
 Then, from the folder *containing* `myapp/`, run:
 
-```
+```text
 python -c "import myapp.utils.helpers"
 ```
 
 **Expected output:**
 
-```
+```text
 myapp.utils
 ```
 
@@ -6412,15 +6421,15 @@ myapp.utils
 
 ---
 
-## 111. `__path__` — Package Search Paths
+### 111. `__path__` — Package Search Paths
 
-### 🎨 The story
+#### 🎨 The story
 This one exists **only for packages** (folders), not regular modules. It is a list of paths where Python looks for the package's submodules.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Almost never directly. It is used by Python's import system. Advanced users occasionally modify it for plugin systems.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 **📄 Fragment** — `__path__` exists only inside a package, never in a plain module.
 
@@ -6431,7 +6440,7 @@ print(__path__)
 
 Then `import myapp` prints something like:
 
-```
+```text
 ['/path/to/projects/myapp']
 ```
 
@@ -6447,7 +6456,7 @@ print(type(json.__path__).__name__)       # list
 
 **Expected output:**
 
-```
+```text
 True
 False
 list
@@ -6457,15 +6466,15 @@ list
 
 ---
 
-## 112. `__spec__` — The Import Blueprint
+### 112. `__spec__` — The Import Blueprint
 
-### 🎨 The story
+#### 🎨 The story
 A blueprint containing all the technical details about how the module was imported — its name, its loader, its location.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Rarely. It is used internally by Python's import system and by tools that inspect modules.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 # In any module
@@ -6475,15 +6484,15 @@ print(__spec__)
 
 ---
 
-## 113. `__loader__` — The Delivery Driver
+### 113. `__loader__` — The Delivery Driver
 
-### 🎨 The story
+#### 🎨 The story
 The object responsible for actually loading the module into memory. Like a delivery driver who brought the book to your library.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Rarely. Used internally by Python's import machinery.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 print(__loader__)
@@ -6492,15 +6501,15 @@ print(__loader__)
 
 ---
 
-## 114. `__builtins__` — The Always-Available Toolkit
+### 114. `__builtins__` — The Always-Available Toolkit
 
-### 🎨 The story
+#### 🎨 The story
 The toolbox that is always in the room — `print`, `len`, `str`, `int`, and all the built-in functions you can use anywhere without importing.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Rarely need to touch it directly. It is what makes built-in functions available in every module automatically.
 
-### ⚠️ `__builtins__` is an implementation detail — use `builtins` instead
+#### ⚠️ `__builtins__` is an implementation detail — use `builtins` instead
 
 `__builtins__` is genuinely inconsistent, and the inconsistency is documented as such by CPython:
 
@@ -6509,7 +6518,7 @@ Rarely need to touch it directly. It is what makes built-in functions available 
 
 So `__builtins__.__dict__` works in a script and raises `AttributeError` in a library — the kind of bug that appears only after you refactor code into a module.
 
-### 💻 How to use it — the portable way
+#### 💻 How to use it — the portable way
 
 ```python
 import builtins
@@ -6522,7 +6531,7 @@ print(len([n for n in dir(builtins) if not n.startswith("_")]) > 100)   # True
 
 **Expected output:**
 
-```
+```text
 True
 True
 True
@@ -6530,22 +6539,22 @@ True
 
 The `import builtins` module is the public, stable interface. Reach for `__builtins__` only when inspecting how a sandbox or `exec` environment was configured — one of its few legitimate uses.
 
-### ⚠️ Warning
+#### ⚠️ Warning
 Do not assign to `builtins` to create globals visible everywhere. It works, and it makes code unreadable and untestable, because a name appears from nowhere with no import to trace. Pass values explicitly or use a module-level constant instead.
 
 ---
 
-## 115. `__all__` — The Public API Sign
+### 115. `__all__` — The Public API Sign
 
-### 🎨 The story
+#### 🎨 The story
 Imagine a shop window with a sign saying **"These are our featured items."** When someone does `from mypackage import *`, only the names listed in `__all__` come along for the ride.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - In `__init__.py` files, to define what your package publicly exposes.
 - In modules, to control what gets imported with `import *`.
 - To hide internal helper functions from users of your library.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 **📄 Fragment (two files)** — create both, side by side, then run `python main.py`.
 
@@ -6583,32 +6592,32 @@ except NameError as e:
 
 **Expected output** (the object address varies):
 
-```
+```text
 You can use me!
 <mymodule.PublicClass object at 0x...>
 NameError: name '_internal_helper' is not defined
 ```
 
-### 💡 Two rules about `__all__` that are easy to miss
+#### 💡 Two rules about `__all__` that are easy to miss
 
 **Without `__all__`, `import *` skips underscore-prefixed names anyway.** The leading underscore is already a "private" convention that `import *` honours. So `__all__` is not what hides `_internal_helper` — the underscore is. What `__all__` adds is *positive* control: it lets you export a deliberately chosen subset, and — importantly — exclude public names you did not intend to re-export, such as modules you imported at the top of your file.
 
 **`__all__` also drives documentation tools.** Sphinx and most API-doc generators treat it as the module's declared public surface. That is often the better argument for writing one than `import *`, which most style guides discourage in application code anyway.
 
-### ⚠️ Note
+#### ⚠️ Note
 `__all__` only affects `import *`. Users can still do `from mymodule import _internal_helper` explicitly if they really want to. `__all__` is a **convention**, not a lock.
 
 ---
 
-## 116. `__version__` — The Edition Number
+### 116. `__version__` — The Edition Number
 
-### 🎨 The story
+#### 🎨 The story
 The edition number on a book. This is a **convention** (not enforced by Python) that packages use to declare their version.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 In every package you publish. Users and tools like `pip` and `importlib.metadata` check this.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 **📄 Fragment** — needs a real package on your import path.
 
@@ -6634,15 +6643,15 @@ print(sys.version_info >= (3, 8))  # True
 
 **Expected output** (the `json` version depends on your interpreter build):
 
-```
+```text
 2.0.9
 True
 ```
 
-### ⚠️ Convention
+#### ⚠️ Convention
 Use **semantic versioning**: `MAJOR.MINOR.PATCH` (for example `2.0.1`), where a MAJOR bump signals a breaking change, MINOR adds functionality compatibly, and PATCH is a backward-compatible fix.
 
-### 💡 The modern way: do not repeat yourself
+#### 💡 The modern way: do not repeat yourself
 
 Declaring the version in both `pyproject.toml` and `__init__.py` means two places to update and eventually two different answers. Read it from the installed package metadata instead:
 
@@ -6659,7 +6668,7 @@ print(__version__.count(".") >= 1)    # True — looks like a version string
 
 **Expected output:**
 
-```
+```text
 True
 ```
 
@@ -6667,15 +6676,15 @@ True
 
 ---
 
-## 117. `__author__`, `__email__`, `__license__` — The Credits Page
+### 117. `__author__`, `__email__`, `__license__` — The Credits Page
 
-### 🎨 The story
+#### 🎨 The story
 The credits page in a book — who wrote it, how to contact them, and what license it uses.
 
-### 🔍 When to use them
+#### 🔍 When to use them
 Purely conventional metadata. Nice to include in libraries you share publicly.
 
-### 💻 How to use them
+#### 💻 How to use them
 
 ```python
 # Inside your package's __init__.py
@@ -6686,24 +6695,24 @@ __email__ = "jane@example.com"
 __license__ = "MIT"
 ```
 
-### ⚠️ Modern practice
+#### ⚠️ Modern practice
 For serious packages published to PyPI, most of this metadata now belongs in `pyproject.toml` rather than in dunders. But the dunders still work fine and remain common.
 
 ---
 
-## 118. `__init__.py` — The File That Makes a Folder a Package
+### 118. `__init__.py` — The File That Makes a Folder a Package
 
-### 🎨 The story
+#### 🎨 The story
 This is not a method — it is a **file**. Its presence in a folder tells Python, *"Treat this folder as a package."* Think of it as the **cover page** that binds the loose chapters into a proper book.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Any time you build a package. Even an empty `__init__.py` is enough to make a folder a package.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 Suppose your folder structure looks like this:
 
-```
+```text
 mypackage/
     __init__.py
     users.py
@@ -6741,28 +6750,28 @@ from mypackage import User, Order
 
 ⚠️ **This is the single most common source of `ImportError: attempted relative import with no known parent package`.** A relative import only works when the file is *imported as part of a package*. Running `python mypackage/__init__.py` directly makes Python treat it as a top-level script with no package context, and the dot has nothing to refer to. Run `python -m mypackage` or import it from outside instead.
 
-### ⚠️ Modern Python note
+#### ⚠️ Modern Python note
 Since Python 3.3, folders **without** `__init__.py` can also work as **namespace packages**. But for most projects, using `__init__.py` is still clearer and more common.
 
 ---
 
-## 119. `__main__.py` — Making a Package Runnable
+### 119. `__main__.py` — Making a Package Runnable
 
-### 🎨 The story
+#### 🎨 The story
 If `__init__.py` is what makes a folder a package, `__main__.py` is what makes a package **runnable** with `python -m mypackage`. Think of it as adding a "Play" button to the package.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you want users to be able to run your package like a program:
 
-```
+```text
 python -m mypackage
 ```
 
 Popular examples: `python -m http.server`, `python -m venv`, `python -m pip`.
 
-### 💻 How to use it
+#### 💻 How to use it
 
-```
+```text
 mypackage/
     __init__.py
     __main__.py
@@ -6787,19 +6796,19 @@ if __name__ == "__main__":
 
 Now `python -m mypackage` prints:
 
-```
+```text
 mypackage is running
 ```
 
 You can confirm the mechanism without writing any files, using a package that ships one:
 
-```
+```text
 python -m json.tool --help
 ```
 
 That works because `json/tool.py` exists and is runnable as a module — the same machinery.
 
-### 💡 Why `-m` matters, not just as a convenience
+#### 💡 Why `-m` matters, not just as a convenience
 
 `python -m mypackage` and `python mypackage/__main__.py` are **not** equivalent:
 
@@ -6811,25 +6820,25 @@ That works because `json/tool.py` exists and is runnable as a module — the sam
 
 The second column is why `-m` is the supported way to run a package. The `from .core import run` line above fails under the third column.
 
-### ⚠️ Keep `__main__.py` thin
+#### ⚠️ Keep `__main__.py` thin
 
 Anything defined in `__main__.py` gets executed a second time if the package is also imported normally, which can produce two copies of a class that do not compare equal. Keep the real logic in `core.py` and let `__main__.py` do nothing but call it — exactly as shown.
 
 ---
 
-## 120. `__pycache__` — Python's Cache Folder (Bonus)
+### 120. `__pycache__` — Python's Cache Folder (Bonus)
 
-### 🎨 The story
+#### 🎨 The story
 Not a dunder method, but you will see this folder appear next to your code. It is where Python stores **compiled bytecode** to make future imports faster — like a library keeping pre-highlighted copies of frequently-read books.
 
-### 🔍 What to do about it
+#### 🔍 What to do about it
 - Do not check it into version control (add `__pycache__/` to `.gitignore`).
 - Do not edit files inside it manually.
 - Safe to delete — Python will recreate it as needed.
 
 ---
 
-## 🎯 Package & Module Dunders — Quick Summary
+### 🎯 Package & Module Dunders — Quick Summary
 
 | Dunder | Purpose | Where it lives |
 |--------|---------|----------------|
@@ -6865,7 +6874,7 @@ Not a dunder method, but you will see this folder appear next to your code. It i
 
 ---
 
-# 🔍 PART V: Introspection Attributes
+## 🔍 PART V: Introspection Attributes
 
 *Every object in Python carries hidden information tags — like the barcode, batch number, and country-of-origin label on a product. These dunder **attributes** (not methods) let you inspect what an object really is.*
 
@@ -6874,17 +6883,17 @@ Imagine every object walking around with a **backpack of ID cards**. One card sa
 
 ---
 
-## 121. `__class__` — What Kind of Thing Am I? 🟢
+### 121. `__class__` — What Kind of Thing Am I? 🟢
 
-### 🎨 The story
+#### 🎨 The story
 Every object knows its own species. Ask a dog "what are you?" and it answers "Dog." That's `__class__`.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - To check an object's class at runtime.
 - To dynamically create another object of the same type.
 - For debugging.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Dog:
@@ -6901,22 +6910,22 @@ another = buddy.__class__("Max")
 print(another.name)             # Max
 ```
 
-### ⚠️ Tip
+#### ⚠️ Tip
 `type(buddy)` and `buddy.__class__` usually return the same thing. Use `isinstance(buddy, Dog)` for regular class checks — it is safer because it respects inheritance.
 
 ---
 
-## 122. `__dict__` — The Object's Storage Room 🟢
+### 122. `__dict__` — The Object's Storage Room 🟢
 
-### 🎨 The story
+#### 🎨 The story
 The drawer where an object keeps all its personal belongings (its attributes). Every object has one, unless it uses `__slots__`.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - To see all attributes of an object at once.
 - To dynamically add or inspect attributes.
 - For serialization and debugging.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class User:
@@ -6934,17 +6943,17 @@ print(alice.email)      # alice@example.com
 
 ---
 
-## 123. `__annotations__` — The Type-Hint Notebook 🟡
+### 123. `__annotations__` — The Type-Hint Notebook 🟡
 
-### 🎨 The story
+#### 🎨 The story
 A restaurant menu with dietary labels: *"gluten-free, vegan, contains nuts."* `__annotations__` stores the type hints your code declares — the labels attached to variables and function parameters.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - To inspect type hints at runtime.
 - To build validation frameworks (like Pydantic and FastAPI).
 - To auto-generate documentation.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Employee:
@@ -6964,16 +6973,16 @@ print(greet.__annotations__)
 
 ---
 
-## 124. `__qualname__` — My Full Address 🟡
+### 124. `__qualname__` — My Full Address 🟡
 
-### 🎨 The story
+#### 🎨 The story
 `__name__` gives you your first name. `__qualname__` gives you your **full address** — including the class or function you live inside.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - For clearer error messages and logging in nested classes/functions.
 - When debugging complex code with many nested definitions.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Outer:
@@ -6990,16 +6999,16 @@ print(Outer.Inner.method.__qualname__)  # Outer.Inner.method
 
 ---
 
-## 125. `__module__` — Which Neighborhood Do I Live In? 🟡
+### 125. `__module__` — Which Neighborhood Do I Live In? 🟡
 
-### 🎨 The story
+#### 🎨 The story
 Your home address's city. `__module__` tells you which module a class or function was defined in.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - For debugging: identifying where a class actually came from.
 - For building plugin systems and serialization.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 Any class you can already import demonstrates it — no package setup required:
 
@@ -7018,7 +7027,7 @@ print(Local.__module__)            # __main__
 
 **Expected output** when run as a script:
 
-```
+```text
 collections
 json.decoder
 __main__
@@ -7030,16 +7039,16 @@ Classes defined in the script you are running report `__main__`, for the same re
 
 ---
 
-## 126. `__bases__` — Who Are My Parents? 🟡
+### 126. `__bases__` — Who Are My Parents? 🟡
 
-### 🎨 The story
+#### 🎨 The story
 A family tree showing your direct parents. `__bases__` lists a class's immediate parent classes.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - For understanding inheritance relationships.
 - For building framework tools that need to walk class hierarchies.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Animal:
@@ -7057,16 +7066,16 @@ print(Mammal.__bases__)  # (<class '__main__.Animal'>,)
 
 ---
 
-## 127. `__mro__` — Method Resolution Order 🟡
+### 127. `__mro__` — Method Resolution Order 🟡
 
-### 🎨 The story
+#### 🎨 The story
 The **order in which Python searches for methods** when your class inherits from multiple classes. Think of it as the priority list: *"If you don't find it in Dog, check Mammal, then Animal, then object."*
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - To understand and debug multiple inheritance.
 - To predict which parent method will be called.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Animal:
@@ -7086,14 +7095,14 @@ print(Dog().speak())
 
 **Expected output:**
 
-```
+```text
 (<class '__main__.Dog'>, <class '__main__.Mammal'>, <class '__main__.Animal'>, <class 'object'>)
 Woof!
 ```
 
 Python searched for `speak` in exactly that order and stopped at the first match — `Dog` — so `Woof!` wins over `Animal`'s `"Some sound"`. Every class ends with `object`, because everything inherits from it.
 
-### 💡 Where the MRO stops being obvious: the diamond
+#### 💡 Where the MRO stops being obvious: the diamond
 
 With single inheritance the order is just the chain upward, and you rarely need to think about it. With multiple inheritance it is computed by an algorithm called **C3 linearisation**, and reading it becomes genuinely useful:
 
@@ -7119,7 +7128,7 @@ print(Both().who())
 
 **Expected output:**
 
-```
+```text
 ['Both', 'Left', 'Right', 'Base', 'object']
 Left -> Right -> Base
 ```
@@ -7143,7 +7152,7 @@ except TypeError as e:
 
 **Expected output** (Python wraps this message across two lines):
 
-```
+```text
 TypeError: Cannot create a consistent method resolution
 order (MRO) for bases A, B
 ```
@@ -7154,16 +7163,16 @@ The fix is to reverse the bases to `class Fine(B, A)`, putting the more specific
 
 ---
 
-## 128. `__subclasses__()` — Who Are My Children? 🔴
+### 128. `__subclasses__()` — Who Are My Children? 🔴
 
-### 🎨 The story
+#### 🎨 The story
 A parent asking, "Who are all my kids and grandkids?" `__subclasses__()` returns a class's *direct* subclasses.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - For building plugin/registration systems where subclasses auto-register.
 - For frameworks that need to discover all types of a category.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Shape:
@@ -7179,21 +7188,21 @@ print(Shape.__subclasses__())
 # [<class '__main__.Circle'>, <class '__main__.Square'>]
 ```
 
-### ⚠️ Note
+#### ⚠️ Note
 Unlike most dunders, this is a **method** — you call it with parentheses: `Shape.__subclasses__()`.
 
 ---
 
-## 129. `__weakref__` — Support for Weak References 🔴
+### 129. `__weakref__` — Support for Weak References 🔴
 
-### 🎨 The story
+#### 🎨 The story
 A **sticky note** rather than a permanent tag. A weak reference points to an object without preventing it from being cleaned up by Python's memory manager.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - Building caches that don't leak memory.
 - Building observer patterns that don't keep dead objects alive.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import weakref
@@ -7210,10 +7219,10 @@ del d          # The original is gone
 print(ref())   # None — the weak reference "knows" it's dead
 ```
 
-### ⚠️ Note
+#### ⚠️ Note
 `__weakref__` is a slot that Python creates automatically on most classes. You rarely touch it directly — you just use the `weakref` module.
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a tiny plugin-loading script that exercises module, package, and introspection attributes together:
 
@@ -7239,7 +7248,7 @@ print(ref())                             # None
 
 ---
 
-# 🧰 PART W: Function & Method Attributes
+## 🧰 PART W: Function & Method Attributes
 
 *Functions are objects too — and they carry their own set of dunder attributes. Most Python users never need to touch these directly, but knowing they exist unlocks decorator writing, debugging, and metaprogramming.*
 
@@ -7248,16 +7257,16 @@ Every function in Python is like a **backpack** — you can open it up and see t
 
 ---
 
-## 130. `__code__` — The Function's Recipe 🔴
+### 130. `__code__` — The Function's Recipe 🔴
 
-### 🎨 The story
+#### 🎨 The story
 The written recipe inside a cookbook. `__code__` is the compiled instructions of a function — the low-level details of what parameters it takes, what file it's from, and so on.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - For advanced debugging.
 - When building code-analysis tools.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 def add(a, b):
@@ -7268,7 +7277,7 @@ print(add.__code__.co_argcount)   # 2
 print(add.__code__.co_filename)   # <path to file>
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 - `co_varnames` = names of variables the function uses
 - `co_argcount` = how many arguments the function takes
 - `co_filename` = which file the function was defined in
@@ -7277,12 +7286,12 @@ Rarely useful in day-to-day work. Mostly for tools like linters and profilers.
 
 ---
 
-## 131. `__globals__` — The Function's Neighborhood 🔴
+### 131. `__globals__` — The Function's Neighborhood 🔴
 
-### 🎨 The story
+#### 🎨 The story
 The list of things a function knows about from its module — its neighbors.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 APP_NAME = "MyApp"
@@ -7295,15 +7304,15 @@ print("APP_NAME" in show.__globals__)   # True
 
 ---
 
-## 132. `__defaults__` — The Default Suitcase 🟡
+### 132. `__defaults__` — The Default Suitcase 🟡
 
-### 🎨 The story
+#### 🎨 The story
 What the function packs when you don't tell it otherwise. The default values of positional arguments.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - For introspecting or dynamically modifying default arguments (advanced).
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 def greet(name, greeting="Hello", times=1):
@@ -7314,12 +7323,12 @@ print(greet.__defaults__)   # ('Hello', 1)
 
 ---
 
-## 133. `__kwdefaults__` — Keyword-Only Defaults 🔴
+### 133. `__kwdefaults__` — Keyword-Only Defaults 🔴
 
-### 🎨 The story
+#### 🎨 The story
 Some function parameters must be called by name (like `port=8080`), not by position. Their default values live in `__kwdefaults__`.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 def config(*, host="localhost", port=8080):
@@ -7328,17 +7337,17 @@ def config(*, host="localhost", port=8080):
 print(config.__kwdefaults__)   # {'host': 'localhost', 'port': 8080}
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 The `*` in `def config(*, host=..., port=...)` means: *"After this point, every parameter MUST be passed by name."* So `config("localhost", 80)` would fail — you have to write `config(host="localhost", port=80)`. Their defaults land in `__kwdefaults__` (instead of the regular `__defaults__`).
 
 ---
 
-## 134. `__closure__` — Captured Variables 🔴
+### 134. `__closure__` — Captured Variables 🔴
 
-### 🎨 The story
+#### 🎨 The story
 When a function is defined inside another function, it can "remember" variables from the outer function even after the outer function has finished. `__closure__` is where those remembered values live.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 def make_multiplier(factor):
@@ -7351,22 +7360,22 @@ print(double(5))                  # 10
 print(double.__closure__[0].cell_contents)   # 2 — the captured factor
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 When we call `make_multiplier(2)`, it creates a `multiply` function that "remembers" `factor = 2` — even after `make_multiplier` has returned. That remembered `2` is stored in `__closure__`. `cell_contents` is just Python's word for "the value stored inside this closure slot."
 
 This is how you build **function factories** — functions that make other functions with different settings baked in.
 
 ---
 
-## 135. `__wrapped__` — The Decorator's Original 🟡
+### 135. `__wrapped__` — The Decorator's Original 🟡
 
-### 🎨 The story
+#### 🎨 The story
 A gift-wrapped box with a receipt showing what's inside. When you use `functools.wraps` in a decorator, `__wrapped__` points to the original, unwrapped function.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When you want to access the original function beneath a decorator.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import functools
@@ -7388,15 +7397,15 @@ print(greet.__wrapped__("alice"))  # hello alice — the original!
 
 ---
 
-## 136. `__signature__` — Custom Signature Info 🔴
+### 136. `__signature__` — Custom Signature Info 🔴
 
-### 🎨 The story
+#### 🎨 The story
 `inspect.signature(func)` normally tells you what parameters a function takes. `__signature__` lets you **manually override** that — useful when your callable is a wrapper and you want tools to see the underlying parameters.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 When building wrappers or fake callables where the auto-detected signature would be misleading.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import inspect
@@ -7419,17 +7428,17 @@ print(inspect.signature(adder))   # (x, y)
 print(adder(3, 4))                # 7
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 `Adder.__call__` actually accepts anything (`*args, **kwargs`), but we lie to Python's inspector and say *"I take exactly two parameters, `x` and `y`."* Now IDE hints and `help()` show the friendly signature instead of the ugly real one. Advanced trick, rarely needed.
 
 ---
 
-## 137. `__self__` — A Bound Method's Owner 🟡
+### 137. `__self__` — A Bound Method's Owner 🟡
 
-### 🎨 The story
+#### 🎨 The story
 When you grab a method off an object (like `alice.greet`), the method remembers *who it belongs to*. `__self__` is that owner.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class User:
@@ -7447,12 +7456,12 @@ print(bound_method.__self__.name)   # Alice
 
 ---
 
-## 138. `__func__` — The Underlying Function 🔴
+### 138. `__func__` — The Underlying Function 🔴
 
-### 🎨 The story
+#### 🎨 The story
 The unwrapped function inside a bound method — the one without the "owner" attached.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class User:
@@ -7479,22 +7488,22 @@ print(bound_method.__func__)   # <function User.greet at 0x...>
 
 ---
 
-# 🚀 PART X: Modern Python Dunders (3.10+)
+## 🚀 PART X: Modern Python Dunders (3.10+)
 
 *Python keeps evolving. These dunders come from recent Python versions and unlock modern features like pattern matching, dataclass hooks, and generic type parameters.*
 
 ---
 
-## 139. `__match_args__` — Pattern Matching Support 🟡
+### 139. `__match_args__` — Pattern Matching Support 🟡
 
-### 🎨 The story
+#### 🎨 The story
 Python 3.10 introduced **structural pattern matching** — a super-powered version of `if/elif` that lets you match complex data shapes. `__match_args__` tells the matcher **which attributes to unpack** when someone matches your class.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - Whenever you build a class that users will match against in a `match` statement.
 - Automatically set for you by `@dataclass`.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Point:
@@ -7520,22 +7529,22 @@ print(describe(Point(3, 0)))   # On the X-axis at 3
 print(describe(Point(2, 5)))   # Point at (2, 5)
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 The `match`/`case` statement is like a smart `if/elif`, but it can peek inside objects and match on their contents. `__match_args__ = ("x", "y")` tells Python: *"When someone writes `Point(a, b)` in a case, treat the first slot as `x` and the second as `y`."* Then Python can automatically unpack the point and match its shape.
 
 ---
 
-## 140. `__post_init__` — After-Setup Hook (Dataclasses) 🟢
+### 140. `__post_init__` — After-Setup Hook (Dataclasses) 🟢
 
-### 🎨 The story
+#### 🎨 The story
 After a dataclass automatically fills in your `__init__`, `__post_init__` runs to let you do extra setup — like a final quality-check step on an assembly line.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 - To validate fields after dataclass initialization.
 - To compute derived fields.
 - Any time you use `@dataclass` and need custom initialization logic.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 from dataclasses import dataclass
@@ -7557,17 +7566,17 @@ print(r.area)   # 12
 # Rectangle(-1, 4)   # Would raise ValueError!
 ```
 
-### ⚠️ Note
+#### ⚠️ Note
 This is specific to `@dataclass`. Regular classes just use `__init__`.
 
 ---
 
-## 141. `__type_params__` — Generic Type Parameters (Python 3.12+) 🔴
+### 141. `__type_params__` — Generic Type Parameters (Python 3.12+) 🔴
 
-### 🎨 The story
+#### 🎨 The story
 Python 3.12 added a cleaner syntax for generic types: `class Stack[T]:`. The `T` is a **placeholder** for whatever type will be stored — like a labeled empty box. `__type_params__` stores those placeholders.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 # Python 3.12+ syntax
@@ -7581,20 +7590,20 @@ class Stack[T]:
 print(Stack.__type_params__)   # (T,)
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 `Stack[int]` means "a Stack that holds `int` values." `Stack[str]` means "a Stack of strings." The `T` inside the class definition is just a placeholder that gets swapped out when you use it. Only useful for type-hint-heavy code with static type checkers like `mypy`.
 
 ---
 
-## 142. `__buffer__` and 143. `__release_buffer__` — Buffer Protocol (Python 3.12+) 🔴
+### 142. `__buffer__` and 143. `__release_buffer__` — Buffer Protocol (Python 3.12+) 🔴
 
-### 🎨 The story
+#### 🎨 The story
 Imagine two machines sharing the **same storage room** instead of each keeping their own copy. That's what the buffer protocol does — it lets objects share raw memory efficiently, without copying. This is how NumPy arrays can hand raw data to image libraries or C code without duplication.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 Almost never in application code. Only when building low-level libraries that need direct memory access (like NumPy, Pillow, or PyTorch internals).
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 # Python 3.12+
@@ -7615,20 +7624,20 @@ view = memoryview(buf)
 print(bytes(view))   # b'Hello'
 ```
 
-### 🧒 In Plain English
+#### 🧒 In Plain English
 `memoryview` is Python's way of looking at bytes without copying them. `__buffer__` says "here's a window into my data — you can read from it directly." `__release_buffer__` says "thanks, I'm done borrowing." Zero-copy sharing means huge performance gains for scientific computing.
 
 ---
 
-## 144. `__getnewargs__` — Pickling Support 🔴
+### 144. `__getnewargs__` — Pickling Support 🔴
 
-### 🎨 The story
+#### 🎨 The story
 When you save an object with `pickle`, `__getnewargs__` tells pickle **what arguments to pass to `__new__`** when reconstructing the object.
 
-### 🔍 When to use it
+#### 🔍 When to use it
 For objects whose creation requires specific arguments (like immutable types built with `__new__`).
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 import pickle
@@ -7652,12 +7661,12 @@ print(p2)   # Point(3, 4) — perfectly restored
 
 ---
 
-## 145. `__getnewargs_ex__` — Pickling with Keywords 🔴
+### 145. `__getnewargs_ex__` — Pickling with Keywords 🔴
 
-### 🎨 The story
+#### 🎨 The story
 Same as `__getnewargs__`, but also supports keyword arguments.
 
-### 💻 How to use it
+#### 💻 How to use it
 
 ```python
 class Config:
@@ -7672,7 +7681,7 @@ class Config:
 
 ---
 
-## 🎯 Introspection & Modern Dunders — Quick Summary
+### 🎯 Introspection & Modern Dunders — Quick Summary
 
 | Dunder | Purpose | Difficulty |
 |--------|---------|:----------:|
@@ -7714,7 +7723,7 @@ class Config:
 >
 > **Best practices.** State your minimum Python version in `pyproject.toml` (`requires-python`) and mean it. Let `@dataclass` generate `__match_args__` rather than writing it by hand. When a feature is version-gated, say so in the code or the docs — the guide labels each of these inline for exactly that reason.
 
-### 🧪 Exercise
+#### 🧪 Exercise
 
 Write a `@logged` decorator and a `Point` dataclass that together exercise function and dataclass attributes:
 
@@ -7747,89 +7756,89 @@ match Point(1, 2):
 
 ---
 
-# 📋 The Complete Cheat Sheet
+## 📋 The Complete Cheat Sheet
 
-## Object lifecycle
+### Object lifecycle
 `__new__`, `__init__`, `__del__`, `__init_subclass__`, `__set_name__`
 
-## String representation
+### String representation
 `__str__`, `__repr__`, `__format__`, `__bytes__`
 
-## Comparison
+### Comparison
 `__eq__`, `__ne__`, `__lt__`, `__le__`, `__gt__`, `__ge__`, `__hash__`
 
-## Arithmetic
+### Arithmetic
 `__add__`, `__sub__`, `__mul__`, `__truediv__`, `__floordiv__`, `__mod__`, `__divmod__`, `__pow__`, `__matmul__`
 
-## Reflected arithmetic
+### Reflected arithmetic
 `__radd__`, `__rsub__`, `__rmul__`, `__rtruediv__`, `__rfloordiv__`, `__rmod__`, `__rpow__`, `__rmatmul__`
 
-## In-place arithmetic
+### In-place arithmetic
 `__iadd__`, `__isub__`, `__imul__`, `__itruediv__`, `__ifloordiv__`, `__imod__`, `__ipow__`, `__imatmul__`
 
-## Unary
+### Unary
 `__neg__`, `__pos__`, `__abs__`, `__invert__`, `__round__`, `__trunc__`, `__floor__`, `__ceil__`
 
-## Bitwise
+### Bitwise
 `__and__`, `__or__`, `__xor__`, `__lshift__`, `__rshift__`
 Reflected: `__rand__`, `__ror__`, `__rxor__`, `__rlshift__`, `__rrshift__`
 In-place: `__iand__`, `__ior__`, `__ixor__`, `__ilshift__`, `__irshift__`
 
-## Type conversion
+### Type conversion
 `__bool__`, `__int__`, `__float__`, `__complex__`, `__index__`
 
-## Container behavior
+### Container behavior
 `__len__`, `__length_hint__`, `__getitem__`, `__setitem__`, `__delitem__`, `__missing__`, `__contains__`
 
-## Iteration
+### Iteration
 `__iter__`, `__next__`, `__reversed__`
 
-## Callable
+### Callable
 `__call__`
 
-## Context managers
+### Context managers
 `__enter__`, `__exit__`, `__aenter__`, `__aexit__`
 
-## Attribute access
+### Attribute access
 `__getattr__`, `__getattribute__`, `__setattr__`, `__delattr__`, `__dir__`
 *(`__slots__` is a class **attribute** you assign, not a method — see the attribute list below.)*
 
-## Descriptors
+### Descriptors
 `__get__`, `__set__`, `__delete__`
 
-## Class magic
+### Class magic
 `__instancecheck__`, `__subclasscheck__`, `__subclasshook__`, `__class_getitem__`, `__mro_entries__`, `__prepare__`
 
-## Async
+### Async
 `__await__`, `__aiter__`, `__anext__`, `__aenter__`, `__aexit__`
 
-## Copying and pickling
+### Copying and pickling
 `__copy__`, `__deepcopy__`, `__getstate__`, `__setstate__`, `__reduce__`, `__reduce_ex__`
 
-## Path
+### Path
 `__fspath__`
 
-## Module & package (module-level)
+### Module & package (module-level)
 `__name__`, `__doc__`, `__file__`, `__dict__`, `__package__`, `__path__`, `__spec__`, `__loader__`, `__builtins__`
 
-## Module & package (conventions)
+### Module & package (conventions)
 `__all__`, `__version__`, `__author__`, `__email__`, `__license__`
 
-## Package files
+### Package files
 `__init__.py`, `__main__.py`
 
-## Introspection attributes
+### Introspection attributes
 `__class__`, `__dict__`, `__annotations__`, `__qualname__`, `__module__`, `__bases__`, `__mro__`, `__subclasses__()`, `__weakref__`
 
-## Function & method attributes
+### Function & method attributes
 `__code__`, `__globals__`, `__defaults__`, `__kwdefaults__`, `__closure__`, `__wrapped__`, `__signature__`, `__self__`, `__func__`
 
-## Modern Python (3.10+)
+### Modern Python (3.10+)
 `__match_args__`, `__post_init__`, `__type_params__`, `__buffer__`, `__release_buffer__`, `__getnewargs__`, `__getnewargs_ex__`
 
 ---
 
-# 📖 Glossary
+## 📖 Glossary
 
 *Every term this guide uses more than once, in plain English. Terms are listed alphabetically.*
 
@@ -7873,7 +7882,7 @@ In-place: `__iand__`, `__ior__`, `__ixor__`, `__ilshift__`, `__irshift__`
 
 ---
 
-# ⭐ The Golden Best Practices
+## ⭐ The Golden Best Practices
 
 Each of these is demonstrated somewhere in this guide; the cross-reference says where.
 
@@ -7907,7 +7916,7 @@ Each of these is demonstrated somewhere in this guide; the cross-reference says 
 
 ---
 
-# 🧪 Exercise Solutions
+## 🧪 Exercise Solutions
 
 Each solution states the reasoning, not just the code. Try the exercise first — the value is in the attempt.
 
@@ -7957,7 +7966,7 @@ except Exception as e:
 
 **Expected output:**
 
-```
+```text
 home
 False
 FrozenInstanceError: cannot assign to field 'lat'
@@ -7996,7 +8005,7 @@ print(Coordinate(1.0, 2.0) == "not a coordinate")    # False
 
 **Expected output:**
 
-```
+```text
 home
 False
 ```
@@ -8032,7 +8041,7 @@ print(list(Fibonacci(0)))
 
 **Expected output:**
 
-```
+```text
 [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
 [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
 [(0, 0), (1, 1), (1, 1)]
@@ -8066,7 +8075,7 @@ print(list(bf))     # [] — exhausted, and it never recovers
 
 **Expected output:**
 
-```
+```text
 [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
 []
 ```
@@ -8112,7 +8121,7 @@ except ValueError as e:
 
 **Expected output** (timings vary by machine):
 
-```
+```text
 loading: completed in 0.01s
 caller can read elapsed: True
 parsing: failed after 0.00s (ValueError)
@@ -8154,7 +8163,7 @@ except ValueError:
 
 **Expected output:**
 
-```
+```text
 loading: completed in 0.01s
 parsing: failed after 0.00s (ValueError)
 propagated correctly
@@ -8216,7 +8225,7 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 ['Dataset']
 Dataset(name='db-backup', size_mb=512)
 db-backup (512 MB)
@@ -8271,7 +8280,7 @@ print(sorted([TaskD(2, "b"), TaskD(2, "a"), TaskD(5, "c")]))
 
 **Expected output** (order of same-priority items from the hand-written class may vary, both are correct):
 
-```
+```text
 [Task(5, 'deploy'), Task(2, 'email'), Task(2, 'review')]
 Task(2, 'email')
 True
@@ -8356,7 +8365,7 @@ print(sum([Vector2D(1, 1), Vector2D(2, 2)], Vector2D(0, 0)))
 
 **Expected output:**
 
-```
+```text
 Vector2D(4, 6)
 Vector2D(2, 4)
 Vector2D(2, 4)
@@ -8424,7 +8433,7 @@ print(p[TrackNumber(1)])
 
 **Expected output:**
 
-```
+```text
 3 True
 False
 Yesterday
@@ -8487,7 +8496,7 @@ asyncio.run(main())
 
 **Expected output:**
 
-```
+```text
 budget reset
 pong
 pong
@@ -8546,7 +8555,7 @@ print(type(Sensor.reading).__name__)
 
 **Expected output:**
 
-```
+```text
 20
 68.0
 reading must be positive, got -5
@@ -8611,7 +8620,7 @@ asyncio.run(main())
 
 **Expected output:**
 
-```
+```text
 True
 True
 TypedBox[int]
@@ -8697,7 +8706,7 @@ print(restored.shuffle_rng is not None)
 
 **Expected output:**
 
-```
+```text
 A
 K
 Q
@@ -8740,7 +8749,7 @@ print(ref())
 
 **Expected output:**
 
-```
+```text
 __main__
 __main__
 Plugin
@@ -8801,7 +8810,7 @@ match Point(1, 2):
 
 **Expected output:**
 
-```
+```text
 add (10,) None
 15
 True
@@ -8815,7 +8824,7 @@ origin is not a valid point
 
 ---
 
-# 🎉 Final Words
+## 🎉 Final Words
 
 You now hold the complete map of Python's most powerful hidden feature. Every dunder method Python offers is on these pages, explained the same simple way.
 
@@ -8842,6 +8851,6 @@ Come back to this guide whenever you need it. Bookmark the sections you use most
 
 ---
 
-## Documentation links
+### Documentation links
 
 [Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

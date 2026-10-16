@@ -1,3 +1,8 @@
+---
+title: "Azure Resources Reference: Compute, Networking, Storage and Data"
+description: "Explore Azure resource families, their responsibilities and dependencies, with CLI examples, operational considerations and links to official sources."
+---
+
 # 📦 Azure Resources Deep Reference
 
 **🏷️ Difficulty:** 🟢 Beginner start guide → 🔴 Advanced resource reference (the [Azure overview](./azure_cheatsheet.md) is helpful but optional)
@@ -56,38 +61,38 @@ az group list --output table
 | 📚 | Authoritative docs |
 
 <a id="resource-toc"></a>
-# 🗺️ Table of Contents
+## 🗺️ Table of Contents
 
-## 0. Fundamentals
+### 0. Fundamentals
 0. [🧱 How to Use This Resource Reference](#r0)
 
-## PART I — 🖥️ Compute & Application Hosting
+### PART I — 🖥️ Compute & Application Hosting
 1. [Virtual Machines](#r1)
 2. [Managed Application Platforms](#r2)
 3. [Containers & Kubernetes](#r3)
 
-## PART II — 🌐 Networking
+### PART II — 🌐 Networking
 4. [Network Foundations](#r4)
 5. [DNS](#r5)
 6. [Hybrid & Global Connectivity](#r6)
 7. [Application Delivery & Load Balancing](#r7)
 8. [Network Security & Management](#r8)
 
-## PART III — 💾 Storage
+### PART III — 💾 Storage
 9. [Azure Storage Account](#r9)
 10. [Object & Data Lake Storage](#r10)
 11. [File Storage](#r11)
 12. [Block & SAN Storage](#r12)
 13. [Storage Data Movement & Management](#r13)
 
-## PART IV — 🗄️ Databases & Caching
+### PART IV — 🗄️ Databases & Caching
 14. [Microsoft SQL on Azure](#r14)
 15. [Open-Source Relational Databases](#r15)
 16. [NoSQL & Distributed Databases](#r16)
 17. [Caching](#r17)
 18. [Specialized / Partner Databases](#r18)
 
-## PART V — 📨 Messaging, Events & Integration
+### PART V — 📨 Messaging, Events & Integration
 19. [Azure Service Bus](#r19)
 20. [Azure Event Grid](#r20)
 21. [Azure Event Hubs](#r21)
@@ -96,13 +101,13 @@ az group list --output table
 24. [API Management](#r24)
 25. [Real-Time Application Services](#r25)
 
-## PART VI — 👤 Identity, Access & Secrets
+### PART VI — 👤 Identity, Access & Secrets
 26. [Microsoft Entra Concepts Used by Azure Resources](#r26)
 27. [Azure RBAC](#r27)
 28. [Azure Key Vault](#r28)
 29. [Managed HSM](#r29)
 
-## PART VII — 📊 Observability & Operations
+### PART VII — 📊 Observability & Operations
 30. [Azure Monitor](#r30)
 31. [Log Analytics](#r31)
 32. [Application Insights](#r32)
@@ -110,18 +115,18 @@ az group list --output table
 34. [Health & Recommendations](#r34)
 35. [Automation & Maintenance](#r35)
 
-## PART VIII — 🛡️ Security
+### PART VIII — 🛡️ Security
 36. [Microsoft Defender for Cloud](#r36)
 37. [Microsoft Sentinel](#r37)
 38. [Network Security Resources](#r38)
 39. [Confidential Computing](#r39)
 
-## PART IX — 🧯 Backup, Recovery & Resilience
+### PART IX — 🧯 Backup, Recovery & Resilience
 40. [Azure Backup](#r40)
 41. [Azure Site Recovery](#r41)
 42. [Azure Chaos Studio](#r42)
 
-## PART X — 🏛️ Governance & Resource Management
+### PART X — 🏛️ Governance & Resource Management
 43. [Azure Resource Manager](#r43)
 44. [Azure Policy](#r44)
 45. [Management Groups](#r45)
@@ -129,7 +134,7 @@ az group list --output table
 47. [Cost Management](#r47)
 48. [Resource Locks](#r48)
 
-## PART XI — 📈 Data & Analytics
+### PART XI — 📈 Data & Analytics
 49. [Azure Data Factory](#r49)
 50. [Azure Databricks](#r50)
 51. [Azure Data Explorer](#r51)
@@ -137,20 +142,20 @@ az group list --output table
 53. [Azure Stream Analytics](#r53)
 54. [Microsoft Fabric Context](#r54)
 
-## PART XII — 🤖 AI & Machine Learning
+### PART XII — 🤖 AI & Machine Learning
 55. [Microsoft Foundry](#r55)
 56. [Azure OpenAI / Foundry Models](#r56)
 57. [Azure AI Search](#r57)
 58. [Azure Machine Learning](#r58)
 59. [Foundry Tools / AI Services](#r59)
 
-## PART XIII — 🌍 IoT & Edge
+### PART XIII — 🌍 IoT & Edge
 60. [Azure IoT Hub](#r60)
 61. [Azure IoT Operations](#r61)
 62. [Azure Digital Twins](#r62)
 63. [IoT Edge](#r63)
 
-## PART XIV — 🔀 Hybrid, Multicloud & Migration
+### PART XIV — 🔀 Hybrid, Multicloud & Migration
 64. [Azure Arc](#r64)
 65. [Azure Local](#r65)
 66. [Azure VMware Solution](#r66)
@@ -158,28 +163,28 @@ az group list --output table
 68. [Database Migration Service](#r68)
 69. [Azure Storage Mover & Data Box](#r69)
 
-## PART XV — 🖥️ Virtual Desktop
+### PART XV — 🖥️ Virtual Desktop
 70. [Azure Virtual Desktop](#r70)
 
-## PART XVI — 🧰 Specialized Application Services
+### PART XVI — 🧰 Specialized Application Services
 71. [Azure Maps](#r71)
 72. [Azure Communication Services](#r72)
 73. [Azure App Testing](#r73)
 74. [Azure Batch](#r74)
 
-## PART XVII — 🔄 Lifecycle & Transitions
+### PART XVII — 🔄 Lifecycle & Transitions
 75. [Services in Transition / Retirement](#r75)
 76. [Preview & Emerging Resources](#r76)
 
-## PART XVIII — 📚 Official Source Map
+### PART XVIII — 📚 Official Source Map
 77. [Official Microsoft Documentation Directory](#r77)
 
 <a id="r0"></a>
-# 0. 🧱 How to Use This Resource Reference
+## 0. 🧱 How to Use This Resource Reference
 
 > 🟦 **What it is:** Azure Resource Manager (ARM) is the management plane behind Azure resources. A resource provider exposes resource types such as `Microsoft.Compute/virtualMachines` or `Microsoft.KeyVault/vaults`. This reference is organized by resource families rather than by product marketing pages.
 
-## 🧩 Resource map
+### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -192,19 +197,19 @@ az group list --output table
 | **Region/zone** | Placement and resilience characteristics. |
 | **Dependencies** | Networking, identity, DNS, storage, monitoring, etc. |
 
-## ✅ Use when
+### ✅ Use when
 - Use this file after you already know which service family you want.
 - Use the resource map to understand internal Azure objects before writing IaC.
 
-## ⚠️ Engineering watch-outs
+### ⚠️ Engineering watch-outs
 - Do not assume ARM `Owner` means data-plane access.
 - Do not freeze a SKU/API version/region assumption without checking current docs.
 - For private PaaS, DNS is frequently part of the resource design.
 
-## 📚 Official Microsoft docs
+### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types
 
-## 🧪 Try it yourself
+### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -228,7 +233,7 @@ Nothing to clean up — all commands in this exercise only read information.
 
 ---
 
-# ➕ Cross-resource Azure CLI command cards
+## ➕ Cross-resource Azure CLI command cards
 
 > [!TIP]
 > These commands complement the resource-specific examples below. **Before using `$RESOURCE_ID`, select a real, nonproduction resource ID from `az resource list -o table`; `$WORKSPACE_ID` is the Log Analytics workspace customer ID from its Overview screen, and `$ASSIGNEE_ID` is an authorized user/service-principal object ID. These variables are not automatically set by the table.** Never run `move`, `delete`, or role-grant changes on an unreviewed resource. Use `--query`, `--output table`, and `--only-show-errors` to make operational output focused and script-friendly.
@@ -246,14 +251,14 @@ Nothing to clean up — all commands in this exercise only read information.
 | `az policy assignment list` | Lists policy assignments; use before deployments that may be denied or audited. | `az policy assignment list --scope "/subscriptions/$(az account show --query id -o tsv)" -o table` | Policy evaluation can block deployment even when RBAC allows it. |
 | `az deployment operation group list` | Shows individual operations from a resource-group deployment; use after deployment failure. | `az deployment operation group list --resource-group rg-app-prod --name app-20261010 -o table` | Pair with `az deployment group show` to inspect error details. |
 
-# PART I — 🖥️ COMPUTE & APPLICATION HOSTING
+## PART I — 🖥️ COMPUTE & APPLICATION HOSTING
 
 <a id="r1"></a>
-# 1. 🖥️ Virtual Machines
+### 1. 🖥️ Virtual Machines
 
 > 🟦 **What it is:** Azure IaaS compute gives you guest-OS control. VMSS adds fleet/autoscale management; disks, NICs, public IPs, images, extensions, update management and monitoring complete the VM platform.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -270,22 +275,22 @@ Nothing to clean up — all commands in this exercise only read information.
 | **VM Extensions** | Post-provision agents/scripts. |
 | **Update Manager** | Patch orchestration for supported machines. |
 
-## ✅ Use when
+#### ✅ Use when
 - Legacy/lift-and-shift workloads.
 - Custom drivers/agents/OS configuration.
 - Vendor appliances or software not suitable for PaaS.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Avoid public RDP/SSH; use Bastion or private admin paths.
 - A single VM is not HA.
 - Disk/VM throughput limits can bottleneck each other.
 - Deallocate idle VMs to stop compute billing.
 - Check regional VM-family quota before scale/DR.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/virtual-machines/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -315,11 +320,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r2"></a>
-# 2. 🌐 Managed Application Platforms
+### 2. 🌐 Managed Application Platforms
 
 > 🟦 **What it is:** Managed PaaS removes most OS operations for web apps, APIs, event-driven functions, static sites, application configuration and isolated hosting environments.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -332,26 +337,26 @@ az group delete --name "${RG}" --yes
 | **Static Web Apps** | Static frontend + integrated deployment/auth/API patterns. |
 | **App Configuration** | Central application configuration/feature flags. |
 
-## ✅ Use when
+#### ✅ Use when
 - Standard web/API hosting without OS management.
 - Event-driven functions and timers.
 - Static SPA/web hosting.
 - Centralized non-secret configuration and feature flags.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - App Service VNet Integration is outbound; Private Endpoint is inbound.
 - Deployment slots are not DR.
 - Function networking differs by hosting plan.
 - Do not put secrets in App Configuration when Key Vault is appropriate.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/app-service/
 
 https://learn.microsoft.com/azure/azure-functions/
 
 https://learn.microsoft.com/azure/azure-app-configuration/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -382,11 +387,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r3"></a>
-# 3. ☸️ Containers & Kubernetes
+### 3. ☸️ Containers & Kubernetes
 
 > 🟦 **What it is:** Azure offers multiple container levels: Container Apps for managed container applications, AKS for Kubernetes, ACI for simple container groups, ACR for images/artifacts, and specialized services around Kubernetes/fleet/storage.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -402,26 +407,26 @@ az group delete --name "${RG}" --yes
 | **Azure Container Storage** | Container-oriented block storage capability. |
 | **Azure Red Hat OpenShift** | Managed OpenShift platform. |
 
-## ✅ Use when
+#### ✅ Use when
 - Container Apps when you want containers without operating Kubernetes.
 - AKS when Kubernetes APIs/operators/CRDs are actual requirements.
 - ACI for simple isolated/burst containers.
 - ACR for private image/artifact storage.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not choose AKS just because the app has a Dockerfile.
 - AKS IP planning and upgrade strategy are production-critical.
 - Use workload identity rather than shared pod secrets.
 - Use immutable image versions/digests for production.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/container-apps/
 
 https://learn.microsoft.com/azure/aks/
 
 https://learn.microsoft.com/azure/container-registry/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -449,14 +454,14 @@ az group delete --name "${RG}" --yes
 
 ---
 
-# PART II — 🌐 NETWORKING
+## PART II — 🌐 NETWORKING
 
 <a id="r4"></a>
-# 4. 🌐 Network Foundations
+### 4. 🌐 Network Foundations
 
 > 🟦 **What it is:** The VNet/subnet model provides private IP space; NSGs filter traffic, route tables steer it, peering connects VNets, Private Link privately exposes PaaS services, and NAT Gateway controls outbound SNAT.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -473,27 +478,27 @@ az group delete --name "${RG}" --yes
 | **Service Endpoint** | VNet identity to supported public PaaS endpoint. |
 | **NAT Gateway** | Predictable scalable outbound public IP. |
 
-## ✅ Use when
+#### ✅ Use when
 - Private application networks.
 - Hub-spoke architectures.
 - Private PaaS access.
 - Predictable outbound connectivity.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Avoid overlapping CIDRs.
 - Peering is not inherently transitive.
 - Private Endpoint requires DNS planning.
 - Routing is not authorization.
 - NSGs are not WAFs.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/virtual-network/
 
 https://learn.microsoft.com/azure/private-link/
 
 https://learn.microsoft.com/azure/nat-gateway/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -522,11 +527,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r5"></a>
-# 5. 🌍 DNS
+### 5. 🌍 DNS
 
 > 🟦 **What it is:** Azure DNS hosts public DNS, Private DNS Zones provide VNet-visible namespaces, and DNS Private Resolver provides managed hybrid DNS forwarding.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -537,22 +542,22 @@ az group delete --name "${RG}" --yes
 | **DNS Private Resolver** | Managed inbound/outbound DNS forwarding. |
 | **Forwarding Ruleset** | Domain-specific DNS forwarding rules. |
 
-## ✅ Use when
+#### ✅ Use when
 - Private Endpoint name resolution.
 - Hybrid Azure/on-prem DNS.
 - Hosting public DNS zones in Azure.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not create forwarding loops.
 - Private Endpoint clients normally keep using the service FQDN; DNS maps it to private IP.
 - Link the right zones to the right VNets.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/dns/
 
 https://learn.microsoft.com/azure/dns/dns-private-resolver-overview
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -583,11 +588,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r6"></a>
-# 6. 🔌 Hybrid & Global Connectivity
+### 6. 🔌 Hybrid & Global Connectivity
 
 > 🟦 **What it is:** VPN Gateway provides encrypted internet-based tunnels; ExpressRoute provides private provider connectivity; Virtual WAN centralizes managed transit; Route Server exchanges BGP routes with appliances; newer multicloud interconnect options should be verified against current availability.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -601,24 +606,24 @@ az group delete --name "${RG}" --yes
 | **Route Server** | BGP exchange with NVAs. |
 | **Azure multicloud interconnect** | Emerging connectivity options; verify current service docs. |
 
-## ✅ Use when
+#### ✅ Use when
 - VPN for encrypted hybrid connectivity over internet.
 - ExpressRoute for enterprise private connectivity.
 - Virtual WAN for large branch/global transit estates.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Plan redundant paths for critical hybrid workloads.
 - BGP/routes can create large blast radius.
 - Private connectivity does not replace app authentication or encryption requirements.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/vpn-gateway/
 
 https://learn.microsoft.com/azure/expressroute/
 
 https://learn.microsoft.com/azure/virtual-wan/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -645,11 +650,11 @@ Nothing to clean up — all commands in this exercise only read information.
 ---
 
 <a id="r7"></a>
-# 7. ⚖️ Application Delivery & Load Balancing
+### 7. ⚖️ Application Delivery & Load Balancing
 
 > 🟦 **What it is:** Azure separates Layer-4 regional load balancing, Layer-7 regional web ingress/WAF, global edge HTTP delivery, and DNS-based global routing.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -659,26 +664,26 @@ Nothing to clean up — all commands in this exercise only read information.
 | **Front Door Standard/Premium** | Global edge HTTP/S acceleration, routing, WAF, failover. |
 | **Traffic Manager** | DNS-based global endpoint selection. |
 
-## ✅ Use when
+#### ✅ Use when
 - Load Balancer for VM/VMSS TCP/UDP.
 - Application Gateway for regional HTTP/S/WAF/private ingress.
 - Front Door for global web/API edge.
 - Traffic Manager when DNS-based routing is enough.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Health probes must represent real readiness.
 - Traffic Manager does not proxy traffic.
 - Do not build new designs on Front Door classic.
 - Cache settings can leak/stale authenticated content if misconfigured.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/load-balancer/
 
 https://learn.microsoft.com/azure/application-gateway/
 
 https://learn.microsoft.com/azure/frontdoor/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -707,11 +712,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r8"></a>
-# 8. 🔥 Network Security & Management
+### 8. 🔥 Network Security & Management
 
 > 🟦 **What it is:** Azure Firewall centralizes network/application filtering; WAF protects HTTP; DDoS adds enhanced protection; Bastion protects VM management; Network Watcher and Virtual Network Manager help diagnose/manage large estates.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -724,26 +729,26 @@ az group delete --name "${RG}" --yes
 | **Connection Monitor** | Continuous network-path monitoring. |
 | **Virtual Network Manager** | Central connectivity/security management across VNets. |
 
-## ✅ Use when
+#### ✅ Use when
 - Central inspection/hub-spoke.
 - Web perimeter protection.
 - Privileged VM administration without public management ports.
 - Large-estate network governance.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Firewall does nothing if routes bypass it.
 - WAF needs tuning.
 - Bastion does not grant OS credentials.
 - Start troubleshooting with DNS/routes/NSGs before packet capture.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/firewall/
 
 https://learn.microsoft.com/azure/bastion/
 
 https://learn.microsoft.com/azure/network-watcher/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -772,14 +777,14 @@ az group delete --name "${RG}" --yes
 
 ---
 
-# PART III — 💾 STORAGE
+## PART III — 💾 STORAGE
 
 <a id="r9"></a>
-# 9. 🗃️ Azure Storage Account
+### 9. 🗃️ Azure Storage Account
 
 > 🟦 **What it is:** Storage Account is the top-level namespace/security/networking boundary for Blob, Files, Queue and Table capabilities depending on account type. Redundancy, performance tier, networking and authentication are account-level design choices.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -791,19 +796,19 @@ az group delete --name "${RG}" --yes
 | **Entra RBAC/SAS/Keys** | Authentication methods. |
 | **Encryption** | Platform-managed keys by default; CMK optional where needed. |
 
-## ✅ Use when
+#### ✅ Use when
 - Blob/File/Queue/Table storage.
 - Central Azure storage boundary with deliberate isolation.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not share account keys broadly.
 - Different subresources use different private DNS zones/endpoints.
 - Geo redundancy is not application backup.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/storage/common/storage-account-overview
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -833,11 +838,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r10"></a>
-# 10. 🌊 Object & Data Lake Storage
+### 10. 🌊 Object & Data Lake Storage
 
 > 🟦 **What it is:** Blob Storage handles object data; ADLS Gen2 adds hierarchical namespace/file-system semantics for analytics. Lifecycle management, immutability, access tiers and private access are key operational features.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -851,22 +856,22 @@ az group delete --name "${RG}" --yes
 | **ADLS Gen2** | Blob + hierarchical namespace. |
 | **ACLs** | POSIX-like directory/file permissions for ADLS. |
 
-## ✅ Use when
+#### ✅ Use when
 - Objects, documents, logs, backups, media.
 - Analytics lake files and Parquet/Delta datasets.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Avoid millions of tiny analytics files.
 - Private ADLS often needs both `blob` and `dfs` awareness.
 - Archive tier has rehydration latency.
 - RBAC and ADLS ACLs can both affect access.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/storage/blobs/
 
 https://learn.microsoft.com/azure/storage/blobs/data-lake-storage-introduction
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates a storage account and uploads data. It requires Contributor or equivalent management permission plus **Storage Blob Data Contributor** on the storage account (or a suitable data role); a newly granted role may take a few minutes to become effective. Storage costs may apply. Only delete the group created in this exercise.
 
@@ -901,11 +906,11 @@ az group delete -g "$RG" --yes
 ---
 
 <a id="r11"></a>
-# 11. 📁 File Storage
+### 11. 📁 File Storage
 
 > 🟦 **What it is:** Azure Files provides managed SMB/NFS shares and hybrid File Sync; Azure NetApp Files targets premium enterprise NAS workloads; Managed Lustre targets specialized high-performance file workloads.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -915,22 +920,22 @@ az group delete -g "$RG" --yes
 | **Azure NetApp Files** | High-performance enterprise NFS/SMB. |
 | **Azure Managed Lustre** | High-performance parallel file system for specialized workloads. |
 
-## ✅ Use when
+#### ✅ Use when
 - Lift-and-shift apps that require file shares.
 - User/profile/shared-file scenarios.
 - Enterprise/HPC workloads requiring premium NAS/file systems.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - SMB requires network reachability/ports and correct identity.
 - Snapshots/replication are not a complete backup strategy.
 - Premium services need workload/TCO justification.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/storage/files/
 
 https://learn.microsoft.com/azure/azure-netapp-files/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** Creates an empty storage account and an Azure Files share. Requires a test subscription, permissions to create resources, and budget approval. The example uses Azure Resource Manager operations (not mounting the share).
 
@@ -963,11 +968,11 @@ az group delete -g "$RG" --yes
 ---
 
 <a id="r12"></a>
-# 12. 💿 Block & SAN Storage
+### 12. 💿 Block & SAN Storage
 
 > 🟦 **What it is:** Managed Disks provide VM block storage. Disk SKUs trade cost/performance. Shared Disks support specific clustered scenarios. Elastic SAN provides centrally managed SAN-style block storage. Container Storage targets container workloads.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -979,22 +984,22 @@ az group delete -g "$RG" --yes
 | **Elastic SAN** | Managed SAN/iSCSI volumes. |
 | **Container Storage** | Storage service for Kubernetes/container scenarios. |
 
-## ✅ Use when
+#### ✅ Use when
 - VM persistent disks.
 - Clustered block-storage workloads.
 - Central SAN-style provisioning.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - VM SKU throughput may cap a fast disk.
 - Provisioned performance can cost even when idle.
 - SAN/iSCSI requires host/network multipath/resilience planning.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/virtual-machines/managed-disks-overview
 
 https://learn.microsoft.com/azure/storage/elastic-san/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -1023,11 +1028,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r13"></a>
-# 13. 🚚 Storage Data Movement & Management
+### 13. 🚚 Storage Data Movement & Management
 
 > 🟦 **What it is:** Azure provides online managed movers, offline Data Box appliances, policy-driven Storage Actions, and inventory/discovery capabilities for large storage estates.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1036,22 +1041,22 @@ az group delete --name "${RG}" --yes
 | **Storage Actions** | Policy/automation across storage data. |
 | **Storage Discovery** | Estate visibility/inventory capabilities; verify current availability. |
 
-## ✅ Use when
+#### ✅ Use when
 - Large migrations.
 - Offline transfer when WAN is impractical.
 - Estate-scale storage management.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Plan delta synchronization after a bulk seed.
 - Validate source/target ACLs and metadata.
 - Check preview/region status for newer storage-management services.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/databox/
 
 https://learn.microsoft.com/azure/storage-mover/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1076,14 +1081,14 @@ Nothing to clean up — all commands in this exercise only read information.
 
 ---
 
-# PART IV — 🗄️ DATABASES & CACHING
+## PART IV — 🗄️ DATABASES & CACHING
 
 <a id="r14"></a>
-# 14. 🟦 Microsoft SQL on Azure
+### 14. 🟦 Microsoft SQL on Azure
 
 > 🟦 **What it is:** Azure SQL Database is database-level PaaS; Managed Instance offers broader instance compatibility; SQL Server on Azure VM gives full OS/SQL control. Elastic pools, Hyperscale and serverless are deployment/capacity patterns within Azure SQL Database.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1095,21 +1100,21 @@ Nothing to clean up — all commands in this exercise only read information.
 | **SQL Managed Instance** | Managed instance-style PaaS. |
 | **SQL Server on VM** | IaaS SQL Server with OS control. |
 
-## ✅ Use when
+#### ✅ Use when
 - Azure SQL Database for new SQL Server-compatible cloud apps.
 - Managed Instance for instance-level compatibility/migration.
 - SQL VM when OS/full engine control is required.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Private DNS matters with Private Endpoint.
 - Use Entra/managed identity where practical.
 - Test geo-failover and transient-fault retry.
 - Check tier/zone/backup capabilities live.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-sql/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -1143,11 +1148,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r15"></a>
-# 15. 🐘 Open-Source Relational Databases
+### 15. 🐘 Open-Source Relational Databases
 
 > 🟦 **What it is:** Azure Database for PostgreSQL Flexible Server and MySQL Flexible Server are managed open-source relational services with compute, storage, backup, HA and networking choices.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1158,22 +1163,22 @@ az group delete --name "${RG}" --yes
 | **HA** | Redundant server configuration where supported. |
 | **Read Replica** | Read scaling / DR tool depending on service. |
 
-## ✅ Use when
+#### ✅ Use when
 - Apps requiring PostgreSQL/MySQL without managing DB VMs.
 - Managed backup/patching/HA are preferred.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Check extension/plugin compatibility before migration.
 - Use connection pooling.
 - Storage/IO can bottleneck before CPU.
 - Test restores and major-version upgrades.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/postgresql/flexible-server/
 
 https://learn.microsoft.com/azure/mysql/flexible-server/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -1206,11 +1211,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r16"></a>
-# 16. 🌌 NoSQL & Distributed Databases
+### 16. 🌌 NoSQL & Distributed Databases
 
 > 🟦 **What it is:** Cosmos DB is Azure's globally distributed NoSQL family with partitioning, configurable consistency, multiple APIs and change-feed capabilities. Additional distributed/partner database offerings should be evaluated by workload and current GA status.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1224,20 +1229,20 @@ az group delete --name "${RG}" --yes
 | **Cosmos DB APIs** | Document/key-value/graph/table-compatible API choices. |
 | **Managed Cassandra / other distributed offerings** | Specialized compatibility; verify current service docs. |
 
-## ✅ Use when
+#### ✅ Use when
 - Globally distributed low-latency NoSQL.
 - Massive horizontal scale with clear partitioning.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Bad partition key creates hot partitions.
 - 429 is throttling/backpressure.
 - Cross-partition queries can be expensive.
 - Do not force relational workloads into NoSQL.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/cosmos-db/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -1268,11 +1273,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r17"></a>
-# 17. ⚡ Caching
+### 17. ⚡ Caching
 
 > 🟦 **What it is:** Azure Managed Redis is the strategic managed Redis offering for Azure. Redis is typically a performance/cache component, not the primary system of record.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1283,20 +1288,20 @@ az group delete --name "${RG}" --yes
 | **TTL/Eviction** | Cache lifecycle behavior. |
 | **Cache-aside** | Common application pattern. |
 
-## ✅ Use when
+#### ✅ Use when
 - Reduce latency/load on databases/APIs.
 - Sessions, rate limits, leaderboards, hot data.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Design for cache loss and stampede protection.
 - Do not make cache authoritative accidentally.
 - Monitor evictions, memory and connection count.
 - Verify migration from Azure Cache for Redis.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/redis/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -1327,11 +1332,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r18"></a>
-# 18. 🧬 Specialized / Partner Databases
+### 18. 🧬 Specialized / Partner Databases
 
 > 🟦 **What it is:** Azure also exposes specialized first-party and partner database offerings. These change more frequently than the core relational/NoSQL catalog and should be selected only when compatibility or vendor requirements justify them.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1340,18 +1345,18 @@ az group delete --name "${RG}" --yes
 | **Managed Cassandra offerings** | Specialized wide-column compatibility. |
 | **Preview/emerging DB services** | Treat lifecycle/region/API as volatile. |
 
-## ✅ Use when
+#### ✅ Use when
 - Vendor compatibility is a hard requirement.
 - Migration risk is lower with vendor-native engine semantics.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Partner billing/support model may differ from native Azure PaaS.
 - Do not copy preview names into long-lived architecture standards without verification.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://azure.microsoft.com/products/category/databases/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1373,14 +1378,14 @@ Nothing to clean up — all commands in this exercise only read information.
 
 ---
 
-# PART V — 📨 MESSAGING, EVENTS & INTEGRATION
+## PART V — 📨 MESSAGING, EVENTS & INTEGRATION
 
 <a id="r19"></a>
-# 19. 📬 Azure Service Bus
+### 19. 📬 Azure Service Bus
 
 > 🟦 **What it is:** Enterprise message broker for reliable queues and topic/subscription publish-subscribe patterns. Advanced broker features include sessions, DLQs, duplicate detection and transactions depending on tier/configuration.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1393,21 +1398,21 @@ Nothing to clean up — all commands in this exercise only read information.
 | **Peek-lock** | Receive without delete until completion. |
 | **Duplicate Detection** | Broker feature to reduce duplicate enqueue. |
 
-## ✅ Use when
+#### ✅ Use when
 - Business commands/jobs.
 - Reliable async decoupling.
 - Pub/sub with independent subscriptions.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Make consumers idempotent.
 - Monitor DLQs.
 - Lock duration matters for long processing.
 - Prefer Entra/RBAC over shared SAS keys.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/service-bus-messaging/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -1438,11 +1443,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r20"></a>
-# 20. ⚡ Azure Event Grid
+### 20. ⚡ Azure Event Grid
 
 > 🟦 **What it is:** Reactive event-routing service for discrete events. Supports system/custom topics, namespaces, event subscriptions, filters, retries and dead-letter patterns.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1454,20 +1459,20 @@ az group delete --name "${RG}" --yes
 | **CloudEvents** | Common event schema. |
 | **Dead-letter** | Failed delivery destination. |
 
-## ✅ Use when
+#### ✅ Use when
 - React to resource/business events.
 - Fan-out notifications.
 - CloudEvents/event routing.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Events can be delivered more than once; handlers must be idempotent.
 - Do not use events as strict commands when processing guarantees are different.
 - Monitor dead-letter/delivery failures.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/event-grid/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -1498,11 +1503,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r21"></a>
-# 21. 🌊 Azure Event Hubs
+### 21. 🌊 Azure Event Hubs
 
 > 🟦 **What it is:** High-throughput event ingestion/streaming platform with partitions, consumer groups, retention/replay, Capture and Kafka-compatible interfaces.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1514,21 +1519,21 @@ az group delete --name "${RG}" --yes
 | **Capture** | Automatic stream delivery to storage/data lake. |
 | **Kafka endpoint** | Kafka protocol compatibility. |
 
-## ✅ Use when
+#### ✅ Use when
 - Telemetry/log/event streaming.
 - Multiple independent stream consumers.
 - High-volume ingestion.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Partition count affects scale and ordering.
 - No global ordering across partitions.
 - Consumers need checkpoint strategy.
 - Do not use as a business command queue.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/event-hubs/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -1559,11 +1564,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r22"></a>
-# 22. 🪣 Azure Queue Storage
+### 22. 🪣 Azure Queue Storage
 
 > 🟦 **What it is:** Simple durable queue service in Azure Storage with visibility timeout and dequeue semantics.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1573,19 +1578,19 @@ az group delete --name "${RG}" --yes
 | **Dequeue Count** | Useful for poison detection. |
 | **TTL** | Expiration. |
 
-## ✅ Use when
+#### ✅ Use when
 - Simple low-cost work queue.
 - You do not need Service Bus topics/sessions/transactions.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Design poison-message handling.
 - Delivery is not exactly once.
 - Prefer Entra data roles over account keys where supported.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/storage/queues/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates a resource group and storage account (potential charges). It requires appropriate resource-management access **and** Storage Queue Data Contributor or equivalent queue-data access. For local verification, read/peek a queue message; replication statistics would require read-access geo-redundant storage, which this example does not create.
 
@@ -1617,11 +1622,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r23"></a>
-# 23. 🔁 Workflow & Integration
+### 23. 🔁 Workflow & Integration
 
 > 🟦 **What it is:** Logic Apps provides managed workflows/connectors with Consumption and Standard hosting models. Integration Account supports B2B/enterprise integration artifacts in relevant scenarios.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1633,21 +1638,21 @@ az group delete --name "${RG}" --yes
 | **Standard** | Single-tenant/app-style hosting model. |
 | **Integration Account** | B2B artifacts such as schemas/maps/partners for relevant workflows. |
 
-## ✅ Use when
+#### ✅ Use when
 - SaaS/API/system integration.
 - Human-readable workflow orchestration.
 - Connector-heavy business processes.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Connector throttling is real.
 - Avoid giant opaque workflows containing all business logic.
 - Networking differs by hosting model/connectors.
 - Use managed identity where supported.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/logic-apps/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -1677,11 +1682,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r24"></a>
-# 24. 🚪 API Management
+### 24. 🚪 API Management
 
 > 🟦 **What it is:** Managed API gateway and governance platform with APIs/operations, products, subscriptions, policies, gateways and developer portal.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1695,21 +1700,21 @@ az group delete --name "${RG}" --yes
 | **Self-hosted Gateway** | Gateway runtime outside managed Azure gateway in supported scenarios. |
 | **Developer Portal** | Consumer onboarding/docs. |
 
-## ✅ Use when
+#### ✅ Use when
 - Central API security/governance.
 - JWT validation, quotas, transformations, products/portals.
 - Hybrid API gateway needs.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not turn APIM policies into the application business layer.
 - Networking/tier model matters greatly.
 - Cache authenticated/private content carefully.
 - Source-control policies.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/api-management/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1736,11 +1741,11 @@ az apim api list --service-name "${APIM_NAME}" --resource-group "${RG}" --output
 ---
 
 <a id="r25"></a>
-# 25. 📡 Real-Time Application Services
+### 25. 📡 Real-Time Application Services
 
 > 🟦 **What it is:** Azure SignalR Service, Web PubSub, Communication Services and Notification Hubs cover different real-time/user communication channels.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1749,25 +1754,25 @@ az apim api list --service-name "${APIM_NAME}" --resource-group "${RG}" --output
 | **Communication Services** | Voice/video/chat/SMS/email APIs. |
 | **Notification Hubs** | Push notifications to mobile devices. |
 
-## ✅ Use when
+#### ✅ Use when
 - Real-time browser/app updates.
 - Programmable communications.
 - Mobile push notification fanout.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - These are not durable enterprise brokers.
 - Use short-lived client access tokens.
 - Design reconnect/resubscribe behavior.
 - Channel delivery (SMS/push/email) is not guaranteed like a transaction.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-signalr/overview
 
 https://learn.microsoft.com/azure/azure-web-pubsub/
 
 https://learn.microsoft.com/azure/communication-services/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -1796,14 +1801,14 @@ az group delete --name "${RG}" --yes
 
 ---
 
-# PART VI — 👤 IDENTITY, ACCESS & SECRETS
+## PART VI — 👤 IDENTITY, ACCESS & SECRETS
 
 <a id="r26"></a>
-# 26. 🪪 Microsoft Entra Concepts Used by Azure Resources
+### 26. 🪪 Microsoft Entra Concepts Used by Azure Resources
 
 > 🟦 **What it is:** Azure resources rely heavily on Microsoft Entra identities: users, groups, app registrations, enterprise applications/service principals, managed identities and workload identity federation.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1817,20 +1822,20 @@ az group delete --name "${RG}" --yes
 | **User Managed Identity** | Reusable identity resource. |
 | **Workload Identity Federation** | OIDC/federated token trust without stored client secret. |
 
-## ✅ Use when
+#### ✅ Use when
 - Human and workload authentication to Azure.
 - Secretless service-to-service authentication.
 - Federated CI/CD and Kubernetes workloads.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Identity is separate from network reachability.
 - Do not reuse one workload identity across unrelated trust boundaries.
 - Prefer federation/managed identity over long-lived client secrets.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/entra/identity/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1856,11 +1861,11 @@ az ad sp list --filter "displayName eq '"${APP_NAME}"'" --query "[].{name:displa
 ---
 
 <a id="r27"></a>
-# 27. 🎫 Azure RBAC
+### 27. 🎫 Azure RBAC
 
 > 🟦 **What it is:** Authorization system based on principal + role definition + scope. Roles can contain management actions and/or data actions.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1873,21 +1878,21 @@ az ad sp list --filter "displayName eq '"${APP_NAME}"'" --query "[].{name:displa
 | **DataActions** | Data-plane permissions. |
 | **PIM** | Just-in-time privileged human role activation. |
 
-## ✅ Use when
+#### ✅ Use when
 - Grant Azure management/data permissions.
 - Least-privilege workload access.
 - Central human access control.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Contributor cannot normally grant access.
 - Owner is broad and should be exceptional.
 - Inherited assignments matter.
 - RBAC is not Azure Policy.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/role-based-access-control/overview
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -1912,11 +1917,11 @@ az role definition list --name "Reader" --query "[].{name:roleName,id:name,dataA
 ---
 
 <a id="r28"></a>
-# 28. 🔑 Azure Key Vault
+### 28. 🔑 Azure Key Vault
 
 > 🟦 **What it is:** Managed secrets, keys and certificates with RBAC/access controls, private networking, soft delete and purge protection.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1928,21 +1933,21 @@ az role definition list --name "Reader" --query "[].{name:roleName,id:name,dataA
 | **Private Endpoint** | Private vault access. |
 | **Key Vault Reference** | Use vault-backed values from supported application services. |
 
-## ✅ Use when
+#### ✅ Use when
 - Central secrets/keys/certificates.
 - Managed identity-based secret retrieval.
 - Certificate/key lifecycle.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not call Key Vault on every hot-path request without caching strategy.
 - Monitor certificate expiration.
 - Private Endpoint requires correct DNS.
 - Purge protection changes deletion/recovery behavior.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/key-vault/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -1973,11 +1978,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r29"></a>
-# 29. 🧱 Managed HSM
+### 29. 🧱 Managed HSM
 
 > 🟦 **What it is:** Dedicated managed HSM pools for high-assurance cryptographic keys and stronger separation than general Key Vault.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -1987,18 +1992,18 @@ az group delete --name "${RG}" --yes
 | **Local RBAC** | HSM data-plane access model. |
 | **Backup/Restore** | Protected HSM recovery operations. |
 
-## ✅ Use when
+#### ✅ Use when
 - Regulatory/high-value cryptographic keys require dedicated managed HSMs.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Security-domain custody is critical.
 - Use only when Key Vault does not meet requirements.
 - Separate key administration from application use.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/key-vault/managed-hsm/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -2022,14 +2027,14 @@ az keyvault show --hsm-name "${HSM_NAME}" --query "{state:properties.provisionin
 
 ---
 
-# PART VII — 📊 OBSERVABILITY & OPERATIONS
+## PART VII — 📊 OBSERVABILITY & OPERATIONS
 
 <a id="r30"></a>
-# 30. 📡 Azure Monitor
+### 30. 📡 Azure Monitor
 
 > 🟦 **What it is:** Unified monitoring platform for metrics, logs, alerts, data collection and dashboards/workbooks across Azure workloads.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2040,18 +2045,18 @@ az keyvault show --hsm-name "${HSM_NAME}" --query "{state:properties.provisionin
 | **Data Collection Rule** | Configures supported telemetry pipelines. |
 | **Azure Monitor Agent** | Agent for supported machine telemetry. |
 
-## ✅ Use when
+#### ✅ Use when
 - All production Azure workloads need an intentional monitoring design.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not enable every log forever without retention/cost strategy.
 - Alert on user/business impact, not every raw symptom.
 - Monitoring data can be sensitive.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-monitor/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -2076,11 +2081,11 @@ az monitor diagnostic-settings list --resource "${RESOURCE_ID}"
 ---
 
 <a id="r31"></a>
-# 31. 🧾 Log Analytics
+### 31. 🧾 Log Analytics
 
 > 🟦 **What it is:** Azure Monitor Logs workspace stores/query logs using KQL and configurable retention/table plans.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2090,19 +2095,19 @@ az monitor diagnostic-settings list --resource "${RESOURCE_ID}"
 | **Retention** | Hot/archive data retention. |
 | **Analytics/Basic/Auxiliary table models** | Cost/query behavior depends on current table plan. |
 
-## ✅ Use when
+#### ✅ Use when
 - Central searchable logs.
 - Sentinel/Azure Monitor/VM/container/app telemetry.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - One giant workspace may violate ownership/residency boundaries.
 - Noisy ingestion gets expensive.
 - Use time/table filters in KQL.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-workspace-overview
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -2132,11 +2137,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r32"></a>
-# 32. 🔭 Application Insights
+### 32. 🔭 Application Insights
 
 > 🟦 **What it is:** APM capability in Azure Monitor for requests, dependencies, exceptions, traces, availability and distributed tracing, with OpenTelemetry-based instrumentation recommended for many modern workloads.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2148,19 +2153,19 @@ az group delete --name "${RG}" --yes
 | **Availability Test** | Synthetic endpoint test. |
 | **OpenTelemetry** | Vendor-neutral instrumentation standard used by current Azure Monitor SDK strategy. |
 
-## ✅ Use when
+#### ✅ Use when
 - Web/API/service performance and failure analysis.
 - Distributed tracing across dependencies.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not log secrets/PII.
 - Sampling/cardinality control matters.
 - Propagate trace context across queues/services.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -2190,11 +2195,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r33"></a>
-# 33. 🚨 Alerts & Visualization
+### 33. 🚨 Alerts & Visualization
 
 > 🟦 **What it is:** Alert rules evaluate metric/log/activity signals; Action Groups notify or automate; Workbooks and Managed Grafana visualize operational data.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2205,19 +2210,19 @@ az group delete --name "${RG}" --yes
 | **Workbook** | Interactive Azure Monitor visualization. |
 | **Azure Managed Grafana** | Managed Grafana dashboards for supported data sources. |
 
-## ✅ Use when
+#### ✅ Use when
 - Proactive incident detection.
 - Dashboards for operational review.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Every alert needs owner + action/runbook.
 - Test Action Groups.
 - Prevent alert storms and duplicate symptoms.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-monitor/alerts/alerts-overview
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -2247,11 +2252,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r34"></a>
-# 34. 🩺 Health & Recommendations
+### 34. 🩺 Health & Recommendations
 
 > 🟦 **What it is:** Azure Status gives broad public status; Service Health gives personalized service/region incidents and maintenance; Resource Health gives individual resource health; Advisor gives optimization recommendations.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2260,22 +2265,22 @@ az group delete --name "${RG}" --yes
 | **Resource Health** | Specific resource-instance health. |
 | **Azure Advisor** | Cost/reliability/security/performance/operational recommendations. |
 
-## ✅ Use when
+#### ✅ Use when
 - Incident triage and platform-awareness.
 - Subscription-specific maintenance/health alerts.
 - Optimization reviews.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not rely only on Azure Status.
 - Advisor is guidance, not automatic truth for your workload.
 - Service Health should have alerting for critical subscriptions.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/service-health/overview
 
 https://learn.microsoft.com/azure/advisor/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -2296,11 +2301,11 @@ az advisor recommendation list --query "[].{category:category,impact:impact,prob
 ---
 
 <a id="r35"></a>
-# 35. 🤖 Automation & Maintenance
+### 35. 🤖 Automation & Maintenance
 
 > 🟦 **What it is:** Azure Automation, runbooks, Update Manager and Maintenance Configurations provide operational automation/patching/control windows for supported workloads.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2309,21 +2314,21 @@ az advisor recommendation list --query "[].{category:category,impact:impact,prob
 | **Update Manager** | Patch assessment/orchestration for supported machines. |
 | **Maintenance Configuration** | Control maintenance windows for supported resource types. |
 
-## ✅ Use when
+#### ✅ Use when
 - Repeatable operational tasks.
 - Patch governance.
 - Controlled maintenance windows.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Automation identities are privileged—use least privilege.
 - Do not create hidden production logic in ad-hoc runbooks without source control/testing.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/automation/
 
 https://learn.microsoft.com/azure/update-manager/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -2352,14 +2357,14 @@ az group delete --name "${RG}" --yes
 
 ---
 
-# PART VIII — 🛡️ SECURITY
+## PART VIII — 🛡️ SECURITY
 
 <a id="r36"></a>
-# 36. 🛡️ Microsoft Defender for Cloud
+### 36. 🛡️ Microsoft Defender for Cloud
 
 > 🟦 **What it is:** Cloud security posture management plus workload-protection plans for supported Azure/hybrid/multicloud resources.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2369,19 +2374,19 @@ az group delete --name "${RG}" --yes
 | **Regulatory Compliance** | Mapped compliance controls. |
 | **DevSecOps** | Security posture across code/pipeline integrations where supported. |
 
-## ✅ Use when
+#### ✅ Use when
 - Cloud posture and workload threat protection.
 - Security/compliance teams need centralized visibility.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Buying a plan without a remediation process does not improve risk.
 - Prioritize business risk, not only score.
 - Check agent/extension prerequisites.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/defender-for-cloud/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -2403,11 +2408,11 @@ az security secure-scores list --output table
 ---
 
 <a id="r37"></a>
-# 37. 🕵️ Microsoft Sentinel
+### 37. 🕵️ Microsoft Sentinel
 
 > 🟦 **What it is:** Cloud-native SIEM/SOAR using data connectors, analytics rules, incidents, automation rules and playbooks over Log Analytics-backed security data.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2418,18 +2423,18 @@ az security secure-scores list --output table
 | **Automation Rule** | Incident workflow. |
 | **Playbook** | Logic Apps-based response automation. |
 
-## ✅ Use when
+#### ✅ Use when
 - Security operations/detection/response across cloud and enterprise sources.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Security telemetry cost can be significant.
 - Tune detections; do not create thousands of noisy alerts.
 - Playbooks need tightly scoped permissions.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/sentinel/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** You must already have a Log Analytics workspace with Sentinel enabled. `az extension add` installs or updates the optional CLI extension, so this is **not entirely read-only** on your computer. Set `RG` and `LAW_NAME` to the real names in your own subscription before listing incidents.
 
@@ -2456,11 +2461,11 @@ az sentinel alert-rule list --resource-group "${RG}" --workspace-name "${LAW_NAM
 ---
 
 <a id="r38"></a>
-# 38. 🔥 Network Security Resources
+### 38. 🔥 Network Security Resources
 
 > 🟦 **What it is:** NSG, Azure Firewall, WAF, DDoS Protection and Bastion form different layers of network/security control.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2470,25 +2475,25 @@ az sentinel alert-rule list --resource-group "${RG}" --workspace-name "${LAW_NAM
 | **DDoS Protection** | Enhanced DDoS protection plan. |
 | **Bastion** | Private RDP/SSH administration. |
 
-## ✅ Use when
+#### ✅ Use when
 - Layered network security.
 - Centralized egress/ingress control.
 - Protect public web workloads and privileged administration.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not treat NSG as WAF.
 - Firewall needs routes through it.
 - WAF needs tuning.
 - No public RDP/SSH just because Bastion exists.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/firewall/
 
 https://learn.microsoft.com/azure/web-application-firewall/
 
 https://learn.microsoft.com/azure/ddos-protection/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -2519,11 +2524,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r39"></a>
-# 39. 🔐 Confidential Computing
+### 39. 🔐 Confidential Computing
 
 > 🟦 **What it is:** Confidential computing protects data while in use using hardware-backed trusted execution environments for supported VMs, containers and enclave-style workloads.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2531,18 +2536,18 @@ az group delete --name "${RG}" --yes
 | **Confidential Containers** | Container scenarios using confidential-computing infrastructure. |
 | **Enclave capabilities** | Application-isolated trusted execution features where supported. |
 
-## ✅ Use when
+#### ✅ Use when
 - Regulated/high-value data needs protection in use.
 - Threat model includes cloud/admin/hypervisor exposure beyond standard controls.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Confidential computing does not replace encryption, identity or secure code.
 - Supported regions/SKUs/OS/features must be verified live.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/confidential-computing/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -2563,14 +2568,14 @@ az vm list-skus --location eastus --size Standard_EC --output table
 
 ---
 
-# PART IX — 🧯 BACKUP, RECOVERY & RESILIENCE
+## PART IX — 🧯 BACKUP, RECOVERY & RESILIENCE
 
 <a id="r40"></a>
-# 40. 💾 Azure Backup
+### 40. 💾 Azure Backup
 
 > 🟦 **What it is:** Policy-driven managed backup for supported Azure/hybrid workloads using Recovery Services Vaults and Backup Vaults depending on workload.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2580,19 +2585,19 @@ az vm list-skus --location eastus --size Standard_EC --output table
 | **Restore Point** | Recoverable backup state. |
 | **VM/Disk/Files/Blob/DB/AKS backup** | Supported workload-specific backup types. |
 
-## ✅ Use when
+#### ✅ Use when
 - Protect against deletion/corruption/historical recovery.
 - Centralize policy/retention for supported workloads.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Restore testing is mandatory.
 - Backup admin separation improves ransomware resilience.
 - Replication/snapshot is not automatically backup.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/backup/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -2620,11 +2625,11 @@ az backup vault delete --resource-group "${RG}" --name demo-rsv --yes
 ---
 
 <a id="r41"></a>
-# 41. 🌍 Azure Site Recovery
+### 41. 🌍 Azure Site Recovery
 
 > 🟦 **What it is:** Replication/orchestration service for supported VM/site disaster-recovery scenarios, including recovery plans, test failover, failover and failback.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2635,18 +2640,18 @@ az backup vault delete --resource-group "${RG}" --name demo-rsv --yes
 | **Test Failover** | Non-disruptive DR validation. |
 | **Failback** | Return workload after disaster/recovery. |
 
-## ✅ Use when
+#### ✅ Use when
 - VM/site-level DR needs orchestrated recovery.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Replication healthy does not prove the application works after failover.
 - Target DNS/network/dependencies must exist.
 - Test failover regularly.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/site-recovery/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -2674,11 +2679,11 @@ az backup vault delete --resource-group "${RG}" --name demo-asr-vault --yes
 ---
 
 <a id="r42"></a>
-# 42. 💥 Azure Chaos Studio
+### 42. 💥 Azure Chaos Studio
 
 > 🟦 **What it is:** Controlled fault-injection experiments against supported Azure resources to validate resilience assumptions.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2687,18 +2692,18 @@ az backup vault delete --resource-group "${RG}" --name demo-asr-vault --yes
 | **Capability** | Supported fault capability. |
 | **Fault** | Injected failure. |
 
-## ✅ Use when
+#### ✅ Use when
 - Mature teams need repeatable resilience/game-day testing.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Define steady-state hypothesis and stop conditions.
 - Limit blast radius.
 - Chaos permissions are powerful.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/chaos-studio/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -2718,14 +2723,14 @@ az provider show --namespace Microsoft.Chaos --query "resourceTypes[].resourceTy
 
 ---
 
-# PART X — 🏛️ GOVERNANCE & RESOURCE MANAGEMENT
+## PART X — 🏛️ GOVERNANCE & RESOURCE MANAGEMENT
 
 <a id="r43"></a>
-# 43. 🏗️ Azure Resource Manager
+### 43. 🏗️ Azure Resource Manager
 
 > 🟦 **What it is:** ARM is Azure's management/control plane. ARM templates, Bicep, Deployment Stacks and Template Specs build on it.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2737,19 +2742,19 @@ az provider show --namespace Microsoft.Chaos --query "resourceTypes[].resourceTy
 | **Deployment Stack** | Resource lifecycle collection. |
 | **Template Spec** | Versioned ARM template artifact in Azure. |
 
-## ✅ Use when
+#### ✅ Use when
 - All Azure resource management.
 - Repeatable IaC deployments.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - API version matters.
 - Control-plane success does not prove data-plane connectivity.
 - Deployment Stack unmanage/delete behavior must be understood.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-resource-manager/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -2779,11 +2784,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r44"></a>
-# 44. 📏 Azure Policy
+### 44. 📏 Azure Policy
 
 > 🟦 **What it is:** Governance engine for auditing/denying/modifying/deploying resource configuration standards at scope.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2794,19 +2799,19 @@ az group delete --name "${RG}" --yes
 | **Exemption** | Approved exception. |
 | **Remediation Task** | Corrects supported noncompliance. |
 
-## ✅ Use when
+#### ✅ Use when
 - Organization-wide standards/compliance.
 - Allowed regions/SKUs/tags/security/diagnostics enforcement.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Start risky policies in Audit before Deny.
 - Policy is not RBAC.
 - Need exception ownership/process.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/governance/policy/overview
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates a test group and a policy assignment; policy assignment typically requires greater permissions than Contributor. Confirm the built-in policy ID and effect in the Azure Portal **before running**. Policies can take time to evaluate, so an empty compliance table immediately after assignment is normal.
 
@@ -2838,11 +2843,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r45"></a>
-# 45. 🏢 Management Groups
+### 45. 🏢 Management Groups
 
 > 🟦 **What it is:** Hierarchy above subscriptions for inherited RBAC/Policy and enterprise subscription organization.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2851,19 +2856,19 @@ az group delete --name "${RG}" --yes
 | **RBAC Inheritance** | Assignments flow down scopes. |
 | **Policy Inheritance** | Policy assignments flow down scopes. |
 
-## ✅ Use when
+#### ✅ Use when
 - Enterprise-scale governance across subscriptions.
 - Platform vs landing-zone subscription separation.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Top-level assignments have huge blast radius.
 - Avoid designing hierarchy around transient org chart only.
 - Test inherited policies before production rollout.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/governance/management-groups/overview
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -2889,11 +2894,11 @@ az account management-group delete --name demo-mg
 ---
 
 <a id="r46"></a>
-# 46. 🔎 Azure Resource Graph
+### 46. 🔎 Azure Resource Graph
 
 > 🟦 **What it is:** Fast cross-subscription query service for ARM resource metadata and change/inventory analysis using a KQL-like query language.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2902,18 +2907,18 @@ az account management-group delete --name demo-mg
 | **Query** | KQL-like estate query. |
 | **Change Analysis** | Resource-change visibility where supported. |
 
-## ✅ Use when
+#### ✅ Use when
 - Inventory, governance, retirement impact, estate reporting.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Not a replacement for Azure Monitor Logs.
 - Results are limited to resources caller can see.
 - Treat near-real-time metadata as eventually consistent for some changes.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/governance/resource-graph/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -2936,11 +2941,11 @@ Nothing to clean up — read-only query.
 ---
 
 <a id="r47"></a>
-# 47. 💰 Cost Management
+### 47. 💰 Cost Management
 
 > 🟦 **What it is:** Cost Management, budgets, reservations and savings plans support visibility/optimization of Azure spend.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -2950,19 +2955,19 @@ Nothing to clean up — read-only query.
 | **Reservation** | Capacity commitment for specific resource categories. |
 | **Savings Plan** | Eligible compute spend commitment. |
 
-## ✅ Use when
+#### ✅ Use when
 - FinOps visibility and control.
 - Production budget/forecast reviews.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Tags are useful for allocation but not always inherited automatically.
 - Reservation/Savings Plan decisions need usage data.
 - Monitoring and egress can be major hidden costs.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/cost-management-billing/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -2988,11 +2993,11 @@ Nothing to clean up — read-only query.
 ---
 
 <a id="r48"></a>
-# 48. 🔒 Resource Locks
+### 48. 🔒 Resource Locks
 
 > 🟦 **What it is:** Management-plane protection against accidental delete or write at supported scopes.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3000,18 +3005,18 @@ Nothing to clean up — read-only query.
 | **ReadOnly** | Blocks management-plane writes/deletes. |
 | **Inheritance** | Locks at parent scope can affect children. |
 
-## ✅ Use when
+#### ✅ Use when
 - Protect critical shared resources from accidental portal/automation changes.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Locks do not replace RBAC.
 - ReadOnly locks can break operations that internally need management writes.
 - Document break-glass/unlock process.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-resource-manager/management/lock-resources
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3041,14 +3046,14 @@ az group delete --name "${RG}" --yes
 
 ---
 
-# PART XI — 📈 DATA & ANALYTICS
+## PART XI — 📈 DATA & ANALYTICS
 
 <a id="r49"></a>
-# 49. 🏭 Azure Data Factory
+### 49. 🏭 Azure Data Factory
 
 > 🟦 **What it is:** Managed data-integration/orchestration platform with pipelines, activities, linked services, datasets, integration runtimes and triggers.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3061,19 +3066,19 @@ az group delete --name "${RG}" --yes
 | **Trigger** | Schedule/event start. |
 | **Mapping Data Flow** | Visual Spark-based transformation feature. |
 
-## ✅ Use when
+#### ✅ Use when
 - ETL/ELT orchestration and data movement.
 - Hybrid data movement using self-hosted IR.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Connector/source throttling.
 - Secrets should use Key Vault/managed identity.
 - Self-hosted IR needs HA if critical.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/data-factory/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3103,11 +3108,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r50"></a>
-# 50. 🧱 Azure Databricks
+### 50. 🧱 Azure Databricks
 
 > 🟦 **What it is:** Managed Azure integration of Databricks for Spark/lakehouse/data engineering/ML, with workspaces, compute, jobs and Unity Catalog governance.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3117,20 +3122,20 @@ az group delete --name "${RG}" --yes
 | **Unity Catalog** | Data/AI governance layer. |
 | **Delta Lake** | Transactional lakehouse storage format. |
 
-## ✅ Use when
+#### ✅ Use when
 - Spark/lakehouse workloads.
 - Large-scale data engineering and collaborative data science.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Interactive compute left running is expensive.
 - Millions of tiny files hurt performance.
 - Production notebooks need CI/CD/testing discipline.
 - Network architecture should be chosen early.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/databricks/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3160,11 +3165,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r51"></a>
-# 51. ⚡ Azure Data Explorer
+### 51. ⚡ Azure Data Explorer
 
 > 🟦 **What it is:** High-performance analytics service for telemetry/log/time-series data using KQL.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3175,19 +3180,19 @@ az group delete --name "${RG}" --yes
 | **KQL** | Primary query language. |
 | **Materialized View** | Precomputed aggregation/view. |
 
-## ✅ Use when
+#### ✅ Use when
 - Huge telemetry/log/time-series datasets.
 - Near-real-time analytical queries.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Not OLTP.
 - Bound KQL time ranges and columns.
 - Monitor ingestion failures and hot cache behavior.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/data-explorer/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3219,11 +3224,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r52"></a>
-# 52. 🌐 Azure Synapse Analytics
+### 52. 🌐 Azure Synapse Analytics
 
 > 🟦 **What it is:** Integrated Azure analytics workspace spanning dedicated/serverless SQL, Spark and pipelines.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3233,19 +3238,19 @@ az group delete --name "${RG}" --yes
 | **Spark Pool** | Managed Spark. |
 | **Pipelines** | Data orchestration. |
 
-## ✅ Use when
+#### ✅ Use when
 - Existing/strategic Synapse analytics estates.
 - Integrated SQL/Spark/pipeline use cases.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Evaluate current Microsoft Fabric direction for new analytics strategy.
 - Dedicated SQL table distribution design matters.
 - Private networking/dependencies are complex.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/synapse-analytics/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** Synapse is a paid, region-dependent advanced service. This demonstration additionally needs **Storage Blob Data Contributor** on the new storage account to create its filesystem using login authentication. It may require workspace-managed-identity storage permissions. Check account quota and service prerequisites first.
 
@@ -3283,11 +3288,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r53"></a>
-# 53. 🌊 Azure Stream Analytics
+### 53. 🌊 Azure Stream Analytics
 
 > 🟦 **What it is:** Managed SQL-like real-time stream processing with inputs, queries and outputs.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3297,18 +3302,18 @@ az group delete --name "${RG}" --yes
 | **Output** | Destination. |
 | **Streaming Unit** | Capacity unit. |
 
-## ✅ Use when
+#### ✅ Use when
 - Simple managed real-time window/filter/aggregate processing.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Understand event time, late/out-of-order events and partitioning.
 - Monitor watermark/backlog.
 - Use managed identity for supported endpoints.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/stream-analytics/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3339,11 +3344,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r54"></a>
-# 54. 🧵 Microsoft Fabric Context
+### 54. 🧵 Microsoft Fabric Context
 
 > 🟦 **What it is:** Microsoft Fabric is a related SaaS analytics platform with OneLake and multiple workloads. Not every Fabric object is an ordinary Azure ARM resource, so do not model it as a simple resource-provider subtree.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3352,17 +3357,17 @@ az group delete --name "${RG}" --yes
 | **OneLake** | Unified data lake abstraction. |
 | **Lakehouse/Warehouse/etc.** | Fabric workloads rather than ordinary Azure resources. |
 
-## ✅ Use when
+#### ✅ Use when
 - Organization adopts Fabric as unified SaaS analytics platform.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Keep Azure ARM governance concepts separate from Fabric workspace/item governance.
 - Licensing/capacity model differs from normal Azure resource pricing.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/fabric/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -3384,14 +3389,14 @@ Nothing to clean up — all commands in this exercise only read information.
 
 ---
 
-# PART XII — 🤖 AI & MACHINE LEARNING
+## PART XII — 🤖 AI & MACHINE LEARNING
 
 <a id="r55"></a>
-# 55. 🤖 Microsoft Foundry
+### 55. 🤖 Microsoft Foundry
 
 > 🟦 **What it is:** Current Microsoft Azure AI platform unifying agents, models, tools and enterprise controls such as RBAC, networking, tracing, monitoring and evaluations.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3403,19 +3408,19 @@ Nothing to clean up — all commands in this exercise only read information.
 | **Tracing/Evaluation** | Quality and observability capabilities. |
 | **MCP integrations** | Tool interoperability where supported/current. |
 
-## ✅ Use when
+#### ✅ Use when
 - Enterprise generative-AI and agent applications.
 - Managed model/tool/agent development with Azure governance.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Prompt injection is an authorization/tool-safety issue.
 - Use managed identities/RBAC.
 - Model/agent quotas and feature availability are volatile—verify live.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/ai-foundry/what-is-azure-ai-foundry
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3445,11 +3450,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r56"></a>
-# 56. 🧠 Azure OpenAI / Foundry Models
+### 56. 🧠 Azure OpenAI / Foundry Models
 
 > 🟦 **What it is:** Azure-hosted foundation model deployments exposed through Foundry/Azure AI resource models, with deployment types, quotas, content filtering and enterprise networking/authentication.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3460,19 +3465,19 @@ az group delete --name "${RG}" --yes
 | **Content Filtering** | Safety policy layer. |
 | **Private Networking** | Private endpoints/managed network patterns depending on resource model. |
 
-## ✅ Use when
+#### ✅ Use when
 - LLM/embedding/multimodal inference on Azure.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not hard-code model versions/capacity assumptions.
 - Handle 429/5xx with backoff.
 - Prefer Entra/managed identity over keys.
 - Model cost/token budgets need monitoring.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/ai-services/openai/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3502,11 +3507,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r57"></a>
-# 57. 🔎 Azure AI Search
+### 57. 🔎 Azure AI Search
 
 > 🟦 **What it is:** Managed search platform for full-text, vector, hybrid and semantic search; common in RAG systems.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3519,20 +3524,20 @@ az group delete --name "${RG}" --yes
 | **Hybrid Search** | Text + vector. |
 | **Semantic Ranker** | Semantic re-ranking. |
 
-## ✅ Use when
+#### ✅ Use when
 - RAG retrieval.
 - Search/faceting/filtering over documents/content.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not expose admin keys in clients.
 - RAG needs access-control trimming/filtering.
 - Index/chunking changes need reindex strategy.
 - Replicas and partitions drive capacity/cost.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/search/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3563,11 +3568,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r58"></a>
-# 58. 🧪 Azure Machine Learning
+### 58. 🧪 Azure Machine Learning
 
 > 🟦 **What it is:** Managed ML platform for workspaces, compute, environments, data/model assets, pipelines and online/batch endpoints.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3581,20 +3586,20 @@ az group delete --name "${RG}" --yes
 | **Deployment** | Model version/runtime behind endpoint. |
 | **Pipeline** | Repeatable ML workflow. |
 
-## ✅ Use when
+#### ✅ Use when
 - Train/deploy custom ML models.
 - MLOps/experiment/asset governance.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Stop idle compute.
 - Make environments reproducible.
 - Private dependencies/networking matter.
 - Model quality/drift monitoring is part of production.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/machine-learning/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3623,11 +3628,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r59"></a>
-# 59. 🧰 Foundry Tools / AI Services
+### 59. 🧰 Foundry Tools / AI Services
 
 > 🟦 **What it is:** Specialized AI capabilities cover document understanding, speech, language, translation, vision and content safety/guardrail scenarios under the current Foundry/Azure AI tooling direction.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3639,18 +3644,18 @@ az group delete --name "${RG}" --yes
 | **Vision** | Image/vision capabilities where current service supports them. |
 | **Content Safety / Guardrails** | Safety classification/controls. |
 
-## ✅ Use when
+#### ✅ Use when
 - Use a specialized managed AI API instead of building/training the capability yourself.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - AI output needs business validation.
 - Sensitive documents/audio/images require data-governance review.
 - Service names/endpoints are evolving—verify current Foundry docs.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/ai-services/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3680,14 +3685,14 @@ az group delete --name "${RG}" --yes
 
 ---
 
-# PART XIII — 🌍 IoT & EDGE
+## PART XIII — 🌍 IoT & EDGE
 
 <a id="r60"></a>
-# 60. 📡 Azure IoT Hub
+### 60. 📡 Azure IoT Hub
 
 > 🟦 **What it is:** Managed IoT cloud gateway with per-device identity, telemetry, cloud-to-device messaging, twins and routing. DPS supports at-scale device provisioning.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3700,21 +3705,21 @@ az group delete --name "${RG}" --yes
 | **DPS** | Zero-touch provisioning service. |
 | **Device Update** | Managed update capability where applicable. |
 
-## ✅ Use when
+#### ✅ Use when
 - Large device fleets requiring per-device identity and device management semantics.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not share one symmetric key across fleet.
 - Design offline buffering/reconnect.
 - Monitor throttling/routing failures.
 - Provisioning and key/certificate rotation need lifecycle design.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/iot-hub/
 
 https://learn.microsoft.com/azure/iot-dps/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3745,11 +3750,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r61"></a>
-# 61. 🏭 Azure IoT Operations
+### 61. 🏭 Azure IoT Operations
 
 > 🟦 **What it is:** Industrial/edge data platform running on Arc-enabled Kubernetes with MQTT/data-flow concepts and Azure cloud integration.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3759,19 +3764,19 @@ az group delete --name "${RG}" --yes
 | **Assets/Endpoints** | Industrial resource representation. |
 | **Cloud Connectors** | Integration to Azure/cloud targets. |
 
-## ✅ Use when
+#### ✅ Use when
 - Industrial edge needs local operation plus Azure management.
 - Intermittent cloud connectivity is normal.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Edge networking/certificates are critical.
 - Design offline behavior.
 - Do not treat plant networks like ordinary cloud VNets.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/iot-operations/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -3795,11 +3800,11 @@ Nothing to clean up — provider registration is non-destructive and reusable.
 ---
 
 <a id="r62"></a>
-# 62. 🧬 Azure Digital Twins
+### 62. 🧬 Azure Digital Twins
 
 > 🟦 **What it is:** Graph-based digital representation service using models, twins, relationships and event routes.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3808,18 +3813,18 @@ Nothing to clean up — provider registration is non-destructive and reusable.
 | **Relationship** | Graph edge. |
 | **Event Route** | Sends twin/telemetry events downstream. |
 
-## ✅ Use when
+#### ✅ Use when
 - Physical environments benefit from a connected graph model.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not model every raw sensor sample as permanent twin state.
 - Version/govern models.
 - Digital Twins is not the device gateway itself.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/digital-twins/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3849,11 +3854,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r63"></a>
-# 63. 🧱 IoT Edge
+### 63. 🧱 IoT Edge
 
 > 🟦 **What it is:** IoT Edge runs containerized modules on edge devices/gateways with an edge agent/hub runtime and cloud management through IoT Hub-era patterns. Verify current strategic fit alongside IoT Operations.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3862,17 +3867,17 @@ az group delete --name "${RG}" --yes
 | **Edge Hub** | Local messaging broker/gateway. |
 | **Module** | Containerized edge workload. |
 
-## ✅ Use when
+#### ✅ Use when
 - Existing IoT Edge solutions and supported edge-gateway patterns.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - For new industrial edge designs, compare current IoT Operations direction.
 - Plan module/image updates and offline behavior.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/iot-edge/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -3902,14 +3907,14 @@ az group delete --name "${RG}" --yes
 
 ---
 
-# PART XIV — 🔀 HYBRID, MULTICLOUD & MIGRATION
+## PART XIV — 🔀 HYBRID, MULTICLOUD & MIGRATION
 
 <a id="r64"></a>
-# 64. 🌉 Azure Arc
+### 64. 🌉 Azure Arc
 
 > 🟦 **What it is:** Extends Azure control-plane management to external servers, Kubernetes and selected data/services.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3919,18 +3924,18 @@ az group delete --name "${RG}" --yes
 | **Arc-enabled Data Services** | Hybrid data service scenarios. |
 | **Extensions** | Azure management capabilities on Arc resources. |
 
-## ✅ Use when
+#### ✅ Use when
 - Hybrid/multicloud inventory, policy, monitor, security and management.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Arc does not migrate workloads into Azure.
 - Outbound connectivity/proxy/private-link design matters.
 - Local OS/Kubernetes security still matters.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-arc/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -3954,11 +3959,11 @@ Nothing to clean up — read-only commands.
 ---
 
 <a id="r65"></a>
-# 65. 🏠 Azure Local
+### 65. 🏠 Azure Local
 
 > 🟦 **What it is:** Azure-managed distributed infrastructure platform for customer-controlled/on-prem locations, integrated with Azure/Arc.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -3967,18 +3972,18 @@ Nothing to clean up — read-only commands.
 | **Local VMs** | Virtualized workloads. |
 | **Container/Kubernetes scenarios** | Supported local container platforms depending on current release. |
 
-## ✅ Use when
+#### ✅ Use when
 - Latency/sovereignty/disconnected requirements require local compute with Azure management.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - You still operate physical infrastructure lifecycle.
 - Do not assume full Azure region service catalog locally.
 - Design spare capacity and site DR.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-local/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -4001,11 +4006,11 @@ Nothing to clean up — read-only commands.
 ---
 
 <a id="r66"></a>
-# 66. ☁️ Azure VMware Solution
+### 66. ☁️ Azure VMware Solution
 
 > 🟦 **What it is:** Managed VMware private cloud running on dedicated Azure infrastructure, used for VMware migration/extension while preserving VMware tooling/semantics.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4014,18 +4019,18 @@ Nothing to clean up — read-only commands.
 | **ExpressRoute** | Primary Azure connectivity. |
 | **HCX** | Migration/mobility tooling where used. |
 
-## ✅ Use when
+#### ✅ Use when
 - Large VMware estates need rapid migration with minimal replatforming.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - High fixed cost requires TCO review.
 - Plan IP/DNS/connectivity carefully.
 - A modernization roadmap may still be needed.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-vmware/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -4048,11 +4053,11 @@ Nothing to clean up — read-only commands.
 ---
 
 <a id="r67"></a>
-# 67. 🚚 Azure Migrate
+### 67. 🚚 Azure Migrate
 
 > 🟦 **What it is:** Discovery, assessment and migration hub for servers, databases and application modernization/migration scenarios.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4062,19 +4067,19 @@ Nothing to clean up — read-only commands.
 | **Server Migration** | Replication/cutover workflow. |
 | **Web/App modernization tools** | Assessment/migration paths for supported workloads. |
 
-## ✅ Use when
+#### ✅ Use when
 - Inventory/assess before migration.
 - VM/server migration and right-sizing.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Discover dependencies before cutover.
 - Run test migrations.
 - Lift-and-shift should be followed by optimization/modernization review.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/migrate/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -4098,11 +4103,11 @@ az resource list --resource-type "Microsoft.Migrate/migrateProjects" -o table
 ---
 
 <a id="r68"></a>
-# 68. 🗄️ Database Migration Service
+### 68. 🗄️ Database Migration Service
 
 > 🟦 **What it is:** Managed database migration orchestration for supported source/target combinations, including online/offline migration patterns.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4111,18 +4116,18 @@ az resource list --resource-type "Microsoft.Migrate/migrateProjects" -o table
 | **Online Migration** | Minimize downtime using continuous sync where supported. |
 | **Offline Migration** | One-time move with outage window. |
 
-## ✅ Use when
+#### ✅ Use when
 - Supported database engine migration needs managed orchestration.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Always verify current supported source/target/version matrix.
 - Performance/latency/network path affects online migration.
 - Test app compatibility separately from data copy.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/dms/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -4152,11 +4157,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r69"></a>
-# 69. 📦 Azure Storage Mover & Data Box
+### 69. 📦 Azure Storage Mover & Data Box
 
 > 🟦 **What it is:** Storage Mover handles managed online file/object migration into Azure Storage; Data Box handles offline physical bulk transfer.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4165,21 +4170,21 @@ az group delete --name "${RG}" --yes
 | **Data Box** | Physical appliance transfer. |
 | **Data Box Disk / Heavy** | Offer variants; verify current availability. |
 
-## ✅ Use when
+#### ✅ Use when
 - Large storage migrations.
 - WAN-limited migrations needing offline seed.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Plan delta sync after bulk transfer.
 - Preserve/validate metadata/ACLs.
 - Verify current Data Box offer availability by region.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/storage-mover/
 
 https://learn.microsoft.com/azure/databox/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -4207,14 +4212,14 @@ az group delete --name "${RG}" --yes
 
 ---
 
-# PART XV — 🖥️ VIRTUAL DESKTOP
+## PART XV — 🖥️ VIRTUAL DESKTOP
 
 <a id="r70"></a>
-# 70. 🖥️ Azure Virtual Desktop
+### 70. 🖥️ Azure Virtual Desktop
 
 > 🟦 **What it is:** ARM-based desktop/application virtualization service using host pools, session hosts, application groups and workspaces. FSLogix is commonly used for profile containers.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4226,21 +4231,21 @@ az group delete --name "${RG}" --yes
 | **FSLogix** | Profile-container technology. |
 | **Scaling Plan** | Schedule/load-based host scaling. |
 
-## ✅ Use when
+#### ✅ Use when
 - Remote Windows desktops/apps.
 - Multi-session pooled desktops.
 - Enterprise app virtualization.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Profile storage is often a performance/availability dependency.
 - Golden images need versioning/testing.
 - Do not expose session-host RDP publicly.
 - AVD classic is retired; use ARM model.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/virtual-desktop/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -4269,14 +4274,14 @@ az group delete --name "${RG}" --yes
 
 ---
 
-# PART XVI — 🧰 SPECIALIZED APPLICATION SERVICES
+## PART XVI — 🧰 SPECIALIZED APPLICATION SERVICES
 
 <a id="r71"></a>
-# 71. 🗺️ Azure Maps
+### 71. 🗺️ Azure Maps
 
 > 🟦 **What it is:** Geospatial APIs/services for map rendering, search, routing, geolocation and spatial scenarios.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4286,18 +4291,18 @@ az group delete --name "${RG}" --yes
 | **Geolocation** | Location-related APIs. |
 | **Authentication** | Entra/shared-key/token models depending on API/client scenario. |
 
-## ✅ Use when
+#### ✅ Use when
 - Applications need Azure-integrated geospatial/map APIs.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Location data may be privacy-sensitive.
 - Do not expose privileged keys in untrusted clients.
 - Verify API/version/regional/data-residency requirements.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/azure-maps/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -4326,11 +4331,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r72"></a>
-# 72. ☎️ Azure Communication Services
+### 72. ☎️ Azure Communication Services
 
 > 🟦 **What it is:** Programmable communication APIs for voice/video, chat, SMS and email-related scenarios.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4341,18 +4346,18 @@ az group delete --name "${RG}" --yes
 | **Email** | Email communication service/resources. |
 | **Client Identity/Token** | Short-lived client authorization. |
 
-## ✅ Use when
+#### ✅ Use when
 - Apps need embedded communications.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Use short-lived client tokens.
 - Abuse/rate controls matter.
 - Channel delivery is not a transactional guarantee.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/communication-services/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -4384,11 +4389,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r73"></a>
-# 73. 🧪 Azure App Testing
+### 73. 🧪 Azure App Testing
 
 > 🟦 **What it is:** Azure App Testing services include Load Testing and Playwright Testing for performance and browser end-to-end testing.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4398,18 +4403,18 @@ az group delete --name "${RG}" --yes
 | **Artifacts** | Traces/screenshots/reports. |
 | **CI/CD Integration** | Automated test execution in pipelines. |
 
-## ✅ Use when
+#### ✅ Use when
 - Performance tests and browser E2E tests in CI/CD.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Define safe load-test targets/abort criteria.
 - Flaky browser tests need deterministic setup.
 - Test credentials should be low privilege.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/app-testing/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -4438,11 +4443,11 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r74"></a>
-# 74. 🧮 Azure Batch
+### 74. 🧮 Azure Batch
 
 > 🟦 **What it is:** Managed scheduling of large numbers of parallel/HPC-style tasks across pools of compute nodes.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4452,18 +4457,18 @@ az group delete --name "${RG}" --yes
 | **Task** | Unit of execution. |
 | **AutoScale** | Pool scaling policy. |
 
-## ✅ Use when
+#### ✅ Use when
 - Rendering, simulation, engineering/HPC and parallel batch processing.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Tasks should be retryable/idempotent.
 - Checkpoint long expensive work.
 - Quota/capacity and storage throughput matter.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/batch/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
@@ -4494,14 +4499,14 @@ az group delete --name "${RG}" --yes
 
 ---
 
-# PART XVII — 🔄 LIFECYCLE & TRANSITIONS
+## PART XVII — 🔄 LIFECYCLE & TRANSITIONS
 
 <a id="r75"></a>
-# 75. ⏳ Services in Transition / Retirement
+### 75. ⏳ Services in Transition / Retirement
 
 > 🟦 **What it is:** Azure continuously retires services/features. Keep normal sections focused on current targets and put legacy products here with migration direction.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4512,17 +4517,17 @@ az group delete --name "${RG}" --yes
 | **Azure Spring Apps** | Retires 2028-03-31 → Container Apps or AKS. |
 | **Azure Virtual Desktop classic** | Retired 2026-09-30 → ARM-based AVD. |
 
-## ✅ Use when
+#### ✅ Use when
 - Use this section when inheriting old architecture or migration plans.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Always verify the official retirement page before making dates/contracts part of a plan.
 - Use Service Health/Advisor/Resource Graph to locate impacted resources.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/service-health/service-retirement-alerting-guidance
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -4546,11 +4551,11 @@ Nothing to clean up — read-only inventory commands.
 ---
 
 <a id="r76"></a>
-# 76. 🧪 Preview & Emerging Resources
+### 76. 🧪 Preview & Emerging Resources
 
 > 🟦 **What it is:** Preview/emerging services are useful for evaluation but have different support/SLA/change characteristics. Names, APIs and even product direction can change.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4560,19 +4565,19 @@ Nothing to clean up — read-only inventory commands.
 | **GA** | Generally available production service. |
 | **Feature Flag/API Version** | Preview state may appear at feature/API level rather than whole service. |
 
-## ✅ Use when
+#### ✅ Use when
 - Prototype/evaluate with explicit risk acceptance.
 - Track features that may solve future architecture needs.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Do not silently put preview dependencies in production standards.
 - Verify SLA/support/data-residency/compliance before use.
 - Document exit/migration path.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://azure.microsoft.com/updates/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -4594,14 +4599,14 @@ Nothing to clean up — read-only inventory commands.
 
 ---
 
-# PART XVIII — 📚 OFFICIAL SOURCE MAP
+## PART XVIII — 📚 OFFICIAL SOURCE MAP
 
 <a id="r77"></a>
-# 77. 📚 Official Microsoft Documentation Directory
+### 77. 📚 Official Microsoft Documentation Directory
 
 > 🟦 **What it is:** Use first-party Microsoft sources as the authority for implementation details. This reference intentionally avoids duplicating fast-changing SKU/limit/region matrices.
 
-## 🧩 Resource map
+#### 🧩 Resource map
 
 | Resource / concept | What to remember |
 |---|---|
@@ -4612,22 +4617,22 @@ Nothing to clean up — read-only inventory commands.
 | **Service docs** | Resource-specific implementation details. |
 | **Service Health** | Incidents, maintenance, retirements. |
 
-## ✅ Use when
+#### ✅ Use when
 - Verify any production-critical assumption.
 - Follow links from the relevant section above.
 
-## ⚠️ Engineering watch-outs
+#### ⚠️ Engineering watch-outs
 - Search engines may surface stale Microsoft pages; prefer current Learn pages and service overview/lifecycle notes.
 - For modern AI, verify current Microsoft Foundry naming/resource model.
 
-## 📚 Official Microsoft docs
+#### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/architecture/guide/technology-choices/technology-choices-overview
 
 https://learn.microsoft.com/azure/well-architected/
 
 https://learn.microsoft.com/azure/azure-resource-manager/
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
@@ -4651,6 +4656,6 @@ Nothing to clean up — read-only inventory command.
 
 ---
 
-## Documentation links
+#### Documentation links
 
 [Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

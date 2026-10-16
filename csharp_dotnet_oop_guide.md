@@ -1,9 +1,16 @@
+---
+title: "Object-Oriented Programming with C# and .NET"
+description: "Learn C# and .NET object-oriented programming through classes, inheritance, interfaces, design decisions, exercises and a structured study plan."
+---
+
 <!-- {% raw %} -->
 <div align="center" markdown="1">
 
 # 🏛️ Complete Object-Oriented Programming with C# and .NET
 
-### *From "what is a class?" to "I can design, test, and refactor a real system."*
+<a id="from-what-is-a-class-to-i-can-design-test-and-refactor-a-real-system"></a>
+
+*From "what is a class?" to "I can design, test, and refactor a real system."*
 
 **_By Gehan Fernando_**
 
@@ -114,7 +121,7 @@ public class Greeter
 
 **Output:**
 
-```
+```text
 Hi
 ```
 
@@ -267,7 +274,7 @@ Everything here targets **.NET 8 or later** unless stated otherwise.
 
 <div align="center" markdown="1">
 
-# 🟢 PART 0 — START HERE
+## 🟢 PART 0 — START HERE
 
 *Why OOP exists, and how to set up your lab bench.*
 
@@ -275,14 +282,14 @@ Everything here targets **.NET 8 or later** unless stated otherwise.
 
 ---
 
-# 1. 🌱 How programming got to OOP
+### 1. 🌱 How programming got to OOP
 
 **Level: ⭐ Beginner**
 
 Before you learn *how* OOP works, you should understand *why anyone invented it*.
 Otherwise every rule feels arbitrary and you will forget all of them.
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Imagine you are running a small shop.
 
@@ -302,7 +309,7 @@ So you reorganise. You give each thing **its own folder with its own rules**:
 That reorganisation **is** object-oriented programming. Each folder is an **object**: it holds
 its own data, it enforces its own rules, and it decides what outsiders are allowed to do to it.
 
-### 📜 The three eras of programming
+#### 📜 The three eras of programming
 
 | Era | Style | The core idea | The wall it hit |
 |---|---|---|---|
@@ -310,7 +317,7 @@ its own data, it enforces its own rules, and it decides what outsiders are allow
 | 1970s–80s | **Procedural** | Break the program into functions | Data floats free; anyone can corrupt it |
 | 1980s–now | **Object-oriented** | Bundle data *with* the rules that protect it | Complexity stays contained inside objects |
 
-### 👀 See the difference with your own eyes
+#### 👀 See the difference with your own eyes
 
 Same task, two styles. Read both — you do not need to understand the syntax yet.
 
@@ -367,7 +374,7 @@ Not "unlikely". *Impossible.* The object enforces it for you, forever, without y
 > Procedural code asks *"what steps do I run?"*
 > Object-oriented code asks *"who owns this rule, and how do I make breaking it impossible?"*
 
-### 🎯 When OOP is the right choice
+#### 🎯 When OOP is the right choice
 
 | ✅ Use OOP when | 🚫 OOP adds little when |
 |---|---|
@@ -380,7 +387,7 @@ Not "unlikely". *Impossible.* The object enforces it for you, forever, without y
 > lambdas, records) every single day. OOP gives you the structure; functional style gives you
 > the plumbing. They are partners, not rivals.
 
-## 1.1 🧪 Hands-on exercise
+#### 1.1 🧪 Hands-on exercise
 
 You do not need a C# project yet for this one — pen and paper, or any text editor, is fine.
 (If you want to run it, come back once Chapter 2 is done.)
@@ -415,11 +422,11 @@ and version 1 had none.
 
 <a id="2--prerequisites-and-setup"></a>
 
-# 2. 🛠️ Prerequisites and setup
+### 2. 🛠️ Prerequisites and setup
 
 **Level: ⭐ Beginner**
 
-## 2.1 What you should already know
+#### 2.1 What you should already know
 
 You do **not** need to be an expert. You need these basics:
 
@@ -439,7 +446,7 @@ You do **not** need to be an expert. You need these basics:
 You do **NOT** need: ASP.NET, Entity Framework, SQL, Docker, cloud, or design patterns.
 This guide teaches everything else from scratch.
 
-## 2.2 Install .NET
+#### 2.2 Install .NET
 
 Download the latest **.NET SDK** — not just the runtime; you need the SDK to *build* code:
 
@@ -456,7 +463,7 @@ You should see something like `10.0.100` or higher. **This guide was validated o
 onwards will run almost everything here; the handful of features that need a newer language version
 are flagged inline where they appear.
 
-## 2.3 Create your practice project
+#### 2.3 Create your practice project
 
 ```bash
 dotnet new console -n OopPractice
@@ -466,7 +473,7 @@ dotnet run
 
 You should see `Hello, World!`. That is your lab bench for the whole guide.
 
-## 2.4 Configure the project properly
+#### 2.4 Configure the project properly
 
 Open `OopPractice.csproj` and make it look like this:
 
@@ -498,7 +505,7 @@ Open `OopPractice.csproj` and make it look like this:
 > `dotnet --version` reports `9.x`, set `net9.0` here; if it reports `10.x`, `net10.0` is correct.
 > A mismatch between `TargetFramework` and your installed SDK is the #1 "it won't build" cause.
 
-### 🧰 Which editor?
+##### 🧰 Which editor?
 
 | Editor | Cost | Best for |
 |---|---|---|
@@ -508,7 +515,7 @@ Open `OopPractice.csproj` and make it look like this:
 
 Any of the three is fine. Pick one and stop worrying about it.
 
-## 2.5 The file you will edit constantly
+#### 2.5 The file you will edit constantly
 
 In a modern console app, `Program.cs` uses **top-level statements** — no `class Program`, no `Main`:
 
@@ -530,7 +537,7 @@ public class Greeter
 > middle is a compiler error. On real projects, put each class in **its own file** named after
 > the class (`Greeter.cs`). See [Chapter 36](#36--naming-and-coding-conventions).
 
-## 2.6 🧪 Hands-on exercise
+#### 2.6 🧪 Hands-on exercise
 
 Verify your setup actually works, end to end:
 
@@ -567,7 +574,7 @@ If all seven steps worked, your lab bench is ready for the rest of the guide.
 
 <div align="center" markdown="1">
 
-# 🔵 PART 1 — FOUNDATIONS
+## 🔵 PART 1 — FOUNDATIONS
 
 *The vocabulary and mechanics. Everything later is built on these ten chapters.*
 
@@ -575,11 +582,11 @@ If all seven steps worked, your lab bench is ready for the rest of the guide.
 
 ---
 
-# 3. 🧩 What OOP really means
+### 3. 🧩 What OOP really means
 
 **Level: ⭐ Beginner**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 An **object** is a small, self-managing thing in your program that models something real.
 
@@ -595,7 +602,7 @@ Think of a **vending machine**. It has:
 You cannot reach inside the machine and take a can. You can only press its buttons. That is the
 whole idea of OOP in one sentence.
 
-### 🔬 The four things every object combines
+#### 🔬 The four things every object combines
 
 ```mermaid
 graph TD
@@ -606,7 +613,7 @@ graph TD
     O --> I["🏷️ IDENTITY<br/>This account is not<br/>the same as account #12346"]
 ```
 
-### 💻 The idea as code
+#### 💻 The idea as code
 
 ```csharp
 public class BankAccount
@@ -655,7 +662,7 @@ Console.WriteLine(account.GetBalance());   // 750
 // account.AccountNumber = "X"; // no setter
 ```
 
-### 🎯 When to model something as an object
+#### 🎯 When to model something as an object
 
 | ✅ Make it an object when | Example |
 |---|---|
@@ -674,7 +681,7 @@ Console.WriteLine(account.GetBalance());   // 750
 > An object is not a container for variables. It is a **guardian of rules**.
 > If your class has no rules, ask yourself whether it should be a `record` instead.
 
-## 3.1 🧪 Hands-on exercise
+#### 3.1 🧪 Hands-on exercise
 
 Model a `TrafficLight`. Its data is the current colour. Its rule is that it can only go
 Green → Yellow → Red → Green. Nothing else. Try to make an illegal transition impossible —
@@ -698,14 +705,14 @@ setter for the colour itself.
 
 <a id="4--the-four-pillars-of-oop"></a>
 
-# 4. 🏛️ The four pillars of OOP
+### 4. 🏛️ The four pillars of OOP
 
 **Level: ⭐ Beginner**
 
 Every OOP course on Earth teaches these four words. Most courses never explain them properly.
 Here is the honest version.
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Imagine a **washing machine**.
 
@@ -727,7 +734,7 @@ That is all four pillars, in one appliance. The rest of this chapter is the same
 
 </div>
 
-### 📊 The four pillars at a glance
+#### 📊 The four pillars at a glance
 
 | Pillar | Plain-English meaning | Real-world analogy | C# tools | Chapter |
 |---|---|---|---|:---:|
@@ -736,7 +743,7 @@ That is all four pillars, in one appliance. The rest of this chapter is the same
 | **Inheritance** | Build a specialised type from a general one | A "Manager" is a specialised "Employee" | `: BaseClass`, `virtual`, `override` | [15](#15--inheritance) |
 | **Polymorphism** | One handle, many machines behind it | A power socket — kettle, laptop, lamp all plug in | interfaces, `override` | [16](#16--polymorphism) |
 
-### 🎬 All four in one tiny example
+#### 🎬 All four in one tiny example
 
 Read the comments — each pillar is labelled where it appears.
 
@@ -810,7 +817,7 @@ Charged $250.00 to card ending 4444
 Notice: to add **Apple Pay** tomorrow, you write one new class. You change **zero** existing
 lines. That is what all four pillars working together buy you.
 
-### 🧠 The memory rule
+#### 🧠 The memory rule
 
 ```text
   Encapsulation  ──▶  PROTECTS   (nobody can corrupt my data)
@@ -822,7 +829,7 @@ lines. That is what all four pillars working together buy you.
 > ⚠️ **Gotcha** — Beginners over-use **inheritance** and under-use the other three. In real
 > professional code, encapsulation and polymorphism appear constantly; deep inheritance is rare.
 
-## 4.1 🧪 Hands-on exercise
+#### 4.1 🧪 Hands-on exercise
 
 Take the payment example above and, **without looking back at it**, do the following:
 
@@ -854,13 +861,13 @@ that is the whole point of it.
 
 <a id="5--classes-and-objects"></a>
 
-# 5. 🏗️ Classes and objects
+### 5. 🏗️ Classes and objects
 
 **Level: ⭐ Beginner**
 
-## 5.1 What a class is
+#### 5.1 What a class is
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 A **class** is a *blueprint*. An **object** is a *building made from that blueprint*.
 
@@ -899,7 +906,7 @@ public class Car
 **🎯 When to use:** any time you need a thing that has both data and behaviour, and there will be
 more than one of them (or there might be later).
 
-## 5.2 Creating an object
+#### 5.2 Creating an object
 
 The keyword `new` builds an object from the blueprint.
 
@@ -921,7 +928,7 @@ Console.WriteLine(a.Brand);   // Toyota  — changing b did nothing to a
 Console.WriteLine(b.Brand);   // Honda
 ```
 
-## 5.3 Object initializer — set several properties at once
+#### 5.3 Object initializer — set several properties at once
 
 Instead of four separate lines, use `{ ... }` right after `new`:
 
@@ -941,7 +948,7 @@ typical for simple data holders, configuration objects, and test data.
 constructor, so the object briefly exists in an invalid state. For anything with invariants,
 pass the values through the **constructor** instead ([Chapter 8](#8--constructors-and-object-initialization)).
 
-## 5.4 `var` and target-typed `new` — two ways to type less
+#### 5.4 `var` and target-typed `new` — two ways to type less
 
 C# lets you avoid repeating the type name. Both of these mean exactly the same thing:
 
@@ -967,7 +974,7 @@ Dictionary<string, List<Order>> old = new Dictionary<string, List<Order>>();
 > ⚠️ **Gotcha** — `var` does **not** mean "dynamic" or "any type". C# is still fully static.
 > `var` just saves you typing; the type is fixed at compile time and can never change.
 
-## 5.5 Where do objects live?
+#### 5.5 Where do objects live?
 
 ```csharp
 Car car = new Car();
@@ -981,7 +988,7 @@ Two things happen:
 
 This matters enormously, and [Chapter 11](#11--value-types-vs-reference-types) explains exactly why.
 
-## 5.6 🧪 Hands-on exercise
+#### 5.6 🧪 Hands-on exercise
 
 Create a `Student` class with:
 
@@ -1014,13 +1021,13 @@ Grade: A
 
 ---
 
-# 6. 🧱 Fields, properties, and methods
+### 6. 🧱 Fields, properties, and methods
 
 **Level: ⭐ Beginner**
 
 These three are the *members* of a class. Get the difference clear now and everything else is easier.
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 | Member | Analogy | What it is |
 |---|---|---|
@@ -1037,7 +1044,7 @@ graph LR
     M --> F
 ```
 
-## 6.1 Fields — raw storage
+#### 6.1 Fields — raw storage
 
 ```csharp
 public class Product
@@ -1055,7 +1062,7 @@ changed later without breaking callers, and cannot be part of an interface.
 
 > 🎓 **Professor's rule** — Fields are private. Properties are public. There is almost no exception.
 
-## 6.2 Properties — the controlled doorway
+#### 6.2 Properties — the controlled doorway
 
 The short form (an **auto-property**) — C# creates the hidden field for you:
 
@@ -1070,7 +1077,7 @@ public class Product
 **🎯 When to use:** simple data with no rules yet. It is safe, because you can add validation later
 *without changing any calling code* — that is the whole reason properties exist.
 
-## 6.3 Property with validation — the real reason properties exist
+#### 6.3 Property with validation — the real reason properties exist
 
 ```csharp
 public class Product
@@ -1104,7 +1111,7 @@ percentage 0–100.
 > 💡 **Tip** — Inside a setter, the special keyword `value` holds the incoming assignment.
 > You never declare it; C# provides it.
 
-## 6.4 The property toolbox — six kinds, and when each one is right
+#### 6.4 The property toolbox — six kinds, and when each one is right
 
 This is the single most useful table in this chapter. Bookmark it.
 
@@ -1119,7 +1126,7 @@ This is the single most useful table in this chapter. Bookmark it.
 
 Now each one, with a reason.
 
-### ① Read-only property — set once, at birth
+##### ① Read-only property — set once, at birth
 
 ```csharp
 public class Order
@@ -1134,7 +1141,7 @@ public class Order
 **🎯 Use when:** the value is decided when the object is created and must never change.
 Creation timestamps, IDs, order numbers.
 
-### ② Private setter — only the object may change its own state
+##### ② Private setter — only the object may change its own state
 
 ```csharp
 public class BankAccount
@@ -1161,7 +1168,7 @@ Console.WriteLine(account.Balance);   // ✅ reading is fine
 **🎯 Use when:** the outside world may *look* at a value but only the object's own methods may
 *change* it. This is the workhorse of encapsulation.
 
-### ③ Init-only property — settable in `{ }`, frozen forever after
+##### ③ Init-only property — settable in `{ }`, frozen forever after
 
 ```csharp
 public class Customer
@@ -1182,7 +1189,7 @@ Very common in DTOs and configuration objects.
 **🚫 Don't use when:** the value has validation rules — `init` setters can validate, but a
 constructor makes the requirement obvious and impossible to skip.
 
-### ④ Required property — the compiler forces the caller to supply it
+##### ④ Required property — the compiler forces the caller to supply it
 
 ```csharp
 public class Customer
@@ -1204,7 +1211,7 @@ Customer ok = new Customer { Name = "Gehan" };     // ✅
 > 💡 **Tip** — `required` is checked at **compile time**, which is strictly better than throwing
 > at runtime. Prefer it over a nullable property plus a runtime null-check where you can.
 
-### ⑤ Computed property — never store what you can calculate
+##### ⑤ Computed property — never store what you can calculate
 
 ```csharp
 public class OrderLine
@@ -1240,7 +1247,7 @@ use a method instead, so the caller knows it costs something.
 > 🎓 **Professor's rule** — Cheap and derived → computed property.
 > Expensive or has side-effects → method.
 
-## 6.5 Methods — what the object can *do*
+#### 6.5 Methods — what the object can *do*
 
 ```csharp
 public class Calculator
@@ -1261,7 +1268,7 @@ Anatomy of a method signature:
    modifier    type
 ```
 
-### Expression-bodied methods — one-line shorthand
+##### Expression-bodied methods — one-line shorthand
 
 When a method is a single expression, `=>` is cleaner:
 
@@ -1277,7 +1284,7 @@ public class Calculator
 **🎯 Use when:** the whole body is one expression. **🚫 Don't** contort a 5-line method into one
 unreadable expression just to use `=>`.
 
-### `void` — a method that does something instead of returning something
+##### `void` — a method that does something instead of returning something
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -1285,7 +1292,7 @@ unreadable expression just to use `=>`.
 public void PrintReceipt() => Console.WriteLine("Thank you!");
 ```
 
-## 6.6 Method overloading — same name, different inputs
+#### 6.6 Method overloading — same name, different inputs
 
 ```csharp
 public class Calculator
@@ -1317,7 +1324,7 @@ calc.Add(1m, 2m, 3m, 4m);  // picks Add(params decimal[])
 > public double Parse(string s) => 0;   // ❌ error: already defined
 > ```
 
-## 6.7 🧪 Hands-on exercise
+#### 6.7 🧪 Hands-on exercise
 
 Build a `Thermostat` class:
 
@@ -1345,14 +1352,14 @@ Then try to break it from the outside. You should not be able to.
 
 <a id="7--method-parameters-in-depth"></a>
 
-# 7. 🎛️ Method parameters in depth
+### 7. 🎛️ Method parameters in depth
 
 **Level: ⭐⭐ Intermediate**
 
 Most guides skip this chapter. Then learners meet `out` in real code and panic.
 Here is everything, in order of how often you will actually use it.
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 A method's parameters are the **order form** you fill in before the method does its job.
 
@@ -1370,7 +1377,7 @@ C# gives you several ways to design that form:
 You will use the first four constantly and the last two rarely — which is exactly the order
 they appear below.
 
-## 7.1 Optional parameters — sensible defaults
+#### 7.1 Optional parameters — sensible defaults
 
 ```csharp
 public class EmailService
@@ -1403,7 +1410,7 @@ you should pass a small **options object** instead.
 > library and later change a default from `3` to `5`, code compiled against the old version
 > keeps using `3` until it is recompiled. This is a real source of confusing bugs in libraries.
 
-## 7.2 Named arguments — make call sites readable
+#### 7.2 Named arguments — make call sites readable
 
 ```csharp
 // ❌ What do `true` and `false` mean? Nobody can tell from the call site.
@@ -1430,7 +1437,7 @@ Your future self will thank you.
 > 🎓 **Professor's rule** — If a call has more than one `true`/`false` in a row, use named
 > arguments. Or better, replace the booleans with an **enum** ([Chapter 20](#20--enums-and-type-safe-choices)).
 
-## 7.3 `params` — accept any number of arguments
+#### 7.3 `params` — accept any number of arguments
 
 ```csharp
 public class Logger
@@ -1454,7 +1461,7 @@ log.LogAll(new[] { "a", "b" });          // an actual array also works
 **🎯 Use when:** the count genuinely varies — `Console.WriteLine`, `string.Format`, `Math.Max`
 style APIs. **Rule:** `params` must be the **last** parameter, and there can be only one.
 
-## 7.4 `ref`, `out`, and `in` — passing the variable itself
+#### 7.4 `ref`, `out`, and `in` — passing the variable itself
 
 This is the part everyone finds confusing. Here is the whole thing in one table:
 
@@ -1465,7 +1472,7 @@ This is the part everyone finds confusing. Here is the whole thing in one table:
 | `out` | ❌ No | ✅ Yes | ✅ Yes | Returning a *second* value |
 | `in` | ✅ Yes | No | ❌ No (read-only) | Passing a big `struct` cheaply |
 
-### `out` — the one you will actually use
+##### `out` — the one you will actually use
 
 `out` lets a method return a **second** value. You have already used it without knowing:
 
@@ -1505,7 +1512,7 @@ public class PriceParser
 > 💡 **Tip** — The naming convention is `TryXxx` returning `bool` with an `out` result. Follow it,
 > and every C# developer will instantly understand your API.
 
-### `ref` — modify the caller's variable
+##### `ref` — modify the caller's variable
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -1525,7 +1532,7 @@ Console.WriteLine($"{x}, {y}");   // 2, 1
 **🚫 When NOT to use `ref`:** almost always. In modern C#, returning a value or a tuple is
 clearer. `ref` on *reference types* is especially confusing and rarely what you want.
 
-### `in` — read-only, but avoids copying
+##### `in` — read-only, but avoids copying
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -1539,7 +1546,7 @@ public static double Determinant(in Matrix4x4 m) { /* ... */ return 0; }
 **🎯 Use when:** passing a **large struct** in a performance-sensitive loop. For classes and small
 structs it makes no difference — do not sprinkle it everywhere.
 
-## 7.5 🧪 Hands-on exercise
+#### 7.5 🧪 Hands-on exercise
 
 Write a `SafeDivider` class with a method
 `bool TryDivide(double numerator, double denominator, out double result)`
@@ -1561,11 +1568,11 @@ Then call it both ways — with a valid and an invalid divisor.
 
 ---
 
-# 8. 🏭 Constructors and object initialization
+### 8. 🏭 Constructors and object initialization
 
 **Level: ⭐ Beginner**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 A **constructor** is the object's *birth certificate ceremony*. It runs exactly once, the moment
 the object is created, and its job is to make sure the object is **born valid**.
@@ -1582,7 +1589,7 @@ graph LR
     F --> G["✅ Valid object handed back"]
 ```
 
-## 8.1 Basic constructor
+#### 8.1 Basic constructor
 
 ```csharp
 public class Student
@@ -1614,7 +1621,7 @@ Student student = new Student("Anna", 22);     // ✅
 > 💡 **Tip** — `nameof(name)` produces the string `"name"`, but the compiler checks it. If you
 > rename the parameter, `nameof` updates automatically; a hard-coded `"name"` silently rots.
 
-## 8.2 Default (parameterless) constructor
+#### 8.2 Default (parameterless) constructor
 
 ```csharp
 public class Student
@@ -1638,7 +1645,7 @@ public class Student
 > ```
 > Add it back explicitly if you need it.
 
-## 8.3 Constructor overloading — several ways to build the same thing
+#### 8.3 Constructor overloading — several ways to build the same thing
 
 ```csharp
 public class Product
@@ -1662,7 +1669,7 @@ public class Product
 
 **🎯 Use when:** there are genuinely different, equally valid ways to create the object.
 
-## 8.4 Constructor chaining with `this` — never duplicate validation
+#### 8.4 Constructor chaining with `this` — never duplicate validation
 
 The version above has a bug waiting to happen: if you add validation, you must remember to add it
 to *both* constructors. Chain them instead:
@@ -1694,7 +1701,7 @@ public class Product
 > 🎓 **Professor's rule** — Have **one** constructor that does all the real work. Every other
 > constructor should chain into it with `: this(...)`. Validation then lives in exactly one place.
 
-## 8.5 Base constructor with `base` — building on a parent
+#### 8.5 Base constructor with `base` — building on a parent
 
 ```csharp
 public class Person
@@ -1728,7 +1735,7 @@ public class Student : Person
 > **never call a `virtual` method from a constructor** — the override will run before the derived
 > object is fully built, and it will see uninitialised fields.
 
-## 8.6 Private constructor — control who is allowed to create the object
+#### 8.6 Private constructor — control who is allowed to create the object
 
 ```csharp
 public class AppSettings
@@ -1755,7 +1762,7 @@ var settings = AppSettings.CreateDevelopment();
 
 🔗 **Connects to:** the Factory pattern ([Chapter 40](#40--design-patterns-for-c-oop)).
 
-## 8.7 Static constructor — runs once, for the whole type
+#### 8.7 Static constructor — runs once, for the whole type
 
 ```csharp
 public class Logger
@@ -1780,7 +1787,7 @@ public static string ApplicationName { get; } = "OOP App";   // ✅ simpler
 > ⚠️ **Gotcha** — If a static constructor throws, the type becomes permanently unusable for the
 > rest of the process, with a confusing `TypeInitializationException`. Keep it trivial.
 
-## 8.8 Primary constructors — modern shorthand
+#### 8.8 Primary constructors — modern shorthand
 
 ```csharp
 // The parameters (name, age) are available throughout the whole class body.
@@ -1830,7 +1837,7 @@ constructors. A classic constructor is clearer there.
 > properties. (On a `record`, they *are* — see [Chapter 25](#25--classes-structs-records-immutability-and-serialization).)
 > They are captured, private, and mutable — so avoid reassigning them.
 
-## 8.9 Constructor vs object initializer vs `required` — which one?
+#### 8.9 Constructor vs object initializer vs `required` — which one?
 
 | You want... | Use |
 |---|---|
@@ -1842,7 +1849,7 @@ constructors. A classic constructor is clearer there.
 > 🎓 **Professor's rule** — If breaking a rule would corrupt your data, it belongs in a
 > **constructor**. Object initializers are for convenience, not for safety.
 
-## 8.10 🧪 Hands-on exercise
+#### 8.10 🧪 Hands-on exercise
 
 Create a `BankAccount` with:
 
@@ -1869,11 +1876,11 @@ Then prove to yourself that you cannot create an invalid account from outside.
 
 ---
 
-# 9. 🚪 Access modifiers
+### 9. 🚪 Access modifiers
 
 **Level: ⭐ Beginner**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Access modifiers are the **locks on the doors** of your code. They decide who is allowed in.
 
@@ -1886,7 +1893,7 @@ Think of a hospital:
 | 👨‍⚕️ Doctors' room | This department + its specialists | `protected` |
 | 🏢 Whole hospital | Any staff in this building | `internal` |
 
-## 9.1 The complete table
+#### 9.1 The complete table
 
 | Modifier | Who can see it | 🎯 Use it for |
 |---|---|---|
@@ -1908,7 +1915,7 @@ If you write no modifier at all:
 > ⚠️ **Gotcha** — A `class Foo` with no modifier is `internal`, so it is invisible from other
 > projects. This bites everyone once when building a class library.
 
-## 9.2 Seeing them in action
+#### 9.2 Seeing them in action
 
 ```csharp
 public class BankAccount
@@ -1948,7 +1955,7 @@ account.GetBalance();                    // ✅ public
 account.ForceSetBalanceForTesting(50);   // ✅ only if in the same project
 ```
 
-## 9.3 The decision flowchart
+#### 9.3 The decision flowchart
 
 ```mermaid
 graph TD
@@ -1966,7 +1973,7 @@ graph TD
 > Making a member public is a promise you may have to keep for years. Making it private costs
 > nothing and can be reversed any time.
 
-## 9.4 Why this matters more than it looks
+#### 9.4 Why this matters more than it looks
 
 Every `public` member is part of your **contract**. Once other code uses it:
 
@@ -1981,7 +1988,7 @@ A `private` member has **none** of those problems. You can rewrite it at 3 a.m. 
 call it from `Program.cs`. Read the error. Now change it to `public`. Notice how you just made a
 promise you may not want to keep.
 
-## 9.5 🧪 Hands-on exercise
+#### 9.5 🧪 Hands-on exercise
 
 Build a small `Vault` class that stores a `PIN` and a list of transactions:
 
@@ -2009,11 +2016,11 @@ Build a small `Vault` class that stores a `PIN` and a list of transactions:
 
 ---
 
-# 10. 🌳 `object` — the ancestor of everything
+### 10. 🌳 `object` — the ancestor of everything
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 In C#, **every single type is descended from one common ancestor**, called `object`
 (or `System.Object` — same thing).
@@ -2038,7 +2045,7 @@ graph TD
 
 This is why every object in .NET already has four methods, **even if you never wrote them**.
 
-## 10.1 The four inherited methods
+#### 10.1 The four inherited methods
 
 | Method | What it does by default | Should you override it? |
 |---|---|---|
@@ -2060,7 +2067,7 @@ Console.WriteLine(car.GetType().Name); // "Car"
 Console.WriteLine(car.GetHashCode());  // some number like 58225482
 ```
 
-## 10.2 `ToString()` — the free win most beginners miss
+#### 10.2 `ToString()` — the free win most beginners miss
 
 Every time you print an object or look at it in the debugger, `ToString()` is called.
 Overriding it takes five seconds and pays back forever.
@@ -2104,7 +2111,7 @@ Console.WriteLine(laptop);   // "Laptop ($1,200.00)"   😊
 > ⚠️ **Gotcha** — Never put secrets (passwords, tokens, full card numbers) into `ToString()`.
 > Logs are the #1 place credentials leak.
 
-## 10.3 `GetType()` — asking an object what it really is
+#### 10.3 `GetType()` — asking an object what it really is
 
 ```csharp
 object thing = "hello";
@@ -2125,7 +2132,7 @@ if (shape.GetType().Name == "Circle") { /* ... */ }
 shape.CalculateArea();
 ```
 
-## 10.4 `object` as a "holds anything" type
+#### 10.4 `object` as a "holds anything" type
 
 Because everything inherits from `object`, an `object` variable can hold anything:
 
@@ -2148,7 +2155,7 @@ string name = (string)item;      // 💥 InvalidCastException if it wasn't a str
 string name = GetItem<string>();
 ```
 
-## 10.5 Equality preview
+#### 10.5 Equality preview
 
 `object.Equals` compares **references** by default: "are these the same object in memory?"
 For `Money`, `EmailAddress`, or `Product` you usually want "do they have the same *values*?"
@@ -2158,7 +2165,7 @@ That is a whole chapter: [Chapter 24](#24--equality-comparison-sorting-and-copyi
 > Override `Equals`/`GetHashCode` only on types where two instances with the same data
 > should count as "the same thing".
 
-## 10.6 🧪 Hands-on exercise
+#### 10.6 🧪 Hands-on exercise
 
 1. Create a `Book` class with `Title`, `Author`, and `Year`. Print an instance with
    `Console.WriteLine(book)` and note the useless output.
@@ -2187,14 +2194,14 @@ That is a whole chapter: [Chapter 24](#24--equality-comparison-sorting-and-copyi
 
 <a id="11--value-types-vs-reference-types"></a>
 
-# 11. ⚖️ Value types vs reference types
+### 11. ⚖️ Value types vs reference types
 
 **Level: ⭐⭐ Intermediate**
 
 This chapter explains a category of bug that confuses **every** learner exactly once.
 Read it carefully and you will skip that day of confusion.
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 There are two ways to hand someone information:
 
@@ -2205,7 +2212,7 @@ There are two ways to hand someone information:
 
 That is the entire difference. Everything below follows from it.
 
-## 11.1 Which is which?
+#### 11.1 Which is which?
 
 | 📄 Value types (copy) | 🔑 Reference types (share) |
 |---|---|
@@ -2219,7 +2226,7 @@ That is the entire difference. Everything below follows from it.
 \* `string` is technically a reference type, but it is **immutable**, so it *behaves* like a value
 type in practice. You can never accidentally modify someone else's string.
 
-## 11.2 The demonstration that makes it click
+#### 11.2 The demonstration that makes it click
 
 📄 **Value type — a photocopy:**
 
@@ -2276,7 +2283,7 @@ graph LR
 > If the caller did not expect that, you have just silently modified their data.
 > This is why professionals prefer **immutable** objects ([Chapter 25](#25--classes-structs-records-immutability-and-serialization)).
 
-## 11.3 Passing to methods
+#### 11.3 Passing to methods
 
 ```csharp
 void ChangeNumber(int n)      { n = 999; }
@@ -2304,7 +2311,7 @@ at a new house does not move the caller's key.
 > what the object contains, but you cannot change which object the caller is holding
 > (unless you use `ref`, see [Chapter 7](#7--method-parameters-in-depth)).
 
-## 11.4 Where they live: stack and heap
+#### 11.4 Where they live: stack and heap
 
 | | 📄 Value type | 🔑 Reference type |
 |---|---|---|
@@ -2320,7 +2327,7 @@ Customer d = null;            // 🔑 `d` holds no address at all
 // int n = null;              // ❌ impossible — value types are never null
 ```
 
-## 11.5 Boxing and unboxing — the hidden cost
+#### 11.5 Boxing and unboxing — the hidden cost
 
 **Boxing** is what happens when a value type is forced into a reference-shaped hole.
 
@@ -2347,7 +2354,7 @@ for (int i = 0; i < 1_000_000; i++)
 > 🎓 **Professor's rule** — If you use generics (`List<int>`, not `ArrayList`) you will
 > essentially never think about boxing again. Which is exactly why generics exist.
 
-## 11.6 So which should *you* write?
+#### 11.6 So which should *you* write?
 
 | Write a `class` (🔑) when | Write a `struct` (📄) when |
 |---|---|
@@ -2360,7 +2367,7 @@ for (int i = 0; i < 1_000_000; i++)
 > 🎓 **Professor's rule** — **When in doubt, write a `class`.** Structs are a performance
 > optimisation with sharp edges. Reach for one only when you can explain why.
 
-## 11.7 🧪 Hands-on exercise
+#### 11.7 🧪 Hands-on exercise
 
 1. Create a `class Point { public int X; public int Y; }` and a
    `struct PointS { public int X; public int Y; }`.
@@ -2384,11 +2391,11 @@ for (int i = 0; i < 1_000_000; i++)
 
 <a id="12--object-lifecycle-and-resource-management"></a>
 
-# 12. ♻️ Object lifecycle and resource management
+### 12. ♻️ Object lifecycle and resource management
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Objects are born, live, and die.
 
@@ -2399,7 +2406,7 @@ mysteriously three hours into production.
 
 This chapter is about giving those back properly.
 
-## 12.1 The lifecycle
+#### 12.1 The lifecycle
 
 ```mermaid
 graph LR
@@ -2409,7 +2416,7 @@ graph LR
     B -.->|"if it holds a file,<br/>socket, connection"| E["🧹 Dispose()<br/>YOUR job — do this<br/>explicitly and early"]
 ```
 
-## 12.2 Garbage collection, in one minute
+#### 12.2 Garbage collection, in one minute
 
 The **Garbage Collector (GC)** periodically looks for objects that no code can reach any more,
 and frees their memory.
@@ -2434,7 +2441,7 @@ void DoWork()
 > wrong answer, and it usually makes performance worse. If you think you need it, you actually
 > need `Dispose()`.
 
-## 12.3 `IDisposable` — the "please give it back" contract
+#### 12.3 `IDisposable` — the "please give it back" contract
 
 Any type that holds a non-memory resource implements `IDisposable`, which means it has one
 method: `Dispose()`.
@@ -2471,7 +2478,7 @@ a stream, a connection, a timer, a subscription, an unmanaged handle.
 **🚫 Don't implement it when:** your class only holds plain data and other managed objects.
 The GC has that covered.
 
-## 12.4 `using` — the safety net that rarely forgets
+#### 12.4 `using` — the safety net that rarely forgets
 
 Calling `Dispose()` by hand is fragile: one exception, one early `return`, and you leak.
 `using` makes the call for you on **every** path out of the block.
@@ -2487,7 +2494,7 @@ using (StreamWriter writer = new StreamWriter("log.txt"))
 // ...Dispose() is STILL called, before the exception continues upward.
 ```
 
-### 🔬 What `using` actually is — it is not magic
+##### 🔬 What `using` actually is — it is not magic
 
 `using` is a **language** feature (see [Three different things, one word: "C#"](#-three-different-things-one-word-c)).
 The compiler rewrites it into a `try`/`finally`, and that is the whole mechanism:
@@ -2533,7 +2540,7 @@ void WriteLog()
 | `using (...) { }` | You need the resource for only part of the method, or you need two scopes |
 | `using var x = ...;` | The resource lives until the end of the method — **prefer this** |
 
-### ⚠️ Where the guarantee genuinely does not hold
+##### ⚠️ Where the guarantee genuinely does not hold
 
 "`using` always disposes" is close enough for everyday code, and stating it as an absolute leaves
 you unprepared for the cases where it is false. A `finally` block does **not** run when:
@@ -2557,7 +2564,7 @@ you can actually recover from. The exceptions above are ones where the process i
 > 🎓 **Professor's rule** — If a type implements `IDisposable`, it goes in a `using`.
 > The rare cases where `finally` cannot run are cases where the process is dying anyway.
 
-### ⚠️ The other half of the contract: you must own it
+##### ⚠️ The other half of the contract: you must own it
 
 `using` disposes whatever you give it, which is wrong when you did not create the object:
 
@@ -2582,7 +2589,7 @@ but the recommended pattern is a single long-lived instance (via `IHttpClientFac
 sockets under load, because disposal does not immediately release the underlying TCP connection —
 it sits in `TIME_WAIT`. An interface promising "I can be disposed" does not mean "dispose me often".
 
-## 12.5 `IAsyncDisposable` and `await using`
+#### 12.5 `IAsyncDisposable` and `await using`
 
 Modern resources (database connections, HTTP handlers, streams) often need to *await* their cleanup.
 
@@ -2607,7 +2614,7 @@ await using var reportWriter = new AsyncReportWriter();
 
 🔗 **Connects to:** [Chapter 33 — Async, await, and OOP](#33--async-await-and-oop).
 
-## 12.6 The full Dispose pattern (for inheritable classes)
+#### 12.6 The full Dispose pattern (for inheritable classes)
 
 If your class holds resources **and** can be inherited, use the standard pattern so subclasses
 can clean up too:
@@ -2642,7 +2649,7 @@ public class ResourceHolder : IDisposable
 **🚫 You almost certainly do not need this.** Use it only if you are writing a base class in a
 library. For everyday code, the simple `Dispose()` in 12.3 is correct.
 
-## 12.7 Finalizers — the last resort you should avoid
+#### 12.7 Finalizers — the last resort you should avoid
 
 ```csharp
 public class NativeResourceWrapper
@@ -2664,7 +2671,7 @@ public class NativeResourceWrapper
 > 🎓 **Professor's rule** — In ~99% of application code you should write **zero** finalizers.
 > Use `IDisposable` + `using`. If you truly wrap a raw OS handle, use `SafeHandle` instead.
 
-## 12.8 🧪 Hands-on exercise
+#### 12.8 🧪 Hands-on exercise
 
 Write a `TemporaryFile : IDisposable` class that:
 
@@ -2690,14 +2697,14 @@ still deleted.
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — Part 1: Foundations (Chapters 3–12)
+#### ✅ Checkpoint — Part 1: Foundations (Chapters 3–12)
 
 </div>
 
 > [!IMPORTANT]
 > Part 1 is the vocabulary and the mechanics. If any answer below will not come, that is the chapter to re-read — everything after this builds on it.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -2708,7 +2715,7 @@ still deleted.
 - **Value type** vs **reference type** (Ch 11)
 - `IDisposable` and `using` (Ch 12)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. Why should a field never be `public`?
 2. You assign one object to a second variable and change the second. Does the first change? What decides the answer?
@@ -2734,7 +2741,7 @@ still deleted.
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Describe a vending machine as an object: its data, its behaviour, its rules, and what gives it identity. Then say which of those four the `private` keyword protects.
 
@@ -2743,7 +2750,7 @@ Describe a vending machine as an object: its data, its behaviour, its rules, and
 
 <div align="center" markdown="1">
 
-# 🟣 PART 2 — THE FOUR PILLARS, IN DEPTH
+## 🟣 PART 2 — THE FOUR PILLARS, IN DEPTH
 
 *You met them in Chapter 4. Now you learn to actually use them.*
 
@@ -2753,11 +2760,11 @@ Describe a vending machine as an object: its data, its behaviour, its rules, and
 
 <a id="13--encapsulation"></a>
 
-# 13. 🛡️ Encapsulation
+### 13. 🛡️ Encapsulation
 
 **Level: ⭐ Beginner**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Encapsulation means: **hide your insides, and only offer safe buttons to press.**
 
@@ -2776,7 +2783,7 @@ You cannot:
 
 The ATM is your class. The buttons are your public methods. The cash inside is your private field.
 
-## 13.1 ❌ Bad encapsulation — the open cash drawer
+#### 13.1 ❌ Bad encapsulation — the open cash drawer
 
 ```csharp
 public class BankAccount
@@ -2796,7 +2803,7 @@ account.Balance = 1_000_000;     // 💰 free money — allowed
 There is no bug here in the *language*. The bug is in the **design**: the class made a promise it
 cannot keep.
 
-### Why this is worse than it looks
+##### Why this is worse than it looks
 
 1. **The rule has to live somewhere else.** Now every screen, service, and API endpoint that
    touches `Balance` must remember to validate.
@@ -2804,7 +2811,7 @@ cannot keep.
    200 lines in your codebase that assign to `Balance`.
 3. **You cannot fix it later.** Adding validation means finding and changing every caller.
 
-## 13.2 ✅ Good encapsulation — the ATM
+#### 13.2 ✅ Good encapsulation — the ATM
 
 ```csharp
 public class BankAccount
@@ -2863,7 +2870,7 @@ Now compare what the *outside world* can do:
 > **Make invalid states unrepresentable.** Do not detect bad data later — make it impossible to
 > create in the first place.
 
-## 13.3 Protecting collections — the leak everyone misses
+#### 13.3 Protecting collections — the leak everyone misses
 
 This one is subtle and catches almost everybody.
 
@@ -2928,7 +2935,7 @@ Console.WriteLine(order.Items.Count);   // ✅ reading is fine
 // order.Items.Add(item);           // ❌ compiler error — IReadOnlyList has no Add
 ```
 
-### Which read-only type should you expose?
+##### Which read-only type should you expose?
 
 | Type | Gives the caller | 🎯 Use for |
 |---|---|---|
@@ -2941,9 +2948,9 @@ Console.WriteLine(order.Items.Count);   // ✅ reading is fine
 > somehow gets hold of the underlying `List<T>` and changes it, the view changes too. For a
 > genuine snapshot, return `items.ToList()` or use `ImmutableList<T>`.
 
-## 13.4 Invariants — the rules that must ALWAYS be true
+#### 13.4 Invariants — the rules that must ALWAYS be true
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 An **invariant** is a promise your object makes about itself that is true from the moment it is
 born until the moment it dies.
@@ -2980,7 +2987,7 @@ public class DateRange
 }
 ```
 
-## 13.5 The encapsulation checklist
+#### 13.5 The encapsulation checklist
 
 Run this over any class you write:
 
@@ -2991,7 +2998,7 @@ Run this over any class you write:
 - [ ] Can I write a line of code outside this class that puts it in an invalid state?
       (If yes — that's your bug.)
 
-## 13.6 🧪 Hands-on exercise
+#### 13.6 🧪 Hands-on exercise
 
 Write a `ShoppingCart` class that guarantees **all** of these, from the outside:
 
@@ -3019,11 +3026,11 @@ compile or throw a clear exception.
 
 ---
 
-# 14. 🎭 Abstraction
+### 14. 🎭 Abstraction
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Abstraction means: **show what something does, hide how it does it.**
 
@@ -3037,7 +3044,7 @@ fuel injection, or ABS controller. The car gives you a **simple surface** over a
 | ☕ A coffee machine button | Pumps, heaters, pressure valves, timers |
 | `IPaymentGateway.Charge(100)` | HTTPS, retries, tokenisation, bank protocols |
 
-### 🔍 Encapsulation vs Abstraction — the difference beginners blur
+#### 🔍 Encapsulation vs Abstraction — the difference beginners blur
 
 They sound similar. They are not the same.
 
@@ -3050,7 +3057,7 @@ They sound similar. They are not the same.
 
 **Encapsulation hides *data*. Abstraction hides *complexity*.**
 
-## 14.1 Abstract class — a partially-built blueprint
+#### 14.1 Abstract class — a partially-built blueprint
 
 An **abstract class** is a class you cannot create directly. It exists to be inherited from.
 It can contain both *finished* code and *unfinished* holes for subclasses to fill.
@@ -3137,7 +3144,7 @@ Rectangle area: 24.00
 **🚫 Don't use one when:** the types are unrelated, or you only need a contract with no shared
 code — use an **interface** instead ([Chapter 17](#17--interfaces)).
 
-## 14.2 `abstract`, `virtual`, `override`, `sealed`, `new` — the complete map
+#### 14.2 `abstract`, `virtual`, `override`, `sealed`, `new` — the complete map
 
 This table is the reason most people are confused about inheritance. Learn it once.
 
@@ -3150,7 +3157,7 @@ This table is the reason most people are confused about inheritance. Learn it on
 | `new` | derived | ✅ Yes | — | "I'm HIDING the parent's version." ⚠️ usually a mistake |
 | *(nothing)* | base | ✅ Yes | cannot override | "This behaviour is fixed." |
 
-### `abstract` — a mandatory hole
+##### `abstract` — a mandatory hole
 
 ```csharp
 public abstract class Payment
@@ -3169,7 +3176,7 @@ Forget the override, and the compiler stops you:
 `'CashPayment' does not implement inherited abstract member 'Payment.Pay(decimal)'`.
 That is a *good* error — it caught a bug before you ran the program.
 
-### `virtual` — an optional upgrade
+##### `virtual` — an optional upgrade
 
 ```csharp
 public class Report
@@ -3205,7 +3212,7 @@ Printing a PDF report.
 Printing a plain-text report.
 ```
 
-### Calling the parent's version with `base`
+##### Calling the parent's version with `base`
 
 Extend behaviour instead of replacing it:
 
@@ -3226,7 +3233,7 @@ public class TimestampedReport : Report
 **🎯 Use `base.Method()` when:** you want to *add* to the parent behaviour, not throw it away.
 This is exactly how the Decorator pattern thinks ([Chapter 40](#40--design-patterns-for-c-oop)).
 
-### `sealed override` — stop the chain here
+##### `sealed override` — stop the chain here
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -3242,7 +3249,7 @@ public class SecureReport : Report
 
 **🎯 Use when:** overriding further would break a security or correctness guarantee.
 
-## 14.3 Abstract properties and abstract members generally
+#### 14.3 Abstract properties and abstract members generally
 
 Abstract isn't just for methods:
 
@@ -3272,7 +3279,7 @@ public class PremiumMember : Member
 Notice how each subclass answers the same three questions differently. That is abstraction and
 polymorphism working together.
 
-## 14.4 The Template Method — abstraction's most useful shape
+#### 14.4 The Template Method — abstraction's most useful shape
 
 An abstract class can define the **order of steps**, and let subclasses fill in the steps.
 
@@ -3314,7 +3321,7 @@ details. Import pipelines, report generation, game turns, checkout flows.
 
 🔗 **Connects to:** [Template Method pattern](#40--design-patterns-for-c-oop).
 
-## 14.5 🧪 Hands-on exercise
+#### 14.5 🧪 Hands-on exercise
 
 Build an abstract `Vehicle` class with:
 
@@ -3340,11 +3347,11 @@ formula. Put them all in one `List<Vehicle>` and loop.
 
 ---
 
-# 15. 🧬 Inheritance
+### 15. 🧬 Inheritance
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Inheritance lets you say: *"This new type is a specialised version of that existing type."*
 
@@ -3354,7 +3361,7 @@ A **SavingsAccount** is a **BankAccount** that earns interest.
 
 The child gets everything the parent has, for free, and adds or changes a little.
 
-## 15.1 Basic inheritance
+#### 15.1 Basic inheritance
 
 ```csharp
 public class Employee
@@ -3407,7 +3414,7 @@ boss.Display();   // Gehan: $8,500.00 / month   ← the SAME Display() method!
 Notice: `Display()` was written **once**, in `Employee`, and it correctly calls `Manager`'s
 version of `CalculateMonthlyPay()`. That is inheritance plus polymorphism.
 
-## 15.2 The "is-a" test — the only rule that matters
+#### 15.2 The "is-a" test — the only rule that matters
 
 Before you write `class B : A`, say this sentence out loud:
 
@@ -3427,7 +3434,7 @@ If it sounds wrong, do not inherit.
 > use **composition** ([Chapter 19](#19--composition-and-object-relationships)) — it is safer,
 > more flexible, and easier to test.
 
-## 15.3 What is inherited, and what isn't
+#### 15.3 What is inherited, and what isn't
 
 | ✅ Inherited | ❌ Not inherited |
 |---|---|
@@ -3439,7 +3446,7 @@ If it sounds wrong, do not inherit.
 > ⚠️ **Gotcha** — Constructors are **not** inherited. Even if `Employee` has a
 > `(string, decimal)` constructor, `Manager` must declare its own and chain with `: base(...)`.
 
-## 15.4 C# has single inheritance — and why that's fine
+#### 15.4 C# has single inheritance — and why that's fine
 
 ```csharp
 public class A { }
@@ -3460,7 +3467,7 @@ public class C : A, IPrintable, IComparable<C>, IDisposable   // ✅ 1 base + N 
 
 > 💡 **Tip** — The order matters syntactically: the base **class** comes first, then interfaces.
 
-## 15.5 `sealed` — closing the door
+#### 15.5 `sealed` — closing the door
 
 ```csharp
 public sealed class SecurityToken
@@ -3477,7 +3484,7 @@ public sealed class SecurityToken
 > 💡 **Tip** — Some teams seal every class by default and unseal deliberately. That is a
 > defensible, disciplined choice: it forces you to *decide* that inheritance is intended.
 
-## 15.6 ⚠️ Member hiding with `new` — the trap
+#### 15.6 ⚠️ Member hiding with `new` — the trap
 
 ```csharp
 public class BasePrinter
@@ -3530,7 +3537,7 @@ asBase.Print();          // "Special print"  ✅ the object's real behaviour, al
 > You almost certainly want `virtual` + `override`. The only legitimate use of `new` is when a
 > base class you do not control adds a member that clashes with yours.
 
-## 15.7 The fragile base class problem
+#### 15.7 The fragile base class problem
 
 Inheritance is the **tightest coupling** in object-oriented programming. A subclass depends on the
 parent's *internal behaviour*, not just its public surface.
@@ -3583,9 +3590,9 @@ That is the **fragile base class problem**: a base class change breaks subclasse
 3. Document *exactly* which methods call which, if you do allow inheritance
 4. Keep inheritance hierarchies **shallow** — 2 levels, maybe 3, never 6
 
-## 15.8 Covariant return types — an override may return something more specific
+#### 15.8 Covariant return types — an override may return something more specific
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 When you override a method, you are allowed to promise **something better** than the parent did.
 If the parent promises "I return an `Animal`", the child may promise "I return a `Dog`" — because
@@ -3629,7 +3636,7 @@ something more specific — `Clone()`, `Build()`, `CreateEmpty()`, builder metho
 > 💡 **Note** — Parameters do **not** work this way. An override must accept exactly the same
 > parameter types as the base method. Accepting *less* would break callers.
 
-## 15.9 🧪 Hands-on exercise
+#### 15.9 🧪 Hands-on exercise
 
 1. Build `Account` → `SavingsAccount` and `CheckingAccount`.
 2. `Account` has a `virtual decimal MonthlyFee()` returning `5`.
@@ -3653,11 +3660,11 @@ something more specific — `Clone()`, `Build()`, `CreateEmpty()`, builder metho
 
 ---
 
-# 16. 🔀 Polymorphism
+### 16. 🔀 Polymorphism
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Polymorphism (Greek: "many shapes") means: **one handle, many machines behind it.**
 
@@ -3669,7 +3676,7 @@ depending on what it's paired with.
 
 In code: **you call one method name, and the right implementation runs automatically.**
 
-## 16.1 Runtime polymorphism — the important kind
+#### 16.1 Runtime polymorphism — the important kind
 
 ```csharp
 public abstract class Animal
@@ -3718,7 +3725,7 @@ Bella says Moo!
 The loop has **no idea** which animal it is holding. The runtime picks the right `MakeSound()`
 based on what the object *actually is*. That is **runtime polymorphism** (or *dynamic dispatch*).
 
-### Why this is such a big deal
+##### Why this is such a big deal
 
 Adding a `Duck` tomorrow:
 
@@ -3735,7 +3742,7 @@ public class Duck : Animal
 Lines of existing code you must change: **zero**. That is the Open/Closed Principle
 ([Chapter 37](#37--solid-principles)) delivered by polymorphism.
 
-## 16.2 Compile-time polymorphism — overloading
+#### 16.2 Compile-time polymorphism — overloading
 
 The compiler chooses which method to call, based on the argument types:
 
@@ -3761,7 +3768,7 @@ public class Messenger
 | **Also called** | Static / early binding | Dynamic / late binding |
 | **Which matters more?** | Convenience | 🏆 **This is "real" polymorphism** |
 
-## 16.3 Interface polymorphism — the professional workhorse
+#### 16.3 Interface polymorphism — the professional workhorse
 
 Inheritance-based polymorphism forces a family tree. Interfaces don't:
 
@@ -3818,7 +3825,7 @@ swap in a **fake** for testing.
 
 This is the single most common form of polymorphism in professional .NET code.
 
-## 16.4 Replace `if`/`switch` with polymorphism
+#### 16.4 Replace `if`/`switch` with polymorphism
 
 This is the refactoring that turns junior code into senior code.
 
@@ -3928,7 +3935,7 @@ public class DiscountPolicyFactory
 > is perfectly fine. Three classes to replace three lines is not always progress.
 > Refactor when the switch **repeats** or **keeps growing**.
 
-## 16.5 🧪 Hands-on exercise
+#### 16.5 🧪 Hands-on exercise
 
 Refactor this into polymorphic classes:
 
@@ -3961,11 +3968,11 @@ Then add **"drone"** shipping without editing a single existing line.
 
 ---
 
-# 17. 📜 Interfaces
+### 17. 📜 Interfaces
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 An **interface** is a **contract**: a list of things a type promises to be able to do — with no
 say in *how* it does them.
@@ -3977,7 +3984,7 @@ they are a robot, a graduate, or a 30-year veteran.
 Or think of a **power plug shape**. Any device with that plug shape fits the socket. The socket
 doesn't care what the device is.
 
-## 17.1 Your first interface
+#### 17.1 Your first interface
 
 ```csharp
 public interface IPrintable
@@ -4020,7 +4027,7 @@ foreach (IPrintable item in printQueue)
 
 This is the thing inheritance **cannot** do. That is why interfaces matter.
 
-## 17.2 Multiple interfaces — a type can wear many hats
+#### 17.2 Multiple interfaces — a type can wear many hats
 
 ```csharp
 public interface IPrinter { void Print(string document); }
@@ -4055,9 +4062,9 @@ PrintReport(new MultiFunctionDevice());   // ✅ also works
 🔗 **Connects to:** this is the Interface Segregation Principle
 ([Chapter 37](#37--solid-principles)) in action.
 
-## 17.3 Interface inheritance — building bigger contracts from smaller ones
+#### 17.3 Interface inheritance — building bigger contracts from smaller ones
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 An interface can extend another interface. The child contract says: *"everything the parent
 requires, plus these extra things."*
@@ -4112,7 +4119,7 @@ void PrintContents(IReadable source) => Console.WriteLine(source.Read());
 PrintContents(file);             // ✅ works — a TextFile IS readable
 ```
 
-### 🎯 When to use interface inheritance
+##### 🎯 When to use interface inheritance
 
 | ✅ Use it when | Example from .NET |
 |---|---|
@@ -4133,7 +4140,7 @@ IList<T>                "...and access me by index"
 Each level adds a little. A method that only loops asks for `IEnumerable<T>`, so *everything*
 fits. That is [Interface Segregation](#37--solid-principles) built into the framework.
 
-### 🚫 When NOT to use it
+##### 🚫 When NOT to use it
 
 > ⚠️ **Do not build deep interface chains just because you can.** An interface inheriting from
 > four others recreates exactly the rigidity that made deep class inheritance a problem.
@@ -4150,7 +4157,7 @@ fits. That is [Interface Segregation](#37--solid-principles) built into the fram
 > 🎓 **Professor's rule** — Inherit interfaces when the bigger contract is honestly a
 > **superset** of the smaller one. Otherwise just implement several interfaces side by side.
 
-## 17.4 What can go inside an interface?
+#### 17.4 What can go inside an interface?
 
 | Member | Allowed? | Example |
 |---|:---:|---|
@@ -4177,7 +4184,7 @@ public interface IAuditable
 }
 ```
 
-## 17.5 Default interface implementations
+#### 17.5 Default interface implementations
 
 An interface can supply a **default body**, so implementers don't have to write it.
 
@@ -4219,7 +4226,7 @@ logger.Error("Something broke");
 > ```
 > This surprises everyone. Use default implementations sparingly.
 
-## 17.6 Explicit interface implementation
+#### 17.6 Explicit interface implementation
 
 Sometimes two interfaces demand a member with the same name, or you want a method available only
 when the object is used *as* that interface.
@@ -4255,7 +4262,7 @@ sinhala.Speak();                       // "Ayubowan!"
 
 **🚫 Don't use it** just to hide things from yourself — normal implementation is clearer 95% of the time.
 
-## 17.7 Generic interfaces
+#### 17.7 Generic interfaces
 
 ```csharp
 public interface IRepository<T>
@@ -4276,7 +4283,7 @@ public class ProductRepository  : IRepository<Product>  { /* ... */ }
 
 🔗 Full treatment in [Chapter 21 — Generics](#21--generics).
 
-## 17.8 Static abstract members — interfaces over static behaviour
+#### 17.8 Static abstract members — interfaces over static behaviour
 
 Modern C# lets an interface require **static** members, which unlocks generic factories and
 generic math.
@@ -4309,7 +4316,7 @@ Console.WriteLine(t);        // 21.5°C
 **🎯 Use when:** writing generic algorithms that need to *create* or *parse* `T`, or generic
 maths. **⭐⭐⭐ Advanced** — you can safely skip this until you need it.
 
-## 17.9 Naming conventions
+#### 17.9 Naming conventions
 
 | Convention | Example |
 |---|---|
@@ -4318,7 +4325,7 @@ maths. **⭐⭐⭐ Advanced** — you can safely skip this until you need it.
 | Service interfaces are nouns | `IEmailSender`, `IOrderRepository` |
 | Don't name it after the implementation | ❌ `ISqlOrderRepository` — the *interface* shouldn't know about SQL |
 
-## 17.10 The most valuable thing interfaces buy you: testing
+#### 17.10 The most valuable thing interfaces buy you: testing
 
 ```csharp
 public interface IEmailSender
@@ -4375,7 +4382,7 @@ Without the interface, this test would send a real email. With it, the test runs
 > 🎓 **Professor's rule** — Ask *"could I need a fake version of this for a test, or a second
 > real implementation one day?"* If yes, put an interface in front of it.
 
-## 17.11 🧪 Hands-on exercise
+#### 17.11 🧪 Hands-on exercise
 
 Design a small notification system:
 
@@ -4401,13 +4408,13 @@ Design a small notification system:
 
 <a id="18--abstract-classes-vs-interfaces"></a>
 
-# 18. ⚖️ Abstract classes vs interfaces
+### 18. ⚖️ Abstract classes vs interfaces
 
 **Level: ⭐⭐ Intermediate**
 
 This is the #1 C# interview question, and the #1 real design decision you will make.
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Both let you say *"these different types have something in common"*. The difference is **what
 kind of thing they have in common**.
@@ -4425,7 +4432,7 @@ A surgeon and a receptionist share **no identity at all** — but they can share
 That is exactly the situation an interface exists for, and exactly the situation a base class
 cannot handle.
 
-## 18.1 The side-by-side comparison
+#### 18.1 The side-by-side comparison
 
 | | 🏛️ Abstract class | 📜 Interface |
 |---|---|---|
@@ -4453,7 +4460,7 @@ cannot handle.
 > **The real, permanent difference is the first row: an interface can never hold per-object
 > state.** That is what makes it a contract rather than a base class.
 
-## 18.2 🏛️ Use an ABSTRACT CLASS when...
+#### 18.2 🏛️ Use an ABSTRACT CLASS when...
 
 - ✅ Several types share **real, working code** you don't want to duplicate
 - ✅ They also share **state** (fields, properties)
@@ -4526,7 +4533,7 @@ public class HourlyEmployee : Employee
 
 The leave-tracking code, the name validation, the employee number — written **once**.
 
-## 18.3 📜 Use an INTERFACE when...
+#### 18.3 📜 Use an INTERFACE when...
 
 - ✅ You are describing a **capability**, not an identity
 - ✅ The implementing types may be completely **unrelated**
@@ -4554,7 +4561,7 @@ public class NullEmailSender : IEmailSender { /* does nothing — used in tests 
 
 None of these is "a kind of" the others. They just do the same **job**.
 
-## 18.4 🎓 The Professor's rule
+#### 18.4 🎓 The Professor's rule
 
 > ### **Abstract classes model IDENTITY. Interfaces model CAPABILITY.**
 >
@@ -4572,7 +4579,7 @@ None of these is "a kind of" the others. They just do the same **job**.
 | A `Circle` **is a** `Shape` | 🏛️ abstract class (shared `Name`, shared `Display`) |
 | A `Customer` **can be** compared for sorting | 📜 `IComparable<Customer>` |
 
-## 18.5 The best answer: use BOTH
+#### 18.5 The best answer: use BOTH
 
 Professional code very often combines them. The interface is the contract the world depends on;
 the abstract class is a convenience for implementers.
@@ -4615,7 +4622,7 @@ Consumers depend on `IRepository<Customer>` and never know or care whether an ab
 > 💡 **Tip** — This is exactly how .NET itself is built: `IList<T>` is the contract,
 > `Collection<T>` is the convenient base class, `List<T>` is a concrete implementation.
 
-## 18.6 Decision flowchart
+#### 18.6 Decision flowchart
 
 ```mermaid
 graph TD
@@ -4628,7 +4635,7 @@ graph TD
     Q3 -->|No| A["🏛️ ABSTRACT CLASS"]
 ```
 
-## 18.7 🧪 Hands-on exercise
+#### 18.7 🧪 Hands-on exercise
 
 For each of these, decide: abstract class, interface, both, or neither. Write one sentence of
 justification for each.
@@ -4655,14 +4662,14 @@ justification for each.
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — Part 2: The four pillars in depth (Chapters 13–18)
+#### ✅ Checkpoint — Part 2: The four pillars in depth (Chapters 13–18)
 
 </div>
 
 > [!IMPORTANT]
 > This is where most people believe they understand OOP and then design something rigid. The questions below are chosen to find that out.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -4673,7 +4680,7 @@ justification for each.
 - **Interfaces** (Ch 17)
 - Choosing between an abstract class and an interface (Ch 18)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. What is an invariant, and why is “protect it inside the object” better than “check it everywhere”?
 2. `Car : Engine` or a `Car` holding an `IEngine`? What is the one-sentence test?
@@ -4699,7 +4706,7 @@ justification for each.
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Model a coffee machine twice — once with inheritance (`EspressoMachine : CoffeeMachine`) and once with composition (a machine holding an `IBrewingStrategy`). Say in one sentence which you would ship, and why.
 
@@ -4708,7 +4715,7 @@ Model a coffee machine twice — once with inheritance (`EspressoMachine : Coffe
 
 <div align="center" markdown="1">
 
-# 🟠 PART 3 — BUILDING REAL TYPES
+## 🟠 PART 3 — BUILDING REAL TYPES
 
 *Everything C# gives you for modelling real problems.*
 
@@ -4716,11 +4723,11 @@ Model a coffee machine twice — once with inheritance (`EspressoMachine : Coffe
 
 ---
 
-# 19. 🧩 Composition and object relationships
+### 19. 🧩 Composition and object relationships
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 **Composition** means building a thing out of other things.
 
@@ -4734,7 +4741,7 @@ Inheritance says **"is a"**. Composition says **"has a"** or **"uses a"**.
 > Not "never inherit". *Favour.* Reach for composition first, and inherit only when
 > "is-a" is genuinely true.
 
-## 19.1 Composition in code
+#### 19.1 Composition in code
 
 ```csharp
 public class Engine
@@ -4782,7 +4789,7 @@ var car = new Car("Corolla", new Engine(132), new GpsNavigator());
 car.StartTrip("Colombo");
 ```
 
-## 19.2 Why composition usually wins
+#### 19.2 Why composition usually wins
 
 Here is the same problem solved both ways. Judge for yourself.
 
@@ -4860,7 +4867,7 @@ And you can even **change it at runtime**, which inheritance can never do.
 | Testability | Must construct the whole hierarchy | Inject a fake for one part |
 | Base class changes | Can silently break subclasses | Contained behind an interface |
 
-## 19.3 The five relationship types
+#### 19.3 The five relationship types
 
 There is a spectrum of "how strongly does A depend on B". Learn all five — they show up in every
 design discussion and every UML diagram.
@@ -4873,7 +4880,7 @@ graph LR
     C --> E["🧬 INHERITANCE<br/>'IS a'"]
 ```
 
-### ① ⚡ Dependency — "uses temporarily"
+##### ① ⚡ Dependency — "uses temporarily"
 
 The weakest link. A passes through a method, and is gone.
 
@@ -4892,7 +4899,7 @@ public class ReportService
 
 **🎯 Use when:** the collaborator is needed for one operation only.
 
-### ② 🤝 Association — "knows about"
+##### ② 🤝 Association — "knows about"
 
 A holds a reference to B, but neither owns the other.
 
@@ -4912,7 +4919,7 @@ public class Student
 
 **Real examples:** Teacher ↔ Student, Customer ↔ Order, Author ↔ Book.
 
-### ③ 🔗 Aggregation — "has, but they live independently"
+##### ③ 🔗 Aggregation — "has, but they live independently"
 
 A whole-part relationship where the part **survives** the whole.
 
@@ -4935,7 +4942,7 @@ Delete the Department, and the Employees still exist — they just move somewher
 
 **Real examples:** Department ↔ Employees, Team ↔ Players, Playlist ↔ Songs.
 
-### ④ 🧩 Composition — "has, and owns their lifetime"
+##### ④ 🧩 Composition — "has, and owns their lifetime"
 
 The part **cannot exist** without the whole, and dies with it.
 
@@ -4983,11 +4990,11 @@ Delete the Order, and its OrderItems are meaningless. They go with it.
 🔗 **Connects to:** this is exactly what an **Aggregate** is in domain modelling
 ([Chapter 41](#41--domain-modeling-and-architecture)).
 
-### ⑤ 🧬 Inheritance — "IS a"
+##### ⑤ 🧬 Inheritance — "IS a"
 
 Covered fully in [Chapter 15](#15--inheritance). The strongest and least flexible relationship.
 
-### The summary table
+##### The summary table
 
 | Relationship | Strength | Lifetime | Question to ask | Example |
 |---|:---:|---|---|---|
@@ -4997,7 +5004,7 @@ Covered fully in [Chapter 15](#15--inheritance). The strongest and least flexibl
 | 🧩 Composition | ▇ | shared | "Does B die with A?" | Order ↔ OrderItems |
 | 🧬 Inheritance | █ | n/a | "Is A *a kind of* B?" | Manager → Employee |
 
-## 19.4 Multiplicity — how many of each?
+#### 19.4 Multiplicity — how many of each?
 
 ```text
 One-to-one    Customer  ──── 1:1 ────  Profile
@@ -5040,7 +5047,7 @@ public class Enrollment
 > 💡 **Tip** — When you model many-to-many, ask *"is there any data about the relationship
 > itself?"* (a date, a grade, a role). There almost always is. Make it a class.
 
-## 19.5 Composition + interfaces = the professional default
+#### 19.5 Composition + interfaces = the professional default
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -5081,7 +5088,7 @@ Every collaborator is an **interface**, injected from outside. This class:
 
 🔗 **Connects to:** [Dependency Injection](#39--dependency-injection).
 
-## 19.6 🧪 Hands-on exercise
+#### 19.6 🧪 Hands-on exercise
 
 Model a **pizza ordering system** and label each relationship:
 
@@ -5110,18 +5117,18 @@ Then implement it, and make it **impossible** to create a `Topping` that isn't a
 
 <a id="20--enums-and-type-safe-choices"></a>
 
-# 20. 🎚️ Enums and type-safe choices
+### 20. 🎚️ Enums and type-safe choices
 
 **Level: ⭐ Beginner**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 An **enum** is a fixed list of named choices.
 
 Days of the week. Order statuses. Traffic-light colours. Card suits. There are exactly N options
 and never any others — so let the compiler enforce that.
 
-## 20.1 The problem enums solve
+#### 20.1 The problem enums solve
 
 ❌ **Magic strings — the silent-bug factory:**
 
@@ -5163,7 +5170,7 @@ order.Status = OrderStatus.Shipped;   // ✅
 
 Plus you get **IntelliSense**: type `OrderStatus.` and your editor lists every legal value.
 
-## 20.2 Using an enum properly
+#### 20.2 Using an enum properly
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -5218,7 +5225,7 @@ public string GetStatusMessage(OrderStatus status) => status switch
 > 💡 **Tip** — Leave out the `_` arm and the compiler will **warn you** when you add a new enum
 > value and forget to handle it. That warning is worth more than the convenience of `_`.
 
-## 20.3 Explicit values and underlying types
+#### 20.3 Explicit values and underlying types
 
 ```csharp
 public enum HttpStatusCode
@@ -5246,7 +5253,7 @@ API contracts, file formats, protocol codes.
 > or renumber** an enum. `Shipped = 3` yesterday and `Shipped = 4` today means every stored row
 > now means something different. Always append new values at the end.
 
-## 20.4 `[Flags]` — combining several options at once
+#### 20.4 `[Flags]` — combining several options at once
 
 ```csharp
 [Flags]
@@ -5289,7 +5296,7 @@ toggles, event filters).
 > If you want the individual flags listed, don't define composite names — or build the string
 > yourself from `Enum.GetValues<FileAccess>()`.
 
-## 20.5 Converting to and from enums
+#### 20.5 Converting to and from enums
 
 ```csharp
 // Enum → int
@@ -5335,12 +5342,12 @@ foreach (OrderStatus value in Enum.GetValues<OrderStatus>())
 > }
 > ```
 
-## 20.6 When an enum is NOT enough
+#### 20.6 When an enum is NOT enough
 
 Enums hold names and numbers. They cannot hold behaviour. When each option needs its own logic,
 you have two better options.
 
-### Option A — a `switch` expression over the enum (simple cases)
+##### Option A — a `switch` expression over the enum (simple cases)
 
 > **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
 
@@ -5358,7 +5365,7 @@ public static class OrderStatusExtensions
 if (order.Status.CanBeCancelled()) { /* ... */ }
 ```
 
-### Option B — polymorphic classes (complex cases)
+##### Option B — polymorphic classes (complex cases)
 
 When each option carries real, differing logic, use classes instead
 ([Chapter 16.4](#164-replace-ifswitch-with-polymorphism)):
@@ -5393,7 +5400,7 @@ public class EnterpriseTier : ISubscriptionTier
 }
 ```
 
-### The decision table
+##### The decision table
 
 | Situation | Use |
 |---|---|
@@ -5406,7 +5413,7 @@ public class EnterpriseTier : ISubscriptionTier
 > 🎓 **Professor's rule** — Enums are for **naming choices**, not for **holding behaviour**.
 > The moment your enum has a `switch` in three different files, it wants to be a class hierarchy.
 
-## 20.7 🧪 Hands-on exercise
+#### 20.7 🧪 Hands-on exercise
 
 1. Create a `TrafficLight` enum (`Red`, `Yellow`, `Green`).
 2. Write a `TrafficLightController` that only allows Green → Yellow → Red → Green.
@@ -5429,11 +5436,11 @@ public class EnterpriseTier : ISubscriptionTier
 
 ---
 
-# 21. 🧰 Generics
+### 21. 🧰 Generics
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 A **generic** is a class or method with a **blank** in it — a placeholder for a type you fill in
 later.
@@ -5442,7 +5449,7 @@ Think of a **shipping box**. The box's design (dimensions, handles, "this way up
 same whether you put books, shoes, or laptops in it. You do not design a `BookBox`, a `ShoeBox`,
 and a `LaptopBox`. You design **one** `Box<T>` and say what goes in it when you use it.
 
-## 21.1 The problem generics solve
+#### 21.1 The problem generics solve
 
 ❌ **Without generics — write it once per type:**
 
@@ -5504,7 +5511,7 @@ int number = numberBox.Value;      // ✅ no cast — the compiler knows it's an
 > 🎓 **Professor's rule** — Generics let you write code **once** that is **type-safe for every
 > type**. If you're writing the same class twice for two types, you want a generic.
 
-## 21.2 Generic methods
+#### 21.2 Generic methods
 
 The type parameter can live on a single method instead of the whole class:
 
@@ -5536,7 +5543,7 @@ Utility.Swap(ref a, ref b);          // 👈 same method, different type
 > works it out from the arguments. You only specify it explicitly when it cannot (e.g. when `T`
 > appears only in the return type).
 
-## 21.3 Generic interfaces
+#### 21.3 Generic interfaces
 
 ```csharp
 public interface IRepository<T>
@@ -5555,7 +5562,7 @@ public class CustomerRepository : IRepository<Customer> { /* ... */ }
 public class ProductRepository  : IRepository<Product>  { /* ... */ }
 ```
 
-## 21.4 Constraints — telling the compiler what `T` can do
+#### 21.4 Constraints — telling the compiler what `T` can do
 
 By default, the compiler knows **nothing** about `T`, so you can barely use it:
 
@@ -5615,7 +5622,7 @@ var customers = new Repository<Customer>();
 // var bad = new Repository<string>();   // ❌ string is not an Entity
 ```
 
-### The full constraint list
+##### The full constraint list
 
 | Constraint | Means | 🎯 Use when |
 |---|---|---|
@@ -5630,7 +5637,7 @@ var customers = new Repository<Customer>();
 | `where T : Enum` | T is an enum | Generic enum helpers |
 | `where T : Delegate` | T is a delegate | Generic event plumbing |
 
-### Multiple constraints
+##### Multiple constraints
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -5649,7 +5656,7 @@ public class EntityFactory<T> where T : Entity, IValidatable, new()
 > ⚠️ **Gotcha** — Order matters: `class`/`struct` first, then base class, then interfaces,
 > then `new()` last. The compiler will tell you if you get it wrong.
 
-## 21.5 Generic classes with interface constraints — a real example
+#### 21.5 Generic classes with interface constraints — a real example
 
 ```csharp
 public interface INotificationSender
@@ -5703,7 +5710,7 @@ emailService.Notify("anna@example.com", "Welcome!");
 > **Use a generic parameter only when the concrete type actually matters** (for `new T()`,
 > for avoiding boxing, or for returning `T`).
 
-## 21.6 Multiple type parameters
+#### 21.6 Multiple type parameters
 
 ```csharp
 public class Cache<TKey, TValue> where TKey : notnull
@@ -5726,7 +5733,7 @@ var scores = new Cache<int, List<double>>();
 > 💡 **Naming convention** — A single parameter is `T`. Multiple parameters get descriptive names
 > starting with `T`: `TKey`, `TValue`, `TResult`, `TEntity`, `TSender`.
 
-## 21.7 Generic delegates
+#### 21.7 Generic delegates
 
 ```csharp
 public delegate TResult Transformer<TInput, TResult>(TInput input);
@@ -5746,11 +5753,11 @@ In practice, .NET's built-in `Func<>` and `Action<>` cover almost everything
 Func<string, int> lengthOf2 = text => text.Length;      // same thing, no custom delegate
 ```
 
-## 21.8 Variance: `out` and `in` ⭐⭐⭐
+#### 21.8 Variance: `out` and `in` ⭐⭐⭐
 
 This is the part of generics people find hardest. Here it is in plain English.
 
-### The question variance answers
+##### The question variance answers
 
 A `Dog` **is an** `Animal`. So — is a `List<Dog>` also a `List<Animal>`?
 
@@ -5764,7 +5771,7 @@ List<Dog> dogs = new List<Dog>();
 
 That is called **invariance**: `List<T>` is neither up- nor down-compatible. It protects you.
 
-### 📤 Covariance (`out`) — safe when T only comes OUT
+##### 📤 Covariance (`out`) — safe when T only comes OUT
 
 If a generic type only ever **returns** `T` and never **accepts** it, going "up" is safe:
 
@@ -5789,7 +5796,7 @@ IEnumerable<string> strings = new List<string> { "a", "b" };
 IEnumerable<object> objects = strings;      // ✅ works — IEnumerable<out T> is covariant
 ```
 
-### 📥 Contravariance (`in`) — safe when T only goes IN
+##### 📥 Contravariance (`in`) — safe when T only goes IN
 
 If a generic type only ever **accepts** `T` and never returns it, going "down" is safe:
 
@@ -5815,7 +5822,7 @@ IComparer<Animal> byName = Comparer<Animal>.Create((x, y) => 0);
 IComparer<Dog> dogComparer = byName;    // ✅ IComparer<in T> is contravariant
 ```
 
-### The memory aid
+##### The memory aid
 
 ```text
   out  📤  T comes OUT     →  COvariant     →  you can go UP   (Dog → Animal)
@@ -5840,7 +5847,7 @@ IComparer<Dog> dogComparer = byName;    // ✅ IComparer<in T> is contravariant
 > Arrays got covariance before generics existed, and it is unsafe. Generics fixed it.
 > **Use `List<T>`/`IReadOnlyList<T>`, not arrays**, and this can never bite you.
 
-## 21.9 Generics you will use every single day
+#### 21.9 Generics you will use every single day
 
 ```csharp
 List<Student> students;                 // a list of anything
@@ -5854,7 +5861,7 @@ Action<string> logMessage;              // an action you can pass around
 IRepository<Customer> customerRepo;     // your own generic abstraction
 ```
 
-## 21.10 🧪 Hands-on exercise
+#### 21.10 🧪 Hands-on exercise
 
 Build a reusable, generic, in-memory repository:
 
@@ -5880,11 +5887,11 @@ Build a reusable, generic, in-memory repository:
 
 ---
 
-# 22. 📚 Collections and LINQ with objects
+### 22. 📚 Collections and LINQ with objects
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Real programs rarely have *one* customer. They have thousands. **Collections** are how you store
 many objects; **LINQ** is how you ask questions about them.
@@ -5899,7 +5906,7 @@ Think of collections as different kinds of containers:
 | `Queue<T>` | A ticket queue — first in, first served |
 | `Stack<T>` | A stack of plates — take the top one |
 
-## 22.1 Choosing the right collection
+#### 22.1 Choosing the right collection
 
 | Collection | Ordered? | Duplicates? | Lookup speed | 🎯 Use when |
 |---|:---:|:---:|:---:|---|
@@ -5926,7 +5933,7 @@ And the **abstractions** you should use in method signatures:
 > **Accept the most general type you can (`IEnumerable<T>`); return the most useful safe type
 > (`IReadOnlyList<T>`).**
 
-## 22.2 Working with a list of objects
+#### 22.2 Working with a list of objects
 
 ```csharp
 public record Product(int Id, string Name, string Category, decimal Price, int Stock);
@@ -5950,7 +5957,7 @@ Console.WriteLine(products.Count);
 Console.WriteLine(products[0].Name);            // index access
 ```
 
-## 22.3 Dictionary — instant lookup by key
+#### 22.3 Dictionary — instant lookup by key
 
 ```csharp
 Dictionary<int, Product> productsById = products.ToDictionary(p => p.Id);
@@ -5975,7 +5982,7 @@ bool exists = productsById.ContainsKey(3);
 productsById.Remove(3);
 ```
 
-## 22.4 LINQ — asking questions about objects
+#### 22.4 LINQ — asking questions about objects
 
 LINQ (Language INtegrated Query) lets you filter, sort, group, and reshape collections in a way
 that reads almost like English.
@@ -5989,7 +5996,7 @@ List<string> result = products
     .ToList();                                                  // materialise
 ```
 
-### The LINQ methods you will actually use
+##### The LINQ methods you will actually use
 
 | Method | Does | Example |
 |---|---|---|
@@ -6008,7 +6015,7 @@ List<string> result = products
 | `Take` / `Skip` | Paging | `.Skip(20).Take(10)` |
 | `ToList` / `ToArray` / `ToDictionary` | Materialise | `.ToList()` |
 
-### Realistic examples
+##### Realistic examples
 
 ```csharp
 // 💰 Total inventory value
@@ -6041,7 +6048,7 @@ if (found is not null)
 var page3 = products.OrderBy(p => p.Id).Skip(20).Take(10).ToList();
 ```
 
-### `First` vs `FirstOrDefault` vs `Single` — the difference that bites
+##### `First` vs `FirstOrDefault` vs `Single` — the difference that bites
 
 | Method | 0 matches | 1 match | 2+ matches |
 |---|---|---|---|
@@ -6053,7 +6060,7 @@ var page3 = products.OrderBy(p => p.Id).Skip(20).Take(10).ToList();
 **🎯 Use `Single`** when "more than one" would be a bug you *want* to know about (looking up by a
 unique ID). **Use `FirstOrDefault`** for ordinary searching.
 
-## 22.5 ⚠️ Deferred execution — the #1 LINQ gotcha
+#### 22.5 ⚠️ Deferred execution — the #1 LINQ gotcha
 
 LINQ queries are **lazy**. They do nothing until you enumerate them.
 
@@ -6085,7 +6092,7 @@ List<Product> expensive = products.Where(p => p.Price > 100).ToList();   // ✅ 
 > might change, end it with `.ToList()`. If you're passing it straight into one `foreach`,
 > leave it lazy — that's cheaper.
 
-## 22.6 Exposing collections safely (recap)
+#### 22.6 Exposing collections safely (recap)
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -6102,7 +6109,7 @@ public class Order
 
 🔗 Explained fully in [Chapter 13.3](#133-protecting-collections--the-leak-everyone-misses).
 
-## 22.7 Collection expressions — modern initialisation
+#### 22.7 Collection expressions — modern initialisation
 
 ```csharp
 List<int> numbers = [1, 2, 3, 4, 5];
@@ -6119,7 +6126,7 @@ List<Product> catalog =
 ];
 ```
 
-## 22.8 🧪 Hands-on exercise
+#### 22.8 🧪 Hands-on exercise
 
 Given a `List<Order>` where each `Order` has a `CustomerName`, `PlacedOn`, and
 `List<OrderItem> Items`:
@@ -6147,11 +6154,11 @@ Do all five with LINQ. Then rewrite #1 with a plain `foreach` and compare readab
 
 ---
 
-# 23. 🔁 Iterators and `yield`
+### 23. 🔁 Iterators and `yield`
 
 **Level: ⭐⭐⭐ Advanced**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Normally a method does all its work and then hands you the finished result.
 
@@ -6162,7 +6169,7 @@ Think of a **vending machine that makes fresh coffee**. You do not get 100 cups 
 You press the button, it makes one cup, and waits. Press again, another cup. If you walk away
 after two, it never makes the other 98.
 
-## 23.1 The problem `yield` solves
+#### 23.1 The problem `yield` solves
 
 ❌ **Without `yield` — build the whole list first:**
 
@@ -6203,7 +6210,7 @@ var first5 = GetEvenNumbers(10_000_000).Take(5).ToList();
 // ✅ The loop ran exactly 10 times, produced 5 items, then stopped. Zero waste.
 ```
 
-## 23.2 How `yield return` actually behaves
+#### 23.2 How `yield return` actually behaves
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -6255,7 +6262,7 @@ The method **suspends** at each `yield return` and **resumes** exactly where it 
 > private IEnumerable<int> TakeIterator(int count) { /* yield here */ yield break; }
 > ```
 
-## 23.3 `yield break` — stopping early
+#### 23.3 `yield break` — stopping early
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -6272,7 +6279,7 @@ public IEnumerable<string> ReadUntilBlank(IEnumerable<string> lines)
 }
 ```
 
-## 23.4 Making your own class `foreach`-able
+#### 23.4 Making your own class `foreach`-able
 
 Implement `IEnumerable<T>` and your class works with `foreach`, LINQ, and collection expressions.
 
@@ -6316,7 +6323,7 @@ TimeSpan total = playlist.Aggregate(TimeSpan.Zero, (sum, s) => sum + s.Duration)
 **🎯 Use when:** your class *is* a collection of something — a `Playlist` of songs, an `Order` of
 items, a `Matrix` of rows.
 
-### Custom iteration order with `yield`
+##### Custom iteration order with `yield`
 
 ```csharp
 public class BinaryTree<T> : IEnumerable<T>
@@ -6344,7 +6351,7 @@ public class BinaryTree<T> : IEnumerable<T>
 
 Writing that traversal by hand, without `yield`, requires an explicit stack and about 40 lines.
 
-## 23.5 `IAsyncEnumerable<T>` — streaming with `await`
+#### 23.5 `IAsyncEnumerable<T>` — streaming with `await`
 
 For data that arrives over time (a database cursor, an API with paging, a live feed):
 
@@ -6374,7 +6381,7 @@ await foreach (Order order in StreamOrdersAsync())
 
 🔗 **Connects to:** [Chapter 33 — Async, await, and OOP](#33--async-await-and-oop).
 
-## 23.6 When to use `yield` — and when not to
+#### 23.6 When to use `yield` — and when not to
 
 | ✅ Use `yield` when | 🚫 Don't use `yield` when |
 |---|---|
@@ -6387,7 +6394,7 @@ await foreach (Order order in StreamOrdersAsync())
 > ⚠️ **Gotcha** — An `IEnumerable<T>` from `yield` re-runs its whole body **every time** you
 > enumerate it. If enumerating is expensive or has side effects, call `.ToList()` once.
 
-## 23.7 🧪 Hands-on exercise
+#### 23.7 🧪 Hands-on exercise
 
 1. Write `IEnumerable<int> Fibonacci()` that yields Fibonacci numbers **forever**.
    Use `.Take(10)` to prove it doesn't hang.
@@ -6413,11 +6420,11 @@ await foreach (Order order in StreamOrdersAsync())
 
 <a id="24--equality-comparison-sorting-and-copying"></a>
 
-# 24. ⚖️ Equality, comparison, sorting, and copying
+### 24. ⚖️ Equality, comparison, sorting, and copying
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Three questions that look similar but are completely different:
 
@@ -6430,7 +6437,7 @@ Three questions that look similar but are completely different:
 Getting these wrong causes some of the strangest bugs in .NET — items that vanish from a
 `HashSet`, `Contains` returning `false` for something you just added, sorts in random order.
 
-## 24.1 Reference equality — "the same object"
+#### 24.1 Reference equality — "the same object"
 
 ```csharp
 public class Customer
@@ -6455,7 +6462,7 @@ equal", because they are two different objects.
 **Sometimes that's exactly right** (two different `BankAccount`s that both hold $100 are *not* the
 same account). **Sometimes it's wrong** (two `Money(100, "USD")` values *are* the same amount).
 
-## 24.2 Value equality — "the same data"
+#### 24.2 Value equality — "the same data"
 
 To make two objects with the same data count as equal, implement `IEquatable<T>` and override
 `Equals` and `GetHashCode`.
@@ -6503,7 +6510,7 @@ Console.WriteLine(p1 == p2);                // True  ✅
 Console.WriteLine(ReferenceEquals(p1, p2)); // False (still two objects — correct)
 ```
 
-## 24.3 ⚠️ Why `GetHashCode` matters — the invisible bug
+#### 24.3 ⚠️ Why `GetHashCode` matters — the invisible bug
 
 `Dictionary` and `HashSet` find items in two steps:
 1. Compute the hash code → jump straight to a "bucket"
@@ -6522,7 +6529,7 @@ Console.WriteLine(set.Contains(new Product(1, "Laptop")));   // False 😱😱�
 
 The object is in there. You just cannot find it. This is a genuinely nasty bug.
 
-### The three rules of `GetHashCode`
+##### The three rules of `GetHashCode`
 
 | Rule | Meaning |
 |---|---|
@@ -6551,7 +6558,7 @@ For multiple fields, use the built-in helper — never invent your own formula:
 public override int GetHashCode() => HashCode.Combine(Id, Name, Category);
 ```
 
-## 24.4 Records — value equality for free
+#### 24.4 Records — value equality for free
 
 All that ceremony, replaced by one line:
 
@@ -6573,7 +6580,7 @@ Console.WriteLine(a);               // Money { Amount = 100, Currency = USD }  �
 > `Equals`/`GetHashCode` is only for the rare case where equality means something custom
 > (e.g. "equal if the Ids match, ignoring every other field").
 
-## 24.5 Comparison and sorting — `IComparable<T>`
+#### 24.5 Comparison and sorting — `IComparable<T>`
 
 Equality answers *"are these the same?"*. Comparison answers *"which comes first?"*.
 
@@ -6609,7 +6616,7 @@ foreach (var e in staff) Console.WriteLine(e);
 **🎯 Use `IComparable<T>` when:** the type has one obvious, natural order (dates by time, money by
 amount, versions by number).
 
-### `IComparer<T>` — many different orders
+##### `IComparer<T>` — many different orders
 
 When there is no single natural order, or you need several:
 
@@ -6641,9 +6648,9 @@ var byNameThenSalary = staff.OrderBy(e => e.Name).ThenByDescending(e => e.Salary
 > `IComparable<T>` when your type will be used in `SortedSet<T>`, `SortedDictionary<,>`, or
 > `Array.Sort`, or when a natural order genuinely exists.
 
-## 24.6 Copying objects — shallow vs deep
+#### 24.6 Copying objects — shallow vs deep
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 - **Shallow copy** — you photocopy a form. The photocopy has the *same* attachment paperclipped to
   it. Change the attachment, and both "copies" see it.
@@ -6690,7 +6697,7 @@ deep.Address.City = "Galle";
 Console.WriteLine(original.Address.City);   // "Colombo"  ✅ untouched
 ```
 
-### `with` on records — a shallow copy with changes
+##### `with` on records — a shallow copy with changes
 
 > **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
 
@@ -6705,7 +6712,7 @@ Person renamed = original with { Name = "Maria" };   // ⚠️ SHALLOW — Addre
 > type, the copy shares it. The fix: make everything the record holds **immutable too**
 > (records all the way down, or `IReadOnlyList<T>`).
 
-### How to deep-copy properly
+##### How to deep-copy properly
 
 | Approach | Pros | Cons |
 |---|---|---|
@@ -6737,7 +6744,7 @@ public class Person
 > Immutable objects can be shared freely and safely by everyone, forever.
 > 🔗 [Chapter 25](#25--classes-structs-records-immutability-and-serialization).
 
-## 24.7 The equality decision table
+#### 24.7 The equality decision table
 
 | Your type is... | Do this |
 |---|---|
@@ -6746,7 +6753,7 @@ public class Person
 | A plain data carrier / DTO | 🏆 Use a `record` |
 | A service, repository, controller | Do nothing — reference equality is correct |
 
-## 24.8 🧪 Hands-on exercise
+#### 24.8 🧪 Hands-on exercise
 
 1. Create `class Money` with `Amount` and `Currency`. Implement `IEquatable<Money>`,
    `GetHashCode`, `==`, `!=`, and `IComparable<Money>` (throwing if currencies differ).
@@ -6770,11 +6777,11 @@ public class Person
 
 ---
 
-# 25. 🧱 Classes, structs, records, immutability, and serialization
+### 25. 🧱 Classes, structs, records, immutability, and serialization
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 C# gives you several ways to define a type. Choosing the right one is a real design decision, and
 most of the time the answer is simple once you know the questions.
@@ -6789,7 +6796,7 @@ most of the time the answer is simple once you know the questions.
 | **Auto `ToString()`** | ❌ | ❌ | ✅ | ✅ |
 | **🎯 Use for** | Entities, services | Tiny values (≤16 bytes) | DTOs, value objects | Tiny immutable values |
 
-## 25.1 `class` — your default
+#### 25.1 `class` — your default
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -6821,7 +6828,7 @@ public class Customer
 **🎯 Use a class when:** the thing has **identity**, changes over time, has behaviour, or needs
 inheritance. **This is 90% of your types.**
 
-## 25.2 `struct` — small, copied values
+#### 25.2 `struct` — small, copied values
 
 ```csharp
 public readonly struct Temperature
@@ -6896,7 +6903,7 @@ is one of the classic sources of confusing bugs in C#.
 > Use a struct only when all-zeros is a *legitimate* value — `Point(0,0)`, `Money(0)`,
 > `TimeSpan.Zero`.
 
-## 25.3 `record` — data with value semantics
+#### 25.3 `record` — data with value semantics
 
 The **positional** form — one line gives you everything:
 
@@ -6963,7 +6970,7 @@ Console.WriteLine(e1.Domain);      // example.com
 **🎯 Use a record when:** the type is defined by its **data**, not its identity — DTOs, API
 models, value objects, events, messages, configuration.
 
-## 25.4 `record struct` — the best of both
+#### 25.4 `record struct` — the best of both
 
 ```csharp
 public readonly record struct Money(decimal Amount, string Currency)
@@ -6995,7 +7002,7 @@ Console.WriteLine(a == new Money(100, "USD"));   // True
 **🎯 Use when:** a small immutable value that you create a lot of. This is the ideal shape for a
 domain **value object**.
 
-## 25.5 `with` expressions — change by making a new one
+#### 25.5 `with` expressions — change by making a new one
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -7018,7 +7025,7 @@ test-data builders, updating configuration.
 
 > ⚠️ **Gotcha** — `with` is a **shallow** copy. See [24.6](#246-copying-objects--shallow-vs-deep).
 
-## 25.6 Record inheritance
+#### 25.6 Record inheritance
 
 ```csharp
 public abstract record Shape(string Name);
@@ -7042,16 +7049,16 @@ double area = shape switch
 > ⚠️ **Gotcha** — Record equality includes the **runtime type**. A `Circle(5)` is never equal to
 > a hypothetical `Sphere(5)` even if their data matches. That is usually what you want.
 
-## 25.7 Immutability — the single best habit in this guide
+#### 25.7 Immutability — the single best habit in this guide
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 An **immutable** object cannot be changed after it is created. Want a different value? Make a new
 object.
 
 Like a **printed receipt**. You do not edit a receipt. If the price was wrong, you issue a new one.
 
-### Why professionals love it
+##### Why professionals love it
 
 | Benefit | Why it matters |
 |---|---|
@@ -7062,7 +7069,7 @@ Like a **printed receipt**. You do not edit a receipt. If the price was wrong, y
 | 🔑 **Safe as dictionary keys** | Hash codes never go stale |
 | 🐛 **Whole bug classes disappear** | "Who changed this?" stops being a question |
 
-### The three levels of immutability
+##### The three levels of immutability
 
 ```csharp
 // ① Read-only properties — set in the constructor, never again
@@ -7082,7 +7089,7 @@ public class Level2
 public record Level3(string Name);
 ```
 
-### ⚠️ The trap: a collection inside an immutable object
+##### ⚠️ The trap: a collection inside an immutable object
 
 > **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
 
@@ -7121,7 +7128,7 @@ public record Order
 > **Default to immutable. Add mutability only where you can point at a reason.**
 > Every mutable field is a question someone will have to answer at 2 a.m.: *"who changed this?"*
 
-## 25.8 The decision flowchart
+#### 25.8 The decision flowchart
 
 ```mermaid
 graph TD
@@ -7135,9 +7142,9 @@ graph TD
     Q3 -->|No| CS["🏛️ sealed class"]
 ```
 
-## 25.9 Serialization — where your objects meet the outside world
+#### 25.9 Serialization — where your objects meet the outside world
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 **Serialization** means turning an object into text (usually JSON) so it can be saved to a file
 or sent over a network. **Deserialization** is turning that text back into an object.
@@ -7178,7 +7185,7 @@ Console.WriteLine(JsonSerializer.Serialize(product, options));
 // }
 ```
 
-### ⚠️ The surprise: deserialization ignores your rules
+##### ⚠️ The surprise: deserialization ignores your rules
 
 Here is the trap. This class carefully protects itself:
 
@@ -7210,7 +7217,7 @@ But a deserializer builds objects by **reflection**, not by calling your public 
 on the settings, it can set private setters and skip your validation completely — producing an
 `Order` that your own code says is impossible.
 
-### ✅ The professional solution: separate DTOs from domain objects
+##### ✅ The professional solution: separate DTOs from domain objects
 
 Do not serialize your domain entities. Use a **DTO** (Data Transfer Object) at the boundary, and
 map between them.
@@ -7257,7 +7264,7 @@ public static class OrderMapper
 | Safe to deserialize? | ✅ Yes | ❌ No |
 | Changes when... | The API contract changes | The business changes |
 
-### Useful attributes
+##### Useful attributes
 
 ```csharp
 using System.Text.Json.Serialization;
@@ -7285,7 +7292,7 @@ public record CustomerDto
 > 💡 **Tip** — `System.Text.Json` is built into .NET and is the default choice. `Newtonsoft.Json`
 > is the older library; you will meet it in existing projects, and it is more flexible but slower.
 
-## 25.10 🧪 Hands-on exercise
+#### 25.10 🧪 Hands-on exercise
 
 Convert this mutable class into an immutable `record`, then show three state changes using `with`:
 
@@ -7318,11 +7325,11 @@ impossible to create an invalid booking.
 
 ---
 
-# 26. 🔍 Casting, conversion, and pattern matching
+### 26. 🔍 Casting, conversion, and pattern matching
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Sometimes you have a value in a general box (`object`, `Shape`, `Animal`) and you need to know
 what it *really* is, or turn it into something else. That's casting and conversion.
@@ -7330,7 +7337,7 @@ what it *really* is, or turn it into something else. That's casting and conversi
 **Pattern matching** is C#'s modern, safe way of doing this — and it is one of the language's
 best features.
 
-## 26.1 The three ways to change a type
+#### 26.1 The three ways to change a type
 
 | Operator | If it fails | 🎯 Use when |
 |---|---|---|
@@ -7359,7 +7366,7 @@ if (thing is string s3)
 > 🎓 **Professor's rule** — Use `is` with a pattern. It tests and converts in one safe step, and
 > the compiler tracks that `s3` is definitely not null inside the block.
 
-## 26.2 Implicit vs explicit numeric conversion
+#### 26.2 Implicit vs explicit numeric conversion
 
 ```csharp
 // ✅ IMPLICIT — always safe, no data can be lost. C# does it for you.
@@ -7382,7 +7389,7 @@ int overflowed = (int)huge;      // -1294967296  😱 silent nonsense
 > checked { int guarded = (int)huge; }       // 💥 OverflowException — much better than nonsense
 > ```
 
-## 26.3 Parsing strings — always use `TryParse`
+#### 26.3 Parsing strings — always use `TryParse`
 
 ```csharp
 string input = Console.ReadLine() ?? "";
@@ -7408,7 +7415,7 @@ Enum.TryParse<OrderStatus>("Shipped", out var status);
 > 🎓 **Professor's rule** — Any value that comes from a **human, a file, or a network** goes
 > through `TryParse`. Exceptions are for *unexpected* problems; bad user input is entirely expected.
 
-## 26.4 Custom conversions
+#### 26.4 Custom conversions
 
 Your own types can define conversions:
 
@@ -7433,11 +7440,11 @@ Celsius back = (Celsius)30.0;           // ✅ explicit — cast required
 Everything else is `explicit`. Better still — use a named method like `ToCelsius()`, which is
 always clearer than a mystery operator.
 
-## 26.5 Pattern matching — the modern way to inspect objects
+#### 26.5 Pattern matching — the modern way to inspect objects
 
 This is where C# gets genuinely elegant.
 
-### Type pattern
+##### Type pattern
 
 ```csharp
 void Describe(object item)
@@ -7451,7 +7458,7 @@ void Describe(object item)
 }
 ```
 
-### `switch` expression — the workhorse
+##### `switch` expression — the workhorse
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -7488,7 +7495,7 @@ public static double AreaOld(Shape shape)
 }
 ```
 
-### Property patterns — match on the contents
+##### Property patterns — match on the contents
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -7503,7 +7510,7 @@ public static string Classify(Order order) => order switch
 };
 ```
 
-### Relational and logical patterns
+##### Relational and logical patterns
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -7524,7 +7531,7 @@ public static bool IsWeekend(DayOfWeek day)
 public static bool IsValidAge(int age) => age is >= 0 and <= 130;
 ```
 
-### `when` clauses — extra conditions
+##### `when` clauses — extra conditions
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -7538,7 +7545,7 @@ public static decimal ShippingCost(Order order) => order switch
 };
 ```
 
-### List patterns
+##### List patterns
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -7553,7 +7560,7 @@ public static string DescribeSequence(int[] numbers) => numbers switch
 };
 ```
 
-### The complete pattern reference
+##### The complete pattern reference
 
 | Pattern | Example | Matches when |
 |---|---|---|
@@ -7569,7 +7576,7 @@ public static string DescribeSequence(int[] numbers) => numbers switch
 | Discard | `_` | Always matches; binds nothing |
 | List | `is [1, 2, ..]` | Sequence shape matches |
 
-## 26.6 ⚠️ When pattern matching is the WRONG tool
+#### 26.6 ⚠️ When pattern matching is the WRONG tool
 
 Pattern matching on types is often a sign that **polymorphism** would be better.
 
@@ -7594,9 +7601,9 @@ public abstract class Shape { public abstract double Area(); }
 > 🎓 **Professor's rule** — A `switch` on **data** is fine forever. A `switch` on **type** that
 > keeps growing is polymorphism asking to be born.
 
-## 26.7 `dynamic` — the escape hatch you should almost never open
+#### 26.7 `dynamic` — the escape hatch you should almost never open
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 `dynamic` tells the compiler: *"stop checking this. Work it out while the program is running."*
 
@@ -7614,7 +7621,7 @@ Console.WriteLine(thing.Length);        // 💥 RuntimeBinderException — int h
 
 That last line **compiles perfectly**. It only fails when a user hits it in production.
 
-### Why it's dangerous
+##### Why it's dangerous
 
 | Problem | Consequence |
 |---|---|
@@ -7624,7 +7631,7 @@ That last line **compiles perfectly**. It only fails when a user hits it in prod
 | ❌ Invisible to refactoring | "Rename" and "Find references" cannot see it |
 | ❌ Breaks trimming / AOT | The compiler cannot know what you'll call |
 
-### What to use instead
+##### What to use instead
 
 | You reached for `dynamic` because... | Use this instead |
 |---|---|
@@ -7648,7 +7655,7 @@ repo.Save(order);
 > a compiler that catches your mistakes before your users do. In years of normal application
 > work you should need it approximately **never**.
 
-## 26.8 🧪 Hands-on exercise
+#### 26.8 🧪 Hands-on exercise
 
 Write a `TransactionDescriber` that takes an `object` and returns a description, using a single
 `switch` expression that handles:
@@ -7677,11 +7684,11 @@ Write a `TransactionDescriber` that takes an `object` and returns a description,
 
 <a id="27--nullable-reference-types-and-null-safety"></a>
 
-# 27. 🛡️ Nullable reference types and null safety
+### 27. 🛡️ Nullable reference types and null safety
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 `null` means "there is nothing here". Its inventor, Tony Hoare, called it his
 *"billion-dollar mistake"* — because for 40 years, the single most common crash in software has
@@ -7690,7 +7697,7 @@ been `NullReferenceException`.
 Modern C# helps enormously with this — but **only at compile time**, and only if you switch it on.
 Understanding exactly where the help stops is the most important thing in this chapter.
 
-## 27.1 Turn it on
+#### 27.1 Turn it on
 
 ```xml
 <PropertyGroup>
@@ -7711,7 +7718,7 @@ to check. A whole class of runtime crashes becomes a squiggly line in your edito
 > Without this, nullable diagnostics are only warnings, and warnings in a large solution get
 > scrolled past.
 
-## 27.2 The `?` changes everything — at compile time
+#### 27.2 The `?` changes everything — at compile time
 
 ```csharp
 string name = "Anna";        // 🚫 NOT nullable — the compiler warns if you assign null
@@ -7728,7 +7735,7 @@ Console.WriteLine(phone.Length);     // ⚠️ CS8602: "Dereference of a possibl
 
 The `?` is you **documenting your intent**, and the compiler holding you to it.
 
-### 🔬 The single most important fact in this chapter
+##### 🔬 The single most important fact in this chapter
 
 **Nullable reference types are a compile-time feature with no runtime existence.** This is the
 language/runtime distinction from the [opening section](#-three-different-things-one-word-c), and it
@@ -7763,7 +7770,7 @@ catch (NullReferenceException)
 
 **Output:**
 
-```
+```text
 True
 False
 NullReferenceException — the annotation stopped nothing
@@ -7809,12 +7816,12 @@ struct Holder { public string Value; }
 
 **Output:**
 
-```
+```text
 True
 True
 ```
 
-### 🎯 So what is it good for?
+##### 🎯 So what is it good for?
 
 A great deal — this is not a reason to switch it off. It is a reason to know its shape:
 
@@ -7844,9 +7851,9 @@ public class Customer
 That class declaration is now **documentation the compiler enforces**. Anyone reading it knows
 instantly which fields might be missing.
 
-## 27.3 The five tools for handling null
+#### 27.3 The five tools for handling null
 
-### ① Null check with `is not null`
+##### ① Null check with `is not null`
 
 ```csharp
 if (phone is not null)
@@ -7858,7 +7865,7 @@ if (phone is not null)
 > 💡 **Tip** — Prefer `is null` / `is not null` over `== null` / `!= null`. A class can override
 > `==` to do something strange; `is null` can never be overridden and always means what it says.
 
-### ② `??` — null-coalescing ("use this instead")
+##### ② `??` — null-coalescing ("use this instead")
 
 ```csharp
 string display = phone ?? "No phone number on file";
@@ -7867,7 +7874,7 @@ string display = phone ?? "No phone number on file";
 phone ??= "unknown";
 ```
 
-### ③ `?.` — null-conditional ("only if not null")
+##### ③ `?.` — null-conditional ("only if not null")
 
 ```csharp
 int? length = phone?.Length;                       // null if phone is null
@@ -7879,14 +7886,14 @@ string? city = customer?.BillingAddress?.City;     // null if ANY link is null
 customer?.Orders?[0]?.Cancel();
 ```
 
-### ④ Combining `?.` and `??` — the most common idiom
+##### ④ Combining `?.` and `??` — the most common idiom
 
 ```csharp
 int length = phone?.Length ?? 0;
 string city = customer?.BillingAddress?.City ?? "Unknown";
 ```
 
-### ⑤ Guard clauses — reject null at the door
+##### ⑤ Guard clauses — reject null at the door
 
 ```csharp
 public class Customer
@@ -7906,7 +7913,7 @@ public class Customer
 **🎯 Use guard clauses when:** the value comes from outside your control — a public API, user
 input, deserialised JSON. The nullable annotations don't survive those boundaries.
 
-## 27.4 ⚠️ The null-forgiving operator `!` — use with great care
+#### 27.4 ⚠️ The null-forgiving operator `!` — use with great care
 
 ```csharp
 string value = phone!;      // "Trust me, compiler, this isn't null."
@@ -7934,7 +7941,7 @@ public class Order
 > 🎓 **Professor's rule** — Every `!` in your code is a promise you made to the compiler.
 > If you break it, the program crashes. Count them, and justify each one.
 
-## 27.5 Designing so null barely appears
+#### 27.5 Designing so null barely appears
 
 The best null handling is not needing it.
 
@@ -7973,7 +7980,7 @@ public Customer? FindById(int id)       // returns null if missing — "it might
 > 💡 **Tip** — The convention `GetX` (throws) vs `FindX` / `TryGetX` (may be absent) is used
 > throughout .NET. Follow it and your API explains itself.
 
-## 27.6 `required` — the compile-time guarantee
+#### 27.6 `required` — the compile-time guarantee
 
 ```csharp
 public class Customer
@@ -8025,7 +8032,7 @@ syntax. It gives you constructor-level safety without writing a constructor.
 > 💡 **Simplest advice** — Pick one style per class and stay with it:
 > **either** a constructor **or** `required` + `init`. Mixing them is where the confusion starts.
 
-## 27.7 Nullable **value** types — a different thing
+#### 27.7 Nullable **value** types — a different thing
 
 ```csharp
 int? age = null;             // Nullable<int> — a struct that may hold no value
@@ -8050,7 +8057,7 @@ int alsoFine = age.GetValueOrDefault();
 > runtime. Data arriving from JSON, a database, or reflection can absolutely be null even though
 > the type says it can't. That is exactly why you still validate at the boundaries.
 
-## 27.8 🧪 Hands-on exercise
+#### 27.8 🧪 Hands-on exercise
 
 Take this class and make it fully null-safe:
 
@@ -8087,11 +8094,11 @@ Requirements: `Name` required; `Bio` and `Address` optional; `Tags` never null (
 
 ---
 
-# 28. 💥 Exceptions and error handling
+### 28. 💥 Exceptions and error handling
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 An **exception** is your code saying: *"I cannot do the job you asked, and I refuse to pretend
 I did."*
@@ -8099,7 +8106,7 @@ I did."*
 Think of a **fire alarm**. It is loud, it interrupts everything, and it exists for genuine
 emergencies. You do not use it to announce lunch.
 
-## 28.1 `try` / `catch` / `finally`
+#### 28.1 `try` / `catch` / `finally`
 
 ```csharp
 try
@@ -8131,7 +8138,7 @@ finally
 > 💡 **Tip** — If your `finally` only disposes something, use `using` instead
 > ([Chapter 12](#12--object-lifecycle-and-resource-management)). It's shorter and impossible to get wrong.
 
-## 28.2 Throwing exceptions
+#### 28.2 Throwing exceptions
 
 ```csharp
 public class BankAccount
@@ -8153,7 +8160,7 @@ public class BankAccount
 }
 ```
 
-### Choosing the right exception type
+##### Choosing the right exception type
 
 | Exception | Throw it when |
 |---|---|
@@ -8179,7 +8186,7 @@ ArgumentOutOfRangeException.ThrowIfGreaterThan(quantity, 100);
 ObjectDisposedException.ThrowIf(disposed, this);
 ```
 
-## 28.3 Custom exceptions — carrying real information
+#### 28.3 Custom exceptions — carrying real information
 
 A good custom exception carries **data**, not just a message.
 
@@ -8214,7 +8221,7 @@ catch (InsufficientBalanceException ex)
 }
 ```
 
-## 28.4 A domain exception base class
+#### 28.4 A domain exception base class
 
 Give your business rules one recognisable family:
 
@@ -8257,7 +8264,7 @@ catch (Exception ex)
 > a 4xx. Any other exception means *"we have a bug"* → a 5xx. That single distinction makes error
 > handling in an API almost trivial.
 
-## 28.5 ⚠️ `throw;` vs `throw ex;` — the stack trace killer
+#### 28.5 ⚠️ `throw;` vs `throw ex;` — the stack trace killer
 
 ```csharp
 try { DoWork(); }
@@ -8281,7 +8288,7 @@ methods deep — is gone forever. You will spend hours hunting a bug you had alr
 
 > 🎓 **Professor's rule** — It is `throw;` — never `throw ex;`. Memorise this one.
 
-## 28.6 Wrapping exceptions with `innerException`
+#### 28.6 Wrapping exceptions with `innerException`
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -8313,7 +8320,7 @@ catch (DataAccessException ex)
 **🎯 Use when:** crossing a layer boundary. The upper layer shouldn't know about `SqlException`,
 but you must not throw the diagnostic information away.
 
-## 28.7 Exception filters with `when`
+#### 28.7 Exception filters with `when`
 
 ```csharp
 try
@@ -8334,7 +8341,7 @@ catch (HttpRequestException ex) when (ex.StatusCode >= HttpStatusCode.InternalSe
 **Why `when` beats an `if` inside the catch:** if the filter returns false, the exception keeps
 travelling **with its original stack intact**. An `if` + `throw;` is messier and loses clarity.
 
-## 28.8 Exceptions vs the Result pattern
+#### 28.8 Exceptions vs the Result pattern
 
 Exceptions are for the **exceptional**. When failure is a normal, expected outcome, returning a
 result is often better.
@@ -8390,7 +8397,7 @@ else
     Console.WriteLine(result.Error);
 ```
 
-### Which to use?
+##### Which to use?
 
 | Situation | Use |
 |---|---|
@@ -8404,7 +8411,7 @@ else
 > ⚠️ **Performance note** — Throwing an exception costs roughly 5,000–10,000× more than returning
 > a value. In a loop or a hot path, that matters enormously. In a once-per-request path, it does not.
 
-## 28.9 The rules of exception handling
+#### 28.9 The rules of exception handling
 
 | ✅ Do | ❌ Don't |
 |---|---|
@@ -8425,7 +8432,7 @@ try { DoImportantWork(); }
 catch { }        // "It works now!" — no, it fails silently forever.
 ```
 
-## 28.10 🧪 Hands-on exercise
+#### 28.10 🧪 Hands-on exercise
 
 Build an `OrderValidator` that:
 
@@ -8451,11 +8458,11 @@ Build an `OrderValidator` that:
 
 ---
 
-# 29. ⚡ Static members, constants, readonly, and thread safety
+### 29. ⚡ Static members, constants, readonly, and thread safety
 
 **Level: ⭐ Beginner**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Most members belong to an **object**. Static members belong to the **type itself**.
 
@@ -8465,7 +8472,7 @@ Most members belong to an **object**. Static members belong to the **type itself
 Think of a school: each *student* has their own name and grade (instance). But the *school* has
 one name and one address, shared by everyone (static).
 
-## 29.1 Static methods
+#### 29.1 Static methods
 
 ```csharp
 public static class MathHelper
@@ -8511,7 +8518,7 @@ int result = MathHelper.Square(5);      // ✅ no `new` needed
 > ```
 > This is the single most common reason static helpers become a problem in real projects.
 
-## 29.2 Static properties and fields
+#### 29.2 Static properties and fields
 
 ```csharp
 public class AppInfo
@@ -8541,7 +8548,7 @@ Console.WriteLine(Counter.InstanceCount);   // 3
 > threads and across web requests. That makes it a thread-safety hazard and a testing nightmare
 > (one test's data leaks into the next). Use it for genuinely global, read-only values only.
 
-## 29.3 `const` — a compile-time value
+#### 29.3 `const` — a compile-time value
 
 ```csharp
 public class TaxRules
@@ -8567,7 +8574,7 @@ Rules for `const`:
 > **keeps using 0.25 until they recompile**.
 > ➡️ For anything that could ever change, use `static readonly` instead — it's read at runtime.
 
-## 29.4 `readonly` — set once, per object
+#### 29.4 `readonly` — set once, per object
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -8593,7 +8600,7 @@ public class Order
 **🎯 Use `readonly` on:** every field you don't intend to reassign. It costs nothing and the
 compiler enforces your intent.
 
-## 29.5 `static readonly` — one shared value, computed at runtime
+#### 29.5 `static readonly` — one shared value, computed at runtime
 
 ```csharp
 public class AppSettings
@@ -8605,7 +8612,7 @@ public class AppSettings
 }
 ```
 
-## 29.6 The comparison table
+#### 29.6 The comparison table
 
 | | `const` | `readonly` | `static readonly` |
 |---|---|---|---|
@@ -8623,7 +8630,7 @@ public class AppSettings
 > ```
 > Use `ImmutableArray<T>`, `IReadOnlyList<T>`, or `FrozenSet<T>` for genuinely fixed collections.
 
-## 29.7 Static classes and utility helpers
+#### 29.7 Static classes and utility helpers
 
 ```csharp
 public static class StringHelper       // static class: cannot be instantiated or inherited
@@ -8643,11 +8650,11 @@ That's usually a sign that behaviour belongs on a real object.
 > The moment it needs configuration, a database, the current time, or a random number, it
 > should become an injectable object.
 
-## 29.8 Thread safety — when two things happen at once
+#### 29.8 Thread safety — when two things happen at once
 
 **Level: ⭐⭐⭐ Advanced**
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 Modern applications do several things at the same time. A web server handles 200 requests
 simultaneously. A desktop app runs work in the background while you keep typing.
@@ -8658,7 +8665,7 @@ Think of **two people editing the same paper form at once**. Both read "quantity
 it out and write "6". Two people added one item each, but the form says 6 instead of 7. Nobody
 did anything wrong, and the data is still wrong.
 
-### The problem, in code
+##### The problem, in code
 
 ```csharp
 public class Counter
@@ -8688,7 +8695,7 @@ Console.WriteLine(counter.Value);    // 😱 something like 94,182 — not 100,0
 The result is different every run. This is a **race condition**, and it is the hardest category
 of bug to find: it passes every test on your machine and fails once a week in production.
 
-### 🔧 Fix 1: `lock` — one at a time, please
+##### 🔧 Fix 1: `lock` — one at a time, please
 
 ```csharp
 public class Counter
@@ -8728,7 +8735,7 @@ Rules for `lock`:
 > wants lock 1, both wait forever and the application freezes. The cure is discipline: always
 > acquire multiple locks in the same order everywhere.
 
-### 🔧 Fix 2: `Interlocked` — faster, for simple numbers
+##### 🔧 Fix 2: `Interlocked` — faster, for simple numbers
 
 ```csharp
 public class Counter
@@ -8744,7 +8751,7 @@ public class Counter
 `Interlocked` performs read-modify-write as a **single uninterruptible operation**. Use it for
 counters and simple flags — it is much cheaper than a lock.
 
-### 🔧 Fix 3: concurrent collections
+##### 🔧 Fix 3: concurrent collections
 
 ```csharp
 // ❌ Not safe for multiple threads
@@ -8764,7 +8771,7 @@ int value = cache.GetOrAdd("misses", _ => 0);
 | `Queue<T>` | `ConcurrentQueue<T>` |
 | `Stack<T>` | `ConcurrentStack<T>` |
 
-### 🏆 Fix 4 (the best one): immutability
+##### 🏆 Fix 4 (the best one): immutability
 
 An object that **cannot change** can never be corrupted by two threads, because there is nothing
 to corrupt. No locks. No races. No deadlocks. Nothing to get wrong.
@@ -8779,7 +8786,7 @@ This is the real, practical reason professionals reach for immutability
 ([Chapter 25.7](#257-immutability--the-single-best-habit-in-this-guide)) — not elegance,
 but the fact that a whole category of horrible bugs simply cannot happen.
 
-### 🎯 What this means for your OOP design
+##### 🎯 What this means for your OOP design
 
 | Situation | What to do |
 |---|---|
@@ -8794,7 +8801,7 @@ but the fact that a whole category of horrible bugs simply cannot happen.
 > over singletons that remember things.** Reach for `lock` only when you genuinely cannot
 > avoid shared mutable state.
 
-## 29.9 🧪 Hands-on exercise
+#### 29.9 🧪 Hands-on exercise
 
 1. Write an `IdGenerator` with a static counter that hands out unique sequential IDs.
 2. Call it from `Parallel.For(0, 100_000, ...)` and collect the results in a list.
@@ -8817,11 +8824,11 @@ but the fact that a whole category of horrible bugs simply cannot happen.
 
 ---
 
-# 30. 📡 Delegates, lambdas, events, and callbacks
+### 30. 📡 Delegates, lambdas, events, and callbacks
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Normally you pass **data** to a method. A **delegate** lets you pass **behaviour** — a method
 itself — as if it were a value.
@@ -8830,7 +8837,7 @@ Think of giving someone your **phone number**. You're not doing the work; you're
 *"call me when you need this done."* That's a delegate. And when several people hold your number
 and you announce something to all of them at once — that's an **event**.
 
-## 30.1 Delegates — a variable that holds a method
+#### 30.1 Delegates — a variable that holds a method
 
 ```csharp
 // The declaration describes a SHAPE: "takes two ints, returns an int".
@@ -8851,7 +8858,7 @@ Console.WriteLine(op(2, 3));        // 6
 **🎯 Use when:** the *caller* should decide the behaviour — sorting comparators, filters,
 event handlers, retry policies, transformations.
 
-## 30.2 `Func`, `Action`, `Predicate` — the built-ins you'll actually use
+#### 30.2 `Func`, `Action`, `Predicate` — the built-ins you'll actually use
 
 You almost never need to declare your own delegate type. .NET provides these:
 
@@ -8878,7 +8885,7 @@ Console.WriteLine(isEven(4));       // True
 > 💡 **Tip** — In `Func<A, B, C>`, the **last** type parameter is always the return type.
 > `Func<string, int>` takes a string and returns an int.
 
-## 30.3 Lambdas — writing a method inline
+#### 30.3 Lambdas — writing a method inline
 
 ```csharp
 // All of these are the same thing, from most to least verbose:
@@ -8899,7 +8906,7 @@ Func<Order, decimal> calculateTotal = order =>
 };
 ```
 
-### ⚠️ Closures — lambdas capture variables, not values
+##### ⚠️ Closures — lambdas capture variables, not values
 
 ```csharp
 int multiplier = 3;
@@ -8911,7 +8918,7 @@ multiplier = 10;                   // 👈 changed AFTER the lambda was created
 Console.WriteLine(multiply(5));    // 50  😲 — the lambda sees the new value
 ```
 
-### ⚠️ The loop trap — and why `for` and `foreach` behave differently
+##### ⚠️ The loop trap — and why `for` and `foreach` behave differently
 
 This one still catches experienced developers, because the two loops are **not** the same.
 
@@ -8963,7 +8970,7 @@ for (int i = 0; i < 3; i++)
 > If the variable changes later, the lambda sees the change. When that isn't what you want,
 > copy the value into a new local first.
 
-## 30.4 Delegates as strategy — passing behaviour into a method
+#### 30.4 Delegates as strategy — passing behaviour into a method
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -9004,7 +9011,7 @@ processor.ProcessAll(
 **🎯 Use an interface when:** the behaviour is substantial, needs several methods, needs state,
 or you want to name it (`IDiscountPolicy` explains itself; `Func<decimal, decimal>` does not).
 
-## 30.5 Multicast delegates — one call, many methods
+#### 30.5 Multicast delegates — one call, many methods
 
 ```csharp
 Action<string> notify = message => Console.WriteLine($"Console: {message}");
@@ -9017,7 +9024,7 @@ notify("System started");      // 👈 all three run, in order
 > ⚠️ **Gotcha** — If one handler throws, the remaining ones **never run**. And for a
 > `Func<>`, you only get the **last** handler's return value. Multicast is really for `void`.
 
-## 30.6 Events — the publisher/subscriber pattern
+#### 30.6 Events — the publisher/subscriber pattern
 
 An **event** is a delegate with safety rails: only the declaring class can raise it; outsiders
 can only subscribe (`+=`) and unsubscribe (`-=`).
@@ -9062,7 +9069,7 @@ public event EventHandler? Clicked;  // ✅ event
 // button.Clicked.Invoke(...);       // ❌ compiler error — only Button can raise it
 ```
 
-## 30.7 Custom event arguments
+#### 30.7 Custom event arguments
 
 ```csharp
 public class OrderPlacedEventArgs : EventArgs
@@ -9119,7 +9126,7 @@ service.PlaceOrder(1001, 25_000);
 **🎯 Use events when:** something happened and **zero or more** interested parties may want to
 react — and the publisher genuinely doesn't care who they are or whether anyone is listening.
 
-## 30.8 ⚠️ Events and memory leaks
+#### 30.8 ⚠️ Events and memory leaks
 
 This is the #1 real-world event bug:
 
@@ -9165,7 +9172,7 @@ public class Subscriber : IDisposable
 > 🎓 **Professor's rule** — Every `+=` deserves a matching `-=`. If the publisher outlives the
 > subscriber, that `-=` is mandatory.
 
-## 30.9 Events vs interfaces — which one?
+#### 30.9 Events vs interfaces — which one?
 
 | | 📡 Events | 📜 Interface callbacks |
 |---|---|---|
@@ -9180,7 +9187,7 @@ public class Subscriber : IDisposable
 > **mediator** or **message bus** (`IPublisher.Publish(new OrderPlaced(...))`), which is easier
 > to test and doesn't leak. Events remain the right tool for UI frameworks.
 
-## 30.10 🧪 Hands-on exercise
+#### 30.10 🧪 Hands-on exercise
 
 Build a `StockMonitor`:
 
@@ -9204,11 +9211,11 @@ Build a `StockMonitor`:
 
 ---
 
-# 31. 🔧 Extension methods
+### 31. 🔧 Extension methods
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 An extension method lets you add a method to a type **you do not own** — `string`, `int`,
 `DateTime`, a third-party library class — without modifying it or inheriting from it.
@@ -9216,7 +9223,7 @@ An extension method lets you add a method to a type **you do not own** — `stri
 Think of a **phone case with a bottle opener**. You didn't change the phone. You didn't build a
 new phone. You just attached something so the phone now *appears* to open bottles.
 
-## 31.1 Writing one
+#### 31.1 Writing one
 
 ```csharp
 public static class StringExtensions          // ① must be a STATIC class
@@ -9257,7 +9264,7 @@ The three rules, again:
 
 Plus: the namespace must be in scope (a `using`, or implicit usings).
 
-## 31.2 What extension methods can and cannot do
+#### 31.2 What extension methods can and cannot do
 
 | ✅ Can | ❌ Cannot |
 |---|---|
@@ -9271,7 +9278,7 @@ Plus: the namespace must be in scope (a `using`, or implicit usings).
 > the **instance method always wins**. Your extension is silently ignored. This causes genuinely
 > baffling debugging sessions.
 
-## 31.3 Extending interfaces — where they really shine
+#### 31.3 Extending interfaces — where they really shine
 
 This is the most valuable use. Add convenience to an interface without forcing every implementer
 to write it.
@@ -9299,7 +9306,7 @@ Now **every** repository, present and future, gets `GetPage` and `Any` for free.
 > `IEnumerable<T>`. That's why they work on `List<T>`, arrays, `Dictionary<,>`, your own iterator
 > classes — everything.
 
-## 31.4 Domain-specific extensions that read like English
+#### 31.4 Domain-specific extensions that read like English
 
 ```csharp
 public static class DateOnlyExtensions
@@ -9335,7 +9342,7 @@ Console.WriteLine($"Age: {birthday.Age(today)}");
 
 Read that last line aloud. It sounds like a sentence. That's the goal.
 
-## 31.5 🎯 When to use — and 🚫 when not to
+#### 31.5 🎯 When to use — and 🚫 when not to
 
 | ✅ Use an extension method when | 🚫 Use a regular method when |
 |---|---|
@@ -9359,7 +9366,7 @@ Read that last line aloud. It sounds like a sentence. That's the goal.
 > 🎓 **Professor's rule** — Extension methods are for **types you don't control**, and for
 > **convenience over an interface**. They are not a way to avoid putting behaviour on your own classes.
 
-## 31.6 🧪 Hands-on exercise
+#### 31.6 🧪 Hands-on exercise
 
 Write a `ValidationExtensions` static class with:
 
@@ -9384,15 +9391,15 @@ Write a `ValidationExtensions` static class with:
 
 ---
 
-# 32. 🎁 Indexers, operators, tuples, and everyday essentials
+### 32. 🎁 Indexers, operators, tuples, and everyday essentials
 
 **Level: ⭐⭐ Intermediate**
 
 A grab-bag of C# features that make your types feel like first-class citizens of the language.
 
-## 32.1 Indexers — make your object behave like an array
+#### 32.1 Indexers — make your object behave like an array
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 An indexer lets people write `myObject[something]` instead of `myObject.Get(something)`.
 
@@ -9462,7 +9469,7 @@ Console.WriteLine(config["ConnectionString"]);
 **🚫 Don't use one when:** the "lookup" is expensive or has side effects — `[]` looks free, so
 people will call it in loops.
 
-## 32.2 Operator overloading — making `+` work on your types
+#### 32.2 Operator overloading — making `+` work on your types
 
 ```csharp
 public readonly record struct Money(decimal Amount, string Currency)
@@ -9522,9 +9529,9 @@ reader. Use a named method.
 > `<=` with `>=`, `true` with `false`. And if you overload `==`, you should also override
 > `Equals` and `GetHashCode` ([Chapter 24](#24--equality-comparison-sorting-and-copying)).
 
-## 32.3 Tuples and deconstruction
+#### 32.3 Tuples and deconstruction
 
-### Tuples — a quick, temporary group of values
+##### Tuples — a quick, temporary group of values
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -9556,7 +9563,7 @@ grouping in a LINQ query.
 **🚫 Don't use a tuple when:** it crosses a public API boundary. A `record` gives the values names,
 documentation, validation, and a future. Tuples give you `Item1`.
 
-### Deconstruction — teach your own type to be unpacked
+##### Deconstruction — teach your own type to be unpacked
 
 ```csharp
 public class Point
@@ -9583,7 +9590,7 @@ Console.WriteLine($"({x}, {y})");
 
 > 💡 **Tip** — `record` types get `Deconstruct` generated automatically.
 
-## 32.4 Nested classes
+#### 32.4 Nested classes
 
 ```csharp
 public class Invoice
@@ -9623,7 +9630,7 @@ type and awkward to reuse; a top-level `InvoiceLine` is usually better.
 > 💡 **Tip** — A nested class **can** access the outer class's private static members, but it does
 > **not** automatically get a reference to an outer instance (unlike Java's inner classes).
 
-## 32.5 Partial classes and methods
+#### 32.5 Partial classes and methods
 
 **Partial** splits one type across several files.
 
@@ -9658,7 +9665,7 @@ The compiler merges them into one class.
 to be readable, it has four responsibilities. Split it into four classes
 ([Chapter 37](#37--solid-principles)).
 
-### Partial methods — hooks for generated code
+##### Partial methods — hooks for generated code
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -9675,9 +9682,9 @@ public partial class Customer
 }
 ```
 
-## 32.6 Anonymous types — a throwaway shape with no name
+#### 32.6 Anonymous types — a throwaway shape with no name
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 Sometimes you need to group a few values together for **three lines of code**, and writing a
 whole class for that would be silly. An anonymous type is a class the compiler writes for you,
@@ -9710,7 +9717,7 @@ foreach (var row in report)
     Console.WriteLine($"{row.Category}: {row.Count} items, {row.TotalValue:C}");
 ```
 
-### What the compiler gives you for free
+##### What the compiler gives you for free
 
 | Feature | Included? |
 |---|:---:|
@@ -9760,9 +9767,9 @@ checking, and refactoring support, and you gain a runtime failure whenever a pro
 > **leaves** that method. A `record` costs one line and gives you a name, documentation,
 > and a future.
 
-## 32.7 `nameof` — a string the compiler checks
+#### 32.7 `nameof` — a string the compiler checks
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 `nameof(something)` turns a code symbol into its name as text — but unlike a hand-typed string,
 the compiler **verifies it exists** and **renames it with you**.
@@ -9785,7 +9792,7 @@ Console.WriteLine(nameof(Customer));        // "Customer"
 Console.WriteLine(nameof(Customer.Name));   // "Name"
 ```
 
-### Why it matters
+##### Why it matters
 
 ```csharp
 // ❌ A hand-typed string. Rename the parameter and this silently becomes a lie.
@@ -9808,9 +9815,9 @@ throw new ArgumentException("Name is required.", nameof(newName));
 > string. It is a free improvement over typing the string yourself, so there is never a reason
 > not to use it.
 
-## 32.8 Local functions — a helper that lives inside one method
+#### 32.8 Local functions — a helper that lives inside one method
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 A **local function** is a method declared *inside* another method. Use it when a helper is only
 meaningful to that one method, and putting it on the class would just add clutter.
@@ -9832,7 +9839,7 @@ public decimal CalculateInvoiceTotal(IEnumerable<OrderLine> lines, decimal taxRa
 }
 ```
 
-### Local function vs private method vs lambda
+##### Local function vs private method vs lambda
 
 | | Local function | Private method | Lambda (`Func<>`) |
 |---|---|---|---|
@@ -9872,7 +9879,7 @@ public IEnumerable<int> TakeEvery(int step)
 }
 ```
 
-## 32.9 🧪 Hands-on exercise
+#### 32.9 🧪 Hands-on exercise
 
 Build a `Matrix` class with:
 
@@ -9898,11 +9905,11 @@ Build a `Matrix` class with:
 
 ---
 
-# 33. ⏳ Async, await, and OOP
+### 33. ⏳ Async, await, and OOP
 
 **Level: ⭐⭐⭐ Advanced**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Most real work involves **waiting**: for a database, a web API, a file, a user. `async`/`await`
 lets your program do something else while it waits, instead of standing frozen.
@@ -9913,7 +9920,7 @@ it to the kitchen, and serves other tables. When your food is ready, they come b
 
 `async`/`await` turns your program into the good waiter.
 
-## 33.1 The shapes
+#### 33.1 The shapes
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -9955,7 +9962,7 @@ public class OrderService
 > }
 > ```
 
-## 33.2 Async in interfaces — designing for it up front
+#### 33.2 Async in interfaces — designing for it up front
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -9993,9 +10000,9 @@ public class SqlOrderRepository : IOrderRepository
 > interface async from day one. Retrofitting async into a synchronous interface means changing
 > every caller in the codebase — a genuinely painful refactor known as "async all the way".
 
-## 33.3 The rules that keep you out of trouble
+#### 33.3 The rules that keep you out of trouble
 
-### ✅ Async all the way — never block
+##### ✅ Async all the way — never block
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -10011,7 +10018,7 @@ public async Task<Order> GetOrderAsync(int id) => await repository.FindAsync(id)
 `.Result` and `.Wait()` block the calling thread while the async work needs that same thread to
 resume. In UI and older ASP.NET apps, this deadlocks — the app just freezes, forever.
 
-### ✅ Run independent work in parallel
+##### ✅ Run independent work in parallel
 
 ```csharp
 // ❌ Sequential: 300ms + 200ms + 150ms = 650ms
@@ -10034,7 +10041,7 @@ Preferences p = await prefsTask;
 > ⚠️ Only do this when the calls are genuinely **independent**. If the second needs the first's
 > result, sequential is the only option.
 
-### ✅ Always accept a `CancellationToken`
+##### ✅ Always accept a `CancellationToken`
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -10055,12 +10062,12 @@ public async Task<IReadOnlyList<Order>> SearchAsync(
 When a user closes the browser tab or a request times out, cancellation stops work that nobody
 wants any more. Without it, your server keeps churning on abandoned requests.
 
-### ✅ Name async methods with the `Async` suffix
+##### ✅ Name async methods with the `Async` suffix
 
 `GetOrderAsync`, `SaveAsync`, `SendEmailAsync`. It's a universal convention and it makes
 `await`-forgetting bugs obvious in review.
 
-## 33.4 Async and the four pillars
+#### 33.4 Async and the four pillars
 
 Async doesn't change OOP — it changes method signatures.
 
@@ -10117,7 +10124,7 @@ public class NotificationService
 }
 ```
 
-## 33.5 Exception handling in async code
+#### 33.5 Exception handling in async code
 
 ```csharp
 try
@@ -10147,7 +10154,7 @@ catch (HttpRequestException ex)
 > }
 > ```
 
-## 33.6 `IAsyncDisposable` — async cleanup
+#### 33.6 `IAsyncDisposable` — async cleanup
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -10170,7 +10177,7 @@ await using var repository = new AsyncOrderRepository();
 
 🔗 See [Chapter 12](#12--object-lifecycle-and-resource-management).
 
-## 33.7 The async checklist
+#### 33.7 The async checklist
 
 | ✅ Do | ❌ Don't |
 |---|---|
@@ -10182,7 +10189,7 @@ await using var repository = new AsyncOrderRepository();
 | Use `await using` for `IAsyncDisposable` | Fire and forget without handling exceptions |
 | Design interfaces async from the start | Retrofit async later |
 
-## 33.8 🧪 Hands-on exercise
+#### 33.8 🧪 Hands-on exercise
 
 Build an async `WeatherService`:
 
@@ -10209,11 +10216,11 @@ Build an async `WeatherService`:
 
 <a id="34--attributes-and-reflection"></a>
 
-# 34. 🏷️ Attributes and reflection
+### 34. 🏷️ Attributes and reflection
 
 **Level: ⭐⭐⭐ Advanced**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 **Attributes** are sticky notes you attach to your code — extra information that travels with the
 type and can be read later.
@@ -10224,7 +10231,7 @@ sticky notes are on them?"*
 You use both every day without noticing: `[Fact]` on a test, `[HttpGet]` on a controller,
 `[Required]` on a model property. Something reads those notes and acts on them.
 
-## 34.1 Using built-in attributes
+#### 34.1 Using built-in attributes
 
 ```csharp
 public class Customer
@@ -10266,7 +10273,7 @@ Common ones you'll meet:
 | `[Flags]` | This enum combines with bitwise OR |
 | `[CallerMemberName]` | Compiler fills in the caller's name |
 
-## 34.2 Writing your own attribute
+#### 34.2 Writing your own attribute
 
 ```csharp
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
@@ -10311,7 +10318,7 @@ public class Product
 }
 ```
 
-## 34.3 Reading attributes with reflection
+#### 34.3 Reading attributes with reflection
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -10374,7 +10381,7 @@ Mouse | $25.00 | 50
 
 You just built a tiny version of what every ORM, serialiser, and test framework does.
 
-## 34.4 Reflection basics
+#### 34.4 Reflection basics
 
 ```csharp
 Type type = typeof(Product);
@@ -10406,7 +10413,7 @@ var senders = typeof(Program).Assembly
                 && !t.IsAbstract && !t.IsInterface);
 ```
 
-## 34.5 🚫 When NOT to use reflection
+#### 34.5 🚫 When NOT to use reflection
 
 Reflection is powerful and slow, and it turns compile-time errors into runtime crashes.
 
@@ -10433,7 +10440,7 @@ Reflection is powerful and slow, and it turns compile-time errors into runtime c
 > get reflection's flexibility with zero runtime cost and full type safety. `System.Text.Json`,
 > logging, and regex all have source-generated modes now.
 
-## 34.6 🧪 Hands-on exercise
+#### 34.6 🧪 Hands-on exercise
 
 Build a tiny validation framework:
 
@@ -10458,14 +10465,14 @@ Build a tiny validation framework:
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — Part 3: Building real types (Chapters 19–34)
+#### ✅ Checkpoint — Part 3: Building real types (Chapters 19–34)
 
 </div>
 
 > [!IMPORTANT]
 > Part 3 is the longest stretch of the guide, and much of it turns on distinctions the compiler enforces but the runtime does not — or the other way round. Most questions below sit on that line.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -10477,7 +10484,7 @@ Build a tiny validation framework:
 - **Nullable reference types** (Ch 27)
 - `async`/`await` (Ch 33)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. What does `string?` actually do at run time?
 2. You enumerate the same LINQ query three times against a database. What happens?
@@ -10503,7 +10510,7 @@ Build a tiny validation framework:
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Describe a `Money` type you would ship: which of `class`, `struct`, or `record`, whether it is immutable, how equality works, and what happens when someone adds two different currencies.
 
@@ -10512,7 +10519,7 @@ Describe a `Money` type you would ship: which of `class`, `struct`, or `record`,
 
 <div align="center" markdown="1">
 
-# 🔴 PART 4 — PROFESSIONAL DESIGN
+## 🔴 PART 4 — PROFESSIONAL DESIGN
 
 *Everything from here separates "code that works" from "code a team can live with."*
 
@@ -10520,11 +10527,11 @@ Describe a `Money` type you would ship: which of `class`, `struct`, or `record`,
 
 ---
 
-# 35. 📦 Namespaces, projects, assemblies, solutions
+### 35. 📦 Namespaces, projects, assemblies, solutions
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 OOP isn't only about classes. It's also about **where you put them**. A codebase with 400
 excellent classes in one folder is still an unusable codebase.
@@ -10538,7 +10545,7 @@ The hierarchy, from smallest to largest:
   🗂️ Solution    →  a set of projects that build together
 ```
 
-## 35.1 Namespaces
+#### 35.1 Namespaces
 
 ```csharp
 namespace MyApp.Domain.Customers;      // 👈 file-scoped — modern, no extra indentation
@@ -10569,7 +10576,7 @@ MyApp.Api.Controllers
 > 💡 **Tip** — Match your namespaces to your **folders**. `MyApp.Domain/Orders/Order.cs` should
 > declare `namespace MyApp.Domain.Orders;`. Every tool and every developer expects this.
 
-## 35.2 Assemblies — the unit of deployment
+#### 35.2 Assemblies — the unit of deployment
 
 An **assembly** is what one project compiles into: a single `.dll` or `.exe`.
 
@@ -10592,7 +10599,7 @@ That last point is your best architectural tool: **you cannot accidentally creat
 dependency between projects.** If Domain doesn't reference Infrastructure, no domain class can
 ever call the database directly, no matter how tempting.
 
-## 35.3 Creating a real solution
+#### 35.3 Creating a real solution
 
 ```bash
 # 1. Create the solution file
@@ -10624,7 +10631,7 @@ dotnet build
 dotnet test
 ```
 
-## 35.4 The recommended structure
+#### 35.4 The recommended structure
 
 ```text
 MyApp/
@@ -10687,7 +10694,7 @@ graph RL
 
 🔗 Explained fully in [Chapter 41 — Domain modeling and architecture](#41--domain-modeling-and-architecture).
 
-## 35.5 Useful project settings
+#### 35.5 Useful project settings
 
 ```xml
 <!-- Directory.Build.props at the solution root — applies to EVERY project -->
@@ -10711,7 +10718,7 @@ Letting your test project see `internal` members:
 </ItemGroup>
 ```
 
-## 35.6 🧪 Hands-on exercise
+#### 35.6 🧪 Hands-on exercise
 
 Create the full five-project solution above from scratch with the CLI.
 Then **deliberately try** to add a reference from `MyApp.Domain` to `MyApp.Infrastructure`.
@@ -10734,18 +10741,18 @@ Read the error. That error is your architecture defending itself.
 
 <a id="36--naming-and-coding-conventions"></a>
 
-# 36. ✍️ Naming and coding conventions
+### 36. ✍️ Naming and coding conventions
 
 **Level: ⭐ Beginner**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Code is read **ten times more often than it is written**. Conventions exist so that every C#
 developer on Earth can read your code without a translation guide.
 
 These aren't opinions. They're the near-universal .NET standard.
 
-## 36.1 The casing rules
+#### 36.1 The casing rules
 
 | Element | Casing | Example |
 |---|---|---|
@@ -10767,7 +10774,7 @@ These aren't opinions. They're the near-universal .NET standard.
 > 💡 **Tip** — Some teams prefix private fields with `_` (`_orderTotal`). Microsoft's own runtime
 > code does. Either is fine — **just be consistent within a codebase.** This guide uses no prefix.
 
-## 36.2 Naming that actually communicates
+#### 36.2 Naming that actually communicates
 
 | ❌ Poor | ✅ Better | Why |
 |---|---|---|
@@ -10780,7 +10787,7 @@ These aren't opinions. They're the near-universal .NET standard.
 | `GetData()` | `GetUnpaidInvoices()` | Be specific |
 | `x1`, `x2` | `startDate`, `endDate` | Numbers aren't names |
 
-### Boolean naming
+##### Boolean naming
 
 ```csharp
 public bool IsActive { get; }         // state
@@ -10790,7 +10797,7 @@ public bool ShouldRetry { get; }      // decision
 // ❌ public bool Active;             // ambiguous — is it a state or a command?
 ```
 
-### Method naming
+##### Method naming
 
 | Prefix | Means | Example |
 |---|---|---|
@@ -10802,7 +10809,7 @@ public bool ShouldRetry { get; }      // decision
 | `Create` / `Build` | Makes a new object | `CreateInvoice()` |
 | `Ensure` | Throws if a condition isn't met | `EnsureNotCancelled()` |
 
-## 36.3 Formatting
+#### 36.3 Formatting
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -10847,7 +10854,7 @@ csharp_style_var_when_type_is_apparent = true:suggestion
 dotnet_diagnostic.CA1822.severity = suggestion
 ```
 
-## 36.4 Class member ordering
+#### 36.4 Class member ordering
 
 A consistent order means anyone can find anything:
 
@@ -10885,7 +10892,7 @@ public class Order
 }
 ```
 
-## 36.5 Comments — write fewer, better ones
+#### 36.5 Comments — write fewer, better ones
 
 ```csharp
 // ❌ Useless — the code already says this
@@ -10922,7 +10929,7 @@ public decimal CalculateTotal(decimal taxRate) { /* ... */ return 0; }
 > 🎓 **Professor's rule** — A comment explaining **what** the code does is a sign the code needs
 > a better name. A comment explaining **why** it does it is often the most valuable line in the file.
 
-## 36.6 The naming checklist
+#### 36.6 The naming checklist
 
 - [ ] Could a new developer guess what this class does from its name alone?
 - [ ] Does every boolean read as a yes/no question?
@@ -10932,7 +10939,7 @@ public decimal CalculateTotal(decimal taxRate) { /* ... */ return 0; }
 - [ ] Do async methods end in `Async`?
 - [ ] Is there exactly one public type per file, named after the file?
 
-## 36.7 🧪 Hands-on exercise
+#### 36.7 🧪 Hands-on exercise
 
 Rename everything in this class so it explains itself. Change **no logic** — names only.
 
@@ -10971,11 +10978,11 @@ Then answer:
 
 ---
 
-# 37. 🎯 SOLID principles
+### 37. 🎯 SOLID principles
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 SOLID is five rules that make code **easy to change**. That's the whole point. Not "elegant",
 not "clever" — **changeable**, because requirements always change.
@@ -10991,11 +10998,11 @@ not "clever" — **changeable**, because requirements always change.
 
 ---
 
-## 37.1 🔹 S — Single Responsibility Principle
+#### 37.1 🔹 S — Single Responsibility Principle
 
 > **A class should have one, and only one, reason to change.**
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 Each class does **one job**. Like a kitchen: the fridge stores, the oven cooks, the dishwasher
 cleans. You do not buy a fridge-oven-dishwasher.
@@ -11050,7 +11057,7 @@ public class InvoicePdfRenderer
 }
 ```
 
-### The test for SRP
+##### The test for SRP
 
 Describe the class in one sentence. If you need the word **"and"**, split it.
 
@@ -11062,11 +11069,11 @@ Describe the class in one sentence. If you need the word **"and"**, split it.
 
 ---
 
-## 37.2 🔹 O — Open/Closed Principle
+#### 37.2 🔹 O — Open/Closed Principle
 
 > **Open for extension, closed for modification.**
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 You should be able to add new behaviour by **adding new code**, not by **editing working code**.
 
@@ -11137,11 +11144,11 @@ public class DroneShipping : IShippingMethod
 
 ---
 
-## 37.3 🔹 L — Liskov Substitution Principle
+#### 37.3 🔹 L — Liskov Substitution Principle
 
 > **Anywhere the base type works, every subtype must work too — without surprises.**
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 If your code expects a `Bird` and you hand it a `Penguin`, nothing should break.
 
@@ -11215,7 +11222,7 @@ void FlySquadron(IEnumerable<IFlyingBird> flyers)
 }
 ```
 
-### The second classic: Square/Rectangle
+##### The second classic: Square/Rectangle
 
 ```csharp
 public class Rectangle
@@ -11245,7 +11252,7 @@ A Square **is a** rectangle in geometry. But a *mutable* Square is **not** subst
 *mutable* Rectangle. (Note: if both were **immutable**, the problem disappears — another argument
 for immutability.)
 
-### The LSP checklist for any override
+##### The LSP checklist for any override
 
 - [ ] Does it throw where the base didn't?
 - [ ] Does it require **stricter** inputs than the base?
@@ -11260,11 +11267,11 @@ Any "yes" means you have an LSP violation.
 
 ---
 
-## 37.4 🔹 I — Interface Segregation Principle
+#### 37.4 🔹 I — Interface Segregation Principle
 
 > **No client should be forced to depend on methods it does not use.**
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 Many small, focused interfaces beat one big one. Don't hand someone a 40-button remote when they
 only need the on/off switch.
@@ -11340,11 +11347,11 @@ public class ReportService
 
 ---
 
-## 37.5 🔹 D — Dependency Inversion Principle
+#### 37.5 🔹 D — Dependency Inversion Principle
 
 > **High-level modules should not depend on low-level modules. Both should depend on abstractions.**
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 Your **business rules** should not know about SQL Server, SMTP, or Stripe. They should know about
 `IOrderRepository`, `IEmailSender`, `IPaymentGateway` — and someone else decides what plugs in.
@@ -11418,7 +11425,7 @@ Now:
 - 🔄 Swap SMTP → SendGrid by changing **one registration line**
 - 🎯 `OrderService` contains only business logic, and reads like the business process
 
-### The "inversion" explained
+##### The "inversion" explained
 
 ```text
 ❌ BEFORE — the arrow points DOWN, toward the details
@@ -11437,7 +11444,7 @@ business logic depending on the detail.
 
 ---
 
-## 37.6 SOLID summary card
+#### 37.6 SOLID summary card
 
 | Letter | One-line rule | The smell it fixes |
 |---|---|---|
@@ -11452,7 +11459,7 @@ business logic depending on the detail.
 > six layers of indirection for a program that should have been 300 lines. Apply a principle when
 > you can name the **specific pain** it relieves. "It felt more SOLID" is not a reason.
 
-## 37.7 🧪 Hands-on exercise
+#### 37.7 🧪 Hands-on exercise
 
 Take this class and refactor it, applying **all five** principles. Write down which principle each
 change served:
@@ -11494,13 +11501,13 @@ public class ReportManager
 
 ---
 
-# 38. 🧭 Other principles every professional uses
+### 38. 🧭 Other principles every professional uses
 
 **Level: ⭐⭐ Intermediate**
 
 SOLID gets the headlines. These principles come up just as often in real code review.
 
-## 38.1 DRY — Don't Repeat Yourself
+#### 38.1 DRY — Don't Repeat Yourself
 
 > **Every piece of knowledge should have one authoritative representation.**
 
@@ -11539,7 +11546,7 @@ public class BulkDiscountPolicy
 > 🎓 **The rule of three:** duplicate once, shrug. Duplicate twice, notice. Duplicate three times,
 > extract.
 
-## 38.2 KISS — Keep It Simple
+#### 38.2 KISS — Keep It Simple
 
 > **The simplest thing that works is usually right.**
 
@@ -11562,7 +11569,7 @@ public class StringReverserService { /* ... */ }
 public static string Reverse(this string text) => new string(text.Reverse().ToArray());
 ```
 
-## 38.3 YAGNI — You Aren't Gonna Need It
+#### 38.3 YAGNI — You Aren't Gonna Need It
 
 > **Don't build it until you actually need it.**
 
@@ -11580,7 +11587,7 @@ usually never arrives. Build for **today's** requirement, but keep the code **ea
 > 💡 **The balance:** YAGNI says don't build the feature. It does **not** say write untestable,
 > tangled code. Clean, simple, well-named code is what makes tomorrow's change cheap.
 
-## 38.4 Tell, Don't Ask
+#### 38.4 Tell, Don't Ask
 
 > **Tell an object what to do. Don't ask it for its data and decide for it.**
 
@@ -11609,7 +11616,7 @@ account.Withdraw(amount);       // the account decides; it cannot be done wrong
 **The test:** if you find yourself writing `if (obj.SomeProperty)` and then calling
 `obj.SomeMethod()`, that `if` probably belongs **inside** the object.
 
-## 38.5 The Law of Demeter — "only talk to your friends"
+#### 38.5 The Law of Demeter — "only talk to your friends"
 
 > **Don't reach through one object to get at another.**
 
@@ -11642,7 +11649,7 @@ string city = order.ShippingCity;      // ✅ one dependency, not four
 > not violations. Each call returns a new object of the *same* kind. Demeter is about reaching
 > through **other people's** object graphs.
 
-## 38.6 Composition Root — wire everything in one place
+#### 38.6 Composition Root — wire everything in one place
 
 > **Objects should be composed once, at the entry point of the application.**
 
@@ -11662,7 +11669,7 @@ var orderService = provider.GetRequiredService<OrderService>();
 Everywhere else, classes just declare what they need in their constructor. No `new` of a
 dependency anywhere in the business code.
 
-## 38.7 Fail Fast
+#### 38.7 Fail Fast
 
 > **Detect problems as early and as loudly as possible.**
 
@@ -11692,7 +11699,7 @@ public class Order
 
 A crash at line 3 with a clear message beats corrupt data discovered a week later.
 
-## 38.8 Principle summary
+#### 38.8 Principle summary
 
 | Principle | One line | The pain it prevents |
 |---|---|---|
@@ -11704,7 +11711,7 @@ A crash at line 3 with a clear message beats corrupt data discovered a week late
 | **Composition Root** | Wire it all up in one place | `new` scattered everywhere |
 | **Fail Fast** | Crash early, crash clearly | Silent corruption |
 
-## 38.9 🧪 Hands-on exercise
+#### 38.9 🧪 Hands-on exercise
 
 For each snippet below, name **which principle it breaks** and rewrite it:
 
@@ -11753,11 +11760,11 @@ A = Tell, Don't Ask · B = Law of Demeter · C = DRY · D = YAGNI + KISS · E = 
 
 ---
 
-# 39. 💉 Dependency injection
+### 39. 💉 Dependency injection
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 **Dependency Injection** means: a class doesn't *find* or *build* the things it needs — it is
 **given** them.
@@ -11768,7 +11775,7 @@ to them, and they just make coffee.
 
 Change supplier? The barista doesn't notice. That's dependency injection.
 
-## 39.1 The problem it solves
+#### 39.1 The problem it solves
 
 ❌ **Without DI:**
 
@@ -11838,7 +11845,7 @@ public class OrderService(IOrderRepository repository, IEmailSender emailSender)
 The constructor is now **honest documentation**: "to use me, you need a repository and an email
 sender." No hidden requirements.
 
-## 39.2 The three kinds of injection
+#### 39.2 The three kinds of injection
 
 | Kind | How | Use it |
 |---|---|---|
@@ -11869,7 +11876,7 @@ public class ReportService
 > usually a hint the class is doing two jobs. And if a constructor has 8 parameters, the class
 > is doing 8 things — split it ([SRP](#371--s--single-responsibility-principle)).
 
-## 39.3 The .NET DI container
+#### 39.3 The .NET DI container
 
 For a console app, add the package:
 
@@ -11903,7 +11910,7 @@ The container reads `OrderService`'s constructor, sees it needs an `IOrderReposi
 `IEmailSender`, builds those (and *their* dependencies, recursively), and hands you a finished
 object. You never write `new` again for anything in the graph.
 
-### Registration variations
+##### Registration variations
 
 ```csharp
 // By interface → implementation
@@ -11939,7 +11946,7 @@ public class NotificationService(IEnumerable<INotificationSender> senders)
 }
 ```
 
-## 39.4 Service lifetimes — the part people get wrong
+#### 39.4 Service lifetimes — the part people get wrong
 
 | Lifetime | You get | 🎯 Use for |
 |---|---|---|
@@ -11965,7 +11972,7 @@ graph TD
     R2 --> T3["🟡 TRANSIENT<br/>new"]
 ```
 
-### ⚠️ The captive dependency — the #1 DI bug
+##### ⚠️ The captive dependency — the #1 DI bug
 
 ```csharp
 services.AddSingleton<OrderService>();              // ❌ lives forever
@@ -12005,7 +12012,7 @@ public class BackgroundWorker(IServiceScopeFactory scopeFactory)
 }
 ```
 
-## 39.5 Keyed services — several implementations, chosen by name
+#### 39.5 Keyed services — several implementations, chosen by name
 
 ```csharp
 services.AddKeyedScoped<IPaymentGateway, StripeGateway>("stripe");
@@ -12021,7 +12028,7 @@ public class CheckoutService([FromKeyedServices("stripe")] IPaymentGateway gatew
 }
 ```
 
-## 39.6 ⚠️ The Service Locator anti-pattern
+#### 39.6 ⚠️ The Service Locator anti-pattern
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -12056,7 +12063,7 @@ public class OrderService(IOrderRepository repository)
 }
 ```
 
-## 39.7 The payoff: testing
+#### 39.7 The payoff: testing
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -12086,7 +12093,7 @@ public class OrderServiceTests
 This test runs in **under a millisecond**, works offline, and never flakes. That is what DI buys
 you, and it is why every professional .NET codebase uses it.
 
-## 39.8 DI benefits summary
+#### 39.8 DI benefits summary
 
 | Benefit | Because |
 |---|---|
@@ -12097,7 +12104,7 @@ you, and it is why every professional .NET codebase uses it.
 | ⚙️ **Configurability** | Different implementations per environment |
 | ♻️ **Lifetime management** | The container disposes `IDisposable` services for you |
 
-## 39.9 🧪 Hands-on exercise
+#### 39.9 🧪 Hands-on exercise
 
 Build a console app with a DI container:
 
@@ -12122,11 +12129,11 @@ Build a console app with a DI container:
 
 ---
 
-# 40. 🎨 Design patterns for C# OOP
+### 40. 🎨 Design patterns for C# OOP
 
 **Level: ⭐⭐⭐ Advanced**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 A **design pattern** is a name for a solution that many people have independently arrived at.
 They are not rules to follow — they are **vocabulary**, so you can say *"let's use a Strategy
@@ -12147,7 +12154,7 @@ here"* instead of describing five classes.
 
 ---
 
-## 40.1 🏭 Factory Method
+#### 40.1 🏭 Factory Method
 
 **The problem:** creating an object requires logic, and callers shouldn't have to know it.
 
@@ -12196,7 +12203,7 @@ sender.Send("Your order has shipped.");
 
 ---
 
-## 40.2 🎭 Strategy
+#### 40.2 🎭 Strategy
 
 **The problem:** an algorithm should be swappable at runtime.
 
@@ -12247,7 +12254,7 @@ compression, sorting, validation, retry policies.
 
 ---
 
-## 40.3 🗂️ Repository
+#### 40.3 🗂️ Repository
 
 **The problem:** business logic shouldn't know how data is stored.
 
@@ -12303,7 +12310,7 @@ public class InMemoryOrderRepository : IOrderRepository
 
 ---
 
-## 40.4 📦 Unit of Work
+#### 40.4 📦 Unit of Work
 
 **The problem:** several repository changes must all succeed, or all fail.
 
@@ -12347,7 +12354,7 @@ public class PlaceOrderService(IUnitOfWork unitOfWork)
 
 ---
 
-## 40.5 👁️ Observer
+#### 40.5 👁️ Observer
 
 **The problem:** several parts of the system need to react when something happens.
 
@@ -12395,7 +12402,7 @@ ticker.UpdatePrice("MSFT", 450m);
 
 ---
 
-## 40.6 🎁 Decorator
+#### 40.6 🎁 Decorator
 
 **The problem:** add behaviour to an object without changing its class.
 
@@ -12467,7 +12474,7 @@ without cluttering the real implementation.
 
 ---
 
-## 40.7 🔌 Adapter
+#### 40.7 🔌 Adapter
 
 **The problem:** a third-party class has the wrong shape for your code.
 
@@ -12501,7 +12508,7 @@ control — and you refuse to let its shape leak into your whole codebase.
 
 ---
 
-## 40.8 🏛️ Facade
+#### 40.8 🏛️ Facade
 
 **The problem:** a complicated subsystem needs a simple front door.
 
@@ -12546,7 +12553,7 @@ var result = facade.Checkout(productId: 1, quantity: 2, country: "LK");   // one
 
 ---
 
-## 40.9 📋 Command
+#### 40.9 📋 Command
 
 **The problem:** you want to treat "an action" as an object — to queue it, log it, or undo it.
 
@@ -12625,7 +12632,7 @@ Console.WriteLine(document);      // "Hello World"
 
 ---
 
-## 40.10 🧱 Builder
+#### 40.10 🧱 Builder
 
 **The problem:** an object has many optional parts, and a 9-parameter constructor is unreadable.
 
@@ -12686,7 +12693,7 @@ use a builder when there is real validation or step ordering.
 
 ---
 
-## 40.11 1️⃣ Singleton
+#### 40.11 1️⃣ Singleton
 
 **The problem:** exactly one instance should exist.
 
@@ -12717,7 +12724,7 @@ public sealed class ApplicationCache
 
 ---
 
-## 40.12 📐 Template Method
+#### 40.12 📐 Template Method
 
 **The problem:** several processes share the same steps in the same order, but differ in details.
 
@@ -12758,7 +12765,7 @@ public class SalesReportGenerator : ReportGenerator
 
 ---
 
-## 40.13 🚦 State
+#### 40.13 🚦 State
 
 **The problem:** an object behaves completely differently depending on its state, and the
 `if`-chains are getting out of hand.
@@ -12836,7 +12843,7 @@ order.Cancel();                    // 💥 DomainException — impossible transi
 
 ---
 
-## 40.14 ⛓️ Chain of Responsibility
+#### 40.14 ⛓️ Chain of Responsibility
 
 **The problem:** several handlers might deal with a request; pass it along until one does.
 
@@ -12903,7 +12910,7 @@ bubbling.
 
 ---
 
-## 40.15 🕳️ Null Object
+#### 40.15 🕳️ Null Object
 
 **The problem:** you're writing `if (x is not null)` everywhere.
 
@@ -12965,7 +12972,7 @@ public class OrderService2(ILogger? logger = null)
 
 ---
 
-## 40.16 🔎 Specification
+#### 40.16 🔎 Specification
 
 **The problem:** business rules about "which items qualify" are scattered and duplicated.
 
@@ -13012,7 +13019,7 @@ you want it defined exactly once, with a name.
 
 ---
 
-## 40.17 Pattern chooser
+#### 40.17 Pattern chooser
 
 | Your problem | Pattern |
 |---|---|
@@ -13038,7 +13045,7 @@ you want it defined exactly once, with a name.
 > removes real pain you can name. If you cannot say which pain it removes, you're decorating,
 > not designing.
 
-## 40.18 🧪 Hands-on exercise
+#### 40.18 🧪 Hands-on exercise
 
 For each problem below, name the pattern **and say what pain it removes**. Then implement two
 of them.
@@ -13059,7 +13066,7 @@ of them.
 Then answer the hardest question: **for which of these ten would you NOT use a pattern**,
 and just write the simple code instead? Justify your answer.
 
-## 40.19 🧪 Hands-on exercise — a combined mini-app
+#### 40.19 🧪 Hands-on exercise — a combined mini-app
 
 Patterns are rarely used one at a time in real code — a single feature usually needs two or
 three working together. Build a tiny **"Report Export"** console mini-app that combines
@@ -13103,11 +13110,11 @@ Requirements:
 
 <a id="41--domain-modeling-and-architecture"></a>
 
-# 41. 🏛️ Domain modeling and architecture
+### 41. 🏛️ Domain modeling and architecture
 
 **Level: ⭐⭐⭐ Advanced**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 Everything so far taught you *how* to build classes. This chapter is about **which classes to
 build**, and **where to put them**, so that a real application stays understandable at 50,000
@@ -13117,7 +13124,7 @@ The core idea: **your business rules are the most valuable thing you own.** Prot
 databases, web frameworks, and UI libraries — all of which will be replaced long before the
 business rules change.
 
-## 41.1 The building blocks
+#### 41.1 The building blocks
 
 | Block | What it is | Example |
 |---|---|---|
@@ -13128,7 +13135,7 @@ business rules change.
 | 🎬 **Application service** | Orchestrates a use case, no business rules of its own | `PlaceOrderService` |
 | 🔌 **Infrastructure** | The technical details | `SqlOrderRepository` |
 
-## 41.2 🆔 Entities — identity matters
+#### 41.2 🆔 Entities — identity matters
 
 ```csharp
 public abstract class Entity
@@ -13173,7 +13180,7 @@ public class Customer : Entity
 **The test for an entity:** if you change every field, is it still *the same thing*?
 A customer who changes their name, email, and address is still **customer #42**. ✅ Entity.
 
-## 41.3 💎 Value objects — the values ARE the identity
+#### 41.3 💎 Value objects — the values ARE the identity
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -13205,7 +13212,7 @@ A $100 note is interchangeable with any other $100 note. ✅ Value object.
 > **rules**, you've missed a value object. This is the "primitive obsession" smell
 > ([Chapter 44](#44--common-oop-mistakes)).
 
-### Why value objects pay for themselves
+##### Why value objects pay for themselves
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -13219,9 +13226,9 @@ public void Register(EmailAddress email, PhoneNumber phone, CountryCode country)
 // Register(phone, email, country);   // ❌ compiler error
 ```
 
-## 41.4 🛡️ Aggregates — the consistency boundary
+#### 41.4 🛡️ Aggregates — the consistency boundary
 
-### 🗣️ In plain English
+##### 🗣️ In plain English
 
 An **aggregate** is a group of objects that must stay consistent together, with **one** object in
 charge — the **aggregate root**. All changes go through the root.
@@ -13331,7 +13338,7 @@ public class OrderItem : Entity
 }
 ```
 
-### The rules of aggregates
+##### The rules of aggregates
 
 | Rule | Why |
 |---|---|
@@ -13350,7 +13357,7 @@ public class Order { public Customer Customer { get; set; } }
 public class Order { public int CustomerId { get; } }
 ```
 
-## 41.5 ⚙️ Domain services
+#### 41.5 ⚙️ Domain services
 
 Some logic belongs to no single entity. That's a **domain service** — but it still contains
 **business rules**, not plumbing.
@@ -13379,7 +13386,7 @@ public class PricingService
 belongs to none of them. **🚫 Don't use one** as a dumping ground — if the logic touches only one
 entity's data, it belongs *on that entity*.
 
-## 41.6 🎬 Application services — orchestrating a use case
+#### 41.6 🎬 Application services — orchestrating a use case
 
 An application service is a **conductor**. It contains **no business rules** — it fetches, calls,
 and saves.
@@ -13440,7 +13447,7 @@ twice", "quantity must be positive" — all of that is inside `Order`. The servi
 | Knows nothing about databases or email | Coordinates repositories and gateways |
 | `PricingService`, `TransferService` | `PlaceOrderService`, `RegisterUserService` |
 
-## 41.7 🔌 Infrastructure
+#### 41.7 🔌 Infrastructure
 
 Everything technical:
 
@@ -13477,7 +13484,7 @@ public class SqlOrderRepository(AppDbContext context) : IOrderRepository
 }
 ```
 
-## 41.8 🧅 The dependency rule
+#### 41.8 🧅 The dependency rule
 
 ```mermaid
 graph TD
@@ -13518,7 +13525,7 @@ What this buys you:
 The compiler enforces it. `MyApp.Domain` has **no project references**, so it *cannot* call
 Entity Framework even if someone wants to.
 
-## 41.9 Putting it together
+#### 41.9 Putting it together
 
 > **▶️ Continues** — to run this as one file, move the statements above the type declarations (see [How to read the code blocks](#-how-to-read-the-code-blocks)).
 
@@ -13569,7 +13576,7 @@ services.AddScoped<PlaceOrderService>();
 > projects. But the **habits** — business rules on the entity, interfaces for infrastructure —
 > cost nothing at any size and save you enormously when the app grows.
 
-## 41.10 🧪 Hands-on exercise
+#### 41.10 🧪 Hands-on exercise
 
 Model a **hotel booking** domain:
 
@@ -13600,11 +13607,11 @@ your model is right.
 
 ---
 
-# 42. 🧪 Unit testing OOP code
+### 42. 🧪 Unit testing OOP code
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 A **unit test** is a small program that checks one behaviour of your code, automatically.
 
@@ -13613,7 +13620,7 @@ one weld, one circuit — automatically, every time.
 
 The real payoff isn't finding bugs today. It is **being able to change code tomorrow without fear**.
 
-## 42.1 Setting up
+#### 42.1 Setting up
 
 ```bash
 dotnet new xunit -n MyApp.Domain.Tests
@@ -13628,7 +13635,7 @@ dotnet test
 | **NUnit** | Mature, feature-rich, very popular |
 | **MSTest** | Microsoft's original; fine, less common in new projects |
 
-## 42.2 Your first test — Arrange, Act, Assert
+#### 42.2 Your first test — Arrange, Act, Assert
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -13650,7 +13657,7 @@ public class BankAccountTests
 }
 ```
 
-### Naming tests so failures explain themselves
+##### Naming tests so failures explain themselves
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -13664,7 +13671,7 @@ public class BankAccountTests
 When CI says *"Withdraw_WhenAmountExceedsBalance_Throws FAILED"*, you already know what broke
 before opening a single file.
 
-## 42.3 Testing that something throws
+#### 42.3 Testing that something throws
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -13690,7 +13697,7 @@ public async Task PlaceOrderAsync_WhenCustomerNotFound_ThrowsDomainException()
 }
 ```
 
-## 42.4 `[Theory]` — one test, many inputs
+#### 42.4 `[Theory]` — one test, many inputs
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -13724,7 +13731,7 @@ public class DiscountTests
 **🎯 Use `[Theory]` when:** the same logic must hold across many inputs — especially **boundaries**
 (0, 1, max, max+1, empty, null).
 
-## 42.5 Test doubles — fakes, stubs, and mocks
+#### 42.5 Test doubles — fakes, stubs, and mocks
 
 | Double | Does | Example |
 |---|---|---|
@@ -13734,7 +13741,7 @@ public class DiscountTests
 | **Mock** | Records calls so you can assert on them | "Was `SendAsync` called once?" |
 | **Spy** | A real object that also records | Rare |
 
-### Hand-written fakes — clearer than you'd think
+##### Hand-written fakes — clearer than you'd think
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -13786,7 +13793,7 @@ public async Task PlaceOrder_SendsConfirmationEmail()
 }
 ```
 
-### Mocking libraries (Moq, NSubstitute)
+##### Mocking libraries (Moq, NSubstitute)
 
 ```csharp
 // With NSubstitute:
@@ -13803,7 +13810,7 @@ await emailSender.Received(1).SendAsync(
 > and get reused across dozens of tests. Use a fake for anything you'll need more than twice;
 > use a mock when you specifically need to assert *"this was called with exactly these arguments"*.
 
-## 42.6 The most important rule: test behaviour, not implementation
+#### 42.6 The most important rule: test behaviour, not implementation
 
 ❌ **Testing implementation — this test breaks on every refactor:**
 
@@ -13837,7 +13844,7 @@ public void AddItem_WithZeroQuantity_Throws()
 > private method public "so it can be tested", that method probably wants to be its **own class**
 > with its own public API.
 
-## 42.7 What to test, and what not to
+#### 42.7 What to test, and what not to
 
 | ✅ Definitely test | 🚫 Don't bother testing |
 |---|---|
@@ -13848,7 +13855,7 @@ public void AddItem_WithZeroQuantity_Throws()
 | State transitions | Generated code |
 | Bugs you just fixed (a regression test) | Private methods (indirectly, via public ones) |
 
-### The test pyramid
+##### The test pyramid
 
 ```text
               ▲
@@ -13865,7 +13872,7 @@ public void AddItem_WithZeroQuantity_Throws()
 Aim for the **base** to be big. A thousand unit tests that run in two seconds are worth more than
 twenty end-to-end tests that take twenty minutes and fail randomly.
 
-## 42.8 Well-designed code is testable code
+#### 42.8 Well-designed code is testable code
 
 This is the great secret: **if something is hard to test, its design is wrong.**
 
@@ -13917,7 +13924,7 @@ public void IsOverdue_ThirtyOneDaysAfterDueDate_ReturnsTrue()
 }
 ```
 
-## 42.9 Testing principles checklist
+#### 42.9 Testing principles checklist
 
 - [ ] One logical assertion per test
 - [ ] Arrange / Act / Assert, visibly separated
@@ -13928,7 +13935,7 @@ public void IsOverdue_ThirtyOneDaysAfterDueDate_ReturnsTrue()
 - [ ] Tests run in **milliseconds**
 - [ ] A failing test tells you *why*, not just *that*
 
-## 42.10 🧪 Hands-on exercise
+#### 42.10 🧪 Hands-on exercise
 
 For the `Order` aggregate from [Chapter 41](#41--domain-modeling-and-architecture), write tests for:
 
@@ -13958,11 +13965,11 @@ If your tests still pass unchanged, you tested behaviour. If they broke, you tes
 
 ---
 
-# 43. 🔨 Refactoring OOP code
+### 43. 🔨 Refactoring OOP code
 
 **Level: ⭐⭐ Intermediate**
 
-### 🗣️ In plain English
+#### 🗣️ In plain English
 
 **Refactoring** means improving the *structure* of code **without changing what it does**.
 
@@ -13972,7 +13979,7 @@ Like tidying a workshop. Same tools, same jobs — but now you can find the scre
 > If behaviour changes, that's not refactoring — that's a rewrite, and it needs different care.
 > **You must have tests before you refactor.** Without them, you're just editing and hoping.
 
-## 43.1 The refactoring catalogue
+#### 43.1 The refactoring catalogue
 
 | Refactoring | 🚨 The smell that triggers it |
 |---|---|
@@ -13989,7 +13996,7 @@ Like tidying a workshop. Same tools, same jobs — but now you can find the scre
 | **Introduce Guard Clause** | Deeply nested `if` pyramids |
 | **Split Loop** | One loop doing three unrelated things |
 
-## 43.2 Extract Method
+#### 43.2 Extract Method
 
 ❌ **Before:**
 
@@ -14054,7 +14061,7 @@ private static decimal CalculateTotal(Order order)
 > 💡 **Tip** — Every comment saying *"// validate"* or *"// calculate"* is a method waiting to be
 > extracted. The comment becomes the method name and then the comment can be deleted.
 
-## 43.3 Introduce Value Object (fixing primitive obsession)
+#### 43.3 Introduce Value Object (fixing primitive obsession)
 
 ❌ **Before:**
 
@@ -14103,7 +14110,7 @@ public class Customer
 **What you gained:** validation in one place, normalisation for free, value equality, a `Domain`
 property, and a compiler that will not let you pass a phone number where an email is expected.
 
-## 43.4 Replace Conditional with Polymorphism
+#### 43.4 Replace Conditional with Polymorphism
 
 ❌ **Before:**
 
@@ -14160,7 +14167,7 @@ public class ShippingMethodRegistry(IEnumerable<IShippingMethod> methods)
 
 🔗 See [Chapter 16.4](#164-replace-ifswitch-with-polymorphism) for when this is *not* worth it.
 
-## 43.5 Introduce Parameter Object
+#### 43.5 Introduce Parameter Object
 
 ❌ **Before — these four always travel together:**
 
@@ -14201,7 +14208,7 @@ public void CreateBooking(int roomId, BookingPeriod period, int guests, GuestDet
 
 The validation now lives with the data, and the parameter list is readable.
 
-## 43.6 Introduce Guard Clauses (flatten the pyramid)
+#### 43.6 Introduce Guard Clauses (flatten the pyramid)
 
 ❌ **Before:**
 
@@ -14248,7 +14255,7 @@ public void Process(Order order)
 }
 ```
 
-## 43.7 The safe refactoring workflow
+#### 43.7 The safe refactoring workflow
 
 ```mermaid
 graph LR
@@ -14271,7 +14278,7 @@ graph LR
 > 🎓 **Professor's rule** — *"Make the change easy, then make the easy change."* — Kent Beck.
 > When a feature is hard to add, refactor first so it becomes easy, then add it.
 
-## 43.8 🧪 Hands-on exercise
+#### 43.8 🧪 Hands-on exercise
 
 Refactor this class step by step. After **each** step, list which refactoring you applied:
 
@@ -14314,14 +14321,14 @@ public class ReportService
 
 ---
 
-# 44. 🚨 Common OOP mistakes
+### 44. 🚨 Common OOP mistakes
 
 **Level: ⭐⭐ Intermediate**
 
 Every one of these is something you will see in real code — and probably write once yourself.
 Learn to spot them.
 
-## 44.1 🏢 The God class
+#### 44.1 🏢 The God class
 
 **Symptom:** one class does everything.
 
@@ -14353,7 +14360,7 @@ public class OrderManager
 | Merge conflicts on it constantly | Split it — several people need different parts |
 | You scroll to find anything | [SRP](#371--s--single-responsibility-principle) |
 
-## 44.2 🩸 The anemic domain model
+#### 44.2 🩸 The anemic domain model
 
 **Symptom:** classes hold data but no behaviour; all the logic lives in "services".
 
@@ -14421,7 +14428,7 @@ public class Order
 > are all properties and your services are all logic, you have written procedural code with
 > `class` keywords sprinkled on it.
 
-## 44.3 🌲 Too much inheritance
+#### 44.3 🌲 Too much inheritance
 
 ```text
 ❌ BaseEntity → Person → Employee → Manager → RegionalManager → SeniorRegionalManager
@@ -14436,7 +14443,7 @@ at the top and five layers may break in ways no test catches.
 | Replace "reuse" inheritance with [composition](#19--composition-and-object-relationships) |
 | Use interfaces for capabilities, base classes only for genuine identity |
 
-## 44.4 🔓 Public mutable state
+#### 44.4 🔓 Public mutable state
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -14463,7 +14470,7 @@ public class Order
 }
 ```
 
-## 44.5 🔤 Primitive obsession
+#### 44.5 🔤 Primitive obsession
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -14498,7 +14505,7 @@ public void Transfer(AccountNumber from, AccountNumber to, Money amount) { }
 
 🔗 [Chapter 41.3](#413--value-objects--the-values-are-the-identity).
 
-## 44.6 🔗 Tight coupling
+#### 44.6 🔗 Tight coupling
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -14514,7 +14521,7 @@ public class OrderService
 public class OrderService(IEmailSender sender, IOrderRepository repository) { }
 ```
 
-## 44.7 🎪 Over-abstraction
+#### 44.7 🎪 Over-abstraction
 
 The opposite mistake, and just as real:
 
@@ -14549,7 +14556,7 @@ public string FormatUserName(string first, string last) => $"{last}, {first}";
 > 🎓 **Professor's rule** — An interface with exactly one implementation, that will never have
 > another, and that you never fake in a test, is **pure overhead**. Delete it.
 
-## 44.8 🖥️ Business logic in the UI
+#### 44.8 🖥️ Business logic in the UI
 
 > **📄 Fragment** — shown without the surrounding class or project, so it will not compile on its own.
 
@@ -14579,7 +14586,7 @@ private void CheckoutButton_Click(object sender, EventArgs e)
 }
 ```
 
-## 44.9 🗄️ Business logic only in the database
+#### 44.9 🗄️ Business logic only in the database
 
 Stored procedures containing all your rules have the mirror-image problem: they cannot be unit
 tested, cannot be versioned properly with the application, and cannot be reused by anything that
@@ -14588,7 +14595,7 @@ isn't a database client.
 Keep rules **in the domain**. Use the database for storage and for the things it's genuinely
 better at (set-based reporting, constraints as a safety net).
 
-## 44.10 🚫 Ignoring nullability
+#### 44.10 🚫 Ignoring nullability
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -14605,7 +14612,7 @@ public class Customer
 Turn `<Nullable>enable</Nullable>` on, and **fix the warnings** rather than silencing them. Each
 one is a `NullReferenceException` you're being handed for free, at compile time.
 
-## 44.11 The code-smell reference table
+#### 44.11 The code-smell reference table
 
 | 🚩 Smell | 🔧 Fix | Chapter |
 |---|---|---|
@@ -14623,7 +14630,7 @@ one is a `NullReferenceException` you're being handed for free, at compile time.
 | Static mutable state | Inject it instead | [29](#29--static-members-constants-readonly-and-thread-safety) |
 | Hard to test | Look for the design problem behind it | [42](#42--unit-testing-oop-code) |
 
-## 44.12 🧪 Hands-on exercise
+#### 44.12 🧪 Hands-on exercise
 
 Find a project you wrote more than three months ago. Go through this chapter's list and honestly
 mark every smell you find. Pick the **worst one**, write a test that captures its current
@@ -14646,14 +14653,14 @@ That exercise teaches more than any tutorial.
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — Part 4: Professional design (Chapters 35–44)
+#### ✅ Checkpoint — Part 4: Professional design (Chapters 35–44)
 
 </div>
 
 > [!IMPORTANT]
 > Part 4 is where advice becomes *conditional*. Every principle here has a cost, and being able to name that cost is the difference between using a principle and repeating it.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -14664,7 +14671,7 @@ That exercise teaches more than any tutorial.
 - **Entity** vs **value object** vs **aggregate** (Ch 41)
 - Testing behaviour rather than implementation (Ch 42)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. Explain dependency injection to a non-technical person in one sentence, using no software words.
 2. What does Open/Closed actually ask you to *do* on Monday morning?
@@ -14690,7 +14697,7 @@ That exercise teaches more than any tutorial.
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Take a class from your own code that constructs its own database or HTTP client. Describe what changes in the test when that dependency is injected — and name one thing dependency injection made *worse*.
 
@@ -14699,7 +14706,7 @@ Take a class from your own code that constructs its own database or HTTP client.
 
 <div align="center" markdown="1">
 
-# 🟡 PART 5 — PRACTICE AND REFERENCE
+## 🟡 PART 5 — PRACTICE AND REFERENCE
 
 *Reading teaches you words. Building teaches you the language.*
 
@@ -14709,16 +14716,16 @@ Take a class from your own code that constructs its own database or HTTP client.
 
 <a id="45--hands-on-projects"></a>
 
-# 45. 🛠️ Hands-on projects
+### 45. 🛠️ Hands-on projects
 
 **Level: ⭐ → ⭐⭐⭐**
 
-### Why projects, and not more reading
+#### Why projects, and not more reading
 
 You do not learn OOP by understanding it. You learn it by **making design decisions and living
 with the consequences**. Every project below is chosen because it forces a specific decision.
 
-## 45.1 🟢 Beginner projects
+#### 45.1 🟢 Beginner projects
 
 | # | Project | Forces you to learn |
 |---|---|---|
@@ -14731,7 +14738,7 @@ with the consequences**. Every project below is chosen because it forces a speci
 | 7 | **Traffic Light Controller** | Enums, state transitions, guard clauses |
 | 8 | **Temperature Converter** | Value objects, structs, operator overloading |
 
-### Worked brief — Bank Account System
+##### Worked brief — Bank Account System
 
 > **Requirements**
 > - `Account` types: `Savings` (earns interest, min balance 100) and `Checking` (overdraft to −500)
@@ -14744,7 +14751,7 @@ with the consequences**. Every project below is chosen because it forces a speci
 > **Concepts exercised:** encapsulation, abstract classes, invariants, custom exceptions,
 > `IReadOnlyList<T>`, value objects (`Money`).
 
-### Starter code — Student Management System
+##### Starter code — Student Management System
 
 Project #1 in the beginner list above is the one most people start with. Here is a minimal,
 **runnable** skeleton — `dotnet new console -n StudentManagement`, then replace `Program.cs`:
@@ -14822,7 +14829,7 @@ as `IReadOnlyList<Student>` instead of printed only through `PrintRoster`, and a
 `DuplicateStudentException` thrown when the same name is enrolled twice. That last change is
 exactly the kind of decision the rest of this chapter's checklist expects you to justify.
 
-## 45.2 🟡 Intermediate projects
+#### 45.2 🟡 Intermediate projects
 
 | # | Project | Forces you to learn |
 |---|---|---|
@@ -14835,7 +14842,7 @@ exactly the kind of decision the rest of this chapter's checklist expects you to
 | 7 | **Support Ticket System** | State pattern, Chain of Responsibility for escalation |
 | 8 | **Expense Approval Workflow** | Chain of Responsibility, Specification |
 
-## 45.3 🔴 Advanced projects
+#### 45.3 🔴 Advanced projects
 
 | # | Project | Forces you to learn |
 |---|---|---|
@@ -14848,7 +14855,7 @@ exactly the kind of decision the rest of this chapter's checklist expects you to
 | 7 | **Plugin-based Report Engine** | Reflection, plugin discovery, Open/Closed |
 | 8 | **Mini ORM** | Reflection, attributes, generics, expression trees |
 
-## 45.4 The checklist every project should satisfy
+#### 45.4 The checklist every project should satisfy
 
 Whatever you build, before you call it done:
 
@@ -14875,7 +14882,7 @@ Whatever you build, before you call it done:
 - [ ] At least one design pattern, with a written justification
 - [ ] One deliberate refactoring, done with tests green
 
-## 45.5 How to run a project properly
+#### 45.5 How to run a project properly
 
 ```text
 DAY 1  ── Write the RULES in plain English. No code. Just sentences like
@@ -14911,7 +14918,7 @@ That last step is the one people skip, and it's the one that turns knowledge int
 
 ---
 
-# 46. 🏆 Capstone: Library Management System
+### 46. 🏆 Capstone: Library Management System
 
 **Level: ⭐⭐⭐ Advanced**
 
@@ -14919,7 +14926,7 @@ This capstone deliberately combines **everything**: encapsulation, abstraction, 
 polymorphism, generics, value objects, aggregates, domain exceptions, dependency injection,
 and unit tests.
 
-## 46.1 Requirements
+#### 46.1 Requirements
 
 > **Build a console application that manages a library.**
 >
@@ -14946,7 +14953,7 @@ and unit tests.
 > - Value objects for ISBN and Money
 > - Unit tests with no database
 
-## 46.2 Create the solution
+#### 46.2 Create the solution
 
 ```bash
 dotnet new sln -n LibraryManagement
@@ -14963,7 +14970,7 @@ dotnet add LibraryManagement.ConsoleApp reference LibraryManagement.Domain
 dotnet add LibraryManagement.Tests      reference LibraryManagement.Domain
 ```
 
-## 46.3 Domain foundations
+#### 46.3 Domain foundations
 
 ```csharp
 // LibraryManagement.Domain/Common/DomainException.cs
@@ -14992,7 +14999,7 @@ public abstract class Entity
 }
 ```
 
-## 46.4 Value objects
+#### 46.4 Value objects
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -15043,7 +15050,7 @@ public readonly record struct Isbn
 }
 ```
 
-## 46.5 The `Book` entity
+#### 46.5 The `Book` entity
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -15109,7 +15116,7 @@ public class Book : Entity
 }
 ```
 
-## 46.6 The `Member` abstraction — the aggregate root
+#### 46.6 The `Member` abstraction — the aggregate root
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -15189,7 +15196,7 @@ public abstract class Member : Entity
 }
 ```
 
-## 46.7 Membership types — polymorphism in action
+#### 46.7 Membership types — polymorphism in action
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -15227,7 +15234,7 @@ public class PremiumMember : Member
 
 Adding a `StudentMember` tomorrow requires **zero** changes to `Member`, `Book`, or the service.
 
-## 46.8 The generic repository
+#### 46.8 The generic repository
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -15270,7 +15277,7 @@ public class InMemoryRepository<T> : IRepository<T> where T : Entity
 }
 ```
 
-## 46.9 The library service
+#### 46.9 The library service
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -15333,7 +15340,7 @@ public class LibraryService(
 }
 ```
 
-## 46.10 The console app
+#### 46.10 The console app
 
 ```csharp
 // LibraryManagement.ConsoleApp/Program.cs
@@ -15429,7 +15436,7 @@ is just this guide's run date plus 14 days. This is exactly why the unit tests b
 `FixedClock` instead: production code can use the real clock, but anything asserting on a date
 needs a clock it controls ([§42](#42--unit-testing-oop-code)).
 
-## 46.11 Unit tests
+#### 46.11 Unit tests
 
 > **▶️ Continues** — uses a type declared earlier in this chapter; keep that block in the same file.
 
@@ -15600,7 +15607,7 @@ dotnet test
 Notice: **every test runs with no database, no file system, no network, and no mocking library.**
 That is the reward for a clean domain model.
 
-## 46.12 Extensions — take it further
+#### 46.12 Extensions — take it further
 
 | Extension | Concept it teaches |
 |---|---|
@@ -15632,14 +15639,14 @@ That is the reward for a clean domain model.
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — Part 5: Practice and reference (Chapters 45–50)
+#### ✅ Checkpoint — Part 5: Practice and reference (Chapters 45–50)
 
 </div>
 
 > [!IMPORTANT]
 > The last part is the one that decides whether any of this became a skill. Reading about design is not the same as making design decisions nobody has made for you.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -15647,7 +15654,7 @@ That is the reward for a clean domain model.
 - The capstone's layering, and why each project references only the one beneath (Ch 46)
 - How to grade an open-ended design exercise (Ch 47, 49)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. You have built the capstone. What is the single test of whether your layering is real?
 2. Why does the guide give worked solutions for some exercises and not others?
@@ -15667,14 +15674,14 @@ That is the reward for a clean domain model.
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Close the guide. In your own words, and without using the words *encapsulation*, *inheritance*, *polymorphism*, or *abstraction*, explain to a colleague why object-oriented design makes software cheaper to change.
 
 ---
 
 
-# 47. ✅ Professional checklist
+### 47. ✅ Professional checklist
 
 > [!NOTE]
 > **No 🧭 In practice block from here on, and that is deliberate.** Chapters 1–46 each teach a
@@ -15685,7 +15692,7 @@ Close the guide. In your own words, and without using the words *encapsulation*,
 Use this to audit yourself. You are ready for professional C# OOP work when you can **explain and
 implement** every item.
 
-## 47.1 Core syntax and mechanics
+#### 47.1 Core syntax and mechanics
 
 - [ ] Class, object, `new`
 - [ ] Field vs property vs method
@@ -15697,7 +15704,7 @@ implement** every item.
 - [ ] Value types vs reference types, and boxing
 - [ ] Method parameters: optional, named, `params`, `ref`, `out`, `in`
 
-## 47.2 The four pillars
+#### 47.2 The four pillars
 
 - [ ] Encapsulation with real invariants
 - [ ] Safe collection exposure (`IReadOnlyList<T>`)
@@ -15708,7 +15715,7 @@ implement** every item.
 - [ ] Replacing conditionals with polymorphism
 - [ ] Choosing between an abstract class and an interface
 
-## 47.3 Type design
+#### 47.3 Type design
 
 - [ ] Composition over inheritance, with a reason
 - [ ] The five relationship types (dependency → inheritance)
@@ -15726,7 +15733,7 @@ implement** every item.
 - [ ] Covariant return types
 - [ ] Why DTOs and domain entities must be separate
 
-## 47.4 Modern C#
+#### 47.4 Modern C#
 
 - [ ] Nullable reference types, with zero warnings
 - [ ] `required` and `init` (and `[SetsRequiredMembers]`)
@@ -15746,7 +15753,7 @@ implement** every item.
 - [ ] Thread safety: race conditions, `lock`, `Interlocked`, concurrent collections
 - [ ] Why immutability is the best answer to thread safety
 
-## 47.5 Professional design
+#### 47.5 Professional design
 
 - [ ] All five SOLID principles, with a real example of each
 - [ ] DRY, KISS, YAGNI, Tell-Don't-Ask, Law of Demeter
@@ -15758,7 +15765,7 @@ implement** every item.
 - [ ] The dependency rule and layered architecture
 - [ ] Naming and coding conventions
 
-## 47.6 Quality
+#### 47.6 Quality
 
 - [ ] Unit tests with Arrange / Act / Assert
 - [ ] `[Theory]` for boundary conditions
@@ -15768,7 +15775,7 @@ implement** every item.
 - [ ] Refactoring safely, with tests green
 - [ ] Recognising all twelve code smells in [Chapter 44](#44--common-oop-mistakes)
 
-## 47.7 Real-world readiness
+#### 47.7 Real-world readiness
 
 - [ ] I can build a multi-project console application from scratch
 - [ ] I can separate domain logic from UI and from the database
@@ -15781,7 +15788,7 @@ implement** every item.
 - [ ] I can justify every interface in my codebase
 - [ ] I can explain a design decision I **rejected**, and why
 
-## 47.8 🧪 Hands-on exercise — audit your own code
+#### 47.8 🧪 Hands-on exercise — audit your own code
 
 This checklist is only useful once you point it at real code, not at itself.
 
@@ -15802,11 +15809,11 @@ code, that is the honest signal to revisit Part 2 before going further.
 
 ---
 
-# 48. 📅 30-day learning plan
+### 48. 📅 30-day learning plan
 
 One to two hours a day. Each week ends with something you built.
 
-## 🟢 Week 1 — Foundations
+#### 🟢 Week 1 — Foundations
 
 | Day | Topic | Chapters |
 |:---:|---|---|
@@ -15820,7 +15827,7 @@ One to two hours a day. Each week ends with something you built.
 
 🎁 **Deliverable:** a Bank Account system where invalid state is impossible from outside.
 
-## 🔵 Week 2 — The pillars and everyday C#
+#### 🔵 Week 2 — The pillars and everyday C#
 
 | Day | Topic | Chapters |
 |:---:|---|---|
@@ -15834,7 +15841,7 @@ One to two hours a day. Each week ends with something you built.
 
 🎁 **Deliverable:** a shape/payment system where adding a new type changes zero existing lines.
 
-## 🟠 Week 3 — Type design and modern C#
+#### 🟠 Week 3 — Type design and modern C#
 
 | Day | Topic | Chapters |
 |:---:|---|---|
@@ -15848,7 +15855,7 @@ One to two hours a day. Each week ends with something you built.
 
 🎁 **Deliverable:** an inventory system with value objects, generics, and zero nullable warnings.
 
-## 🔴 Week 4 — Professional design and architecture
+#### 🔴 Week 4 — Professional design and architecture
 
 | Day | Topic | Chapters |
 |:---:|---|---|
@@ -15865,7 +15872,7 @@ One to two hours a day. Each week ends with something you built.
 🎁 **Deliverable:** the [Library Management System capstone](#46--capstone-library-management-system),
 fully tested.
 
-### 📈 After day 30
+##### 📈 After day 30
 
 | Next step | Why |
 |---|---|
@@ -15875,7 +15882,7 @@ fully tested.
 | Read *Domain-Driven Design Distilled* (Vernon) | Deepens Chapter 41 |
 | Contribute to an open-source .NET project | Real code review is the fastest teacher |
 
-## 📝 Hands-on exercise — build your own tracker
+#### 📝 Hands-on exercise — build your own tracker
 
 The schedule above is a template, not a prescription — your pace, your job, and your free
 evenings are not the author's. Make it yours before you start Day 1:
@@ -15900,7 +15907,7 @@ A minimal template for step 1/2 looks like this:
 
 ---
 
-# 49. 🔑 Solutions to the foundation exercises
+### 49. 🔑 Solutions to the foundation exercises
 
 **Level: ⭐ Beginner → ⭐⭐ Intermediate**
 
@@ -15928,7 +15935,7 @@ problems with many valid answers; for those, the checklist in
 
 ---
 
-## 49.1 §4.1 — The four pillars, in your own words
+#### 49.1 §4.1 — The four pillars, in your own words
 
 This exercise has no code. Here are defensible answers to each part.
 
@@ -15960,7 +15967,7 @@ that a definition you can only recite is not a definition you own.
 
 ---
 
-## 49.2 §5.6 — `Student`, with a validated `Age`
+#### 49.2 §5.6 — `Student`, with a validated `Age`
 
 **Thinking it through.** The first half is a plain class. The second half — "refuse any value below
 0 or above 130" — is impossible with an auto-property, because there is no place to put the check.
@@ -16007,7 +16014,7 @@ catch (ArgumentOutOfRangeException e) { Console.WriteLine($"rejected: {e.ParamNa
 
 **Output:**
 
-```
+```text
 Name: Anna
 Age: 22
 Grade: A
@@ -16040,7 +16047,7 @@ Now `new Student()` is a **compile error**, which is strictly better than a runt
 
 ---
 
-## 49.3 §6.7 — `Thermostat`
+#### 49.3 §6.7 — `Thermostat`
 
 **Thinking it through.** Each requirement maps to a different property shape, and choosing the right
 shape *is* the exercise:
@@ -16101,7 +16108,7 @@ catch (ArgumentOutOfRangeException) { Console.WriteLine("rejected: target 40 is 
 
 **Output:**
 
-```
+```text
 current=18.5 target=22 heating=True
 current=23 heating=False
 rejected: target 40 is out of range
@@ -16123,7 +16130,7 @@ within the ±90/60 band. Encapsulation bounds what can happen; it cannot make da
 
 ---
 
-## 49.4 §7.5 — `SafeDivider` and the `Try` pattern
+#### 49.4 §7.5 — `SafeDivider` and the `Try` pattern
 
 **Thinking it through.** The method must answer two questions at once — *did it work?* and *what is
 the answer?* A single return value cannot carry both without inventing a sentinel. The `Try` pattern
@@ -16159,7 +16166,7 @@ Console.WriteLine(d.TryDivide(10, 0, out double bad)
 
 **Output:**
 
-```
+```text
 10/4 = 2.5
 10/0 refused, result left at 0
 ```
@@ -16185,7 +16192,7 @@ Console.WriteLine(10.0 / 0 - 10.0 / 0);         // NaN — and now every later r
 
 **Output:**
 
-```
+```text
 ∞
 NaN
 ```
@@ -16196,7 +16203,7 @@ for broken assumptions ([§28.8](#288-exceptions-vs-the-result-pattern)).
 
 ---
 
-## 49.5 §8.10 — `BankAccount` that cannot be born invalid
+#### 49.5 §8.10 — `BankAccount` that cannot be born invalid
 
 **Thinking it through.** The requirement "prove you cannot create an invalid account from outside"
 is the real exercise. It means every route in must pass through validation — so there must be no
@@ -16268,7 +16275,7 @@ Console.WriteLine($"chained constructor balance: {empty.Balance}");
 
 **Output** (run on a machine with a `$` currency setting — see the note below):
 
-```
+```text
 balance after deposit: 150
 refused: Withdrawal would leave $10.00, below the $25.00 minimum.
 balance after withdrawal: 25
@@ -16292,7 +16299,7 @@ Console.WriteLine(amount.ToString(CultureInfo.InvariantCulture));               
 
 **Output:**
 
-```
+```text
 $10.00
 10,00 €
 10
@@ -16318,7 +16325,7 @@ This is a genuinely common source of tests that pass on a developer's machine an
 
 ---
 
-## 49.6 §12.8 — `TemporaryFile` and deterministic cleanup
+#### 49.6 §12.8 — `TemporaryFile` and deterministic cleanup
 
 **Thinking it through.** The whole point is the last requirement: *throw an exception in the middle
 and verify the file was still deleted*. That is what `using` buys you, and the exercise is designed
@@ -16378,7 +16385,7 @@ Console.WriteLine($"exists after using:  {File.Exists(captured)}");
 
 **Output:**
 
-```
+```text
 exists inside using: True
 exception was thrown and caught
 exists after using:  False
@@ -16408,7 +16415,7 @@ useful ([§12.7](#127-finalizers--the-last-resort-you-should-avoid)).
 
 ---
 
-## 49.7 §27.8 — Making `UserProfile` null-safe
+#### 49.7 §27.8 — Making `UserProfile` null-safe
 
 **Thinking it through.** The original has four problems, and the fix for each is different. Work out
 which is which before reading on: `Name` must exist; `Bio` and `Address` may be missing; `Tags` must
@@ -16491,7 +16498,7 @@ Console.WriteLine(sparse.GetSummary());
 
 **Output:**
 
-```
+```text
 Anna from Colombo — Engineer — 1 tags
 Bob from an unknown location — no bio — 0 tags
 ```
@@ -16522,9 +16529,9 @@ leave `Name` null despite `required`. Validate after deserialising; the annotati
 
 ---
 
-# 50. 📖 Glossary and reference links
+### 50. 📖 Glossary and reference links
 
-## 50.1 Glossary
+#### 50.1 Glossary
 
 | Term | Meaning |
 |---|---|
@@ -16585,7 +16592,7 @@ leave `Name` null despite `required`. Validate after deserialising; the annotati
 | **Variance** | Whether generic types can substitute up or down a hierarchy |
 | **Virtual member** | A member a subclass is allowed to override |
 
-## 50.2 Official Microsoft documentation
+#### 50.2 Official Microsoft documentation
 
 **Fundamentals**
 - Object-oriented programming in C#: https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/oop
@@ -16621,7 +16628,7 @@ leave `Name` null despite `required`. Validate after deserialising; the annotati
 - C# coding conventions: https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions
 - Framework design guidelines: https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/
 
-## 50.3 Recommended books
+#### 50.3 Recommended books
 
 | Book | Author | Read it when |
 |---|---|---|
@@ -16636,7 +16643,7 @@ leave `Name` null despite `required`. Validate after deserialising; the annotati
 | *Implementing Domain-Driven Design* | Vaughn Vernon | You want the practical companion |
 | *The Pragmatic Programmer* | Hunt & Thomas | Any time. It's about being a professional. |
 
-## 50.4 🧪 Hands-on exercise
+#### 50.4 🧪 Hands-on exercise
 
 This chapter is reference material, not a technique to practise — but a glossary only sticks
 once you've used the words, not just read them:
@@ -16656,7 +16663,7 @@ become part of your vocabulary rather than something you recognise when you see 
 
 <div align="center" markdown="1">
 
-# 🎓 Final professor note
+## 🎓 Final professor note
 
 </div>
 
@@ -16696,6 +16703,6 @@ Now close the guide and go build something. 🚀
 
 ---
 
-## Documentation links
+### Documentation links
 
 [Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

@@ -1,8 +1,15 @@
+---
+title: "Object-Oriented Programming with Python: Classes, Design and Testing"
+description: "Learn Python object-oriented programming with classes, inheritance, composition, protocols, testing, design exercises and a structured study plan."
+---
+
 <div align="center" markdown="1">
 
 # 🐍 Complete Object-Oriented Programming with Python
 
-### *From your very first class to professional software design*
+<a id="from-your-very-first-class-to-professional-software-design"></a>
+
+*From your very first class to professional software design*
 
 **_By Gehan Fernando_**
 
@@ -151,7 +158,7 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 999999.0
 TypeError: '<=' not supported between instances of 'str' and 'int'
 AttributeError: property 'balance' of 'Account' object has no setter
@@ -248,7 +255,7 @@ The 39 sections are grouped into five parts. Each part ends with a ✅ **Checkpo
 
 <div align="center" markdown="1">
 
-# 🟢 PART 1 — FOUNDATIONS
+## 🟢 PART 1 — FOUNDATIONS
 
 *The vocabulary and the mechanics. Sections 1-8 are the ground everything else stands on.*
 
@@ -256,11 +263,11 @@ The 39 sections are grouped into five parts. Each part ends with a ✅ **Checkpo
 
 ---
 
-# 1. Prerequisites and setup
+### 1. Prerequisites and setup
 
 > 📌 **In plain words:** Before building with OOP "LEGO bricks," you need to know what a brick is. This section makes sure you have the basics and a working Python playground.
 
-## 1.1 ✅ What you should know first
+#### 1.1 ✅ What you should know first
 
 Before OOP, you should be comfortable with these building blocks:
 
@@ -279,7 +286,7 @@ Before OOP, you should be comfortable with these building blocks:
 > [!TIP]
 > **You do NOT need** Django, Flask, FastAPI, databases, cloud knowledge, or advanced data science to start OOP. Those come later. OOP is a *foundation*, not an advanced topic.
 
-## 1.2 ⬇️ Install Python
+#### 1.2 ⬇️ Install Python
 
 Install Python from the official site:
 
@@ -344,7 +351,7 @@ oop_practice/
 └── pyproject.toml
 ```
 
-## 1.3 🏋️ Hands-on exercise
+#### 1.3 🏋️ Hands-on exercise
 
 Set up a real Python playground and prove it works.
 
@@ -379,7 +386,7 @@ python src/oop_practice/main.py
 
 **Expected output (the version text will differ on your machine):**
 
-```
+```text
 Running on Python 3.12.4 (main, ...)
 ```
 
@@ -402,7 +409,7 @@ Running on Python 3.12.4 (main, ...)
 
 ---
 
-# 2. What OOP means
+### 2. What OOP means
 
 > 📌 **In plain words:** Object-Oriented Programming is a way of designing software around **objects** — self-contained "things" that bundle their data and the actions you can perform on that data, all in one place.
 
@@ -472,7 +479,7 @@ This class represents a real concept: a bank account. It holds money (data), let
 
 ---
 
-# 3. The four pillars of OOP
+### 3. The four pillars of OOP
 
 > 📌 **In plain words:** All of OOP rests on four big ideas. Learn these names — every job interview and every codebase uses them.
 
@@ -496,7 +503,7 @@ This class represents a real concept: a bank account. It holds money (data), let
 > - **Inheritance** 🧬 — a *sports car* is a *car* with extra abilities.
 > - **Polymorphism** 🔀 — every car has a "brake," but each brakes in its own way.
 
-### 🦆 Python's bonus idea: duck typing
+#### 🦆 Python's bonus idea: duck typing
 
 Python adds an important idea: **duck typing**.
 
@@ -537,11 +544,11 @@ print_any_report(ExcelReport())
 
 ---
 
-# 4. Classes and objects
+### 4. Classes and objects
 
 > 📌 **In plain words:** A **class** is the recipe. An **object** is the cake you bake from it. One recipe → many cakes.
 
-## 4.1 🏗️ Class — the blueprint
+#### 4.1 🏗️ Class — the blueprint
 
 A class is a blueprint.
 
@@ -577,7 +584,7 @@ defines *what attributes exist*; each object holds *the actual values*.
 | Defines | Which attributes and methods exist | The actual values |
 | Analogy | Blueprint, recipe, mould | House, cake, casting |
 
-## 4.2 🚗 Object — an instance of a class
+#### 4.2 🚗 Object — an instance of a class
 
 An **object** (or **instance**) is one concrete thing built from the class.
 
@@ -590,11 +597,11 @@ car.start()
 
 **Expected output:**
 
-```
+```text
 Toyota Corolla is starting.
 ```
 
-### 📌 What `Car(...)` actually did
+##### 📌 What `Car(...)` actually did
 
 Reading left to right, four things happened:
 
@@ -605,7 +612,7 @@ Reading left to right, four things happened:
 
 `self` inside `__init__` refers to *that specific object*. You never pass it yourself — Python supplies it.
 
-### 📌 Each object is independent
+##### 📌 Each object is independent
 
 This is the point of classes, so it is worth seeing rather than being told:
 
@@ -632,7 +639,7 @@ print(car_a is car_b)               # False — two distinct objects
 
 **Expected output:**
 
-```
+```text
 Toyota Corolla is starting.
 Honda Civic is starting.
 2025 2023
@@ -643,7 +650,7 @@ One class, two objects, two independent sets of data. The class is the drawing; 
 
 > 🎯 **When to use:** create a new object every time you need a new, independent "thing" with its own data.
 
-## 4.3 🧾 Object attributes
+#### 4.3 🧾 Object attributes
 
 **Attributes** are the values stored on an object. You read them with a dot.
 
@@ -657,13 +664,13 @@ print(car.year)      # 2024
 
 **Expected output:**
 
-```
+```text
 Toyota
 Corolla
 2024
 ```
 
-### ⚠️ Python lets you add attributes that were never declared
+##### ⚠️ Python lets you add attributes that were never declared
 
 This surprises people arriving from stricter languages, and it is worth knowing early because it turns typos into silent bugs:
 
@@ -686,7 +693,7 @@ print(car.__dict__)          # you can see both
 
 **Expected output:**
 
-```
+```text
 red
 2024
 {'brand': 'Toyota', 'model': 'Corolla', 'year': 2024, 'colour': 'red', 'yaer': 2030}
@@ -707,7 +714,7 @@ The `yaer` typo did not raise anything. It created a brand-new attribute and lef
 This is the "level 1 / level 2 / level 3" distinction from the [enforcement section](#-pythons-three-levels-of-enforcement-read-this-before-section-5), showing up for the first time.
 
 <a id="44--object-creation-with-keyword-arguments"></a>
-## 4.4 🏷️ Object creation with keyword arguments
+#### 4.4 🏷️ Object creation with keyword arguments
 
 Keyword arguments name each value at the call site, which makes the code readable and makes a whole class of mistakes impossible.
 
@@ -724,11 +731,11 @@ car.start()
 
 **Expected output:**
 
-```
+```text
 Toyota Corolla is starting.
 ```
 
-### 📌 Why this matters more than it looks
+##### 📌 Why this matters more than it looks
 
 Positional arguments are silently order-sensitive. Swap two of the same type and nothing complains:
 
@@ -751,14 +758,14 @@ right.start()
 
 **Expected output:**
 
-```
+```text
 Corolla Toyota is starting.
 Toyota Corolla is starting.
 ```
 
 Both are strings, so nothing — not Python, not a type checker — can detect the swap. Keyword arguments remove the possibility.
 
-### 💡 Forcing keywords with `*`
+##### 💡 Forcing keywords with `*`
 
 If a constructor is genuinely too easy to get wrong, you can *require* keywords. Everything after a bare `*` must be passed by name:
 
@@ -780,14 +787,14 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 Toyota
 TypeError: Car.__init__() takes 1 positional argument but 4 were given
 ```
 
 > 🎯 **When to force it:** three or more parameters, or two of the same type that could be transposed. For a one- or two-parameter constructor such as `Point(x, y)` it is unnecessary ceremony.
 
-### ✅ The whole chapter as one runnable program
+##### ✅ The whole chapter as one runnable program
 
 Save this as `cars.py` and run `python cars.py`:
 
@@ -821,7 +828,7 @@ print(car.describe(), "|", other.describe())
 
 **Expected output:**
 
-```
+```text
 Toyota Corolla is starting.
 Toyota Corolla 2024
 2023 Honda Civic
@@ -830,7 +837,7 @@ Toyota Corolla 2024
 
 > 💡 **Pro tip:** prefer keyword arguments when a constructor has several parameters. `Car("Toyota", "Corolla", 2024)` is easy to get wrong; `Car(brand=..., model=..., year=...)` documents itself.
 
-## 4.5 ⚡ Dataclass option — less typing
+#### 4.5 ⚡ Dataclass option — less typing
 
 For simple data containers, Python's `dataclasses` module can reduce boilerplate (it writes `__init__` for you).
 
@@ -849,7 +856,7 @@ class Car:
 
 > 🎯 **When to use a dataclass:** when the class mostly *holds data*. (Deep dive in [Section 19](#19-classes-dataclasses-named-tuples-and-immutability).)
 
-## 4.6 🧪 Hands-on exercise
+#### 4.6 🧪 Hands-on exercise
 
 Create a `Student` class with:
 
@@ -891,7 +898,7 @@ student.display_info()
 
 **Expected output:**
 
-```
+```text
 Name: Anna
 Age: 22
 Grade: A
@@ -921,11 +928,11 @@ the entire point of §4 — see it happen rather than take it on trust.
 
 ---
 
-# 5. Attributes, properties, and methods
+### 5. Attributes, properties, and methods
 
 > 📌 **In plain words:** **Attributes** are what an object *knows*. **Methods** are what an object *does*. **Properties** are attributes with a bouncer at the door — checking values before letting them in.
 
-## 5.1 Attributes
+#### 5.1 Attributes
 
 Attributes store data inside an object.
 
@@ -938,7 +945,7 @@ class Product:
 > [!NOTE]
 > Python has no truly private fields like some other languages. A leading underscore (`_price`) means: **"internal detail; please don't touch this directly from outside."** It's a polite sign, not a locked door.
 
-## 5.2 🌐 Public attributes
+#### 5.2 🌐 Public attributes
 
 For simple data, public attributes are perfectly normal in Python.
 
@@ -960,7 +967,7 @@ print(product.price)
 > 🎯 **When to use plain public attributes:** when there are no rules to enforce — any value is acceptable.
 
 <a id="53--property-with-validation"></a>
-## 5.3 🛡️ Property with validation
+#### 5.3 🛡️ Property with validation
 
 Use `@property` when you need validation or computed behavior.
 
@@ -994,7 +1001,7 @@ product.price = 60.0
 
 > 🎯 **When to use:** when setting/reading a value needs a rule, a calculation, or logging — but you still want the clean `object.attribute` syntax.
 
-## 5.4 🔒 Read-only property
+#### 5.4 🔒 Read-only property
 
 A read-only property has a getter but no setter — the outside world can look, but not change.
 
@@ -1012,7 +1019,7 @@ class Order:
 
 > 🎯 **When to use:** for values that should never change after creation, like a "created at" timestamp or an ID.
 
-## 5.5 🚪 Private setter style
+#### 5.5 🚪 Private setter style
 
 Python does not have private setters, but you can expose a read-only property and update it only through methods.
 
@@ -1033,7 +1040,7 @@ class BankAccount:
 
 > 💡 **Pro tip:** This is the classic "you can *read* the balance, but you can only *change* it through `deposit()`/`withdraw()`" pattern — the heart of safe money handling.
 
-## 5.6 🧮 Computed property
+#### 5.6 🧮 Computed property
 
 A property can *calculate* its value on the fly instead of storing it.
 
@@ -1050,7 +1057,7 @@ class OrderLine:
 
 > 🎯 **When to use:** when a value is *derived* from other values (`total = price × quantity`). Storing it separately risks the two getting out of sync.
 
-## 5.7 ⚙️ Methods
+#### 5.7 ⚙️ Methods
 
 Methods define behavior.
 
@@ -1067,7 +1074,7 @@ calculator = Calculator()
 print(calculator.add(2, 3))
 ```
 
-## 5.8 🔤 Method naming
+#### 5.8 🔤 Method naming
 
 Common Python convention (verbs, lowercase, underscores):
 
@@ -1080,7 +1087,7 @@ is_available
 
 > ⚠️ **Avoid** C#/Java style names such as `CalculateTotal` in normal Python code. Python uses `snake_case`.
 
-## 5.9 🔁 Method overloading in Python
+#### 5.9 🔁 Method overloading in Python
 
 > 📌 **In plain words:** Some languages let you define the *same method name* several times with different parameters. Python does **not** — the last definition simply wins.
 
@@ -1123,7 +1130,7 @@ class Printer:
 
 > 🎯 **When to use which:** reach for **default arguments** first (simplest), **`*args`** when the count varies, and **`singledispatchmethod`** only when behavior genuinely depends on the *type* of the argument.
 
-## 5.10 🏋️ Hands-on exercise
+#### 5.10 🏋️ Hands-on exercise
 
 Build a `Temperature` class that:
 
@@ -1175,7 +1182,7 @@ except AttributeError as e:
 
 **Expected output:**
 
-```
+```text
 77.0
 212.0
 ValueError: Temperature cannot be below absolute zero.
@@ -1201,7 +1208,7 @@ AttributeError: property 'fahrenheit' of 'Temperature' object has no setter
 
 ---
 
-# 6. Constructors and object initialization
+### 6. Constructors and object initialization
 
 > 📌 **In plain words:** A **constructor** is the setup routine that runs the moment an object is born. In Python it's the `__init__` method — it fills in the object's starting data.
 
@@ -1209,7 +1216,7 @@ AttributeError: property 'fahrenheit' of 'Temperature' object has no setter
 
 In Python, `__init__` initializes an object *after* it is created.
 
-## 6.1 Basic constructor
+#### 6.1 Basic constructor
 
 ```python
 class Student:
@@ -1224,7 +1231,7 @@ class Student:
 student = Student("Anna", 22)
 ```
 
-## 6.2 🎚️ Default values
+#### 6.2 🎚️ Default values
 
 Give parameters defaults so callers can skip them.
 
@@ -1242,7 +1249,7 @@ student = Student()
 
 > 🎯 **When to use:** when a sensible fallback exists (e.g., `quantity=1`, `country="US"`).
 
-## 6.3 🏭 Constructor alternatives with class methods
+#### 6.3 🏭 Constructor alternatives with class methods
 
 Python does not support multiple `__init__` methods. Use **class methods as named constructors** ("factory methods").
 
@@ -1267,7 +1274,7 @@ product = Product.free("Sample")
 
 > 🎯 **When to use:** when you want several clear, well-named ways to build the same object.
 
-## 6.4 ✅ Constructor validation
+#### 6.4 ✅ Constructor validation
 
 Reject bad data at the moment of creation — never let an invalid object exist.
 
@@ -1285,7 +1292,7 @@ class Product:
 
 > 💡 **Pro tip:** "Fail fast." If an object can't be valid, refuse to build it. This prevents mysterious bugs much later.
 
-## 6.5 🧬 Base constructor with `super()`
+#### 6.5 🧬 Base constructor with `super()`
 
 When a class inherits from another, call the parent's constructor with `super()`.
 
@@ -1302,7 +1309,7 @@ class Student(Person):
 
 > 🌍 **Analogy:** Filling out a form. `super().__init__(name)` fills in the general "Person" section; then the `Student` adds its own extra fields.
 
-## 6.6 🔐 Private constructor style
+#### 6.6 🔐 Private constructor style
 
 Python cannot make constructors truly private, but you can *signal intent* and provide factory methods.
 
@@ -1318,7 +1325,7 @@ class AppSettings:
 
 If you need stricter control, validate inside `__init__` or use a factory function.
 
-## 6.7 🧱 `__new__`
+#### 6.7 🧱 `__new__`
 
 > 📌 **In plain words:** `__new__` *creates* the object; `__init__` *fills it in*. You rarely touch `__new__` in everyday code.
 
@@ -1336,7 +1343,7 @@ class UppercaseString(str):
 
 > ⚠️ **When to avoid:** almost always. If you're reaching for `__new__` in application code, pause and check whether `__init__` or a factory method would be clearer.
 
-## 6.8 ⚡ Dataclass initialization
+#### 6.8 ⚡ Dataclass initialization
 
 ```python
 from dataclasses import dataclass
@@ -1353,7 +1360,7 @@ class Person:
 person = Person("Anna", 22)
 ```
 
-## 6.9 🩺 Dataclass post-initialization
+#### 6.9 🩺 Dataclass post-initialization
 
 Use `__post_init__` for validation *after* dataclass initialization.
 
@@ -1374,7 +1381,7 @@ class Product:
 
 > 🎯 **When to use:** you love the auto-generated `__init__` of a dataclass but still need validation rules.
 
-## 6.10 🧪 Hands-on exercise
+#### 6.10 🧪 Hands-on exercise
 
 Create a `BankAccount` with:
 
@@ -1458,7 +1465,7 @@ except AttributeError as e:
 
 **Expected output:**
 
-```
+```text
 After deposit : 150.00
 After withdraw: 50.00
 InsufficientFundsError: Balance cannot fall below 25.0. Available to withdraw: 25.00
@@ -1496,7 +1503,7 @@ AttributeError: property 'balance' of 'BankAccount' object has no setter
 
 ---
 
-# 7. Access conventions
+### 7. Access conventions
 
 > 📌 **In plain words:** Python doesn't lock doors — it puts up *signs*. There's no `public`/`private`/`protected` keyword. Instead, **underscores signal how you should treat a name.**
 
@@ -1528,7 +1535,7 @@ class BankAccount:
 > [!IMPORTANT]
 > **Professional rule:** Start with a small public API. Treat everything else as an implementation detail.
 
-## 7.1 🚧 Name mangling
+#### 7.1 🚧 Name mangling
 
 Double-leading-underscore names are *name-mangled*.
 
@@ -1542,7 +1549,7 @@ Python changes `__secret` internally to something like `_Example__secret`.
 
 > ⚠️ **Reality check:** This is **not** real security. It mainly prevents accidental name clashes in subclasses. Anyone determined can still access it.
 
-## 7.2 📦 Module-level privacy
+#### 7.2 📦 Module-level privacy
 
 A leading underscore on a module-level function or class means "internal."
 
@@ -1571,7 +1578,7 @@ __all__ = ["BankAccount"]
 >
 > **Best practices.** Start with a small public surface and treat everything else as internal — it is easy to make a name public later and painful to take one back. Use double underscores sparingly; their real purpose is avoiding accidental collisions in subclass hierarchies, not privacy, and they make debugging and testing noticeably more awkward.
 
-## 7.3 🏋️ Hands-on exercise
+#### 7.3 🏋️ Hands-on exercise
 
 Write a `Thermostat` class with a public `target_temperature` attribute, an internal `_sensor_offset` attribute (a correction value nobody outside the class should rely on), and a name-mangled `__calibration_key` attribute. Add a public method `read_temperature()` that uses `_sensor_offset` internally. Then, in a separate `Usage:` snippet, show that Python does **not** stop you from reading `_sensor_offset` or `obj._Thermostat__calibration_key` from outside the class — only the convention asks you not to.
 
@@ -1602,7 +1609,7 @@ print(t._Thermostat__calibration_key)  # factory-default — name mangling, not 
 
 **Expected output:**
 
-```
+```text
 21.5
 0.5
 factory-default
@@ -1612,11 +1619,11 @@ factory-default
 
 ---
 
-# 8. Object lifecycle and resource management
+### 8. Object lifecycle and resource management
 
 > 📌 **In plain words:** Objects are born, get used, and eventually cleaned up. Most cleanup is automatic — but some resources (files, connections) must be closed *promptly*, and that's your job.
 
-## 8.1 👶 Object creation
+#### 8.1 👶 Object creation
 
 **📄 Fragment** — `Customer` is the one-attribute class defined just below in [§8.2](#82--object-references). This single line is shown on its own only to isolate what `Customer("Anna")` does; run it as part of that block.
 
@@ -1626,7 +1633,7 @@ customer = Customer("Anna")
 
 Python creates the object, then calls `__init__`.
 
-## 8.2 🔗 Object references
+#### 8.2 🔗 Object references
 
 Most Python variables hold **references** to objects — like two remote controls pointing at the same TV.
 
@@ -1647,13 +1654,13 @@ Both variables point to the **same** object, so changing one changes "both."
 
 > ⚠️ **Common beginner surprise:** `customer_b = customer_a` does **not** make a copy. It makes a second label for the same object.
 
-## 8.3 🗑️ Garbage collection basics
+#### 8.3 🗑️ Garbage collection basics
 
 Python automatically manages memory. CPython uses **reference counting** plus a **cycle detector**. You normally do not manually free memory.
 
 > 🌍 **Analogy:** Like a hotel housekeeping service — once nobody is "using a room" (no references), it gets cleaned up automatically.
 
-## 8.4 🔌 Resources that must be closed
+#### 8.4 🔌 Resources that must be closed
 
 Some resources should be released promptly:
 
@@ -1675,7 +1682,7 @@ The file is closed automatically when the block exits — even if an error happe
 
 > 🌍 **Analogy:** `with` is like a **self-closing door**. You walk through, do your thing, and it shuts behind you automatically — you can never forget to close it.
 
-## 8.5 🛠️ Custom context manager class
+#### 8.5 🛠️ Custom context manager class
 
 ```python
 class ReportWriter:
@@ -1704,7 +1711,7 @@ with ReportWriter("report.txt") as writer:
     writer.write("Hello")
 ```
 
-## 8.6 🎀 Context manager with decorator
+#### 8.6 🎀 Context manager with decorator
 
 A shorter way, using `@contextmanager`:
 
@@ -1730,7 +1737,7 @@ with report_writer("report.txt") as file:
 > 🎯 **When to use which:** the `@contextmanager` decorator is quicker for simple cases; a full class is better when the resource needs extra methods or state.
 
 <a id="87--destructors-with-__del__"></a>
-## 8.7 ⚰️ Destructors with `__del__`
+#### 8.7 ⚰️ Destructors with `__del__`
 
 `__del__` is rarely needed and can be unpredictable (you can't reliably know *when* it runs).
 
@@ -1743,7 +1750,7 @@ class NativeResourceWrapper:
 
 > ⚠️ **When to avoid:** almost always. **Prefer context managers over `__del__` for resource cleanup.** Treat `__del__` as a last-resort safety net, never your main plan.
 
-## 8.8 🏋️ Hands-on exercise
+#### 8.8 🏋️ Hands-on exercise
 
 Write a custom context manager class `TemporaryCounter` that:
 
@@ -1787,7 +1794,7 @@ except RuntimeError as e:
 
 **Expected output:**
 
-```
+```text
 Counter opened
 Final count: 2
 Counter closed
@@ -1818,14 +1825,14 @@ Caught after exit: boom
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — Part 1: Foundations
+#### ✅ Checkpoint — Part 1: Foundations
 
 </div>
 
 > [!IMPORTANT]
 > **The honest test is whether you can _produce_ an explanation, not recognise one.** Cover the guide and answer out loud, in your own words. If a sentence will not come, that is the section to re-read — not a sign that you are slow.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 For each idea, answer the same four questions: **What is it? Why does it matter? How does it work? Can I give an example?**
 
@@ -1836,7 +1843,7 @@ For each idea, answer the same four questions: **What is it? Why does it matter?
 - A **constructor** (§6)
 - Python's **three levels of enforcement** ([front matter](#-pythons-three-levels-of-enforcement-read-this-before-section-5))
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. Without using the word "object", what does a class give you that a loose group of variables and functions does not?
 2. `customer_b = customer_a` runs. What exactly was copied?
@@ -1862,7 +1869,7 @@ For each idea, answer the same four questions: **What is it? Why does it matter?
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Describe a **vending machine** as an object. Name its data, its behaviour, its rules, and what gives it identity. If you can do that without looking back at §2, Part 1 is done.
 
@@ -1870,7 +1877,7 @@ Describe a **vending machine** as an object. Name its data, its behaviour, its r
 
 <div align="center" markdown="1">
 
-# 🟣 PART 2 — THE FOUR PILLARS, IN DEPTH
+## 🟣 PART 2 — THE FOUR PILLARS, IN DEPTH
 
 *Sections 9-15 take the four words from Section 3 and turn each one into working technique.*
 
@@ -1878,13 +1885,13 @@ Describe a **vending machine** as an object. Name its data, its behaviour, its r
 
 ---
 
-# 9. Encapsulation
+### 9. Encapsulation
 
 > 📌 **In plain words:** Encapsulation means **protecting an object's internal state** and only allowing changes through valid, controlled operations. The object guards its own data.
 
 > 🌍 **Analogy:** An **ATM**. You can't reach inside and rewrite your balance to a billion dollars. You can only `deposit` or `withdraw` through approved buttons — each with rules. The cash and the balance are *encapsulated*.
 
-## 9.1 ❌ Bad encapsulation
+#### 9.1 ❌ Bad encapsulation
 
 ```python
 class BankAccount:
@@ -1901,7 +1908,7 @@ account.balance = -999999
 
 The object happily allows **invalid state**. Nothing stops a negative balance.
 
-## 9.2 ✅ Better encapsulation
+#### 9.2 ✅ Better encapsulation
 
 ```python
 class BankAccount:
@@ -1934,7 +1941,7 @@ class BankAccount:
 
 > 🎯 **When to encapsulate:** whenever invalid data would cause bugs or break business rules — which is *most* of the time for real objects.
 
-## 9.3 📦 Protecting collections
+#### 9.3 📦 Protecting collections
 
 **▶️ Continues** — assumes an `OrderItem` class. A complete, runnable version of this pattern (including the exact errors each variant produces) is in [§17.8](#178--expose-collections-safely).
 
@@ -1968,7 +1975,7 @@ class Order:
 
 > 💡 **Pro tip:** Returning a `tuple` prevents callers from accidentally modifying your internal list. They get a snapshot, not the keys to your house.
 
-## 9.4 🧷 Invariants
+#### 9.4 🧷 Invariants
 
 An **invariant** is a rule that must *always* be true for an object.
 
@@ -1982,7 +1989,7 @@ Examples:
 > [!IMPORTANT]
 > OOP design should **protect invariants inside the object** — not scatter the checks across the whole program. The object is the single source of truth for its own rules.
 
-## 9.5 🏋️ Hands-on exercise
+#### 9.5 🏋️ Hands-on exercise
 
 Build a `StockItem` class that:
 
@@ -2036,7 +2043,7 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 6
 AttributeError: property 'quantity' of 'StockItem' object has no setter
 ValueError: Cannot remove more than is in stock.
@@ -2061,7 +2068,7 @@ ValueError: Cannot remove more than is in stock.
 
 ---
 
-# 10. Abstraction
+### 10. Abstraction
 
 > 📌 **In plain words:** Abstraction means showing the **essential idea** and hiding the messy details. You expose *what* something does, not *how* it does it.
 
@@ -2074,7 +2081,7 @@ Python supports abstraction through:
 - 📐 Protocols
 - 🎯 Clear public APIs
 
-## 10.1 🏛️ Abstract base class
+#### 10.1 🏛️ Abstract base class
 
 ```python
 from abc import ABC, abstractmethod
@@ -2110,7 +2117,7 @@ shape.display_area()
 
 > 🌍 **Analogy:** `Shape` is a **job description** that says "every shape MUST know how to calculate its area." It refuses to hire (instantiate) any shape that can't.
 
-## 10.2 📝 Abstract methods
+#### 10.2 📝 Abstract methods
 
 ```python
 from abc import ABC, abstractmethod
@@ -2123,7 +2130,7 @@ class Payment(ABC):
 
 > 🎯 A subclass **must** implement `pay` before it can be instantiated. This enforces the contract at runtime.
 
-## 10.3 🔄 Regular overridable methods
+#### 10.3 🔄 Regular overridable methods
 
 Any normal Python method can be overridden.
 
@@ -2137,7 +2144,7 @@ class PdfReport(Report):
         print("Printing PDF report.")
 ```
 
-## 10.4 🧩 Template method style
+#### 10.4 🧩 Template method style
 
 An abstract class can define a *workflow* and leave specific steps to subclasses.
 
@@ -2166,7 +2173,7 @@ class DataImporter(ABC):
 
 > 🎯 **When to use the template method:** when several classes share the *same overall process* but differ in a few steps.
 
-## 10.5 🏋️ Hands-on exercise
+#### 10.5 🏋️ Hands-on exercise
 
 Using the template-method shape from §10.4, build a `ReportGenerator` abstract base class with:
 
@@ -2228,7 +2235,7 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 Sales: 100
 Returns: 5
 ---
@@ -2256,13 +2263,13 @@ TypeError: Can't instantiate abstract class ReportGenerator with abstract method
 
 ---
 
-# 11. Inheritance
+### 11. Inheritance
 
 > 📌 **In plain words:** Inheritance lets a new class **reuse and extend** an existing class. The child gets everything the parent has, plus its own extras.
 
 > 🌍 **Analogy:** A **child inheriting traits** from a parent — same eye color and last name (reused), but with their own personality (extended).
 
-## 11.1 Basic inheritance
+#### 11.1 Basic inheritance
 
 ```python
 class Employee:
@@ -2287,7 +2294,7 @@ manager.display()          # inherited from Employee
 print(manager.department)  # added by Manager
 ```
 
-## 11.2 ✅ The `is-a` rule
+#### 11.2 ✅ The `is-a` rule
 
 > [!IMPORTANT]
 > Use inheritance **only** when the derived type truly **is a** kind of the base type.
@@ -2308,7 +2315,7 @@ Order is a DatabaseConnection.
 Invoice is a Printer.
 ```
 
-## 11.3 🔧 Method overriding
+#### 11.3 🔧 Method overriding
 
 A child can replace a parent's behavior.
 
@@ -2322,7 +2329,7 @@ class Dog(Animal):
         print("Dog barks.")
 ```
 
-## 11.4 ⬆️ Calling base behavior with `super()`
+#### 11.4 ⬆️ Calling base behavior with `super()`
 
 **▶️ Continues from [§9.2](#92--better-encapsulation)** — assumes the `BankAccount` class defined there, with its validating `deposit` method.
 
@@ -2338,7 +2345,7 @@ class AuditedBankAccount(BankAccount):
 
 > 🎯 **When to use `super()`:** when you want to *add* something around existing behavior (like logging), not throw it away.
 
-## 11.5 🚫 Preventing inheritance
+#### 11.5 🚫 Preventing inheritance
 
 Python does not enforce `sealed` classes at runtime like C#, but type checkers understand `@final`.
 
@@ -2352,7 +2359,7 @@ class SecurityToken:
 
 > 🎯 This is mainly for **static type checking** — a signal to tools and readers: "do not subclass this."
 
-## 11.6 🧩 Multiple inheritance
+#### 11.6 🧩 Multiple inheritance
 
 Python supports inheriting from more than one class.
 
@@ -2371,7 +2378,7 @@ class Invoice(Printable, Serializable):
 
 > ⚠️ **Use with care.** Multiple inheritance can get confusing fast. Prefer small, focused **mixins** when it genuinely improves clarity.
 
-### 🧭 Which parent wins? The method resolution order
+##### 🧭 Which parent wins? The method resolution order
 
 As soon as a class has two parents, an obvious question appears: if **both** define `describe()`, which one runs? Python answers this with the **method resolution order** (**MRO**) — a single, fixed list of classes it searches from left to right.
 
@@ -2401,7 +2408,7 @@ for cls in Announcement.__mro__:
 
 **Expected output:**
 
-```
+```text
 LOUD: Please note: a thing
 Announcement
 LoudMixin
@@ -2410,7 +2417,7 @@ Base
 object
 ```
 
-### 📌 What that output is telling you
+##### 📌 What that output is telling you
 
 Read the second half first: the MRO is `Announcement → LoudMixin → PoliteMixin → Base → object`. Python looks for `describe` in that order and stops at the first class that has one — `LoudMixin`.
 
@@ -2420,7 +2427,7 @@ That is why the three parts compose into one sentence. Each mixin adds its own p
 
 > 🌍 **Analogy:** the MRO is a **relay race with a fixed running order**, not a family tree. `super()` hands the baton to whoever runs next in *this* race, which depends on how the class was assembled — not on who each runner's parents are.
 
-### ⚠️ Two consequences worth knowing
+##### ⚠️ Two consequences worth knowing
 
 **1. Order matters, and it is left to right.** Writing `class Announcement(PoliteMixin, LoudMixin, Base)` instead produces `Please note: LOUD: a thing`. Same classes, different sentence.
 
@@ -2439,7 +2446,7 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 TypeError: Cannot create a consistent method resolution
 order (MRO) for bases A, B
 ```
@@ -2448,7 +2455,7 @@ The rule Python enforces is that a class must always appear **before** its own b
 
 > 💡 **The practical rules.** Put mixins **before** the main base class (`class X(Mixin, Base)`), give each mixin a `super()` call so the chain is not broken, and if you find yourself drawing a diagram to work out which method runs, that is the signal to use **composition** instead. Multiple inheritance is a sharp tool with a narrow good use: small, focused, cooperative mixins.
 
-## 11.7 🏚️ The fragile base class problem
+#### 11.7 🏚️ The fragile base class problem
 
 > [!WARNING]
 > Inheritance creates **tight coupling**. A change in a base class can silently break every derived class.
@@ -2456,7 +2463,7 @@ The rule Python enforces is that a class must always appear **before** its own b
 > [!IMPORTANT]
 > **Professional rule:** Use inheritance for *true specialization*, not just to avoid retyping code. When in doubt, prefer **composition** ([Section 15](#15-composition-and-object-relationships)).
 
-## 11.8 🏋️ Hands-on exercise
+#### 11.8 🏋️ Hands-on exercise
 
 Model a small employee hierarchy:
 
@@ -2505,7 +2512,7 @@ print(isinstance(executive, Manager))
 
 **Expected output:**
 
-```
+```text
 115000
 True
 True
@@ -2530,13 +2537,13 @@ True
 
 ---
 
-# 12. Polymorphism
+### 12. Polymorphism
 
 > 📌 **In plain words:** Polymorphism ("many forms") means one instruction can work with many different types — each responding in its own way.
 
 > 🌍 **Analogy:** You say **"make a sound"** to a dog, a cat, and a cow. Same command, three different results: *bark*, *meow*, *moo*. That's polymorphism.
 
-## 12.1 🧬 Runtime polymorphism with inheritance
+#### 12.1 🧬 Runtime polymorphism with inheritance
 
 ```python
 from abc import ABC, abstractmethod
@@ -2566,7 +2573,7 @@ for animal in animals:
 
 > 🎯 The loop doesn't care *which* animal it holds — it just says "make your sound," and each one responds correctly.
 
-## 12.2 🦆 Duck typing polymorphism
+#### 12.2 🦆 Duck typing polymorphism
 
 Python often does not require a shared base class at all.
 
@@ -2588,7 +2595,7 @@ notify(SmsSender(), "Welcome")
 
 > 💡 As long as the object *has* a `send` method, `notify` is happy. No inheritance needed.
 
-## 12.3 📐 Protocol polymorphism
+#### 12.3 📐 Protocol polymorphism
 
 Protocols make duck typing **explicit** for type checkers (best of both worlds).
 
@@ -2611,7 +2618,7 @@ def checkout(processor: PaymentProcessor, amount: float) -> None:
     processor.process(amount)
 ```
 
-## 12.4 🔀 Replace conditional with polymorphism
+#### 12.4 🔀 Replace conditional with polymorphism
 
 This is one of the most valuable refactorings in all of OOP.
 
@@ -2653,7 +2660,7 @@ def calculate_discount(policy: DiscountPolicy) -> float:
 
 > 🎯 **When to use this:** when you see a big `if/elif` or `match` that branches on a "type" string. Adding a new customer type should mean adding a *class*, not editing old logic.
 
-## 12.5 🏋️ Hands-on exercise
+#### 12.5 🏋️ Hands-on exercise
 
 Build three unrelated classes — `Dog`, `Duck`, `Robot` — each with a `make_sound()` method and **no shared base class** (duck typing). Write a `def chorus(speakers) -> None:` function that loops over any list and calls `make_sound()` on each. Then replace the loose typing with a `SoundMaker` protocol so a type checker can verify the list.
 
@@ -2701,7 +2708,7 @@ chorus([Dog(), Duck(), Robot(), Cat()])
 
 **Expected output:**
 
-```
+```text
 Woof!
 Quack!
 Beep boop.
@@ -2727,7 +2734,7 @@ Meow!
 
 ---
 
-# 13. Protocols and interfaces
+### 13. Protocols and interfaces
 
 > 📌 **In plain words:** A **protocol** describes a *capability* — a list of methods an object must have — without caring about its class. It's a contract based on behavior, not family tree.
 
@@ -2739,7 +2746,7 @@ Python does not have a dedicated `interface` keyword. The closest tools are:
 
 > 🌍 **Analogy:** A **power socket standard**. Any device with the right plug shape fits — the socket doesn't care who made the device. The plug shape *is* the protocol.
 
-## 13.1 Basic protocol
+#### 13.1 Basic protocol
 
 ```python
 from typing import Protocol
@@ -2766,7 +2773,7 @@ print_document(Invoice())
 
 > 💡 `Invoice` does **not** need to inherit from `Printable`. It only needs to *have* the required method. This is "structural typing."
 
-## 13.2 🧰 Multiple capabilities
+#### 13.2 🧰 Multiple capabilities
 
 ```python
 from typing import Protocol
@@ -2787,7 +2794,7 @@ class MultiFunctionDevice:
         print("Scanning.")
 ```
 
-## 13.3 🏷️ Protocol properties
+#### 13.3 🏷️ Protocol properties
 
 ```python
 from typing import Protocol
@@ -2798,7 +2805,7 @@ class Entity(Protocol):
         ...
 ```
 
-## 13.4 🔍 Runtime-checkable protocols
+#### 13.4 🔍 Runtime-checkable protocols
 
 Protocols exist mainly for **static** type checking — by default, `isinstance` against a Protocol raises. Add `@runtime_checkable` when you genuinely need a runtime test.
 
@@ -2834,7 +2841,7 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 True
 False
 TypeError: Instance and class checks can only be used with @runtime_checkable protocols
@@ -2866,14 +2873,14 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 True
 TypeError: Liar.print_item() missing 2 required positional arguments: 'required_arg' and 'another'
 ```
 
 `mypy` would reject `Liar` as a `Printable`; `isinstance` cannot. Treat `@runtime_checkable` as a convenience for dispatching on capability, never as validation. This is the level-2-versus-level-3 distinction from the [enforcement section](#-pythons-three-levels-of-enforcement-read-this-before-section-5): protocols are a static tool, and adding `@runtime_checkable` does not promote them to a runtime guarantee.
 
-## 13.5 🧱 Generic protocol
+#### 13.5 🧱 Generic protocol
 
 ```python
 from typing import Protocol, TypeVar
@@ -2891,7 +2898,7 @@ class Repository(Protocol[T]):
         ...
 ```
 
-## 13.6 🔤 Naming conventions
+#### 13.6 🔤 Naming conventions
 
 Python protocols often use descriptive names **without** an `I` prefix.
 
@@ -2907,7 +2914,7 @@ PaymentProcessor
 
 > 💡 Some teams still use names like `IRepository`, but that is less Pythonic. Prefer plain, descriptive names.
 
-## 13.7 🏋️ Hands-on exercise
+#### 13.7 🏋️ Hands-on exercise
 
 Define a `Notifier` protocol with one method, `notify(message: str) -> None`. Write a function `alert_all(notifiers, message)` that calls `notify` on each. Implement two unrelated classes satisfying the protocol — `ConsoleNotifier` and a test-only `RecordingNotifier` that stores messages in a list instead of printing — **without inheriting from `Notifier`**.
 
@@ -2953,7 +2960,7 @@ print(isinstance(recorder, Notifier))
 
 **Expected output:**
 
-```
+```text
 Console: Server down
 ['Server down']
 True
@@ -2978,11 +2985,11 @@ True
 
 ---
 
-# 14. Abstract base classes vs protocols
+### 14. Abstract base classes vs protocols
 
 > 📌 **In plain words:** Both describe contracts, but they answer different questions. **ABC:** "*what IS this?*" (identity + shared code). **Protocol:** "*what can this DO?*" (capability, no family ties).
 
-## 14.1 🏛️ Use an abstract base class when...
+#### 14.1 🏛️ Use an abstract base class when...
 
 - ✅ You need shared implementation.
 - ✅ You need shared state.
@@ -3004,7 +3011,7 @@ class Employee(ABC):
         pass
 ```
 
-## 14.2 📐 Use a protocol when...
+#### 14.2 📐 Use a protocol when...
 
 - ✅ You need a capability or contract.
 - ✅ Types may be unrelated.
@@ -3022,7 +3029,7 @@ class EmailSender(Protocol):
         ...
 ```
 
-## 14.3 📏 Professional rule
+#### 14.3 📏 Professional rule
 
 > [!IMPORTANT]
 > **Abstract base classes model _identity_. Protocols model _capability_.**
@@ -3035,7 +3042,7 @@ class EmailSender(Protocol):
 | Dog **is an** Animal | 🏛️ ABC / base class |
 
 <a id="144--avoid-unnecessary-abstractions"></a>
-## 14.4 ⚠️ Avoid unnecessary abstractions
+#### 14.4 ⚠️ Avoid unnecessary abstractions
 
 > [!WARNING]
 > Do **not** create a protocol or abstract base class for *every* class. That's over-engineering.
@@ -3048,7 +3055,7 @@ Create abstractions only when you need:
 - 🧱 A stable boundary between layers
 - 🔌 Plugin-like behavior
 
-## 14.5 🏋️ Hands-on exercise
+#### 14.5 🏋️ Hands-on exercise
 
 Two features need an abstraction. Decide ABC vs protocol for each, then write it:
 
@@ -3111,7 +3118,7 @@ print(isinstance(car, Vehicle))
 
 **Expected output:**
 
-```
+```text
 lat=0, lon=0
 GPS: 6.9, 79.8
 150
@@ -3137,7 +3144,7 @@ True
 
 ---
 
-# 15. Composition and object relationships
+### 15. Composition and object relationships
 
 > 📌 **In plain words:** Composition means **building objects out of other objects** — "has-a" instead of "is-a." It's usually more flexible than inheritance.
 
@@ -3164,7 +3171,7 @@ graph TB
 separate object and asks it to do things. The test is the sentence: say it out loud, and the wrong
 one sounds absurd ("a Car is an Engine").
 
-## 15.1 🧩 Composition example
+#### 15.1 🧩 Composition example
 
 ```python
 class Engine:
@@ -3182,7 +3189,7 @@ class Car:
 
 A car **has an** engine.
 
-## 15.2 ⚖️ Inheritance vs composition
+#### 15.2 ⚖️ Inheritance vs composition
 
 | Relationship | Prefer |
 |---|---|
@@ -3192,7 +3199,7 @@ A car **has an** engine.
 | Customer **has** Address | 🧩 Composition |
 | Report **can be** exported | 📐 Protocol / composition |
 
-## 15.3 🤝 Association
+#### 15.3 🤝 Association
 
 A general relationship between objects.
 
@@ -3207,7 +3214,7 @@ class Teacher:
         print(f"Teaching {student.name}")
 ```
 
-## 15.4 🪶 Aggregation
+#### 15.4 🪶 Aggregation
 
 A **weak** whole-part relationship. The part can live without the whole.
 
@@ -3224,7 +3231,7 @@ class Department:
 
 > 💡 Employees can exist outside the department — if the department closes, the employees still exist.
 
-## 15.5 🔗 Composition (strong)
+#### 15.5 🔗 Composition (strong)
 
 A **strong** whole-part relationship. The part belongs to the whole.
 
@@ -3244,7 +3251,7 @@ class Order:
 
 > 💡 **Aggregation vs composition:** if the "whole" is destroyed, do the parts still make sense? Employees survive a closed department (aggregation). Order items don't survive a deleted order (composition).
 
-## 15.6 📎 Dependency
+#### 15.6 📎 Dependency
 
 One class uses another *temporarily* (passed in, not stored long-term).
 
@@ -3260,7 +3267,7 @@ class ReportService:
         writer.write(report.content)
 ```
 
-## 15.7 🔢 Multiplicity
+#### 15.7 🔢 Multiplicity
 
 Common relationships:
 
@@ -3270,7 +3277,7 @@ One-to-many:  Customer has Orders.
 Many-to-many: Student has Courses, Course has Students.
 ```
 
-## 15.8 🏋️ Hands-on exercise
+#### 15.8 🏋️ Hands-on exercise
 
 Build a `Car` that **has an** `Engine` (composition, injected via the constructor) and can `start()` by delegating to it. Create two engine types, `PetrolEngine` and `ElectricEngine`, both with a `start()` method (no shared base class needed). Build two different `Car` instances with different engines.
 
@@ -3308,7 +3315,7 @@ electric_car.start()
 
 **Expected output:**
 
-```
+```text
 Petrol engine rumbles to life.
 Car ready to drive.
 Electric engine hums silently.
@@ -3336,14 +3343,14 @@ Car ready to drive.
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — Part 2: The four pillars
+#### ✅ Checkpoint — Part 2: The four pillars
 
 </div>
 
 > [!IMPORTANT]
 > Part 2 is where most people *think* they understand OOP and then design something rigid. The questions below are chosen to find that out.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -3354,7 +3361,7 @@ Car ready to drive.
 - A **protocol** versus an **abstract base class** (§13–14)
 - **Composition**, and why it is usually preferred (§15)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. What is an *invariant*, and why is "protect it inside the object" better than "check it everywhere"?
 2. `Car(Engine)` versus a `Car` that holds an `Engine`. Which is right, and what is the one-sentence test?
@@ -3380,7 +3387,7 @@ Car ready to drive.
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Model a **coffee machine** twice: once with inheritance (`EspressoMachine(CoffeeMachine)`) and once with composition (a `CoffeeMachine` holding a `BrewingStrategy`). Say in one sentence which you would ship, and why.
 
@@ -3388,7 +3395,7 @@ Model a **coffee machine** twice: once with inheritance (`EspressoMachine(Coffee
 
 <div align="center" markdown="1">
 
-# 🟠 PART 3 — BUILDING REAL TYPES
+## 🟠 PART 3 — BUILDING REAL TYPES
 
 *Sections 16–26 are the everyday toolkit: generics, collections, equality, dataclasses, errors, and how to lay a project out.*
 
@@ -3396,7 +3403,7 @@ Model a **coffee machine** twice: once with inheritance (`EspressoMachine(Coffee
 
 ---
 
-# 16. Generics with OOP
+### 16. Generics with OOP
 
 > 📌 **In plain words:** Generics let you write **one class or function that works with many types** while keeping type-checker safety. Write it once, reuse it for `Product`, `Customer`, anything.
 
@@ -3405,7 +3412,7 @@ Model a **coffee machine** twice: once with inheritance (`EspressoMachine(Coffee
 > [!NOTE]
 > Python generics are mainly for **static type checkers**. At runtime, Python remains dynamic.
 
-## 16.1 📦 Generic class
+#### 16.1 📦 Generic class
 
 ```python
 from typing import Generic, TypeVar
@@ -3424,7 +3431,7 @@ number_box = Box[int](100)
 text_box = Box[str]("Hello")
 ```
 
-## 16.2 🔧 Generic function
+#### 16.2 🔧 Generic function
 
 ```python
 from typing import TypeVar
@@ -3444,7 +3451,7 @@ name = first(["Anna", "Maria"])   # returns a str
 number = first([1, 2, 3])          # returns an int
 ```
 
-## 16.3 📐 Generic protocol
+#### 16.3 📐 Generic protocol
 
 ```python
 from typing import Protocol, TypeVar
@@ -3459,7 +3466,7 @@ class Repository(Protocol[T]):
         ...
 ```
 
-## 16.4 🆔 Base entity
+#### 16.4 🆔 Base entity
 
 ```python
 class Entity:
@@ -3467,7 +3474,7 @@ class Entity:
         self.id = entity_id
 ```
 
-## 16.5 🗃️ Generic repository with a bound
+#### 16.5 🗃️ Generic repository with a bound
 
 **▶️ Continues from §16.4** — assumes the `Entity` base class defined there. A fully runnable version, with a worked explanation of `bound=`, is in [§16.6](#166--typevar-constraints-and-bounds).
 
@@ -3494,11 +3501,11 @@ class InMemoryRepository(Generic[TEntity]):
 
 <a id="166--typevar-constraints-and-bounds"></a>
 
-## 16.6 🎚️ TypeVar constraints and bounds
+#### 16.6 🎚️ TypeVar constraints and bounds
 
 A plain `TypeVar` accepts *any* type. A **bound** and a **constraint** are the two ways to narrow that, and they mean different things.
 
-### 📌 A bound — "anything that IS-A this"
+##### 📌 A bound — "anything that IS-A this"
 
 ```python
 from typing import TypeVar
@@ -3521,14 +3528,14 @@ print(describe(Entity(1)))        # Entity with id 1
 
 **Expected output:**
 
-```
+```text
 Customer with id 7
 Entity with id 1
 ```
 
 The bound is what lets `describe` use `item.id`. Without `bound=Entity`, a type checker would reject that line, because an unbounded `TEntity` might be an `int`, which has no `.id`.
 
-### 📌 A constraint — "exactly one of these"
+##### 📌 A constraint — "exactly one of these"
 
 ```python
 from typing import TypeVar
@@ -3544,12 +3551,12 @@ print(double(2.5))      # 5.0
 
 **Expected output:**
 
-```
+```text
 10
 5.0
 ```
 
-### 📌 The difference that matters
+##### 📌 The difference that matters
 
 | | **Bound** `TypeVar("T", bound=X)` | **Constraint** `TypeVar("T", A, B)` |
 |---|---|---|
@@ -3577,7 +3584,7 @@ print(keep(True), collapse(True))     # True True
 
 **Expected output:**
 
-```
+```text
 True True
 ```
 
@@ -3592,7 +3599,7 @@ reveal_type(collapse(True))    # mypy: Revealed type is "int"
 
 Running `mypy` on the file gives:
 
-```
+```text
 note: Revealed type is "bool"
 note: Revealed type is "int"
 ```
@@ -3603,7 +3610,7 @@ The **bound** preserved `bool`; the **constraint** collapsed it to `int`, becaus
 
 > 💡 **Rule of thumb:** use a **bound** when the type parameter must *have certain members* (the common case); use **constraints** only for a small, closed set of unrelated types such as `int`/`float` or `str`/`bytes`.
 
-## 16.7 📨 Generic service with protocol constraint
+#### 16.7 📨 Generic service with protocol constraint
 
 ```python
 from typing import Protocol, TypeVar, Generic
@@ -3622,7 +3629,7 @@ class NotificationService(Generic[TSender]):
         self._sender.send(message)
 ```
 
-## 16.8 🔗 Callable generics
+#### 16.8 🔗 Callable generics
 
 ```python
 from collections.abc import Callable
@@ -3633,7 +3640,7 @@ length_transformer: Transformer = lambda text: len(text)
 print(length_transformer("Hello"))
 ```
 
-## 16.9 🔀 Variance: covariance and contravariance
+#### 16.9 🔀 Variance: covariance and contravariance
 
 > 📌 **In plain words:** Variance is about *when* a "list/producer of dogs" may stand in for a "list/producer of animals." It matters mostly to static type checkers.
 
@@ -3664,7 +3671,7 @@ class Consumer(Generic[T_contra]):
         print(item)
 ```
 
-## 16.10 🔒 Invariance
+#### 16.10 🔒 Invariance
 
 **📄 Fragment** — assumes any `class Animal` with a subclass `class Dog(Animal)`; two empty classes are enough. Note that the point of this section is what a **type checker** rejects: every line here runs fine under plain Python, so there is nothing to observe by running it.
 
@@ -3680,7 +3687,7 @@ dogs: list[Dog] = []
 
 > 💡 **Why?** If it were allowed, you could add a `Cat` to a `list[Dog]` through the `list[Animal]` reference — a disaster waiting to happen.
 
-## 16.11 🌍 Generics in real Python code
+#### 16.11 🌍 Generics in real Python code
 
 **▶️ Continues** — assumes a simple `Student` class.
 
@@ -3695,7 +3702,7 @@ Repository[Customer]
 Callable[[Order], bool]
 ```
 
-## 16.12 🧪 Generics hands-on exercise
+#### 16.12 🧪 Generics hands-on exercise
 
 Build:
 
@@ -3791,7 +3798,7 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 Product(1, 'Laptop', 1200.0)
 None
 [Product(1, 'Laptop', 1200.0), Product(2, 'Mouse', 25.0)]
@@ -3836,11 +3843,11 @@ a database-backed implementation behind the same method names is exactly the poi
 
 ---
 
-# 17. Collections and object queries
+### 17. Collections and object queries
 
 > 📌 **In plain words:** Real apps rarely have *one* object — they have lists of orders, dictionaries of products, sets of tags. This section is about storing many objects and finding the ones you want.
 
-## 17.1 📚 Common collections
+#### 17.1 📚 Common collections
 
 | Collection | Use when |
 |---|---|
@@ -3855,7 +3862,7 @@ a database-backed implementation behind the same method names is exactly the poi
 
 > 🌍 **Analogy:** A `list` is a **shopping list** (ordered, duplicates allowed). A `set` is a **guest list** (no duplicates). A `dict` is a **phone book** (look up a number by name instantly).
 
-## 17.2 📋 The shared example for this whole section
+#### 17.2 📋 The shared example for this whole section
 
 Sections 17.2 to 17.7 all use the same four products. This block is the **setup**: run it first, then paste each later snippet underneath it in the same file.
 
@@ -3883,7 +3890,7 @@ for p in products:
 
 **Expected output:**
 
-```
+```text
 Product(1, 'Laptop', 1200.0, 'computing')
 Product(2, 'Mouse', 25.0, 'accessories')
 Product(3, 'Monitor', 340.0, 'computing')
@@ -3892,7 +3899,7 @@ Product(4, 'Cable', 9.0, 'accessories')
 
 `__repr__` is defined here for a practical reason: printing a *list* of objects calls `repr` on each element, so without it every line below would read `<__main__.Product object at 0x...>`. See [Section 25.3](#253--string-representation).
 
-## 17.3 🔑 Dictionary
+#### 17.3 🔑 Dictionary
 
 **▶️ Continues from §17.2.**
 
@@ -3913,14 +3920,14 @@ except KeyError as e:
 
 **Expected output:**
 
-```
+```text
 Product(1, 'Laptop', 1200.0, 'computing')
 None
 unknown
 KeyError: 999
 ```
 
-### 📌 `[key]` versus `.get(key)` — choose deliberately
+##### 📌 `[key]` versus `.get(key)` — choose deliberately
 
 | | `d[key]` | `d.get(key)` |
 |---|---|---|
@@ -3931,7 +3938,7 @@ Reaching for `.get()` everywhere looks defensive but is usually wrong: it conver
 
 > 🎯 **When to use a dict:** when you look items up by a unique key (ID, email, username). A dict lookup takes roughly the same time whether it holds ten items or ten million; scanning a list gets slower in proportion to its length.
 
-## 17.4 🔎 Querying objects with comprehensions
+#### 17.4 🔎 Querying objects with comprehensions
 
 **▶️ Continues from §17.2.**
 
@@ -3950,7 +3957,7 @@ print([(p.name, p.price) for p in by_price_desc])
 
 **Expected output:**
 
-```
+```text
 [Product(1, 'Laptop', 1200.0, 'computing'), Product(3, 'Monitor', 340.0, 'computing')]
 ['Laptop', 'Monitor']
 [('Laptop', 1200.0), ('Monitor', 340.0), ('Mouse', 25.0), ('Cable', 9.0)]
@@ -3960,7 +3967,7 @@ print([(p.name, p.price) for p in by_price_desc])
 
 **The `key=` argument** takes a function that extracts the value to sort *by*. `sorted` never modifies the original list — it returns a new one — whereas `products.sort()` sorts in place and returns `None`.
 
-## 17.5 🌊 Generator expressions
+#### 17.5 🌊 Generator expressions
 
 **▶️ Continues from §17.2.**
 
@@ -3979,14 +3986,14 @@ print(list(expensive_names))              # []
 
 **Expected output:**
 
-```
+```text
 generator
 Laptop
 Monitor
 []
 ```
 
-### ⚠️ The single-use behaviour catches people
+##### ⚠️ The single-use behaviour catches people
 
 That final `[]` is not a bug; it is the defining property. A generator holds a *position*, not a collection. Once consumed, it stays consumed.
 
@@ -4004,7 +4011,7 @@ print(list(gen))            # [] — the generator behind it is still exhausted
 
 **Expected output:**
 
-```
+```text
 ['LAPTOP', 'MONITOR']
 ['LAPTOP', 'MONITOR']
 []
@@ -4012,7 +4019,7 @@ print(list(gen))            # [] — the generator behind it is still exhausted
 
 > 🎯 **When to use a generator:** large or streaming data, or when you loop exactly once and want to avoid holding everything in memory. For four products, a list is simpler and the memory difference is meaningless — use generators when the data is big, not because they look clever.
 
-## 17.6 ➕ Aggregation
+#### 17.6 ➕ Aggregation
 
 **▶️ Continues from §17.2.**
 
@@ -4027,7 +4034,7 @@ print(all(p.price > 5 for p in products))              # is everything over 5?
 
 **Expected output:**
 
-```
+```text
 1574.0
 Cable
 Laptop
@@ -4040,7 +4047,7 @@ Note `min`/`max` with `key=` return the **object**, not the price — which is u
 
 ⚠️ **`min()` and `max()` raise `ValueError` on an empty sequence.** Pass `default=` when the collection might be empty: `max(products, key=..., default=None)`.
 
-## 17.7 🗂️ Grouping with dictionaries
+#### 17.7 🗂️ Grouping with dictionaries
 
 **▶️ Continues from §17.2.**
 
@@ -4058,7 +4065,7 @@ for category, items in sorted(products_by_category.items()):
 
 **Expected output:**
 
-```
+```text
 accessories: ['Mouse', 'Cable']
 computing: ['Laptop', 'Monitor']
 ```
@@ -4079,7 +4086,7 @@ print(dict(d))           # {'ghost': []}
 
 **Expected output:**
 
-```
+```text
 0
 1
 {'ghost': []}
@@ -4087,7 +4094,7 @@ print(dict(d))           # {'ghost': []}
 
 <a id="178--expose-collections-safely"></a>
 
-## 17.8 🛡️ Expose collections safely
+#### 17.8 🛡️ Expose collections safely
 
 Handing out your internal list lets callers mutate your object's state behind its back.
 
@@ -4139,7 +4146,7 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 [OrderItem('ghost', -99)]
 AttributeError: 'tuple' object has no attribute 'append'
 (OrderItem('book', 2),)
@@ -4152,7 +4159,7 @@ ValueError: Quantity must be positive.
 
 > ⚠️ Avoid exposing mutable internal lists unless external mutation is genuinely intended (see [Section 9.3](#93--protecting-collections)).
 
-## 17.9 🏋️ Hands-on exercise
+#### 17.9 🏋️ Hands-on exercise
 
 Given this list of orders:
 
@@ -4201,7 +4208,7 @@ for status, group in sorted(by_status.items()):
 
 **Expected output:**
 
-```
+```text
 Order(3, 'Anna', 300.0, 'shipped')
 420.0
 Order(3, 'Anna', 300.0, 'shipped')
@@ -4229,11 +4236,11 @@ shipped [1, 3]
 
 ---
 
-# 18. Equality and object comparison
+### 18. Equality and object comparison
 
 > 📌 **In plain words:** When are two objects "equal"? Same object in memory? Or just same values? Python lets you decide.
 
-## 18.1 🪪 Identity equality (`is`)
+#### 18.1 🪪 Identity equality (`is`)
 
 Two variables reference the **same** object in memory.
 
@@ -4252,7 +4259,7 @@ print(customer_a is customer_b)  # True
 
 > 🌍 **Analogy:** `is` asks *"are these the exact same physical object?"* — like two people pointing at the *same* car. `==` asks *"do these have the same value?"* — like two identical cars off the assembly line.
 
-## 18.2 🟰 Value equality (`__eq__`)
+#### 18.2 🟰 Value equality (`__eq__`)
 
 Two *different* objects are considered equal because their values match.
 
@@ -4271,7 +4278,7 @@ class Product:
 ```
 
 <a id="183--why-__hash__-matters"></a>
-## 18.3 #️⃣ Why `__hash__` matters
+#### 18.3 #️⃣ Why `__hash__` matters
 
 `set` and `dict` use **hash values** to organize items quickly.
 
@@ -4280,7 +4287,7 @@ class Product:
 > - 🔓 **Mutable** objects should usually **not** be hashable.
 > - 🔒 **Immutable** value objects can usually be hashable.
 
-## 18.4 ⚡ Dataclasses and equality
+#### 18.4 ⚡ Dataclasses and equality
 
 Dataclasses provide value-based equality **for free**.
 
@@ -4304,7 +4311,7 @@ print(money_a == money_b)  # True
 
 > 💡 This is a big reason dataclasses are popular for value objects — no hand-written `__eq__` needed.
 
-## 18.5 🔢 Ordering
+#### 18.5 🔢 Ordering
 
 Use `order=True` for dataclasses when ordering makes sense.
 
@@ -4319,7 +4326,7 @@ class PriorityTask:
 
 > ⚠️ Be careful: ordering should represent a **meaningful business concept**, not just "whatever field comes first."
 
-## 18.6 🏋️ Hands-on exercise
+#### 18.6 🏋️ Hands-on exercise
 
 Build a `Coordinate` class (plain, not a dataclass) with `x` and `y`, implementing `__eq__` and `__hash__` so two coordinates with the same values are equal and interchangeable in a `set`. Then rewrite it as a frozen dataclass and confirm it behaves identically.
 
@@ -4362,7 +4369,7 @@ print(CoordinateDataclass(1, 2) == CoordinateDataclass(1, 2))
 
 **Expected output:**
 
-```
+```text
 2
 2
 True
@@ -4387,11 +4394,11 @@ True
 
 ---
 
-# 19. Classes, dataclasses, named tuples, and immutability
+### 19. Classes, dataclasses, named tuples, and immutability
 
 > 📌 **In plain words:** Python gives you several "shapes" for holding data. This section helps you pick the right one for the job.
 
-## 19.1 🏗️ Class
+#### 19.1 🏗️ Class
 
 - Reference object
 - Usually for domain entities and services
@@ -4405,7 +4412,7 @@ class Customer:
         self.name = name
 ```
 
-## 19.2 ⚡ Dataclass
+#### 19.2 ⚡ Dataclass
 
 Good for data-focused classes (auto-generates `__init__`, `__eq__`, `__repr__`).
 
@@ -4418,7 +4425,7 @@ class CustomerDto:
     name: str
 ```
 
-## 19.3 🧊 Frozen dataclass
+#### 19.3 🧊 Frozen dataclass
 
 Good for **immutable** value objects — once created, they can't be changed.
 
@@ -4433,7 +4440,7 @@ class Money:
 
 > 🌍 **Analogy:** A frozen dataclass is like a **printed receipt** 🧾 — you can read it forever, but you can't edit the numbers on it.
 
-## 19.4 📇 Named tuple
+#### 19.4 📇 Named tuple
 
 Useful for small immutable record-like values.
 
@@ -4445,7 +4452,7 @@ class Point(NamedTuple):
     y: float
 ```
 
-## 19.5 🔄 `replace` for immutable objects
+#### 19.5 🔄 `replace` for immutable objects
 
 **▶️ Continues from [§19.2](#192--dataclass)** — assumes the `CustomerDto` dataclass defined there.
 
@@ -4460,7 +4467,7 @@ changed = replace(original, name="Maria")
 
 > 💡 `replace` calls `__init__` on the new object, so any validation in `__post_init__` runs again — the copy cannot be invalid. Note that `original` is untouched: `replace` returns a new object rather than modifying the old one. Pair this with `frozen=True` ([§19.3](#193--frozen-dataclass)) and "make a changed copy" becomes the *only* way to change anything, which is exactly what makes immutable code easy to reason about.
 
-## 19.6 🧊 Immutability
+#### 19.6 🧊 Immutability
 
 Immutable objects cannot be changed after creation.
 
@@ -4489,7 +4496,7 @@ class EmailAddress:
 
 > 🎯 **When to use immutability:** for values that represent a fact, not a thing that changes — money amounts, coordinates, email addresses, date ranges.
 
-## 19.7 🎰 Slots
+#### 19.7 🎰 Slots
 
 `slots=True` can reduce memory usage and prevent accidental new attributes.
 
@@ -4505,7 +4512,7 @@ class Product:
 
 > 🎯 **When to use:** when you create *many* instances (memory matters) or want to catch typos like `product.pirce = 5`. Use it when helpful, not automatically.
 
-## 19.8 🏋️ Hands-on exercise
+#### 19.8 🏋️ Hands-on exercise
 
 For each scenario, pick and implement the right shape from §19 (plain class, dataclass, frozen dataclass, or named tuple):
 
@@ -4568,7 +4575,7 @@ print(coords, moved)
 
 **Expected output:**
 
-```
+```text
 Point(x=1.0, y=2.0)
 AttributeError: cannot assign to field 'lat'
 Coordinates(lat=6.9, lon=79.8) Coordinates(lat=7.0, lon=79.8)
@@ -4593,13 +4600,13 @@ Coordinates(lat=6.9, lon=79.8) Coordinates(lat=7.0, lon=79.8)
 
 ---
 
-# 20. None safety and optional values
+### 20. None safety and optional values
 
 > 📌 **In plain words:** `None` means "no value." Forgetting that a value *might* be `None` is one of the most common causes of crashes. Type hints make "might be missing" visible.
 
 > 🌍 **Analogy:** `None` is an **empty mailbox** 📭. If you reach in expecting a letter and it's empty, you get an error. Always check before reaching in.
 
-## 20.1 ❓ Optional and non-optional references
+#### 20.1 ❓ Optional and non-optional references
 
 The `|` in a type hint means "or". `str | None` declares a value that is **either** a string **or** missing.
 
@@ -4612,7 +4619,7 @@ print(name, phone)
 
 **Expected output:**
 
-```
+```text
 Anna None
 ```
 
@@ -4620,7 +4627,7 @@ Anna None
 
 ⚠️ **Remember which level this is.** A type hint is *level 2* from the [enforcement section](#-pythons-three-levels-of-enforcement-read-this-before-section-5) — it is checked by `mypy`, not by Python. Nothing stops `name = None` at runtime. The value of the hint is that a checker, a reader, and your IDE can all see which variables are allowed to be empty.
 
-## 20.2 ✅ None check
+#### 20.2 ✅ None check
 
 The safe pattern is to check first, then use the value inside the check.
 
@@ -4637,12 +4644,12 @@ show(None)
 
 **Expected output:**
 
-```
+```text
 digits: 10
 no phone on file
 ```
 
-### 📌 Why `is not None` and not `!= None`
+##### 📌 Why `is not None` and not `!= None`
 
 `is` compares identity, and `None` is a singleton — there is exactly one `None` object in a Python process. `is None` therefore cannot be affected by a class's `__eq__`, while `== None` can:
 
@@ -4658,25 +4665,25 @@ print(w is None)             # False — identity cannot be faked
 
 **Expected output:**
 
-```
+```text
 True
 False
 ```
 
 Always write `is None` / `is not None`.
 
-### 💡 Narrowing: what the check buys you
+##### 💡 Narrowing: what the check buys you
 
 A type checker follows the `if`. Inside the `is not None` branch, `phone` is narrowed from `str | None` to plain `str`, so `len(phone)` is accepted. Without the check, `mypy` reports:
 
-```
+```text
 error: Argument 1 to "len" has incompatible type "str | None"; expected "Sized"
 ```
 
 That message is the payoff for writing the hint in the first place: a crash that would have happened in production, reported before the program ran.
 
 <a id="203--default-value"></a>
-## 20.3 🎚️ Default value
+#### 20.3 🎚️ Default value
 
 ```python
 def label(phone: str | None) -> str:
@@ -4689,7 +4696,7 @@ print(label(""))              # an empty string is a real value — preserved
 
 **Expected output:**
 
-```
+```text
 0771234567
 No phone number
 
@@ -4697,7 +4704,7 @@ No phone number
 
 The last line is blank because `""` was passed through unchanged, which is correct: the caller supplied a value, even if it is empty.
 
-### ⚠️ The `or` shortcut is a trap
+##### ⚠️ The `or` shortcut is a trap
 
 `phone or "default"` looks tidier and is subtly different — it replaces **every falsy value**, not just `None`:
 
@@ -4714,7 +4721,7 @@ for value in ("0771234567", None, ""):
 
 **Expected output:**
 
-```
+```text
 '0771234567'   or-> '0771234567'         is-None-> '0771234567'
 None           or-> 'No phone number'    is-None-> 'No phone number'
 ''             or-> 'No phone number'    is-None-> ''
@@ -4724,7 +4731,7 @@ The third row is the bug. An empty string means *"the user deliberately cleared 
 
 **When `or` is fine:** when every falsy value should genuinely be replaced — `page = requested_page or 1`, where `0` is not a valid page either. Use it deliberately, not as a shorter way to write a `None` check.
 
-## 20.4 🧰 Safe helper method
+#### 20.4 🧰 Safe helper method
 
 Push the `None` handling into one place so callers do not repeat it.
 
@@ -4741,13 +4748,13 @@ print(display_length(""))         # 0
 
 **Expected output:**
 
-```
+```text
 4
 0
 0
 ```
 
-### 💡 Safe navigation, Python style
+##### 💡 Safe navigation, Python style
 
 Languages like C# have `?.` for "call this only if not null". Python has no such operator, and these are the idiomatic equivalents:
 
@@ -4780,7 +4787,7 @@ print(getattr(Customer(None).address, "city", "unknown"))   # 3. terse, but opaq
 
 **Expected output:**
 
-```
+```text
 Colombo
 unknown
 Kandy
@@ -4789,7 +4796,7 @@ unknown
 
 The third form works but hides the intent behind a string attribute name that no type checker or refactoring tool can follow. Prefer the explicit check.
 
-## 20.5 🚨 Fail fast
+#### 20.5 🚨 Fail fast
 
 Reject `None`/empty at the boundary so the rest of your code can trust the value.
 
@@ -4804,7 +4811,7 @@ class Customer:
         self.name = name
 ```
 
-## 20.6 🔬 Use static analysis
+#### 20.6 🔬 Use static analysis
 
 Tools such as **mypy** and **pyright** can catch many optional-value mistakes *before* runtime.
 
@@ -4814,7 +4821,7 @@ mypy src
 
 > 💡 **Pro tip:** Running a type checker in your editor is like having a spell-checker for `None` bugs.
 
-## 20.7 🏋️ Hands-on exercise
+#### 20.7 🏋️ Hands-on exercise
 
 Write `find_discount_code(codes: dict[str, float], name: str) -> float | None` that looks up a discount by name and returns `None` if missing. Write a caller that handles the `None` case explicitly (not with `or`), and a second, deliberately buggy caller that uses `or` and mishandles a legitimate `0.0` discount.
 
@@ -4850,7 +4857,7 @@ print(apply_discount_buggy(100.0, find_discount_code(codes, "LOYALTY")))  # BUG:
 
 **Expected output:**
 
-```
+```text
 75.0
 100.0
 100.0
@@ -4876,13 +4883,13 @@ print(apply_discount_buggy(100.0, find_discount_code(codes, "LOYALTY")))  # BUG:
 
 ---
 
-# 21. Exceptions and custom domain errors
+### 21. Exceptions and custom domain errors
 
 > 📌 **In plain words:** An **exception** is Python's way of shouting "something went wrong and I can't continue!" You can catch that shout, or raise your own.
 
 > 🌍 **Analogy:** A **smoke alarm** 🚨. It interrupts everything to signal a problem. You can respond (catch it), or install your own custom alarms (custom exceptions) for specific dangers.
 
-## 21.1 🧯 Basic try/except/finally
+#### 21.1 🧯 Basic try/except/finally
 
 ```python
 try:
@@ -4895,7 +4902,7 @@ finally:
 
 > 💡 `try` = attempt. `except` = handle a specific failure. `finally` = always runs, success or failure (great for cleanup).
 
-## 21.2 🆙 Raise exceptions
+#### 21.2 🆙 Raise exceptions
 
 ```python
 class BankAccount:
@@ -4913,7 +4920,7 @@ class BankAccount:
 ```
 
 <a id="213--custom-exception"></a>
-## 21.3 🏷️ Custom exception
+#### 21.3 🏷️ Custom exception
 
 Make errors specific and meaningful.
 
@@ -4962,13 +4969,13 @@ except InsufficientBalanceError as e:
 
 **Expected output:**
 
-```
+```text
 Message : Balance 100 is not enough for withdrawal 200.
 Shortfall: 100
 Suggest  : deposit at least 100.00 first
 ```
 
-### 💡 The point is the attributes, not the class name
+##### 💡 The point is the attributes, not the class name
 
 A custom exception that only carries a message is barely better than `ValueError("...")`. The value appears when the caller can **react to structured data** — here, `e.shortfall` lets the UI say "deposit at least £100" without parsing the message string. Messages are for humans; attributes are for code.
 
@@ -4977,7 +4984,7 @@ A custom exception that only carries a message is barely better than `ValueError
 > ⚠️ **Inherit from the closest built-in that fits.** `InsufficientBalanceError` could reasonably subclass `ValueError`, so that code catching `ValueError` still works. Subclass `Exception` directly only when no built-in category applies.
 
 <a id="214--domain-exception"></a>
-## 21.4 🏛️ Domain exception
+#### 21.4 🏛️ Domain exception
 
 A shared base class for all your business-rule errors, so callers can catch *your* failures as a group without also swallowing bugs.
 
@@ -5024,13 +5031,13 @@ order.ship()
 
 **Expected output:**
 
-```
+```text
 specific  -> OrderNotPaidError: Order cannot be shipped before payment.
 as a group -> OrderNotPaidError: Order cannot be shipped before payment.
 Order shipped.
 ```
 
-### 📌 Why the base class earns its place
+##### 📌 Why the base class earns its place
 
 A web handler can now write one `except DomainError:` that turns any business-rule violation into a clean `400 Bad Request`, while a genuine bug — a `KeyError` or `AttributeError` — falls through to the generic handler and gets logged as a `500`. Without the shared base you would either list every exception type by hand (and forget the new one someone adds next month) or catch `Exception` and hide your own bugs.
 
@@ -5057,7 +5064,7 @@ print(handle(lambda: {}["missing"]))
 
 **Expected output:**
 
-```
+```text
 200 OK
 400 Bad Request: pay first
 500 Internal Error: KeyError
@@ -5065,7 +5072,7 @@ print(handle(lambda: {}["missing"]))
 
 The `KeyError` is a programming mistake, and it correctly does **not** get reported to the user as a business rule. That separation is the whole reason for a domain-exception base class.
 
-## 21.5 📏 Exception rules
+#### 21.5 📏 Exception rules
 
 - ✅ Raise when the method **cannot complete** its promised job.
 - ❌ Do **not** use exceptions for normal flow control.
@@ -5075,7 +5082,7 @@ The `KeyError` is a programming mistake, and it correctly does **not** get repor
 - ✅ Validate inputs early.
 - ⚠️ Avoid bare `except:` unless doing controlled cleanup and re-raising.
 
-## 21.6 🔗 Exception chaining
+#### 21.6 🔗 Exception chaining
 
 **▶️ Continues from §21.4** — assumes the `DomainError` base class defined there.
 
@@ -5090,7 +5097,7 @@ except ValueError as error:
 
 > 💡 `from error` preserves the whole story — future-you debugging at 2 AM will be grateful.
 
-## 21.7 🏋️ Hands-on exercise
+#### 21.7 🏋️ Hands-on exercise
 
 Build a small validation pipeline: a `DomainError` base class, an `InvalidAgeError(DomainError)` carrying the bad value as an attribute, and a function `register(age: str)` that converts `age` to `int` and raises `InvalidAgeError` **chained** (`from`) onto the original `ValueError` if conversion fails, or directly if the value is negative.
 
@@ -5137,7 +5144,7 @@ except DomainError as e:
 
 **Expected output:**
 
-```
+```text
 InvalidAgeError: 'thirty' is not a valid age.
 raw_value = 'thirty'
 caused by = ValueError
@@ -5163,11 +5170,11 @@ Caught as DomainError: '-5' is not a valid age.
 
 ---
 
-# 22. Class attributes, constants, static methods, and utility modules
+### 22. Class attributes, constants, static methods, and utility modules
 
 > 📌 **In plain words:** Some data belongs to *one object*; some belongs to *the whole class*. Some functions logically live on a class but don't need any object at all.
 
-## 22.1 🧍 vs 👥 Instance attribute vs class attribute
+#### 22.1 🧍 vs 👥 Instance attribute vs class attribute
 
 **Instance attributes** belong to one object:
 
@@ -5192,7 +5199,7 @@ print(AppInfo.name)
 
 > 🌍 **Analogy:** An instance attribute is *your* name badge. A class attribute is the *company logo on the wall* — shared by everyone.
 
-## 22.2 🔤 Constants
+#### 22.2 🔤 Constants
 
 Python does not enforce constants. Use UPPERCASE names by convention.
 
@@ -5201,7 +5208,7 @@ VAT_RATE = 0.25
 MAX_LOGIN_ATTEMPTS = 5
 ```
 
-## 22.3 🔧 Static method
+#### 22.3 🔧 Static method
 
 Belongs logically to the class but needs neither `self` nor `cls`.
 
@@ -5218,7 +5225,7 @@ class MathHelper:
 result = MathHelper.square(5)
 ```
 
-## 22.4 🏭 Class method
+#### 22.4 🏭 Class method
 
 Receives the class itself as `cls` (great for alternative constructors).
 
@@ -5234,7 +5241,7 @@ class AppSettings:
 
 > 💡 **Static vs class method:** a *static* method ignores the class entirely; a *class* method knows about `cls` (useful for building instances).
 
-## 22.5 📦 Utility modules
+#### 22.5 📦 Utility modules
 
 **📄 Fragment (two files)** — create both files side by side, then run `python main.py`.
 
@@ -5262,7 +5269,7 @@ print(square(5))
 
 <a id="226--mutable-class-attribute-warning"></a>
 
-## 22.6 ⚠️ Mutable class attribute warning
+#### 22.6 ⚠️ Mutable class attribute warning
 
 > [!WARNING]
 > Be very careful with **mutable** class attributes — they're shared by *every* instance.
@@ -5284,7 +5291,7 @@ class Team:
         self.members: list[str] = []
 ```
 
-## 22.7 🏋️ Hands-on exercise
+#### 22.7 🏋️ Hands-on exercise
 
 Build a `Product` class that:
 
@@ -5326,7 +5333,7 @@ print(c.name, c.price)
 
 **Expected output:**
 
-```
+```text
 3
 115.0
 Old Keyboard 0.0
@@ -5351,13 +5358,13 @@ Old Keyboard 0.0
 
 ---
 
-# 23. Callbacks, events, and observer-style design
+### 23. Callbacks, events, and observer-style design
 
 > 📌 **In plain words:** Sometimes you want to say "when X happens, run this code." A **callback** is a function you hand to another function to be called later.
 
 > 🌍 **Analogy:** Leaving your number at a restaurant 📱. You don't stand at the counter waiting — they *call you back* when your table is ready. That "call me when it's done" function is a callback.
 
-## 23.1 📞 Callback
+#### 23.1 📞 Callback
 
 A callback is a function passed into another function or object.
 
@@ -5375,7 +5382,7 @@ def add(a: int, b: int) -> int:
 print(calculate(2, 3, add))
 ```
 
-## 23.2 λ Lambda callback
+#### 23.2 λ Lambda callback
 
 **▶️ Continues from §23.1** — assumes the `calculate` function defined there.
 
@@ -5385,7 +5392,7 @@ For tiny throwaway functions:
 result = calculate(2, 3, lambda a, b: a * b)
 ```
 
-## 23.3 🖨️ Built-in callable types
+#### 23.3 🖨️ Built-in callable types
 
 ```python
 from collections.abc import Callable
@@ -5396,7 +5403,7 @@ printer: Printer = print
 printer("Hello")
 ```
 
-## 23.4 🔔 Event-style class
+#### 23.4 🔔 Event-style class
 
 Let many listeners react to one action.
 
@@ -5423,7 +5430,7 @@ button.on_clicked(lambda: print("Button clicked."))
 button.click()
 ```
 
-## 23.5 📨 Custom event data
+#### 23.5 📨 Custom event data
 
 Carry information about *what* happened.
 
@@ -5448,13 +5455,13 @@ class OrderService:
             handler(event)
 ```
 
-## 23.6 👀 Observer pattern
+#### 23.6 👀 Observer pattern
 
 Use observer-style design when many objects need to react to something that happened.
 
 > ⚠️ **When to avoid:** don't make *everything* event-driven. Events can make program flow harder to follow if overused. Use them when decoupling genuinely helps.
 
-## 23.7 🏋️ Hands-on exercise
+#### 23.7 🏋️ Hands-on exercise
 
 Build a `StockTicker` that fires a `PriceChangedEvent(symbol, new_price)` to any number of subscribers. Add two subscribers — one that prints an alert, one that records every event into a list — and demonstrate **unsubscribing** one of them mid-way.
 
@@ -5514,7 +5521,7 @@ print(len(recorded))
 
 **Expected output:**
 
-```
+```text
 ALERT: ACME is now 10.0
 2
 ```
@@ -5538,7 +5545,7 @@ ALERT: ACME is now 10.0
 
 ---
 
-# 24. Extension-style techniques
+### 24. Extension-style techniques
 
 > 📌 **In plain words:** How do you add behavior to types you can't or shouldn't modify? Python has several tools — some clean, one dangerous.
 
@@ -5551,7 +5558,7 @@ Python does not have C#-style extension methods. Common alternatives:
 - 🎀 Decorators
 - 🐒 Monkey patching (rarely, carefully)
 
-## 24.1 🆓 Free function
+#### 24.1 🆓 Free function
 
 ```python
 def is_longer_than(text: str, length: int) -> bool:
@@ -5566,7 +5573,7 @@ result = is_longer_than("Hello World", 5)
 
 > 💡 This is often the **most Pythonic** option. Don't overthink it — a plain function is frequently the best answer.
 
-## 24.2 🧩 Mixin
+#### 24.2 🧩 Mixin
 
 A mixin adds reusable behavior to classes.
 
@@ -5585,7 +5592,7 @@ class Product(DisplayMixin):
 
 > 🎯 **When to use:** for small, focused, reusable behavior shared across unrelated classes.
 
-## 24.3 🎀 Decorator
+#### 24.3 🎀 Decorator
 
 Decorators can extend function behavior without editing the function.
 
@@ -5608,11 +5615,11 @@ def greet(name: str) -> None:
 
 > 🌍 **Analogy:** A decorator is **gift wrapping** 🎁 around a function — the gift is unchanged, but now it has a bow (logging, timing, caching) added around it.
 
-## 24.4 🐒 Monkey patching warning
+#### 24.4 🐒 Monkey patching warning
 
 **Monkey patching** means replacing or adding attributes on a class (or module) *at runtime*, after it was defined, from outside its own source file.
 
-### 📌 What Python does and does not allow
+##### 📌 What Python does and does not allow
 
 You can patch classes **you or a library defined in Python**. You cannot patch the built-in types:
 
@@ -5638,7 +5645,7 @@ except TypeError as e:
 
 **Expected output:**
 
-```
+```text
 HELLO
 patched
 TypeError: cannot set 'custom_method' attribute of immutable type 'str'
@@ -5646,7 +5653,7 @@ TypeError: cannot set 'custom_method' attribute of immutable type 'str'
 
 **Why built-ins are protected:** `str`, `int`, `list`, and friends are implemented in C with fixed layouts, and every part of the interpreter depends on their behaviour. Allowing a patch would let one library silently change the meaning of `str` for every other library in the process. (Languages that *do* permit this — notably Ruby and JavaScript — have a long history of libraries breaking each other this way.)
 
-### ⚠️ Why to avoid it even where it is allowed
+##### ⚠️ Why to avoid it even where it is allowed
 
 The `Greeter` patch above is legal and is still a bad idea in production code:
 
@@ -5655,7 +5662,7 @@ The `Greeter` patch above is legal and is still a bad idea in production code:
 - **It does not compose.** Two libraries patching the same method silently means the last import wins.
 - **Tools cannot follow it.** Type checkers, IDEs, and `grep` will not connect the call site to the patched implementation.
 
-### ✅ What to do instead
+##### ✅ What to do instead
 
 | Goal | Better approach |
 |---|---|
@@ -5680,13 +5687,13 @@ print(isinstance(s, str))  # True
 
 **Expected output:**
 
-```
+```text
 HELLO
 hello world
 True
 ```
 
-### 🎯 The one legitimate use: tests
+##### 🎯 The one legitimate use: tests
 
 Temporarily replacing a dependency during a test is the accepted exception, because it is scoped and reversed automatically. Use `unittest.mock.patch`, which restores the original when the block ends:
 
@@ -5708,7 +5715,7 @@ print(report(Clock()))            # Report at real time — automatically restor
 
 **Expected output:**
 
-```
+```text
 Report at 2026-01-01
 Report at real time
 ```
@@ -5718,7 +5725,7 @@ The `with` block is what makes this acceptable: the patch is visible, narrow, an
 > [!WARNING]
 > Outside tests, monkey patching surprises other developers and breaks the assumption that a class's source file describes its behaviour. Prefer explicit functions, wrappers, or mixins.
 
-## 24.5 🏋️ Hands-on exercise
+#### 24.5 🏋️ Hands-on exercise
 
 You are given a third-party-style `Rectangle` class you must not edit:
 
@@ -5773,7 +5780,7 @@ print(square.describe())
 
 **Expected output:**
 
-```
+```text
 False
 True
 Square with area 16
@@ -5798,13 +5805,13 @@ Square with area 16
 
 ---
 
-# 25. Special methods, operators, nested classes, and code organization
+### 25. Special methods, operators, nested classes, and code organization
 
 > 📌 **In plain words:** Python has special "dunder" methods (double-underscore, like `__len__`) that hook your objects into built-in syntax — so `len(myobject)` or `a + b` "just works."
 
 > 🌍 **Analogy:** Dunder methods are **universal adapters** 🔌. Implement `__len__` and suddenly the built-in `len()` speaks your object's language.
 
-## 25.1 🔢 Indexing with `__getitem__`
+#### 25.1 🔢 Indexing with `__getitem__`
 
 **▶️ Continues** — the usage snippet below builds a `classroom` object from the `Classroom` class above it. For the full contract of `__getitem__`, including slicing and the `IndexError` requirement, see the companion `python_dunder.md`, Entry 68.
 
@@ -5836,12 +5843,12 @@ print(len(classroom))
 
 **Expected output:**
 
-```
+```text
 Anna
 2
 ```
 
-## 25.2 ➕ Operator overloading
+#### 25.2 ➕ Operator overloading
 
 Useful for value objects — lets you write `money_a + money_b`.
 
@@ -5870,7 +5877,7 @@ total = Money(10, "USD") + Money(15, "USD")
 
 <a id="253--string-representation"></a>
 
-## 25.3 🖊️ String representation
+#### 25.3 🖊️ String representation
 
 ```python
 class Product:
@@ -5887,7 +5894,7 @@ class Product:
 
 > 💡 Use `__str__` for **user-friendly** output and `__repr__` for **developer-friendly** debugging output.
 
-## 25.4 📲 Callable objects
+#### 25.4 📲 Callable objects
 
 Make an object behave like a function with `__call__`.
 
@@ -5907,7 +5914,7 @@ calculator = DiscountCalculator(0.10)
 print(calculator(100))
 ```
 
-## 25.5 🚪 Context manager special methods
+#### 25.5 🚪 Context manager special methods
 
 ```python
 class ManagedResource:
@@ -5919,7 +5926,7 @@ class ManagedResource:
         print("Release")
 ```
 
-## 25.6 🪆 Nested classes
+#### 25.6 🪆 Nested classes
 
 A class inside another class.
 
@@ -5932,7 +5939,7 @@ class Invoice:
 
 > ⚠️ **When to avoid:** most of the time. Use nested classes only when the nested type *strongly* belongs to the outer type. In Python, module-level classes are usually clearer.
 
-## 25.7 🧩 Partial classes equivalent
+#### 25.7 🧩 Partial classes equivalent
 
 Python does not have partial classes. Alternatives:
 
@@ -5942,7 +5949,7 @@ Python does not have partial classes. Alternatives:
 - Keep classes small.
 - Use generated code in separate files.
 
-## 25.8 🏋️ Hands-on exercise
+#### 25.8 🏋️ Hands-on exercise
 
 Build a `Vector2D` class with `x` and `y` that supports `+` (`__add__`), equality (`__eq__`), and has both `__repr__` (developer) and `__str__` (user-friendly, e.g. `"(3, 4)"`).
 
@@ -5985,7 +5992,7 @@ print([a])
 
 **Expected output:**
 
-```
+```text
 (4, 6)
 True
 (1, 2)
@@ -6011,13 +6018,13 @@ True
 
 ---
 
-# 26. Modules, packages, environments, and project structure
+### 26. Modules, packages, environments, and project structure
 
 > 📌 **In plain words:** Good OOP isn't just about classes — it's about *organizing* them into files and folders so the project stays understandable as it grows.
 
 > 🌍 **Analogy:** A **module** is a single drawer, a **package** is a filing cabinet, and your **project structure** is the whole well-organized office. 🗄️
 
-## 26.1 📄 Module
+#### 26.1 📄 Module
 
 A module is a `.py` file.
 
@@ -6035,7 +6042,7 @@ class Customer:
     pass
 ```
 
-## 26.2 📦 Package
+#### 26.2 📦 Package
 
 A package is a folder containing Python modules. It commonly has an `__init__.py` file.
 
@@ -6047,7 +6054,7 @@ my_app/
 └── products.py
 ```
 
-## 26.3 🧪 Virtual environment
+#### 26.3 🧪 Virtual environment
 
 Isolates project dependencies so projects never interfere with each other.
 
@@ -6057,7 +6064,7 @@ source .venv/bin/activate
 pip install pytest
 ```
 
-## 26.4 ⚙️ `pyproject.toml`
+#### 26.4 ⚙️ `pyproject.toml`
 
 Modern Python projects commonly use `pyproject.toml` for configuration.
 
@@ -6076,7 +6083,7 @@ pythonpath = ["src"]
 
 <a id="265--recommended-structure"></a>
 
-## 26.5 🏗️ Recommended structure
+#### 26.5 🏗️ Recommended structure
 
 ```text
 my_app/
@@ -6104,7 +6111,7 @@ my_app/
 
 > 💡 Notice the layers: **domain** (business rules), **application** (use cases), **infrastructure** (technical details). This separation pays off as projects grow.
 
-## 26.6 📥 Import style
+#### 26.6 📥 Import style
 
 **📄 Fragment** — the paths below refer to the `my_app` package laid out in [§26.5](#265--recommended-structure); they are illustrations of import *style*, not runnable on their own.
 
@@ -6123,7 +6130,7 @@ from my_app.domain.customers import *
 
 > ⚠️ Wildcard imports (`import *`) hide *where* names come from and can cause silent conflicts.
 
-## 26.7 🔁 Python equivalent of assemblies and solutions
+#### 26.7 🔁 Python equivalent of assemblies and solutions
 
 Coming from C#? Here's the translation:
 
@@ -6135,7 +6142,7 @@ Coming from C#? Here's the translation:
 | Assembly | installed package/wheel, loosely speaking |
 | Solution | repository/workspace with multiple packages/apps |
 
-## 26.8 🏋️ Hands-on exercise
+#### 26.8 🏋️ Hands-on exercise
 
 Design a package layout for a small "todo list" app with a `domain` module (a `Task` class), an `application` module (a `TaskService` that adds/completes tasks), and a `cli.py` entry point — following the layered structure from §26.5. Write the explicit import statements each file needs.
 
@@ -6222,14 +6229,14 @@ service.complete("Write guide")
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — Part 3: Building real types
+#### ✅ Checkpoint — Part 3: Building real types
 
 </div>
 
 > [!IMPORTANT]
 > Part 3 is the longest stretch of the guide, and much of it turns on a distinction Python itself does not enforce: what a **type checker** knows versus what the **interpreter** does. Most questions below sit on that line.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -6241,7 +6248,7 @@ service.complete("Write guide")
 - A **callback** and an **event** (§23)
 - **Modules and packages** (§26)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. `list[Dog]` cannot be used where `list[Animal]` is expected. Give the concrete disaster that rule prevents.
 2. You override `__eq__` on a mutable class and put instances in a `set`. What goes wrong?
@@ -6267,7 +6274,7 @@ service.complete("Write guide")
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Design a `Money` value object in your head: frozen, validated, with value equality and a `+` that refuses to add different currencies. Name which section of Part 3 gave you each of those four properties.
 
@@ -6275,7 +6282,7 @@ Design a `Money` value object in your head: frozen, validated, with value equali
 
 <div align="center" markdown="1">
 
-# 🔴 PART 4 — PROFESSIONAL DESIGN
+## 🔴 PART 4 — PROFESSIONAL DESIGN
 
 *Sections 27–33 are about designing systems rather than classes — and about the cost of every principle.*
 
@@ -6283,7 +6290,7 @@ Design a `Money` value object in your head: frozen, validated, with value equali
 
 ---
 
-# 27. SOLID principles
+### 27. SOLID principles
 
 > 📌 **In plain words:** **SOLID** is five famous rules that keep OOP systems flexible and maintainable. Learn them — they come up in nearly every serious code review and interview.
 
@@ -6297,7 +6304,7 @@ Design a `Money` value object in your head: frozen, validated, with value equali
 | **I** | Interface Segregation | Small, focused contracts |
 | **D** | Dependency Inversion | Depend on abstractions |
 
-## 27.1 🎯 S: Single Responsibility Principle
+#### 27.1 🎯 S: Single Responsibility Principle
 
 A class should have **one reason to change**.
 
@@ -6334,7 +6341,7 @@ class InvoicePrinter:
     pass
 ```
 
-## 27.2 🚪 O: Open/Closed Principle
+#### 27.2 🚪 O: Open/Closed Principle
 
 Software should be **open for extension** and **closed for modification**.
 
@@ -6361,7 +6368,7 @@ class DiscountPolicy(Protocol):
 
 > 🎯 Add new discount types by adding classes, **not** by editing old conditional logic (which risks breaking what already works).
 
-## 27.3 🔄 L: Liskov Substitution Principle
+#### 27.3 🔄 L: Liskov Substitution Principle
 
 A derived class should be usable **wherever** the base class is expected — without surprises.
 
@@ -6388,7 +6395,7 @@ except NotImplementedError as e:
 
 **Expected output:**
 
-```
+```text
 Bird is flying
 NotImplementedError: Penguins cannot fly.
 ```
@@ -6441,7 +6448,7 @@ migrate([Sparrow("Jack"), Sparrow("Jill")])
 
 **Expected output:**
 
-```
+```text
 Jack is eating
 Pip is eating
 Jack is flying
@@ -6460,7 +6467,7 @@ The error moved from **runtime, in unrelated code** to **the type checker, at th
 
 > 🌍 **Analogy:** If a recipe says "use any fruit," swapping in an apple shouldn't blow up the kitchen. A subtype that explodes when substituted violates Liskov.
 
-## 27.4 ✂️ I: Interface Segregation Principle
+#### 27.4 ✂️ I: Interface Segregation Principle
 
 Do not force classes to implement methods they don't need.
 
@@ -6500,7 +6507,7 @@ except NotImplementedError as e:
 
 **Expected output:**
 
-```
+```text
 printing
 NotImplementedError: this printer cannot scan
 ```
@@ -6525,7 +6532,7 @@ class Fax(Protocol):
         ...
 ```
 
-## 27.5 🔌 D: Dependency Inversion Principle
+#### 27.5 🔌 D: Dependency Inversion Principle
 
 High-level code should depend on **abstractions**, not concrete details.
 
@@ -6553,7 +6560,7 @@ class OrderService:
 
 > 💡 This directly sets up the next topic: **Dependency Injection**.
 
-## 27.6 🏋️ Hands-on exercise
+#### 27.6 🏋️ Hands-on exercise
 
 Start from this SRP-violating class:
 
@@ -6623,7 +6630,7 @@ print(final_price(100.0, VipDiscountPolicy()))
 
 **Expected output:**
 
-```
+```text
 Total: 60
 80.0
 ```
@@ -6647,7 +6654,7 @@ Total: 60
 
 ---
 
-# 28. Dependency injection
+### 28. Dependency injection
 
 > 📌 **In plain words:** Dependency Injection (DI) means **giving an object its tools from the outside** instead of having it build them itself. This makes code flexible and testable.
 
@@ -6655,7 +6662,7 @@ Total: 60
 
 Python often uses **simple constructor injection** without any framework.
 
-## 28.1 🏗️ Constructor injection
+#### 28.1 🏗️ Constructor injection
 
 ```python
 from typing import Protocol
@@ -6686,7 +6693,7 @@ order_service.checkout(100.0)
 
 > 🎯 In tests, you inject a *fake* gateway — no real charges. That's DI's superpower.
 
-## 28.2 🔧 Function-based dependency injection
+#### 28.2 🔧 Function-based dependency injection
 
 **▶️ Continues from §28.1** — assumes the `PaymentGateway` protocol defined there.
 
@@ -6697,7 +6704,7 @@ def checkout(total: float, payment_gateway: PaymentGateway) -> None:
 
 > 💡 This is often enough for small Python applications. Don't reach for a DI framework prematurely.
 
-## 28.3 🌱 Composition root
+#### 28.3 🌱 Composition root
 
 **▶️ Continues from §28.1** — assumes `OrderService` and its dependencies from that section.
 
@@ -6711,7 +6718,7 @@ def build_order_service() -> OrderService:
 
 > 🌍 **Analogy:** The composition root is the **assembly line** where all parts are bolted together, once, at the start.
 
-## 28.4 ⏳ Lifetimes in Python
+#### 28.4 ⏳ Lifetimes in Python
 
 Python doesn't have built-in DI lifetimes like some frameworks, but the ideas still apply.
 
@@ -6728,7 +6735,7 @@ Python doesn't have built-in DI lifetimes like some frameworks, but the ideas st
 - Avoid global mutable state.
 - Keep infrastructure objects outside your domain model.
 
-## 28.5 🎁 DI benefits
+#### 28.5 🎁 DI benefits
 
 - 🔗 Loose coupling
 - 🧪 Easier testing
@@ -6736,7 +6743,7 @@ Python doesn't have built-in DI lifetimes like some frameworks, but the ideas st
 - 🔄 Replaceable implementations
 - 📦 Better separation of concerns
 
-## 28.6 🏋️ Hands-on exercise
+#### 28.6 🏋️ Hands-on exercise
 
 Build a `SignupService` that depends on an `EmailSender` protocol, injected through the constructor (not created inside the class). Write a `SmtpEmailSender` (just prints, pretending to send) for production, and a `FakeEmailSender` that records messages for testing. Then write a `build_signup_service()` composition-root function.
 
@@ -6791,7 +6798,7 @@ build_signup_service().sign_up("bob@example.com")
 
 **Expected output:**
 
-```
+```text
 Test passed: [('anna@example.com', 'Welcome!')]
 Sending real email to bob@example.com: Welcome!
 ```
@@ -6815,14 +6822,14 @@ Sending real email to bob@example.com: Welcome!
 
 ---
 
-# 29. Design patterns for Python OOP
+### 29. Design patterns for Python OOP
 
 > 📌 **In plain words:** Design patterns are **proven, reusable solutions** to common design problems — like recipes other cooks already perfected.
 
 > [!TIP]
 > **Do not memorize patterns. Learn the _problem_ each one solves.** Python often needs less ceremony than C# or Java because functions, modules, decorators, and duck typing are first-class tools.
 
-## 29.1 🏭 Factory Method
+#### 29.1 🏭 Factory Method
 
 Creates objects without exposing the creation logic.
 
@@ -6870,7 +6877,7 @@ def create_notification_sender(sender_type: str) -> NotificationSender:
 
 > 🎯 **When to use:** when creating an object involves logic or choosing among types, and you want callers to stay blissfully unaware of the details.
 
-## 29.2 🎛️ Strategy
+#### 29.2 🎛️ Strategy
 
 Select behavior at runtime by swapping in different objects.
 
@@ -6900,7 +6907,7 @@ class CheckoutService:
 > 🌍 **Analogy:** Choosing "standard" vs "express" shipping at checkout — same checkout, swappable strategy.
 
 <a id="293--repository"></a>
-## 29.3 🗃️ Repository
+#### 29.3 🗃️ Repository
 
 Abstracts data access so business code doesn't care where data lives.
 
@@ -6920,7 +6927,7 @@ class Repository(Protocol[T]):
         ...
 ```
 
-## 29.4 💼 Unit of Work
+#### 29.4 💼 Unit of Work
 
 Coordinates multiple repository operations in one transaction (all-or-nothing).
 
@@ -6955,7 +6962,7 @@ class SqlUnitOfWork:
         pass
 ```
 
-## 29.5 👀 Observer
+#### 29.5 👀 Observer
 
 Objects subscribe to changes/events.
 
@@ -6976,7 +6983,7 @@ class EventBus:
 
 > 🌍 **Analogy:** A newsletter 📰 — subscribers get notified whenever a new issue publishes, and the publisher doesn't need to know who they are.
 
-## 29.6 🎀 Decorator (pattern)
+#### 29.6 🎀 Decorator (pattern)
 
 Add behavior without changing the original object.
 
@@ -6999,7 +7006,7 @@ class LoggingPaymentGateway:
 
 > ⚠️ Do not confuse the **Decorator design pattern** with **Python decorator syntax** (`@something`). Related ideas, not identical.
 
-## 29.7 🔌 Adapter
+#### 29.7 🔌 Adapter
 
 Make incompatible interfaces work together.
 
@@ -7026,7 +7033,7 @@ class ThirdPartyMailerAdapter:
 
 > 🌍 **Analogy:** A **travel plug adapter** 🔌 — lets your device fit a foreign socket without rewiring anything.
 
-## 29.8 📜 Command
+#### 29.8 📜 Command
 
 **▶️ Continues from §29.7** — assumes the `EmailSender` protocol defined there.
 
@@ -7048,7 +7055,7 @@ class SendWelcomeEmailCommand:
         self._email_sender.send_email(self._to, "Welcome")
 ```
 
-## 29.9 🧱 Builder
+#### 29.9 🧱 Builder
 
 Construct complex objects step by step.
 
@@ -7077,7 +7084,7 @@ class ReportBuilder:
 
 > 🎯 **When to use:** when an object needs many optional pieces assembled in steps. The `return self` trick enables fluent chaining: `builder.with_title(...).add_section(...).build()`.
 
-## 29.10 1️⃣ Singleton
+#### 29.10 1️⃣ Singleton
 
 Ensures exactly one instance exists.
 
@@ -7092,7 +7099,7 @@ APPLICATION_NAME = "OOP App"
 
 > 💡 Avoid complex singleton classes unless there's a strong reason. A module-level value usually does the job.
 
-## 29.11 🏋️ Hands-on exercise
+#### 29.11 🏋️ Hands-on exercise
 
 Implement the **Strategy** pattern for shipping cost (one class per method: `StandardShipping`, `ExpressShipping`), plus a simple **Factory function** `create_shipping(method_name: str)` that builds the right one from a string. Then write a `Builder`-style `OrderBuilder` (à la §29.9) that chains `.with_customer(...)`, `.with_shipping(...)`, `.build()`.
 
@@ -7168,7 +7175,7 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 Anna 15.0
 ValueError: Unknown shipping method: 'drone'
 ```
@@ -7192,11 +7199,11 @@ ValueError: Unknown shipping method: 'drone'
 
 ---
 
-# 30. Domain modeling and architecture
+### 30. Domain modeling and architecture
 
 > 📌 **In plain words:** This is where OOP grows up. **Domain modeling** means turning real business concepts into well-organized objects, arranged in clean layers.
 
-## 30.1 🆔 Entity
+#### 30.1 🆔 Entity
 
 An entity has **identity** — it's the *same* thing even if its data changes.
 
@@ -7210,7 +7217,7 @@ class Entity:
 
 > 🌍 **Analogy:** *You* are an entity — change your name, address, or hairstyle, and you're still *you* (same ID).
 
-## 30.2 💎 Value object
+#### 30.2 💎 Value object
 
 Defined by its **values**, not identity. Two with the same values are interchangeable.
 
@@ -7227,7 +7234,7 @@ class Money:
 
 > 🌍 **Analogy:** A **$10 bill** — any $10 bill is as good as any other. They have no individual identity, just value.
 
-## 30.3 🧩 Aggregate
+#### 30.3 🧩 Aggregate
 
 **▶️ Continues from §30.1** — assumes the `Entity` base class defined there.
 
@@ -7275,7 +7282,7 @@ class Order(Entity):
         )
 ```
 
-## 30.4 🧠 Domain service
+#### 30.4 🧠 Domain service
 
 **▶️ Continues from §30.3** — assumes the `Order` aggregate defined there.
 
@@ -7293,7 +7300,7 @@ class PricingService:
         return Money(total - total * discount, "USD")
 ```
 
-## 30.5 🎬 Application service
+#### 30.5 🎬 Application service
 
 **▶️ Continues from §30.3 and §30.4** — assumes the `Order` aggregate and a `Repository` protocol.
 
@@ -7314,7 +7321,7 @@ class PlaceOrderService:
         self._order_repository.add(order)
 ```
 
-## 30.6 🏭 Infrastructure
+#### 30.6 🏭 Infrastructure
 
 Infrastructure contains technical details:
 
@@ -7325,7 +7332,7 @@ Infrastructure contains technical details:
 - 📨 Message queues
 - 📝 Logging providers
 
-## 30.7 🧭 Clean architecture dependency rule
+#### 30.7 🧭 Clean architecture dependency rule
 
 A common professional structure:
 
@@ -7355,7 +7362,7 @@ entity, the rule has been broken and both benefits are gone.
 > [!IMPORTANT]
 > **Business logic should not depend directly on databases, UI, or external systems.** The domain sits at the center; everything else points *inward* toward it.
 
-## 30.8 🏋️ Hands-on exercise
+#### 30.8 🏋️ Hands-on exercise
 
 Model a tiny `ShoppingCart` **aggregate**: an `Entity` base class with an `id`, a frozen `Money` value object, and a `ShoppingCart(Entity)` that owns a list of `CartLine` items and enforces the rule "cannot add a line with non-positive quantity." Add a `total()` method that sums line totals as `Money`.
 
@@ -7430,7 +7437,7 @@ except ValueError as e:
 
 **Expected output:**
 
-```
+```text
 Money(amount=36.0, currency='USD')
 ValueError: Quantity must be positive.
 ```
@@ -7454,7 +7461,7 @@ ValueError: Quantity must be positive.
 
 ---
 
-# 31. Unit testing OOP code
+### 31. Unit testing OOP code
 
 > 📌 **In plain words:** Unit tests are small automated checks that prove your code does what you think. They're your safety net when you change things later.
 
@@ -7464,7 +7471,7 @@ Python commonly uses `pytest` or the built-in `unittest` module.
 
 <a id="311--create-a-test-project"></a>
 
-## 31.1 🏗️ Create a test project
+#### 31.1 🏗️ Create a test project
 
 ```bash
 pip install pytest
@@ -7488,7 +7495,7 @@ Run tests:
 pytest
 ```
 
-## 31.2 ✅ Example test with pytest
+#### 31.2 ✅ Example test with pytest
 
 **📄 Fragment** — a test file belonging to the project laid out in [§31.1](#311--create-a-test-project). It imports from your `banking` package and is run with `pytest`, never with `python`.
 
@@ -7506,7 +7513,7 @@ def test_deposit_should_increase_balance() -> None:
 
 > 💡 Notice the **Arrange, Act, Assert** rhythm: set up, do the thing, check the result.
 
-## 31.3 💥 Test exceptions
+#### 31.3 💥 Test exceptions
 
 **📄 Fragment** — same project as [§31.2](#312--example-test-with-pytest); run with `pytest`.
 
@@ -7522,7 +7529,7 @@ def test_withdraw_should_raise_when_amount_exceeds_balance() -> None:
         account.withdraw(200)
 ```
 
-## 31.4 🎭 Fake dependency
+#### 31.4 🎭 Fake dependency
 
 Replace a real dependency with a simple stand-in you control.
 
@@ -7537,7 +7544,7 @@ class FakeEmailSender:
 
 > 🎯 This is where **dependency injection** ([Section 28](#28-dependency-injection)) pays off — you inject the fake instead of the real email service.
 
-## 31.5 🤖 Using unittest.mock
+#### 31.5 🤖 Using unittest.mock
 
 ```python
 from unittest.mock import Mock
@@ -7552,7 +7559,7 @@ def test_order_service_sends_email() -> None:
     email_sender.send.assert_called_once()
 ```
 
-## 31.6 📏 Testing principles
+#### 31.6 📏 Testing principles
 
 - ✅ Test **behavior**, not private implementation details.
 - ✅ Prefer clear test names.
@@ -7563,7 +7570,7 @@ def test_order_service_sends_email() -> None:
 - ✅ Use fake dependencies when needed.
 - ✅ Mock **external systems**, not your domain model.
 
-## 31.7 🏋️ Hands-on exercise
+#### 31.7 🏋️ Hands-on exercise
 
 Given this class:
 
@@ -7641,13 +7648,13 @@ def test_wallets_should_be_independent() -> None:
 
 ---
 
-# 32. Refactoring OOP code
+### 32. Refactoring OOP code
 
 > 📌 **In plain words:** Refactoring means **improving the design without changing what the code does**. Same behavior, cleaner structure.
 
 > 🌍 **Analogy:** Reorganizing a messy closet 🧹 — the same clothes, but now you can actually find things. Nothing new was bought or thrown away.
 
-## 32.1 🧰 Common refactorings
+#### 32.1 🧰 Common refactorings
 
 | Refactoring | Use when |
 |---|---|
@@ -7662,7 +7669,7 @@ def test_wallets_should_be_independent() -> None:
 | Introduce Value Object | Primitive values need rules |
 | Split God Class | One class does everything |
 
-## 32.2 💎 Example: primitive obsession
+#### 32.2 💎 Example: primitive obsession
 
 **❌ Bad — a raw string with no rules:**
 
@@ -7689,7 +7696,7 @@ class EmailAddress:
             raise ValueError("Email is invalid.")
 ```
 
-## 32.3 🔀 Example: replace conditional with polymorphism
+#### 32.3 🔀 Example: replace conditional with polymorphism
 
 **Before:**
 
@@ -7734,13 +7741,13 @@ for method in (StandardShipping(), ExpressShipping(), OvernightShipping()):
 
 **Expected output:**
 
-```
+```text
 StandardShipping     105.00
 ExpressShipping      115.00
 OvernightShipping    129.00
 ```
 
-### 📌 What the refactoring actually bought
+##### 📌 What the refactoring actually bought
 
 | | **Before** (`match` on a string) | **After** (one class per method) |
 |---|---|---|
@@ -7749,7 +7756,7 @@ OvernightShipping    129.00
 | Method-specific data (weight bands, zones) | Nowhere natural to put it | Lives in its own class |
 | Testing one method | Must go through the dispatcher | Test the class directly |
 
-### ⚠️ And the honest trade-off
+##### ⚠️ And the honest trade-off
 
 This refactoring is **not** automatically an improvement. It replaced six obvious lines with four classes, which is more code and more files to navigate. It pays off when:
 
@@ -7759,7 +7766,7 @@ This refactoring is **not** automatically an improvement. It replaced six obviou
 
 If shipping costs are three fixed numbers that change once a year, the original `match` statement is clearer and you should keep it. A dictionary of `{"standard": 5.0, "express": 15.0}` is another perfectly good middle ground. Reach for polymorphism when the conditional is *duplicated* or the branches are *growing*, not merely because a conditional exists.
 
-## 32.4 🔁 Refactoring workflow
+#### 32.4 🔁 Refactoring workflow
 
 1. 🧪 Add tests around the current behavior.
 2. 🔧 Make **one** small design change.
@@ -7770,7 +7777,7 @@ If shipping costs are three fixed numbers that change once a year, the original 
 > [!IMPORTANT]
 > **Never refactor without tests.** Tests are what let you change code confidently, knowing you didn't break anything.
 
-## 32.5 🏋️ Hands-on exercise
+#### 32.5 🏋️ Hands-on exercise
 
 Start from this working but overloaded function:
 
@@ -7826,7 +7833,7 @@ print("Test still passes after refactoring.")
 
 **Expected output:**
 
-```
+```text
 Test still passes after refactoring.
 ```
 
@@ -7849,11 +7856,11 @@ Test still passes after refactoring.
 
 ---
 
-# 33. Common OOP mistakes
+### 33. Common OOP mistakes
 
 > 📌 **In plain words:** Learn these traps *before* you fall into them. Recognizing an anti-pattern early saves days of pain later.
 
-## 33.1 🦖 God class
+#### 33.1 🦖 God class
 
 One class does everything.
 
@@ -7864,7 +7871,7 @@ One class does everything.
 - Hard to test
 - Hard to understand
 
-## 33.2 🩸 Anemic domain model
+#### 33.2 🩸 Anemic domain model
 
 **▶️ Continues** — assumes an `OrderItem` class with a `total` attribute.
 
@@ -7908,7 +7915,7 @@ class Order:
         self._items.append(item)
 ```
 
-## 33.3 🌳 Too much inheritance
+#### 33.3 🌳 Too much inheritance
 
 If you have deep inheritance like:
 
@@ -7918,15 +7925,15 @@ BaseEntity -> Person -> Employee -> Manager -> RegionalManager -> ...
 
 > ⚠️ Pause and reconsider **composition**. Deep inheritance chains are fragile and hard to change.
 
-## 33.4 📢 Public mutable state
+#### 33.4 📢 Public mutable state
 
 Avoid exposing mutable internal lists and dictionaries unless external mutation is intended.
 
-## 33.5 🔢 Primitive obsession
+#### 33.5 🔢 Primitive obsession
 
 Using `str`, `int`, and `float` everywhere instead of meaningful types (see the `EmailAddress` fix in [32.2](#322--example-primitive-obsession)).
 
-## 33.6 🔗 Tight coupling
+#### 33.6 🔗 Tight coupling
 
 **▶️ Continues** — assumes an `EmailSenderProtocol` of the kind shown in [§13](#13-protocols-and-interfaces).
 
@@ -7948,7 +7955,7 @@ class OrderService:
         self._sender = sender
 ```
 
-## 33.7 📐 Overusing protocols
+#### 33.7 📐 Overusing protocols
 
 Do not create protocols for every class automatically. Create protocols when you need:
 
@@ -7958,7 +7965,7 @@ Do not create protocols for every class automatically. Create protocols when you
 - Plugin-like behavior
 - A boundary between layers
 
-## 33.8 🖱️ Business logic in the UI
+#### 33.8 🖱️ Business logic in the UI
 
 **❌ Bad:**
 
@@ -7973,21 +7980,21 @@ Button click handler calls InvoiceService.
 InvoiceService contains business logic.
 ```
 
-## 33.9 🗄️ Business logic in database/infrastructure only
+#### 33.9 🗄️ Business logic in database/infrastructure only
 
 Do not hide *all* rules inside SQL, stored procedures, or external services if your domain needs to enforce them.
 
-## 33.10 📭 Ignoring None handling
+#### 33.10 📭 Ignoring None handling
 
 Use type hints, explicit validation, and tests (see [Section 20](#20-none-safety-and-optional-values)).
 
 <a id="3311--mutable-default-arguments"></a>
-## 33.11 ⚠️ Mutable default arguments
+#### 33.11 ⚠️ Mutable default arguments
 
 > [!WARNING]
 > This is the most famous Python gotcha of all. A mutable default is created **once**, when the function is defined, and then shared by every call that does not supply its own value.
 
-### 📌 See the bug happen
+##### 📌 See the bug happen
 
 **❌ Bad:**
 
@@ -8003,7 +8010,7 @@ print(add_item("cherry"))    # ['apple', 'banana', 'cherry']
 
 **Expected output:**
 
-```
+```text
 ['apple']
 ['apple', 'banana']
 ['apple', 'banana', 'cherry']
@@ -8011,7 +8018,7 @@ print(add_item("cherry"))    # ['apple', 'banana', 'cherry']
 
 Each call was supposed to start from an empty list. Instead, all three share one list that keeps growing.
 
-### 📌 Why it happens
+##### 📌 Why it happens
 
 Default values are evaluated **once, when the `def` statement runs** — not on each call. The empty list is created at definition time and stored on the function object itself. Every call that omits `items` receives *that same list*.
 
@@ -8030,7 +8037,7 @@ print(add_item.__defaults__[0] is add_item("x"))   # True — same object
 
 **Expected output:**
 
-```
+```text
 ([],)
 (['apple'],)
 True
@@ -8038,7 +8045,7 @@ True
 
 `__defaults__` is the tuple of default values stored on the function (covered in `python_dunder.md`, Entry 132). Watching it change from `([],)` to `(['apple'],)` is the whole bug in one line.
 
-### ✅ The fix: use `None` as the sentinel
+##### ✅ The fix: use `None` as the sentinel
 
 ```python
 def add_item(item, items=None):
@@ -8054,7 +8061,7 @@ print(add_item("cherry", ["existing"]))   # ['existing', 'cherry']
 
 **Expected output:**
 
-```
+```text
 ['apple']
 ['banana']
 ['existing', 'cherry']
@@ -8062,7 +8069,7 @@ print(add_item("cherry", ["existing"]))   # ['existing', 'cherry']
 
 `None` works as the sentinel because it is immutable and unambiguous. The `if items is None:` check runs on **every** call, so a new list is built each time.
 
-### ⚠️ Which defaults are affected
+##### ⚠️ Which defaults are affected
 
 The rule is about **mutability**, not about being a container:
 
@@ -8075,7 +8082,7 @@ The rule is about **mutability**, not about being a container:
 
 The `datetime.now()` row catches people who understand the list case: a timestamp default silently reports the time the *module was imported*, not the time of the call.
 
-### 📌 The same bug in classes
+##### 📌 The same bug in classes
 
 **❌ Bad** — a mutable **class attribute** is shared by every instance:
 
@@ -8094,7 +8101,7 @@ print(a.items is b.items)           # True — literally the same list
 
 **Expected output:**
 
-```
+```text
 ['book']
 True
 ```
@@ -8117,14 +8124,14 @@ print(a.items is b.items)           # False — independent
 
 **Expected output:**
 
-```
+```text
 ['book'] []
 False
 ```
 
 This is the same mechanism as the function-default bug: anything created in the *class body* (or in a default value) exists once, while anything created in `__init__` exists once per object. See [Section 22.6](#226--mutable-class-attribute-warning) for more on this distinction.
 
-### ✅ For dataclasses, use `field(default_factory=...)`
+##### ✅ For dataclasses, use `field(default_factory=...)`
 
 A dataclass will not even let you make the mistake:
 
@@ -8150,7 +8157,7 @@ print(a.items, b.items)      # ['book'] []
 
 **Expected output:**
 
-```
+```text
 ValueError: mutable default <class 'list'> for field items is not allowed: use default_factory
 ['book'] []
 ```
@@ -8159,7 +8166,7 @@ ValueError: mutable default <class 'list'> for field items is not allowed: use d
 
 **This is one of the strongest reasons to prefer dataclasses** for data-holding classes: the error is caught when the class is defined, long before any confusing runtime behaviour.
 
-## 33.12 🏋️ Hands-on exercise
+#### 33.12 🏋️ Hands-on exercise
 
 This code has **three** of the mistakes from this section. Find and fix all three:
 
@@ -8228,7 +8235,7 @@ print(order_b.items)
 
 **Expected output:**
 
-```
+```text
 ('Book',)
 ()
 ```
@@ -8254,14 +8261,14 @@ print(order_b.items)
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — Part 4: Professional design
+#### ✅ Checkpoint — Part 4: Professional design
 
 </div>
 
 > [!IMPORTANT]
 > Part 4 is where advice becomes *conditional*. Every principle here has a cost, and being able to name that cost is the difference between using a principle and repeating it.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -8272,7 +8279,7 @@ print(order_b.items)
 - A **fake** versus a **mock** (§31)
 - The **refactoring loop** (§32)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. Explain dependency injection to a non-technical person in one sentence, using no software words.
 2. What does the Open/Closed principle actually ask you to *do* on Monday morning?
@@ -8298,7 +8305,7 @@ print(order_b.items)
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Take the `OrderService` from §28 and describe, in plain words, what changes in a test when the payment gateway is injected instead of constructed inside. Then name the one thing DI made *worse*.
 
@@ -8306,7 +8313,7 @@ Take the `OrderService` from §28 and describe, in plain words, what changes in 
 
 <div align="center" markdown="1">
 
-# 🟡 PART 5 — PRACTICE AND REFERENCE
+## 🟡 PART 5 — PRACTICE AND REFERENCE
 
 *Sections 34–39 are where you stop reading and start building.*
 
@@ -8314,11 +8321,11 @@ Take the `OrderService` from §28 and describe, in plain words, what changes in 
 
 ---
 
-# 34. Hands-on projects
+### 34. Hands-on projects
 
 > 📌 **In plain words:** Reading about OOP is like reading about swimming. These projects are where you jump in the water. 🏊 Pick one at your level and build it end to end.
 
-## 34.1 🟢 Beginner projects
+#### 34.1 🟢 Beginner projects
 
 1. Student Management System
 2. Bank Account System
@@ -8327,7 +8334,7 @@ Take the `OrderService` from §28 and describe, in plain words, what changes in 
 5. Shape Area Calculator
 6. Notification Sender
 
-## 34.2 🟡 Intermediate projects
+#### 34.2 🟡 Intermediate projects
 
 1. Library Management System
 2. Hotel Booking System
@@ -8336,7 +8343,7 @@ Take the `OrderService` from §28 and describe, in plain words, what changes in 
 5. Vehicle Rental System
 6. Course Enrollment System
 
-## 34.3 🔴 Advanced projects
+#### 34.3 🔴 Advanced projects
 
 1. E-Commerce Cart and Checkout
 2. Payroll System
@@ -8345,7 +8352,7 @@ Take the `OrderService` from §28 and describe, in plain words, what changes in 
 5. Support Ticket System
 6. Event Booking Platform
 
-## 34.4 ✅ What every project should practice
+#### 34.4 ✅ What every project should practice
 
 > [!TIP]
 > Treat this as a checklist for *each* project. A project that hits all these is a real portfolio piece.
@@ -8379,13 +8386,13 @@ Take the `OrderService` from §28 and describe, in plain words, what changes in 
 
 ---
 
-# 35. Complete capstone project: Library Management System
+### 35. Complete capstone project: Library Management System
 
 > 📌 **In plain words:** This is the grand finale — a single project that combines nearly *everything* in this guide into one working console app. Build it, and you've proven you can do professional Python OOP. 🎓
 
 This capstone intentionally combines beginner and professional OOP ideas.
 
-## 35.1 📋 Requirements
+#### 35.1 📋 Requirements
 
 Build a console app with:
 
@@ -8405,7 +8412,7 @@ Build a console app with:
 
 <a id="352--create-project"></a>
 
-## 35.2 🏗️ Create project
+#### 35.2 🏗️ Create project
 
 ```bash
 mkdir library_management
@@ -8469,7 +8476,7 @@ pythonpath = ["src"]
 >
 > Build the files in the order given — each one imports from the ones before it.
 
-## 35.3 🚨 Domain exception
+#### 35.3 🚨 Domain exception
 
 ```python
 # src/library_management/domain/exceptions.py
@@ -8478,7 +8485,7 @@ class DomainError(Exception):
     pass
 ```
 
-## 35.4 🆔 Entity base
+#### 35.4 🆔 Entity base
 
 ```python
 # src/library_management/domain/entities.py
@@ -8488,7 +8495,7 @@ class Entity:
         self.id = entity_id
 ```
 
-## 35.5 📚 Book
+#### 35.5 📚 Book
 
 ```python
 # src/library_management/domain/books.py
@@ -8526,7 +8533,7 @@ class Book(Entity):
         self._is_available = True
 ```
 
-## 35.6 👤 Member abstraction
+#### 35.6 👤 Member abstraction
 
 ```python
 # src/library_management/domain/members.py
@@ -8572,7 +8579,7 @@ class Member(Entity, ABC):
 
 > 💡 See how many concepts converge here: **inheritance** (`Entity`), **abstraction** (`ABC` + abstract `borrow_limit`), **encapsulation** (`_borrowed_books` + read-only `tuple`), and **domain rules** (borrow limit).
 
-## 35.7 👥 Member types
+#### 35.7 👥 Member types
 
 ```python
 # src/library_management/domain/members.py continued
@@ -8590,7 +8597,7 @@ class PremiumMember(Member):
 
 > 🎯 This is **polymorphism** in action — `RegularMember` and `PremiumMember` differ only in their `borrow_limit`, and the shared `borrow_book` logic just works for both.
 
-## 35.8 🧑‍💼 Librarian
+#### 35.8 🧑‍💼 Librarian
 
 ```python
 # src/library_management/domain/members.py continued
@@ -8604,7 +8611,7 @@ class Librarian(Entity):
         self.name = name
 ```
 
-## 35.9 🗃️ Generic repository
+#### 35.9 🗃️ Generic repository
 
 ```python
 # src/library_management/domain/repositories.py
@@ -8639,7 +8646,7 @@ class InMemoryRepository(Generic[TEntity]):
         return list(self._items)
 ```
 
-## 35.10 📖 Library service
+#### 35.10 📖 Library service
 
 ```python
 # src/library_management/domain/services.py
@@ -8698,7 +8705,7 @@ class LibraryService:
 
 > 💡 `LibraryService` uses **dependency injection** — it receives its repositories, so in tests you can hand it fakes.
 
-## 35.11 🖥️ Console app
+#### 35.11 🖥️ Console app
 
 ```python
 # src/library_management/console_app.py
@@ -8735,7 +8742,7 @@ for book in library.search_books("code"):
 python -m library_management.console_app
 ```
 
-## 35.12 🧪 Unit tests
+#### 35.12 🧪 Unit tests
 
 ```python
 # tests/test_library.py
@@ -8774,7 +8781,7 @@ def test_borrow_book_should_raise_when_limit_reached() -> None:
 pytest
 ```
 
-## 35.13 🚀 Capstone extensions
+#### 35.13 🚀 Capstone extensions
 
 Ready for more? Add:
 
@@ -8805,14 +8812,14 @@ Ready for more? Add:
 
 ---
 
-# 36. Professional checklist
+### 36. Professional checklist
 
 > 📌 **In plain words:** A self-assessment. When you can confidently check every box, you're ready for professional Python OOP work. ✅
 
 > [!NOTE]
 > **No 🧭 In practice block from here on, and that is deliberate.** Sections 36–39 are reference material — a checklist, a schedule, a dictionary, and a link list. “How / when / where / when not / best practices” describes *techniques*, and these four sections do not contain techniques: there is nothing to apply in the wrong situation, and no failure mode to warn you about beyond “do not treat a checklist as a substitute for building something.” Use them the way you use an index.
 
-## 36.1 🔤 Core syntax
+#### 36.1 🔤 Core syntax
 
 - [ ] Class
 - [ ] Object
@@ -8831,7 +8838,7 @@ Ready for more? Add:
 - [ ] Generics/type hints
 - [ ] Collections
 
-## 36.2 🏛️ Professional design
+#### 36.2 🏛️ Professional design
 
 - [ ] Encapsulation with invariants
 - [ ] Composition over inheritance
@@ -8845,7 +8852,7 @@ Ready for more? Add:
 - [ ] Testing
 - [ ] Refactoring
 
-## 36.3 🐍 Python-specific features
+#### 36.3 🐍 Python-specific features
 
 - [ ] Type hints
 - [ ] `Protocol`
@@ -8862,7 +8869,7 @@ Ready for more? Add:
 - [ ] Modules and packages
 - [ ] Virtual environments
 
-## 36.4 🌍 Real-world readiness
+#### 36.4 🌍 Real-world readiness
 
 - [ ] Can build a console OOP application.
 - [ ] Can separate domain logic from UI.
@@ -8877,11 +8884,11 @@ Ready for more? Add:
 
 ---
 
-# 37. 30-day learning plan
+### 37. 30-day learning plan
 
 > 📌 **In plain words:** A day-by-day roadmap. One month, one skill at a time, from zero to a full library system. 📅
 
-## 📗 Week 1: Foundations
+#### 📗 Week 1: Foundations
 
 | Day | Focus |
 |:---:|---|
@@ -8895,7 +8902,7 @@ Ready for more? Add:
 
 🎁 **Deliverable:** shape calculator and bank account system.
 
-## 📘 Week 2: Practical Python OOP
+#### 📘 Week 2: Practical Python OOP
 
 | Day | Focus |
 |:---:|---|
@@ -8909,7 +8916,7 @@ Ready for more? Add:
 
 🎁 **Deliverable:** inventory system.
 
-## 📙 Week 3: Professional design
+#### 📙 Week 3: Professional design
 
 | Day | Focus |
 |:---:|---|
@@ -8923,7 +8930,7 @@ Ready for more? Add:
 
 🎁 **Deliverable:** checkout system with payment and shipping strategies.
 
-## 📕 Week 4: Architecture and testing
+#### 📕 Week 4: Architecture and testing
 
 | Day | Focus |
 |:---:|---|
@@ -8944,7 +8951,7 @@ Ready for more? Add:
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — the whole guide
+#### ✅ Checkpoint — the whole guide
 
 </div>
 
@@ -8952,7 +8959,7 @@ Ready for more? Add:
 > This is the last one, and it is the only checkpoint that matters after you close the guide. It asks
 > nothing about syntax.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 Explain each of these to a colleague who does not write Python, in one or two sentences each, **without using the word itself**:
 
@@ -8962,7 +8969,7 @@ Explain each of these to a colleague who does not write Python, in one or two se
 - Why dependency injection makes code testable
 - Why you should not refactor without tests
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. Someone says “good Python OOP means making everything a class.” What is wrong with that?
 2. Name the one measurement that tells you whether a design is any good.
@@ -8995,7 +9002,7 @@ Explain each of these to a colleague who does not write Python, in one or two se
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Pick any class you have written in the last month. In three sentences: what does it protect, what
 can be swapped for it, and how would you test it without touching a database or a network? If all
@@ -9003,7 +9010,7 @@ three answers come easily, this guide has done its job.
 
 ---
 
-# 38. Glossary
+### 38. Glossary
 
 > 📌 A quick-reference dictionary of every key term in this guide.
 
@@ -9041,7 +9048,7 @@ three answers come easily, this guide has done its job.
 
 ---
 
-# 39. Reference links
+### 39. Reference links
 
 > 📌 Use these official references when you want to dig deeper.
 
@@ -9062,7 +9069,7 @@ three answers come easily, this guide has done its job.
 
 <div align="center" markdown="1">
 
-## 🎯 Final advice
+#### 🎯 Final advice
 
 </div>
 
@@ -9103,6 +9110,6 @@ Good Python OOP means:
 
 ---
 
-## Documentation links
+#### Documentation links
 
 [Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

@@ -1,3 +1,8 @@
+---
+title: "Git Command Cheat Sheet: Branching, Collaboration and Recovery"
+description: "Practice Git setup, commits, branching, collaboration, releases and recovery with explained command examples and guidance on destructive operations."
+---
+
 # 🌿 Git Command Cheat Sheet
 
 [![Git](https://img.shields.io/badge/Git-Version%20control-F05032?style=for-the-badge&logo=git&logoColor=white)](https://git-scm.com/docs)

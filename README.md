@@ -2,7 +2,9 @@
 
 # 🌈 Knowledge Base Learning Paths — Python, C#/.NET, SQL, Azure, Docker, Podman & Git Guides
 
-### **Build real skills, one practical guide at a time.**
+<a id="build-real-skills-one-practical-guide-at-a-time"></a>
+
+**Build real skills, one practical guide at a time.**
 
 Beginner-to-advanced Markdown guides and cheat sheets: **Python OOP**, **Python dunder methods**, **C# and .NET OOP**, a **complete SQL guide**, an **Azure engineering cheat sheet**, **Docker**, **Podman**, and **Git command cheat sheets**, and a **local AI chat app lab with Ollama and Streamlit**.
 

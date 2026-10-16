@@ -1,8 +1,15 @@
+---
+title: "SQL Guide for Microsoft SQL Server and MySQL"
+description: "Learn SQL with Microsoft SQL Server and MySQL examples covering tables, queries, joins, transactions, indexing, database design and practice exercises."
+---
+
 <div align="center" markdown="1">
 
 # 🗄️ The Complete SQL Guide — MSSQL & MySQL
 
-### *From "what is a table?" to "I can design, tune, secure, and scale a real database."*
+<a id="from-what-is-a-table-to-i-can-design-tune-secure-and-scale-a-real-database"></a>
+
+*From "what is a table?" to "I can design, tune, secure, and scale a real database."*
 
 **_By Gehan Fernando_**
 
@@ -384,11 +391,11 @@ SELECT * FROM customers LIMIT 5;
 
 ---
 
-# 🌱 PART 1 — FOUNDATIONS
+## 🌱 PART 1 — FOUNDATIONS
 
 ---
 
-# 1. What a database really is
+### 1. What a database really is
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -397,7 +404,7 @@ SELECT * FROM customers LIMIT 5;
 > [!NOTE]
 > 📌 **In plain words:** A database is an organized place to keep information so that you can **find it again quickly**, **trust that it is correct**, and **let many people use it at the same time without chaos**.
 
-## 1.1 🌍 Start with something you already know: a spreadsheet
+#### 1.1 🌍 Start with something you already know: a spreadsheet
 
 Imagine a spreadsheet for a small shop:
 
@@ -420,7 +427,7 @@ That is already a database in miniature. Look at the vocabulary:
 
 > 🌍 **Analogy:** A table is a **filing cabinet drawer**. Each folder in the drawer is a row. Each folder has the same labelled pockets (columns): name, email, city. The primary key is the number written on the folder tab so you can find it instantly.
 
-## 1.2 ❓ So why not just use a spreadsheet?
+#### 1.2 ❓ So why not just use a spreadsheet?
 
 A spreadsheet breaks the moment your shop becomes real. Here is exactly where it fails and what a database does instead:
 
@@ -437,7 +444,7 @@ A spreadsheet breaks the moment your shop becomes real. Here is exactly where it
 > [!NOTE]
 > 📌 **In plain words:** A spreadsheet stores data. A database **protects** data.
 
-## 1.3 🧩 The vocabulary you need for the rest of this guide
+#### 1.3 🧩 The vocabulary you need for the rest of this guide
 
 | Term | Simple explanation | Example from our shop |
 |---|---|---|
@@ -458,7 +465,7 @@ A spreadsheet breaks the moment your shop becomes real. Here is exactly where it
 
 <a id="14--what-relational-means"></a>
 
-## 1.4 🏛️ What "relational" means
+#### 1.4 🏛️ What "relational" means
 
 The **R** in RDBMS means *relational*. It simply means: **split your data into small, focused tables and connect them by keys**, instead of one giant table that repeats itself.
 
@@ -492,7 +499,7 @@ Now the email exists **once**. Fix it once, and all three orders are correct. Th
 
 <a id="15--types-of-databases-so-you-know-what-you-are-not-learning"></a>
 
-## 1.5 🗂️ Types of databases (so you know what you are *not* learning)
+#### 1.5 🗂️ Types of databases (so you know what you are *not* learning)
 
 | Type | What it is | Examples | Best for |
 |---|---|---|---|
@@ -521,7 +528,7 @@ Now the email exists **once**. Fix it once, and all three orders are correct. Th
 >
 > **Best practices.** Split repeating data into its own table from the start and join it back — the single most expensive mistake in this chapter is one wide table that repeats the customer's email on every order row, because then a typo creates two customers and nobody can tell which is real. Give every table a primary key on day one; adding one later means deciding what to do with the duplicates you have already accumulated.
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Goal:** prove to yourself, with a text editor and no database engine at all, why the "one giant table" design breaks and the relational design doesn't.
 
@@ -538,7 +545,7 @@ Now the email exists **once**. Fix it once, and all three orders are correct. Th
 
 ---
 
-# 2. What SQL is, and the two engines we use
+### 2. What SQL is, and the two engines we use
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -547,7 +554,7 @@ Now the email exists **once**. Fix it once, and all three orders are correct. Th
 > [!NOTE]
 > 📌 **In plain words:** **SQL** (Structured Query Language) is the language you use to *talk* to a relational database. You describe **what you want**, and the database figures out **how to get it**.
 
-## 2.1 🗣️ SQL is a language of intent, not instructions
+#### 2.1 🗣️ SQL is a language of intent, not instructions
 
 In most programming languages you say *how*: loop over this, check that, add to a list. In SQL you say *what*:
 
@@ -566,7 +573,7 @@ You never wrote a loop. You never said which order to read the disk in. The data
 > [!TIP]
 > 💡 **Pro tip:** This is the single biggest mindset shift for programmers learning SQL. If you find yourself writing loops (or *cursors*, SQL's row-by-row loops) to process rows one at a time, you are fighting the language. See [Chapter 59](#59-dynamic-sql-cursors-and-set-based-thinking).
 
-## 2.2 🧬 The five families of SQL commands
+#### 2.2 🧬 The five families of SQL commands
 
 Every SQL statement you will ever write belongs to one of these five groups. Memorize this table — it is asked in almost every interview.
 
@@ -580,7 +587,7 @@ Every SQL statement you will ever write belongs to one of these five groups. Mem
 
 > 🌍 **Analogy:** Building a house. **DDL** builds the rooms. **DML** moves the furniture in and out. **DQL** looks around and describes what is there. **DCL** hands out the door keys. **TCL** makes sure that "move the sofa in and take the old one out" either fully happens or does not happen at all.
 
-## 2.3 🔀 MSSQL vs MySQL — the honest comparison
+#### 2.3 🔀 MSSQL vs MySQL — the honest comparison
 
 | Topic | 🟥 Microsoft SQL Server (MSSQL) | 🟦 MySQL |
 |---|---|---|
@@ -606,7 +613,7 @@ Every SQL statement you will ever write belongs to one of these five groups. Mem
 > [!TIP]
 > 💡 **Pro tip:** Roughly **85% of everyday SQL is identical** in both engines. `SELECT`, `WHERE`, `JOIN`, `GROUP BY`, and window functions are the same. The differences are mostly at the edges: showing results page by page, built-in functions, and procedural code (SQL with variables, `IF`, and loops). This guide flags every difference with a 🔀 box.
 
-## 2.4 ⚙️ What the database is actually doing when you press Execute
+#### 2.4 ⚙️ What the database is actually doing when you press Execute
 
 ```text
    You type SQL
@@ -634,7 +641,7 @@ Every SQL statement you will ever write belongs to one of these five groups. Mem
 > [!NOTE]
 > 📌 **In plain words:** You ask a question. The database *plans* the cheapest way to answer it, then runs that plan. When a query is slow, it is almost always because the plan was bad — usually because an index was missing, or the database's summary of your data (its *statistics*) was out of date. That is the whole story of [Part 10](#46-indexes-the-complete-guide).
 
-## 2.5 📝 SQL syntax rules you must know from minute one
+#### 2.5 📝 SQL syntax rules you must know from minute one
 
 ```sql
 -- 1. Statements end with a semicolon. (Optional in MSSQL, required in MySQL scripts.)
@@ -689,7 +696,7 @@ ORDER BY o.order_date DESC;
 >
 > **Best practices.** Write standard SQL wherever a standard form exists (`COALESCE` rather than `ISNULL`/`IFNULL`, `CASE` rather than `IIF`/`IF`) so your knowledge and your queries travel. When you do use an engine-specific feature, know that you are doing it — this guide marks every such block with 🟥 or 🟦 precisely so that you can tell.
 
-## 🧪 Try it yourself
+#### 🧪 Try it yourself
 
 **Goal:** spot the five SQL command families in a block of SQL you did not write yet, before you ever run a query.
 
@@ -708,7 +715,7 @@ ORDER BY o.order_date DESC;
 
 ---
 
-# 3. Installing and connecting
+### 3. Installing and connecting
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -719,7 +726,7 @@ ORDER BY o.order_date DESC;
 
 > 🌍 **Analogy:** You are setting up a **kitchen**. The **server** is the cooker — it does the actual work, and it runs quietly in the background whether or not you are looking at it. The **client tool** (SSMS, Workbench, DBeaver) is your **worktop**: where you stand, write, and see what comes out. They are two separate things, and beginners often install one and wonder why nothing happens. **You need both.**
 
-## 3.1 🟥 Installing SQL Server (free)
+#### 3.1 🟥 Installing SQL Server (free)
 
 | Option | Best for | How |
 |---|---|---|
@@ -745,7 +752,7 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=YourStrong!Passw0rd" \
 > [!WARNING]
 > ⚠️ **If the connection fails with "The certificate chain was issued by an authority that is not trusted":** tick **Trust server certificate** in the connection window and connect again. Newer tools refuse a server's self-made security certificate by default; for a database on your own computer, trusting it is safe and normal.
 
-## 3.2 🟦 Installing MySQL (free)
+#### 3.2 🟦 Installing MySQL (free)
 
 | Option | Best for | How |
 |---|---|---|
@@ -772,7 +779,7 @@ docker run --name mysql-learn -e MYSQL_ROOT_PASSWORD=YourStrong!Passw0rd \
 
 **Connect with:** Host `127.0.0.1` (it means "this computer"), Port `3306`, User `root` (the built-in administrator), and the password you chose.
 
-## 3.3 ⌨️ Connecting from the command line
+#### 3.3 ⌨️ Connecting from the command line
 
 These commands let you type SQL in a terminal window instead of a graphical tool. **Beginners can skip this section** and use SSMS, Workbench, or DBeaver. (`ShopDB` is created in Chapter 4 — until then, leave `-d ShopDB` and `ShopDB` off the end.)
 
@@ -790,7 +797,7 @@ mysql -h 127.0.0.1 -u root -p ShopDB
 > [!WARNING]
 > ⚠️ **Security note:** The `sa` and `root` accounts are the all-powerful administrators. Use them to set up your learning environment, then create a normal user for daily work — exactly as you would on a real, live (*production*) server. [Chapter 54](#54-security-users-roles-and-permissions) shows how.
 
-## 3.4 🧪 Your very first query
+#### 3.4 🧪 Your very first query
 
 Run this in each engine to confirm everything works:
 
@@ -833,7 +840,7 @@ SELECT VERSION() AS engine_version, NOW() AS server_time;
 
 ---
 
-# 4. The sample database: ShopDB
+### 4. The sample database: ShopDB
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -842,7 +849,7 @@ SELECT VERSION() AS engine_version, NOW() AS server_time;
 > [!NOTE]
 > 📌 **In plain words:** Every example in this guide uses **one** realistic database — a small online electronics store. Build it once now, and every query in all 66 chapters will run on your machine.
 
-## 4.1 🏪 The business we are modelling
+#### 4.1 🏪 The business we are modelling
 
 **ShopDB** runs an online electronics store. In real life the business needs to answer questions like:
 
@@ -854,7 +861,7 @@ SELECT VERSION() AS engine_version, NOW() AS server_time;
 
 Every one of those questions becomes a query later in this guide.
 
-## 4.2 🗺️ The schema at a glance
+#### 4.2 🗺️ The schema at a glance
 
 ```text
    ┌───────────────┐          ┌──────────────┐
@@ -911,7 +918,7 @@ holds many products and a product appears on many orders.
 
 > 🌍 **Analogy for the bridge table:** An order can contain many products, and a product can appear on many orders. You cannot express that with a single column on either side — so you create a middle table (`order_items`) where each row says *"this order, this product, this quantity, this price."* Every many-to-many relationship in every database you will ever build is solved this exact way.
 
-## 4.3 🟥 Build ShopDB — MSSQL version
+#### 4.3 🟥 Build ShopDB — MSSQL version
 
 **What to do:** in SSMS click **New Query** (in VS Code, open a new SQL file and connect), paste the whole script below, and run it with **F5**.
 
@@ -1057,7 +1064,7 @@ CREATE TABLE payments (
 GO
 ```
 
-## 4.4 🟦 Build ShopDB — MySQL version
+#### 4.4 🟦 Build ShopDB — MySQL version
 
 **What to do:** in MySQL Workbench open a new SQL tab (**File → New Query Tab**), paste the whole script below, and run all of it with **Ctrl + Shift + Enter** (the plain ⚡ lightning-bolt button).
 
@@ -1209,7 +1216,7 @@ CREATE TABLE payments (
 > | Storage engine | n/a | `ENGINE=InnoDB` |
 > | Batch separator (splits a script into parts sent one after another) | `GO` | not needed |
 
-## 4.5 🌱 Seed the data (identical in both engines)
+#### 4.5 🌱 Seed the data (identical in both engines)
 
 This script runs unchanged in **both** MSSQL and MySQL. It fills the lookup tables, the people, and the products.
 
@@ -1376,7 +1383,7 @@ INSERT INTO payments (order_id, payment_date, amount, method, status) VALUES
 (1022, '2026-08-14 20:30:00',  159.00, 'CashOnDelivery', 'Pending');
 ```
 
-## 4.6 ✅ Verify your build
+#### 4.6 ✅ Verify your build
 
 Run this check. It counts the rows in every table, so you can compare your copy with the guide's.
 
@@ -1425,7 +1432,7 @@ UNION ALL SELECT 'payments',    COUNT(*) FROM payments;
 >
 > **Best practices.** Notice that `order_items.unit_price` duplicates `products.unit_price` **on purpose**: an order must remember the price at the moment of sale, because product prices change. That is a real design decision, not a normalisation mistake, and [Chapter 52](#52-denormalization-and-when-to-break-the-rules) explains when duplication is correct. Keep the build script handy — breaking your practice data deliberately is how you learn.
 
-## 🏋️ Try it yourself
+#### 🏋️ Try it yourself
 
 **Goal:** prove you can both *verify* and *extend* ShopDB, not just run someone else's script.
 
@@ -1439,7 +1446,7 @@ UNION ALL SELECT 'payments',    COUNT(*) FROM payments;
 
 ---
 
-# 5. How a query actually runs
+### 5. How a query actually runs
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -1448,7 +1455,7 @@ UNION ALL SELECT 'payments',    COUNT(*) FROM payments;
 > [!NOTE]
 > 📌 **In plain words:** SQL is not executed in the order you write it. Learning the **real** order explains 90% of the confusing errors beginners hit.
 
-## 5.1 ✍️ The order you WRITE a query
+#### 5.1 ✍️ The order you WRITE a query
 
 ```text
 SELECT      ...    <- 1st written
@@ -1460,7 +1467,7 @@ ORDER BY    ...    <- 6th
 LIMIT/TOP   ...    <- 7th
 ```
 
-## 5.2 🧠 The order the DATABASE runs it (logical query processing)
+#### 5.2 🧠 The order the DATABASE runs it (logical query processing)
 
 Behind the scenes, the database reads your query in a completely different order. You have not met every keyword below yet — that is fine. Come back to this list whenever a query does something surprising.
 
@@ -1488,9 +1495,9 @@ graph LR
 
 > 🌍 **Analogy — a fruit market:** You **go to the market** (FROM). You **pick only ripe fruit** (WHERE). You **sort it into baskets by type** (GROUP BY). You **discard baskets with fewer than 3 pieces** (HAVING). You **write a label for each remaining basket** (SELECT). You **remove duplicate labels** (DISTINCT). You **line the baskets up by weight** (ORDER BY). You **take the heaviest 5 home** (LIMIT).
 
-## 5.3 💥 Three mysteries this instantly solves
+#### 5.3 💥 Three mysteries this instantly solves
 
-### Mystery 1 — Why can I not use a column alias in WHERE?
+##### Mystery 1 — Why can I not use a column alias in WHERE?
 
 An **alias** is a temporary name you give a result column with `AS`. Below, `price_with_tax` is an alias for `unit_price * 1.15`.
 
@@ -1520,7 +1527,7 @@ WHERE price_with_tax > 1000;
 
 > 🔀 **MySQL exception:** MySQL *does* allow aliases in `GROUP BY`, `HAVING`, and `ORDER BY`, and MSSQL allows them in `ORDER BY`. **Neither** allows them in `WHERE`.
 
-### Mystery 2 — Why does ORDER BY accept an alias?
+##### Mystery 2 — Why does ORDER BY accept an alias?
 
 ```sql
 -- ✅ WORKS in both
@@ -1531,7 +1538,7 @@ ORDER BY price_with_tax DESC;
 
 **Why:** `ORDER BY` (step 7) runs **after** `SELECT` (step 5), so the alias already exists.
 
-### Mystery 3 — What is the real difference between WHERE and HAVING?
+##### Mystery 3 — What is the real difference between WHERE and HAVING?
 
 `GROUP BY` collects rows into groups (below: one group per category), and `HAVING` then filters those groups. Chapter 26 covers both in detail.
 
@@ -1556,7 +1563,7 @@ ORDER BY avg_price DESC;
 > [!TIP]
 > 💡 **Pro tip:** If a filter does not need an aggregate function, put it in `WHERE`, not `HAVING`. `WHERE` removes rows *before* the expensive grouping work, so it is faster. Putting non-aggregate filters in `HAVING` is a classic performance mistake.
 
-## 5.4 🧪 Try it yourself
+#### 5.4 🧪 Try it yourself
 
 1. Write a query that returns each product's name and its price in a second currency (multiply by 3.6), sorted from most expensive.
 2. Now try to filter that computed column in `WHERE`. Watch it fail. Read the error carefully.
@@ -1578,11 +1585,11 @@ ORDER BY avg_price DESC;
 
 ---
 
-# 🧱 PART 2 — BUILDING BLOCKS
+## 🧱 PART 2 — BUILDING BLOCKS
 
 ---
 
-# 6. Data types
+### 6. Data types
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -1593,7 +1600,7 @@ ORDER BY avg_price DESC;
 
 > 🌍 **Analogy:** Data types are the **shaped holes in a toddler's shape-sorter toy**. The star hole only accepts the star block. You cannot force a triangle in. That sounds restrictive — it is actually what keeps your data clean for the next ten years.
 
-## 6.1 🔢 Numeric types
+#### 6.1 🔢 Numeric types
 
 | Purpose | 🟥 MSSQL | 🟦 MySQL | Range / notes |
 |---|---|---|---|
@@ -1636,7 +1643,7 @@ SELECT
 > - **`DECIMAL(5,4)`** — rates and percentages that must be exact (interest, tax).
 > - **`FLOAT`/`DOUBLE`** — scientific measurements, coordinates, sensor data, where tiny error is acceptable.
 
-## 6.2 🔤 String types
+#### 6.2 🔤 String types
 
 | Purpose | 🟥 MSSQL | 🟦 MySQL | Notes |
 |---|---|---|---|
@@ -1682,7 +1689,7 @@ INSERT INTO demo_unicode VALUES ('日本語 🎉');   -- ✅ stored correctly
 > [!TIP]
 > 💡 **Pro tip on sizing:** `VARCHAR(50)` and `VARCHAR(255)` use the *same* storage for the word "Tom" — you only pay for the characters actually stored. But the declared size still matters: it documents your intent, blocks junk data, and **decides how much memory the database reserves when it sorts that column**. Do not lazily declare everything `VARCHAR(4000)` — every sort on that column would reserve far more memory than it needs.
 
-## 6.3 📅 Date and time types
+#### 6.3 📅 Date and time types
 
 | Purpose | 🟥 MSSQL | 🟦 MySQL | Example value |
 |---|---|---|---|
@@ -1726,7 +1733,7 @@ CREATE TABLE audit_demo (
 
 > 🔎 **[Chapter 61](#61-time-zones-and-global-data) covers this properly** — `AT TIME ZONE`, `CONVERT_TZ`, DST (daylight saving time), and how to write a local-day filter that still uses an index.
 
-## 6.4 🎁 Special and modern types
+#### 6.4 🎁 Special and modern types
 
 | Type | 🟥 MSSQL | 🟦 MySQL | Use for |
 |---|---|---|---|
@@ -1744,7 +1751,7 @@ CREATE TABLE audit_demo (
 > [!WARNING]
 > ⚠️ **Avoid MySQL `ENUM` in serious designs.** Adding a value requires an `ALTER TABLE` on the whole table, the ordering rules surprise people, and other database engines do not have it. Use a small lookup table with a foreign key, or a `CHECK` constraint. Our `ShopDB` uses `CHECK` for exactly this reason.
 
-## 6.5 🧭 The decision table: which type do I pick?
+#### 6.5 🧭 The decision table: which type do I pick?
 
 | I need to store... | Use this |
 |---|---|
@@ -1765,7 +1772,7 @@ CREATE TABLE audit_demo (
 > [!CAUTION]
 > 🐛 **Common mistake:** Storing a phone number as `BIGINT`. You immediately lose the leading `+`, the leading zeros, spaces, dashes, and extensions. Phone numbers are **identifiers, not quantities** — you never do arithmetic on them. The same applies to postal codes, invoice numbers with letters, and national ID numbers.
 
-## 6.6 🧪 Try it yourself
+#### 6.6 🧪 Try it yourself
 
 1. Create a table `type_lab` with one column of every numeric type. Insert `12345.678` into each and observe how each one stores it.
 2. Try inserting `'abc'` into an `INT` column. Read the exact error message — you will see it again.
@@ -1787,7 +1794,7 @@ CREATE TABLE audit_demo (
 
 ---
 
-# 7. Creating databases and schemas
+### 7. Creating databases and schemas
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -1796,7 +1803,7 @@ CREATE TABLE audit_demo (
 > [!NOTE]
 > 📌 **In plain words:** A **database** is the outer container. A **schema** is a folder *inside* it that groups related tables so a large system stays organized.
 
-## 7.1 🏗️ Creating a database
+#### 7.1 🏗️ Creating a database
 
 ```sql
 -- ✅ MSSQL
@@ -1879,7 +1886,7 @@ DROP DATABASE IF EXISTS DemoDB;
 > [!WARNING]
 > ⚠️ **`DROP DATABASE` is instant and permanent.** There is no recycle bin, no confirmation, no undo. On a real, live (*production*) server, ordinary accounts should not even be allowed to run it. See [Chapter 56](#56-backup-restore-and-disaster-recovery) before you ever type it on a real server.
 
-## 7.2 📁 Schemas — the folder system
+#### 7.2 📁 Schemas — the folder system
 
 > 🌍 **Analogy:** A database is a **filing cabinet**. Schemas are the **labelled drawers**: Sales, HR, Finance. Without drawers, 400 tables sit in one pile.
 
@@ -1926,7 +1933,7 @@ JOIN shop_analytics.customer_scores s ON s.customer_id = c.customer_id;
 > [!TIP]
 > 💡 **Pro tip (MSSQL):** Always write `dbo.customers`, never bare `customers`. Leaving the schema out makes SQL Server look the name up every time the query runs, can fill its memory with duplicate query plans, and breaks as soon as two schemas contain a table with the same name.
 
-## 7.3 🧪 Try it yourself
+#### 7.3 🧪 Try it yourself
 
 1. Create a database called `PracticeDB` with `utf8mb4` (MySQL) or default settings (MSSQL).
 2. In MSSQL, create schemas `sales` and `archive`, and put one table in each.
@@ -1947,7 +1954,7 @@ JOIN shop_analytics.customer_scores s ON s.customer_id = c.customer_id;
 
 ---
 
-# 8. Creating tables
+### 8. Creating tables
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -1958,7 +1965,7 @@ JOIN shop_analytics.customer_scores s ON s.customer_id = c.customer_id;
 
 > 🌍 **Analogy:** Designing a paper form before you print a thousand copies. You decide which boxes exist, what may be written in each (a date, a number, a name), and which boxes are compulsory. Every row is one filled-in copy of that form.
 
-## 8.1 🧱 The anatomy of CREATE TABLE
+#### 8.1 🧱 The anatomy of CREATE TABLE
 
 ```text
 CREATE TABLE table_name (
@@ -2017,7 +2024,7 @@ The `CONSTRAINT` lines at the bottom are the table's **rules**: the `PRIMARY KEY
 > [!NOTE]
 > 📌 **Read that last constraint again.** `UNIQUE (product_id, customer_id)` encodes a *business rule* in the database itself: **one review per customer per product**. No amount of buggy application code can ever violate it. This is the superpower of a relational database — rules that cannot be bypassed.
 
-## 8.2 🕳️ NULL vs NOT NULL — decide for every column
+#### 8.2 🕳️ NULL vs NOT NULL — decide for every column
 
 `NULL` means **"no value — unknown or not applicable"**. It is not zero, and it is not empty text.
 
@@ -2030,7 +2037,7 @@ The `CONSTRAINT` lines at the bottom are the table's **rules**: the `PRIMARY KEY
 > [!TIP]
 > 💡 **Pro tip:** Make every column `NOT NULL` unless you have a real reason to allow empty values. Columns that allow `NULL` make every query that touches them harder to get right (see [Chapter 15](#15-null-the-value-that-is-not-there)). Ask: *"Can this genuinely be unknown in the real world?"* A ship date genuinely can be. An email address on a signup form cannot.
 
-## 8.3 🎁 DEFAULT values
+#### 8.3 🎁 DEFAULT values
 
 ```sql
 -- ✅ MSSQL
@@ -2065,7 +2072,7 @@ INSERT INTO support_tickets (subject) VALUES ('Laptop will not power on');
 > [!IMPORTANT]
 > 🎯 **When to use DEFAULT:** status columns, created-at timestamps, counters starting at 0, yes/no flags, and "created by" columns that record who did what. Anywhere the sensible value is obvious and you do not want every insert statement to repeat it.
 
-## 8.4 📄 Creating a table from a query
+#### 8.4 📄 Creating a table from a query
 
 Extremely useful for backups before a risky change, and for building report tables.
 
@@ -2106,7 +2113,7 @@ CREATE TABLE products_clone LIKE products;
 > ```
 > It costs seconds. It has saved thousands of careers.
 
-## 8.5 🧪 Try it yourself
+#### 8.5 🧪 Try it yourself
 
 1. Create a `wishlists` table linking `customers` and `products`, with a `created_at` default and a unique constraint preventing the same product twice per customer.
 2. Create it with the composite primary key `(customer_id, product_id)` instead of a surrogate ID (a made-up ID number — explained in 9.2). Which do you prefer, and why?
@@ -2127,7 +2134,7 @@ CREATE TABLE products_clone LIKE products;
 
 ---
 
-# 9. Constraints, the rules that protect your data
+### 9. Constraints, the rules that protect your data
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -2138,7 +2145,7 @@ CREATE TABLE products_clone LIKE products;
 
 > 🌍 **Analogy:** Constraints are the **bouncers at the club door**. The app might be careless about who it invites, but the bouncer checks every single person, every single time, with no exceptions and no bad days.
 
-## 9.1 🗂️ The six constraint types
+#### 9.1 🗂️ The six constraint types
 
 | Constraint | Guarantees | Real-world meaning in ShopDB |
 |---|---|---|
@@ -2149,7 +2156,7 @@ CREATE TABLE products_clone LIKE products;
 | `CHECK` | The value passes a test you write | A rating is between 1 and 5 |
 | `DEFAULT` | A value is supplied when omitted | New orders start as 'Pending' |
 
-## 9.2 🔑 PRIMARY KEY
+#### 9.2 🔑 PRIMARY KEY
 
 ```sql
 -- Single-column, inline
@@ -2196,7 +2203,7 @@ CREATE TABLE order_items_demo (
 > [!TIP]
 > 💡 **Pro tip:** Use a surrogate key as the primary key **and** put a `UNIQUE` constraint on the natural key. You get fast stable joins *and* the real-world uniqueness rule. `ShopDB.customers` does exactly this: `customer_id` is the PK, `email` is `UNIQUE`.
 
-## 9.3 🔗 FOREIGN KEY and referential integrity
+#### 9.3 🔗 FOREIGN KEY and referential integrity
 
 A **foreign key** links a row to a row in another table. **Referential integrity** means every link points at something that really exists — an order can never belong to a customer who does not exist.
 
@@ -2267,7 +2274,7 @@ ALTER TABLE order_items
 > [!CAUTION]
 > 🐛 **Common mistake (MySQL):** Foreign keys are **silently ignored** by the `MyISAM` storage engine. If your FKs seem to do nothing, run `SHOW CREATE TABLE your_table;` and confirm it says `ENGINE=InnoDB`.
 
-## 9.4 ✔️ UNIQUE
+#### 9.4 ✔️ UNIQUE
 
 ```sql
 -- (customers.email already got its UNIQUE in Chapter 4; a second identical
@@ -2297,7 +2304,7 @@ ALTER TABLE employees
 >     ON customers(tax_id) WHERE tax_id IS NOT NULL;
 > ```
 
-## 9.5 🛂 CHECK constraints
+#### 9.5 🛂 CHECK constraints
 
 > ℹ️ **Note:** `ShopDB` already created `ck_products_price`, `ck_items_discount`, and the tier check in [Chapter 4](#4-the-sample-database-shopdb). Re-adding a constraint name that already exists fails with *"There is already an object named 'ck_products_price' in the database"* — so the examples below use `_demo` suffixes to stay runnable on your existing database.
 
@@ -2325,7 +2332,7 @@ ALTER TABLE customers
 > [!TIP]
 > 💡 **Pro tip:** A `CHECK` constraint can reference multiple columns in the same row, but **not other tables** and **not subqueries**. For cross-table rules, use a trigger ([Chapter 39](#39-triggers)) or handle it in a stored procedure.
 
-## 9.6 🧭 Adding, dropping, and inspecting constraints
+#### 9.6 🧭 Adding, dropping, and inspecting constraints
 
 ```sql
 -- ✅ Works in BOTH: add
@@ -2376,7 +2383,7 @@ ORDER BY table_name, constraint_type;
 > | `df_` | Default | `df_orders_status` |
 > | `ix_` | Index | `ix_orders_order_date` |
 
-## 9.7 🧪 Try it yourself
+#### 9.7 🧪 Try it yourself
 
 1. Try to insert a customer with a duplicate email. Read the error. Now try a `loyalty_tier` of `'Diamond'`. Read that error too.
 2. Try to delete customer #1 (who has orders). Which constraint stops you, and what exactly does the message say?
@@ -2398,7 +2405,7 @@ ORDER BY table_name, constraint_type;
 
 ---
 
-# 10. Auto-numbering: IDENTITY vs AUTO_INCREMENT
+### 10. Auto-numbering: IDENTITY vs AUTO_INCREMENT
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -2409,7 +2416,7 @@ ORDER BY table_name, constraint_type;
 
 > 🌍 **Analogy:** The **ticket dispenser at a bakery counter**. You do not choose your number; you pull the next one. Two customers can never get the same ticket, even if they pull at the same instant.
 
-## 10.1 🟥 MSSQL: IDENTITY
+#### 10.1 🟥 MSSQL: IDENTITY
 
 ```sql
 CREATE TABLE invoices (
@@ -2460,7 +2467,7 @@ DBCC CHECKIDENT ('invoices', NORESEED);        -- just report the current value
 -- ⚠️ Never reseed BELOW the highest existing value: the next insert collides with a key that already exists
 ```
 
-## 10.2 🟦 MySQL: AUTO_INCREMENT
+#### 10.2 🟦 MySQL: AUTO_INCREMENT
 
 ```sql
 CREATE TABLE invoices (
@@ -2489,7 +2496,7 @@ INSERT INTO invoices (invoice_id, amount) VALUES (5000, 999.00);
 ALTER TABLE invoices AUTO_INCREMENT = 1;
 ```
 
-## 10.3 🔀 Side-by-side comparison
+#### 10.3 🔀 Side-by-side comparison
 
 | Task | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -2502,7 +2509,7 @@ ALTER TABLE invoices AUTO_INCREMENT = 1;
 | Per table limit | One identity column | One auto_increment column (**must be indexed**) |
 | Gaps after rollback | ✅ Yes, gaps happen | ✅ Yes, gaps happen |
 
-## 10.4 🕳️ Gaps are normal — stop trying to fix them
+#### 10.4 🕳️ Gaps are normal — stop trying to fix them
 
 ```sql
 -- 🟥 MSSQL
@@ -2528,7 +2535,7 @@ INSERT INTO invoices (amount) VALUES (20.00);   -- the rolled-back ID is skipped
 > [!WARNING]
 > ⚠️ **Never use an auto-number as an invoice number, receipt number, or anything legally sequential.** Auditors require numbers with no gaps. Generate those yourself in a small counter table (slower, but gap-free), or use a numbering scheme with a date prefix.
 
-## 10.5 🆔 The alternative: GUIDs / UUIDs
+#### 10.5 🆔 The alternative: GUIDs / UUIDs
 
 > [!NOTE]
 > 📌 **In plain words:** a **GUID** (Microsoft's name) or **UUID** (everyone else's name) is a 36-character random ID such as `3f2504e0-4f89-11d3-9a0c-0305e82c3301`. It is so random that thousands of computers can create IDs at the same moment without ever producing the same one.
@@ -2562,7 +2569,7 @@ CREATE TABLE sessions (
 > [!TIP]
 > 💡 **The professional compromise used by many real systems:** keep an `INT IDENTITY` as the internal primary key (fast joins, small indexes) **and** add a `UNIQUE` GUID column as the ID shown to the outside world (in web addresses and apps). Best of both.
 
-## 10.6 🎯 When to use which key strategy
+#### 10.6 🎯 When to use which key strategy
 
 | Your situation | Use |
 |---|---|
@@ -2577,7 +2584,7 @@ CREATE TABLE sessions (
 > [!CAUTION]
 > 🐛 **Common mistake:** adding an `id INT IDENTITY` primary key to a bridge table that already has a perfectly good natural key of `(order_id, product_id)`. It adds a column, adds an index, and — worst of all — **stops the database preventing duplicates**, because now two rows with the same order and product are "different" rows.
 
-## 10.7 🧪 Try it yourself
+#### 10.7 🧪 Try it yourself
 
 1. Insert a product without specifying `product_id`. Retrieve the generated ID immediately, using the correct function for your engine.
 2. Start a transaction, insert a row, roll it back, then insert again. Prove to yourself the gap is permanent.
@@ -2598,7 +2605,7 @@ CREATE TABLE sessions (
 
 ---
 
-# 11. ALTER and DROP
+### 11. ALTER and DROP
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -2609,7 +2616,7 @@ CREATE TABLE sessions (
 
 > 🌍 **Analogy:** `ALTER` is adding a new room to a house while the family still lives in it. `DROP` is knocking the whole house down — and everything inside goes with it.
 
-## 11.1 ➕ Adding columns
+#### 11.1 ➕ Adding columns
 
 ```sql
 -- ✅ Works in BOTH
@@ -2631,7 +2638,7 @@ ALTER TABLE customers
 > [!WARNING]
 > ⚠️ **Adding a `NOT NULL` column to a table that already has rows** requires a `DEFAULT`, otherwise the existing rows would have no value and the statement fails. On very large tables, adding a `NOT NULL` column with a default can rewrite the entire table — check your engine version and plan it for a quiet, pre-announced time (a *maintenance window*).
 
-## 11.2 ✏️ Changing a column
+#### 11.2 ✏️ Changing a column
 
 > 🔀 **This is one of the biggest syntax differences between the two engines.**
 
@@ -2677,7 +2684,7 @@ ALTER TABLE customers CHANGE COLUMN phone_number phone VARCHAR(40) NULL;   -- an
 > SELECT MAX(CHAR_LENGTH(phone)) FROM customers;
 > ```
 
-## 11.3 🏷️ Renaming
+#### 11.3 🏷️ Renaming
 
 ```sql
 -- 🟥 MSSQL: a built-in stored procedure (a saved program), not a normal SQL statement
@@ -2700,7 +2707,7 @@ ALTER TABLE customers RENAME COLUMN phone_number TO phone;  -- restore the colum
 > [!WARNING]
 > ⚠️ **Renaming does not update anything that references the old name.** Views, stored procedures, functions, and application code all break silently. In MSSQL, `sp_rename` even prints a warning about this. Search all of your code before renaming anything on a live server.
 
-## 11.4 ➖ Dropping columns
+#### 11.4 ➖ Dropping columns
 
 ```sql
 -- ✅ Works in BOTH
@@ -2722,7 +2729,7 @@ ALTER TABLE customers DROP COLUMN referral_code, marketing_opt_in;
 > [!WARNING]
 > ⚠️ You usually cannot drop a column that is part of a primary key, referenced by a foreign key, used by an index, or referenced by a check constraint or computed column. **Drop the dependent object first.**
 
-## 11.5 💣 DROP vs TRUNCATE vs DELETE
+#### 11.5 💣 DROP vs TRUNCATE vs DELETE
 
 This is one of the most common interview questions in existence. Learn this table cold.
 
@@ -2758,7 +2765,7 @@ DROP TABLE staging_orders;
 > [!TIP]
 > 💡 **How to remember it:** `DELETE` erases *some words*. `TRUNCATE` erases *the whole page*. `DROP` throws away *the whole notebook*.
 
-## 11.6 🛡️ Safe DDL habits for production
+#### 11.6 🛡️ Safe DDL habits for production
 
 ```sql
 -- ✅ Works in BOTH: guard against "does not exist" errors
@@ -2793,7 +2800,7 @@ ALTER TABLE customers ADD COLUMN nickname VARCHAR(50), ALGORITHM=INSTANT;
 
 > 🔎 **Doing this repeatedly, on many servers, without a human at a keyboard is [Chapter 64](#64-database-devops-migrations-standards-and-testing)** — versioned migrations, idempotent scripts (safe to run twice), and the expand–contract pattern for changes that cannot break a running application.
 
-## 11.7 🧪 Try it yourself
+#### 11.7 🧪 Try it yourself
 
 1. Add a `notes VARCHAR(500)` column to `orders`, populate it for one row, then drop it.
 2. Try to change `customers.email` to `VARCHAR(10)`. Read the error and explain it.
@@ -2815,13 +2822,13 @@ ALTER TABLE customers ADD COLUMN nickname VARCHAR(50), ALGORITHM=INSTANT;
 
 ---
 
-# 📥 PART 3 — WORKING WITH DATA (CRUD)
+## 📥 PART 3 — WORKING WITH DATA (CRUD)
 
 > **CRUD** = **C**reate (`INSERT`), **R**ead (`SELECT`), **U**pdate (`UPDATE`), **D**elete (`DELETE`). These four verbs are 95% of the SQL written in the world.
 
 ---
 
-# 12. INSERT, putting data in
+### 12. INSERT, putting data in
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -2832,7 +2839,7 @@ ALTER TABLE customers ADD COLUMN nickname VARCHAR(50), ALGORITHM=INSTANT;
 
 > 🌍 **Analogy:** Adding new cards to a card index box. You can add one card, a whole stack at once, or photocopy cards from another box.
 
-## 12.1 ✍️ The basic INSERT
+#### 12.1 ✍️ The basic INSERT
 
 ```sql
 -- ✅ Works in BOTH: always list your columns explicitly
@@ -2853,7 +2860,7 @@ INSERT INTO categories VALUES (NULL, 'Wearables', 'Smartwatches and fitness band
 > [!WARNING]
 > ⚠️ **Why leaving out the column list is dangerous:** it depends on column *order*. The day someone adds a column in the middle, every one of these statements silently writes data into the wrong column, or fails at 3 a.m. **Always name your columns.** It costs 10 seconds and prevents a whole family of failures on live systems.
 
-## 12.2 📦 Inserting multiple rows at once
+#### 12.2 📦 Inserting multiple rows at once
 
 > 💡 **Why one multi-row `INSERT` beats three single-row ones:** each separate statement is its own
 > round trip to the server and, under autocommit, its own transaction — with its own log flush. One
@@ -2871,7 +2878,7 @@ INSERT INTO categories (category_name, description) VALUES
 > [!TIP]
 > 💡 **Pro tip:** A single multi-row insert is one round trip (one message to the server and one reply) and one transaction. A thousand separate inserts are a thousand round trips. On a remote server, the difference is often **50x**. When loading data, batch your inserts in groups of 500 to 1000 rows.
 
-## 12.3 📋 INSERT ... SELECT — copying data between tables
+#### 12.3 📋 INSERT ... SELECT — copying data between tables
 
 This is where `INSERT` becomes genuinely powerful.
 
@@ -2915,7 +2922,7 @@ GROUP BY c.customer_id, c.full_name
 HAVING SUM(oi.unit_price * oi.quantity * (1 - oi.discount)) > 2000;
 ```
 
-## 12.4 🚫 Inserting only rows that do not already exist
+#### 12.4 🚫 Inserting only rows that do not already exist
 
 `WHERE NOT EXISTS (…)` means *"only if no such row is found"* ([Chapter 30](#30-subqueries-and-exists) explains it fully):
 
@@ -2943,7 +2950,7 @@ ON DUPLICATE KEY UPDATE description = new.description;
 > [!WARNING]
 > ⚠️ **Be careful with `INSERT IGNORE`.** It hides *every* error it can, not just duplicates — including text being cut short to fit. A row can end up saved with silently damaged values. Prefer `ON DUPLICATE KEY UPDATE` or an explicit `NOT EXISTS` guard.
 
-## 12.5 🎯 Capturing what was inserted
+#### 12.5 🎯 Capturing what was inserted
 
 ```sql
 -- 🟥 MSSQL: OUTPUT gives you the inserted rows back, even for many rows
@@ -2969,7 +2976,7 @@ VALUES ('New Person', 'new.person@example.com', 'Canada');
 SELECT LAST_INSERT_ID() AS new_customer_id;
 ```
 
-## 12.6 🚚 Bulk loading large files
+#### 12.6 🚚 Bulk loading large files
 
 > [!NOTE]
 > 📌 **What a staging table is:** a plain table shaped like your incoming file, with **no rules at all**. You load the raw file into it, clean the data *there*, and only then move it into the real table. Several later chapters use these, so create them once now:
@@ -3038,7 +3045,7 @@ IGNORE 1 ROWS
 > [!WARNING]
 > ⚠️ **MySQL `LOAD DATA INFILE` and the `secure_file_priv` setting:** by default MySQL only reads files from one specific directory. Check it with `SHOW VARIABLES LIKE 'secure_file_priv';`. Use `LOAD DATA LOCAL INFILE` to read from the client machine instead, if the server permits it.
 
-## 12.7 🐛 The four INSERT errors you will definitely hit
+#### 12.7 🐛 The four INSERT errors you will definitely hit
 
 | Error | Cause | Fix |
 |---|---|---|
@@ -3054,7 +3061,7 @@ IGNORE 1 ROWS
 > SELECT * FROM staging_products WHERE LEN(product_name) > 120;
 > ```
 
-## 12.8 🧪 Try it yourself
+#### 12.8 🧪 Try it yourself
 
 1. Add three new products to the `Gaming` category in a single statement.
 2. Copy every `Cancelled` order into a new `cancelled_orders_log` table using `INSERT ... SELECT`.
@@ -3076,7 +3083,7 @@ IGNORE 1 ROWS
 
 ---
 
-# 13. SELECT, the heart of SQL
+### 13. SELECT, the heart of SQL
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -3087,7 +3094,7 @@ IGNORE 1 ROWS
 
 > 🌍 **Analogy:** Asking a librarian: *"Bring me the title and author of every book about cooking."* You say which details you want (the columns) and from where (the table); the librarian brings back a neat list. Nothing on the shelves changes.
 
-## 13.1 🌱 The simplest possible queries
+#### 13.1 🌱 The simplest possible queries
 
 ```sql
 -- ✅ Works in BOTH
@@ -3122,7 +3129,7 @@ SELECT 'Hello, SQL' AS greeting;
 >
 > Everywhere else — application code, views, stored procedures, reports — **name the columns**.
 
-## 13.2 🏷️ Aliases — renaming columns and tables
+#### 13.2 🏷️ Aliases — renaming columns and tables
 
 ```sql
 -- ✅ Works in BOTH: column aliases with AS (AS is optional but clearer)
@@ -3155,7 +3162,7 @@ JOIN orders    AS o ON o.customer_id = c.customer_id;
 > [!TIP]
 > 💡 **Pro tip:** Use short, meaningful table aliases (`c` for customers, `oi` for order_items), and use them the same way in all of your code. Never use `a`, `b`, `c` — after three joins nobody, including you, knows what `b` was.
 
-## 13.3 🧮 Computed columns and expressions
+#### 13.3 🧮 Computed columns and expressions
 
 An **expression** is a calculation, such as `unit_price * quantity`. The database works it out separately for every row and shows the answer as a new column.
 
@@ -3195,7 +3202,7 @@ SELECT CONCAT(full_name, ' <', email, '>') AS contact FROM customers;
 > [!CAUTION]
 > 🐛 **Common mistake:** A developer moving from MSSQL to MySQL writes `first_name + ' ' + last_name` and gets `0` for every row. MySQL converted the strings to numbers and added them. **`CONCAT()` is the answer that works in both engines.**
 
-## 13.4 ♻️ DISTINCT — removing duplicates
+#### 13.4 ♻️ DISTINCT — removing duplicates
 
 ```sql
 -- ✅ Works in BOTH
@@ -3213,7 +3220,7 @@ SELECT COUNT(DISTINCT country) AS country_count FROM customers;
 > [!WARNING]
 > ⚠️ **`DISTINCT` is often a symptom, not a solution.** If you added `DISTINCT` because your join suddenly produced duplicate rows, the real problem is the join (Chapter 28) — usually a missing condition, or one row matching many rows in the other table. `DISTINCT` hides the problem and makes the database do an expensive sort. Fix the join instead. See [Chapter 28](#28-joins-the-complete-picture).
 
-## 13.5 🎩 Useful SELECT tricks
+#### 13.5 🎩 Useful SELECT tricks
 
 ```sql
 -- ✅ Works in BOTH
@@ -3231,7 +3238,7 @@ SELECT CONCAT('Total: ', CAST(1499.00 * 2 AS CHAR)) AS demo;
 SELECT CONCAT('Total: ', CAST(1499.00 * 2 AS VARCHAR(20))) AS demo;
 ```
 
-## 13.6 🧪 Try it yourself
+#### 13.6 🧪 Try it yourself
 
 1. List every product with its name, price, and the price including 15% tax, aliased clearly.
 2. Produce a single column `label` reading `UltraBook Pro 14 — $1499.00` for every product.
@@ -3253,7 +3260,7 @@ SELECT CONCAT('Total: ', CAST(1499.00 * 2 AS VARCHAR(20))) AS demo;
 
 ---
 
-# 14. WHERE, asking precise questions
+### 14. WHERE, asking precise questions
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -3264,7 +3271,7 @@ SELECT CONCAT('Total: ', CAST(1499.00 * 2 AS VARCHAR(20))) AS demo;
 
 > 🌍 **Analogy:** `WHERE` is the **bouncer with a guest list**. Every row walks up; the bouncer checks the condition; the row gets in or is turned away.
 
-## 14.1 ⚖️ Comparison operators
+#### 14.1 ⚖️ Comparison operators
 
 | Operator | Meaning | Example |
 |:---:|---|---|
@@ -3301,7 +3308,7 @@ WHERE units_in_stock <= reorder_level      -- comparing two COLUMNS
 > [!TIP]
 > 💡 **Note that last one.** `WHERE` conditions can compare two columns of the same row, not just a column against a constant. `units_in_stock <= reorder_level` is a genuine business rule — *"time to reorder"* — expressed in one line.
 
-## 14.2 🔗 AND, OR, NOT, and the parentheses trap
+#### 14.2 🔗 AND, OR, NOT, and the parentheses trap
 
 ```sql
 -- ✅ Works in BOTH
@@ -3330,7 +3337,7 @@ WHERE (category_id = 1 OR category_id = 2)
 > [!TIP]
 > 💡 **Pro tip:** When a `WHERE` clause mixes `AND` and `OR`, **always use parentheses**, even when you are sure they are unnecessary. They cost nothing and they document your intent to the next reader.
 
-## 14.3 📏 BETWEEN — and its date trap
+#### 14.3 📏 BETWEEN — and its date trap
 
 ```sql
 -- ✅ Works in BOTH: BETWEEN is INCLUSIVE on both ends
@@ -3368,7 +3375,7 @@ WHERE payment_date >= '2026-01-01'
 > [!TIP]
 > 💡 **Learn the half-open pattern `>= start AND < next_start` (the start is included, the end is not) and use it for every date range for the rest of your life.** It is correct regardless of the column's precision, it never needs adjusting for leap years or month lengths, and — crucially — it is **SARGable**, meaning an index on the date column can still be used. See [Chapter 48](#48-query-optimization-and-sargability).
 
-## 14.4 📋 IN and NOT IN
+#### 14.4 📋 IN and NOT IN
 
 ```sql
 -- ✅ Works in BOTH
@@ -3411,7 +3418,7 @@ WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.employee_id = e.employee_id);
 > [!TIP]
 > 💡 **Professional habit: prefer `NOT EXISTS` over `NOT IN` for subqueries, always.** It is NULL-safe and usually produces a better execution plan (the step-by-step route the database takes to answer — Chapter 47).
 
-## 14.5 🔍 LIKE and pattern matching
+#### 14.5 🔍 LIKE and pattern matching
 
 | Wildcard | Meaning | Example | Matches |
 |:---:|---|---|---|
@@ -3460,7 +3467,7 @@ SELECT * FROM products WHERE product_name LIKE '%50!%%' ESCAPE '!';
 > - **MySQL** with a `_ci` collation is also case-insensitive; with `_bin` or `_cs` it is **case-sensitive**.
 > - To force case-sensitivity: MSSQL `COLLATE Latin1_General_CS_AS`, MySQL `LIKE BINARY 'a%'`.
 
-## 14.6 🧪 Try it yourself
+#### 14.6 🧪 Try it yourself
 
 1. Find every product priced between 100 and 400 that is not discontinued.
 2. Find all customers whose email is at `example.com` **and** who live outside the UK.
@@ -3483,7 +3490,7 @@ SELECT * FROM products WHERE product_name LIKE '%50!%%' ESCAPE '!';
 
 ---
 
-# 15. NULL, the value that is not there
+### 15. NULL, the value that is not there
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -3494,7 +3501,7 @@ SELECT * FROM products WHERE product_name LIKE '%50!%%' ESCAPE '!';
 
 > 🌍 **Analogy:** You have two sealed boxes. Are their contents equal? You cannot say yes. You cannot say no. The honest answer is **"unknown."** That is exactly what `NULL = NULL` returns.
 
-## 15.1 💥 The three golden rules of NULL
+#### 15.1 💥 The three golden rules of NULL
 
 ```sql
 -- RULE 1: NULL is never equal to anything, not even to itself.
@@ -3530,7 +3537,7 @@ SELECT * FROM products WHERE unit_price <> NULL;  -- zero rows
 > SELECT * FROM orders WHERE status <> 'Cancelled' OR status IS NULL;
 > ```
 
-## 15.2 🧰 The NULL-handling toolkit
+#### 15.2 🧰 The NULL-handling toolkit
 
 | Function | 🟥 MSSQL | 🟦 MySQL | What it does |
 |---|---|---|---|
@@ -3569,7 +3576,7 @@ FROM products;
 
 > 🔀 **A subtle MSSQL difference:** `ISNULL` returns the data type of its **first** argument, so `ISNULL(CAST(x AS VARCHAR(5)), 'Not available')` silently truncates to `'Not a'`. `COALESCE` picks a type big enough for all of its values, so it does not do this. **Another reason to prefer `COALESCE`.**
 
-## 15.3 📊 How NULL behaves in aggregates, sorting, and grouping
+#### 15.3 📊 How NULL behaves in aggregates, sorting, and grouping
 
 ```sql
 -- ✅ Works in BOTH: aggregates IGNORE NULLs. This surprises everyone once.
@@ -3610,7 +3617,7 @@ SELECT DISTINCT city FROM customers;   -- at most one NULL row
 > ORDER BY CASE WHEN ship_date IS NULL THEN 1 ELSE 0 END, ship_date;
 > ```
 
-## 15.4 🕳️ NULL vs empty string vs zero
+#### 15.4 🕳️ NULL vs empty string vs zero
 
 ```sql
 -- These are three completely different things
@@ -3628,7 +3635,7 @@ SELECT full_name, phone FROM customers WHERE phone = '';      -- finds B only
 
 > 🔀 **Oracle-style trap for people arriving from Oracle:** Oracle treats `''` **as** `NULL`. MSSQL and MySQL do not. They are genuinely different values.
 
-## 15.5 🎯 When to allow NULL, and which tool to reach for
+#### 15.5 🎯 When to allow NULL, and which tool to reach for
 
 | Question | Answer |
 |---|---|
@@ -3644,7 +3651,7 @@ SELECT full_name, phone FROM customers WHERE phone = '';      -- finds B only
 > [!CAUTION]
 > 🐛 **Common mistake:** using `NOT NULL DEFAULT ''` or `DEFAULT 0` to "avoid the NULL problem". You have not removed the ambiguity, you have hidden it — now you cannot tell "we asked and they have no phone" from "we never asked". **A NULL that means something is better than a fake value that means nothing.**
 
-## 15.6 🧪 Try it yourself
+#### 15.6 🧪 Try it yourself
 
 1. Count how many orders have no `ship_date`. Then try it with `= NULL` and confirm you get zero.
 2. Write a query showing every order with a shipping status of either the date, or the text `'In progress'`.
@@ -3666,7 +3673,7 @@ SELECT full_name, phone FROM customers WHERE phone = '';      -- finds B only
 
 ---
 
-# 16. ORDER BY, sorting results
+### 16. ORDER BY, sorting results
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -3675,7 +3682,7 @@ SELECT full_name, phone FROM customers WHERE phone = '';      -- finds B only
 > [!NOTE]
 > 📌 **In plain words:** Without `ORDER BY`, the database returns rows in **whatever order is cheapest** — which can change between runs, versions, and even from one execution to the next. If order matters, you must say so.
 
-## 16.1 🔤 The basics
+#### 16.1 🔤 The basics
 
 ```sql
 -- ✅ Works in BOTH
@@ -3690,7 +3697,7 @@ ORDER BY category_id ASC, unit_price DESC;
 
 > 🌍 **Analogy for multi-column sort:** a phone book. Sort by surname first; when two people share a surname, sort those by first name. The second column only matters *within* a tie of the first.
 
-## 16.2 🎯 Sorting by expressions, aliases, and positions
+#### 16.2 🎯 Sorting by expressions, aliases, and positions
 
 ```sql
 -- ✅ Works in BOTH: by an alias (legal because ORDER BY runs after SELECT)
@@ -3713,7 +3720,7 @@ SELECT product_name FROM products ORDER BY CHAR_LENGTH(product_name) DESC;
 > [!WARNING]
 > ⚠️ **Never use `ORDER BY 2` in real code.** The day someone adds a column to the `SELECT` list, your sort silently changes to a different column. It is a time bomb.
 
-## 16.3 🎨 Custom sort order with CASE
+#### 16.3 🎨 Custom sort order with CASE
 
 A genuinely useful real-world technique: sorting by business priority rather than alphabetically.
 
@@ -3752,7 +3759,7 @@ ORDER BY
     full_name;
 ```
 
-## 16.4 ⚠️ The unordered-result trap
+#### 16.4 ⚠️ The unordered-result trap
 
 ```sql
 -- ❌ NEVER assume this returns rows in insertion order
@@ -3767,7 +3774,7 @@ SELECT * FROM customers;
 > [!WARNING]
 > ⚠️ **A view (a saved query, Chapter 36) or a subquery with `ORDER BY` guarantees nothing.** In MSSQL, `ORDER BY` inside a view is only legal alongside `TOP`/`OFFSET`, and even then the outer query may reorder the rows. Sorting belongs in the **final, outermost** query.
 
-## 16.5 ⚡ Sorting and performance
+#### 16.5 ⚡ Sorting and performance
 
 Sorting a million rows costs memory and processor time, and when memory runs out the database has to use slow disk space. An index in the right order removes that cost entirely.
 
@@ -3782,7 +3789,7 @@ CREATE INDEX ix_orders_order_date ON orders(order_date);
 > [!TIP]
 > 💡 **Pro tip:** An index can satisfy an `ORDER BY` only if the sort direction pattern matches. `ORDER BY a ASC, b DESC` needs an index defined as `(a ASC, b DESC)`. Both engines support per-column direction in an index definition (MySQL genuinely honours `DESC` in indexes from 8.0 onward; earlier versions parsed and ignored it).
 
-## 16.6 🎯 When to sort — and when not to
+#### 16.6 🎯 When to sort — and when not to
 
 | Situation | Sort? |
 |---|---|
@@ -3796,7 +3803,7 @@ CREATE INDEX ix_orders_order_date ON orders(order_date);
 > [!TIP]
 > 💡 **Make every sort that users see *deterministic* (the same order every time).** `ORDER BY order_date DESC` on data with duplicate dates returns rows in an arbitrary order that can change between runs. Add a unique tiebreaker: `ORDER BY order_date DESC, order_id DESC`. Without it, paging silently repeats and skips rows.
 
-## 16.7 🧪 Try it yourself
+#### 16.7 🧪 Try it yourself
 
 1. List all products from most to least expensive, with category as a tiebreaker.
 2. Sort customers so that Gold and Platinum tiers appear first, then alphabetically by name.
@@ -3818,7 +3825,7 @@ CREATE INDEX ix_orders_order_date ON orders(order_date);
 
 ---
 
-# 17. Paging: TOP, LIMIT, OFFSET, FETCH
+### 17. Paging: TOP, LIMIT, OFFSET, FETCH
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -3829,7 +3836,7 @@ CREATE INDEX ix_orders_order_date ON orders(order_date);
 
 > 🌍 **Analogy:** A search engine never shows you all 4 million results at once. It shows page 1 with 10 results, and a "Next" button. Paging is how you build that "Next" button.
 
-## 17.1 🔝 Getting the first N rows
+#### 17.1 🔝 Getting the first N rows
 
 ```sql
 -- 🟥 MSSQL
@@ -3853,7 +3860,7 @@ ORDER BY unit_price DESC
 LIMIT 5;
 ```
 
-## 17.2 📄 Paging through results
+#### 17.2 📄 Paging through results
 
 ```sql
 -- 🟥 MSSQL (2012+): the official SQL-standard syntax. ORDER BY is REQUIRED.
@@ -3896,7 +3903,7 @@ ORDER BY order_date DESC, order_id DESC       -- order_id breaks every tie
 OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;
 ```
 
-## 17.3 🐌 Why OFFSET gets slow, and what professionals use instead
+#### 17.3 🐌 Why OFFSET gets slow, and what professionals use instead
 
 ```sql
 -- 🟦 MySQL · 😱 To return rows 1,000,001 to 1,000,010, the engine reads and discards
@@ -3953,7 +3960,7 @@ ORDER BY order_date, order_id
 LIMIT 10;
 ```
 
-## 17.4 🔢 Getting the total row count for a pager
+#### 17.4 🔢 Getting the total row count for a pager
 
 `COUNT(*) OVER ()` is a *window function* ([Chapter 33](#33-window-functions)): it counts **all** the matching rows and repeats that total on every row returned — even though you only fetch 10 of them.
 
@@ -3984,7 +3991,7 @@ LIMIT 10;
 > [!TIP]
 > 💡 **Pro tip:** For very large tables, an exact total count is expensive and usually pointless — nobody clicks to page 40,000. Real systems either cache the count, show an approximation ("about 12,000 results"), or drop the count entirely in favour of "Load more".
 
-## 17.5 🎯 When to use which paging strategy
+#### 17.5 🎯 When to use which paging strategy
 
 | Your screen | Use | Why |
 |---|---|---|
@@ -3998,7 +4005,7 @@ LIMIT 10;
 > [!CAUTION]
 > 🐛 **Common mistake:** paging a result whose sort is not unique. The database is free to return tied rows in a different order each query, so the same row appears on page 2 *and* page 3 while another never appears at all. Users report "records go missing" and it is almost impossible to reproduce. **Always end `ORDER BY` with a unique column.**
 
-## 17.6 🧪 Try it yourself
+#### 17.6 🧪 Try it yourself
 
 1. Get the 5 most expensive products in both dialects.
 2. Return page 2 of customers, 5 per page, sorted by signup date.
@@ -4020,7 +4027,7 @@ LIMIT 10;
 
 ---
 
-# 18. UPDATE, changing data
+### 18. UPDATE, changing data
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -4031,7 +4038,7 @@ LIMIT 10;
 
 > 🌍 **Analogy:** Correcting entries in an address book with a pen. The `WHERE` clause says *which* entries to correct. Forget it, and you have just written the same new phone number into every single entry in the book.
 
-## 18.1 ✍️ Basic UPDATE
+#### 18.1 ✍️ Basic UPDATE
 
 ```sql
 -- ✅ Works in BOTH
@@ -4052,7 +4059,7 @@ SET unit_price = unit_price * 1.10
 WHERE category_id = 3;
 ```
 
-## 18.2 🚨 The most expensive mistake in SQL
+#### 18.2 🚨 The most expensive mistake in SQL
 
 ```sql
 -- 💀 THIS UPDATES EVERY ROW IN THE TABLE
@@ -4115,7 +4122,7 @@ COMMIT;      -- or ROLLBACK; if it looks wrong
 > [!TIP]
 > 💡 **In SSMS**, tick *Tools → Options → Query Execution → SQL Server → ANSI → SET IMPLICIT_TRANSACTIONS* — then every change waits until you type `COMMIT`. Or simply build the habit of typing `BEGIN TRAN` before every hand-typed `UPDATE` on a live server.
 
-## 18.3 🔗 UPDATE with a JOIN
+#### 18.3 🔗 UPDATE with a JOIN
 
 Extremely common in real work: update one table based on data in another.
 
@@ -4193,7 +4200,7 @@ SET c.loyalty_tier =
     END;
 ```
 
-## 18.4 📸 Seeing what changed
+#### 18.4 📸 Seeing what changed
 
 ```sql
 -- 🟥 MSSQL: OUTPUT shows the before AND after values
@@ -4222,7 +4229,7 @@ SELECT ROW_COUNT() AS rows_affected;
 > [!WARNING]
 > ⚠️ **Read it immediately.** `@@ROWCOUNT` is reset by the *next* statement — even by a `PRINT` or an `IF`. Capture it into a variable on the very next line if you need it later: `DECLARE @n INT = @@ROWCOUNT;`
 
-## 18.5 🔀 Conditional and bulk updates
+#### 18.5 🔀 Conditional and bulk updates
 
 ```sql
 -- ✅ Works in BOTH: different new values per row, one pass
@@ -4263,7 +4270,7 @@ LIMIT 5000;
 -- repeat until ROW_COUNT() = 0
 ```
 
-## 18.6 🧪 Try it yourself
+#### 18.6 🧪 Try it yourself
 
 1. Give every product in the `Audio` category a 5% price cut — inside a transaction, and roll it back.
 2. Set `shipping_city` from the customer's city for every order where it is NULL, in both dialects.
@@ -4285,7 +4292,7 @@ LIMIT 5000;
 
 ---
 
-# 19. DELETE, TRUNCATE, DROP
+### 19. DELETE, TRUNCATE, DROP
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -4296,7 +4303,7 @@ LIMIT 5000;
 
 > 🌍 **Analogy:** A notebook. `DELETE` rubs out chosen lines. `TRUNCATE` tears out every page but keeps the empty notebook. `DROP` throws the whole notebook in the bin.
 
-## 19.1 🎯 DELETE — remove selected rows
+#### 19.1 🎯 DELETE — remove selected rows
 
 ```sql
 -- ✅ Works in BOTH
@@ -4351,7 +4358,7 @@ WHERE order_id IN (SELECT order_id FROM orders WHERE status = 'Cancelled');
 > );
 > ```
 
-## 19.2 🧹 TRUNCATE — empty the table fast
+#### 19.2 🧹 TRUNCATE — empty the table fast
 
 ```sql
 -- ✅ Works in BOTH
@@ -4375,7 +4382,7 @@ included.
 > 2. **Triggers do not fire.** If you rely on a delete trigger to record deletions, `TRUNCATE` skips it completely.
 > 3. **In MySQL, `TRUNCATE` is saved the moment it runs (an *implicit commit*), so it cannot be rolled back.** In MSSQL it can be rolled back inside an explicit transaction. Do not carry the habit across engines.
 
-## 19.3 🗑️ Soft delete — what production systems actually do
+#### 19.3 🗑️ Soft delete — what production systems actually do
 
 Real applications very rarely delete anything. They mark it as gone.
 
@@ -4422,7 +4429,7 @@ SELECT * FROM customers WHERE is_deleted = 0;
 > SELECT * FROM customers WHERE is_deleted = 0;
 > ```
 
-## 19.4 🛟 The pre-delete checklist
+#### 19.4 🛟 The pre-delete checklist
 
 ```sql
 -- 🟥 MSSQL
@@ -4473,7 +4480,7 @@ ROLLBACK;
 > DELETE FROM payments WHERE payment_date < '2024-01-01' LIMIT 5000;  -- repeat
 > ```
 
-## 19.5 🧪 Try it yourself
+#### 19.5 🧪 Try it yourself
 
 1. Delete all `order_items` belonging to cancelled orders — first as a `SELECT`, then for real inside a transaction, then roll back.
 2. Add a soft-delete column to `products` and write the view that hides discontinued and deleted items.
@@ -4495,14 +4502,14 @@ ROLLBACK;
 
 ---
 
-# 🧮 PART 4 — FUNCTIONS
+## 🧮 PART 4 — FUNCTIONS
 
 > [!NOTE]
 > 📌 **In plain words:** A function takes a value in and gives a transformed value back. `UPPER('tom')` gives `'TOM'`. Functions are how raw stored data becomes a readable report.
 
 ---
 
-# 20. String functions
+### 20. String functions
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -4516,7 +4523,7 @@ ROLLBACK;
 > [!IMPORTANT]
 > 🎯 **When you will reach for them:** cleaning imported data, building display labels and full names, extracting the domain from an email, generating reference codes like `INV-00042`, and tidying values (for example, making every email lower-case) before you compare them.
 
-## 20.1 📏 Length, case, and trimming
+#### 20.1 📏 Length, case, and trimming
 
 When a table cell says *(2017+)* or *(2022+)*, that function needs SQL Server 2017 or 2022 or newer.
 
@@ -4563,7 +4570,7 @@ SELECT 'INV-' + FORMAT(order_id, '00000000') AS invoice_no FROM orders;
 > [!WARNING]
 > ⚠️ **Avoid `FORMAT()` in MSSQL on large result sets.** It runs extra Microsoft .NET code for every single row and is often **40x slower** than plain text functions. It is fine for a 50-row report, terrible for a million-row export.
 
-## 20.2 ✂️ Extracting parts of a string
+#### 20.2 ✂️ Extracting parts of a string
 
 | Task | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -4619,7 +4626,7 @@ FROM customers;
 > [!TIP]
 > 💡 **Note the `full_name + ' '` trick in the MSSQL version.** `CHARINDEX(' ', 'Madonna')` returns 0, and `LEFT(s, -1)` errors. Appending a space guarantees a match and makes the expression safe for single-word names. Small defensive touches like this are what separates code that works on your test data from code that works on real data.
 
-## 20.3 🔗 Joining and replacing
+#### 20.3 🔗 Joining and replacing
 
 ```sql
 -- ✅ CONCAT works in BOTH and treats NULL as an empty string
@@ -4672,7 +4679,7 @@ shown in full, so you can see what the joined string looks like:
 > SET SESSION group_concat_max_len = 100000;
 > ```
 
-## 20.4 🧼 A real-world data cleaning pipeline
+#### 20.4 🧼 A real-world data cleaning pipeline
 
 ```sql
 -- ✅ Works in BOTH: normalize a messy imported customer file
@@ -4696,7 +4703,7 @@ FROM customers;
 > [!TIP]
 > 💡 **Pro tip:** Do heavy text cleaning **once**, on the way in (in a staging table), not on every read. Cleaning in a `SELECT` means the CPU work repeats for every user, every query, forever — and it stops indexes from being used (see [Chapter 48](#48-query-optimization-and-sargability)).
 
-## 20.5 🧪 Try it yourself
+#### 20.5 🧪 Try it yourself
 
 1. Produce a column reading `SILVA, Amara` for every customer.
 2. Extract the email domain and count customers per domain.
@@ -4718,7 +4725,7 @@ FROM customers;
 
 ---
 
-# 21. Numeric and math functions
+### 21. Numeric and math functions
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -4729,7 +4736,7 @@ FROM customers;
 
 > 🌍 **Real-world analogy:** A **till at a shop counter**. It adds, it applies tax, and — crucially — it decides how to round the awkward half-cent. Get the rounding rule wrong and every receipt is a penny out; do it a million times and someone notices.
 
-## 21.1 🔢 The essential list
+#### 21.1 🔢 The essential list
 
 | Task | 🟥 MSSQL | 🟦 MySQL | Example |
 |---|---|---|---|
@@ -4759,7 +4766,7 @@ FROM products
 ORDER BY unit_price DESC;
 ```
 
-## 21.2 ⚠️ The integer division trap
+#### 21.2 ⚠️ The integer division trap
 
 ```sql
 -- ⚠️ Works in BOTH, but the engines DISAGREE on integer ÷ integer
@@ -4790,7 +4797,7 @@ GROUP BY category_id;
 > [!TIP]
 > 💡 **Memorize this habit: `100.0 * a / b`, never `100 * a / b`.** The `.0` turns the whole calculation into decimal maths. It is the single most common cause of "why is my percentage zero?"
 
-## 21.3 🎲 Random rows and rounding modes
+#### 21.3 🎲 Random rows and rounding modes
 
 ```sql
 -- ✅ MSSQL: a random sample of 5 products
@@ -4814,7 +4821,7 @@ SELECT ROUND(2.5, 0), ROUND(3.5, 0);
 -- But floating-point inputs can behave differently — another reason to use DECIMAL for money.
 ```
 
-## 21.4 🎯 When to use which rounding function
+#### 21.4 🎯 When to use which rounding function
 
 This is the decision people get wrong most often, so here it is as a table:
 
@@ -4862,7 +4869,7 @@ FROM products;
 > [!TIP]
 > 💡 **Pro tip:** `ROUND()` changes the value but not the number of decimal places the result is shown with, so it can still *display* as `129.00000`. When the number is going straight onto a report, finish with `CAST(x AS DECIMAL(12,2))`. See [Chapter 28](#28-joins-the-complete-picture) for a worked example.
 
-## 21.5 🧪 Try it yourself
+#### 21.5 🧪 Try it yourself
 
 1. Show each product's price, price with 8.25% tax, and the tax rounded to 2 places.
 2. Compute each category's share of the total catalogue as a percentage — and confirm it is not zero in MSSQL.
@@ -4884,7 +4891,7 @@ FROM products;
 
 ---
 
-# 22. Date and time functions
+### 22. Date and time functions
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -4895,7 +4902,7 @@ FROM products;
 
 > 🌍 **Analogy:** Is `03/04/2026` the 3rd of April or the 4th of March? A British person and an American person will give you different answers — and so will two databases. Date functions are how you stop guessing.
 
-## 22.1 🕐 Getting the current date and time
+#### 22.1 🕐 Getting the current date and time
 
 | Task | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -4923,7 +4930,7 @@ SELECT NOW()              AS now_local,
 > [!TIP]
 > 💡 **`SYSDATETIME()` is more precise than `GETDATE()`** (100 nanoseconds vs 3.33 milliseconds). Prefer it for new MSSQL code.
 
-## 22.2 🧩 Extracting parts of a date
+#### 22.2 🧩 Extracting parts of a date
 
 | Part | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -4963,7 +4970,7 @@ SELECT
 FROM orders;
 ```
 
-## 22.3 ➕ Date arithmetic
+#### 22.3 ➕ Date arithmetic
 
 ```sql
 -- 🟥 MSSQL: DATEADD(part, number, date)
@@ -5028,7 +5035,7 @@ SELECT DATEDIFF(YEAR, '1990-11-20', GETDATE())
 SELECT TIMESTAMPDIFF(YEAR, '1990-11-20', CURDATE()) AS age;
 ```
 
-## 22.4 📅 Truncating to period boundaries — the reporting workhorse
+#### 22.4 📅 Truncating to period boundaries — the reporting workhorse
 
 Reports often need to turn every date into "the first day of its month", so that all of March's orders fall into one group. That is called *truncating* a date.
 
@@ -5085,7 +5092,7 @@ GROUP BY DATE_FORMAT(o.order_date, '%Y-%m')
 ORDER BY month_key;
 ```
 
-## 22.5 🎨 Formatting dates for display
+#### 22.5 🎨 Formatting dates for display
 
 ```sql
 -- 🟥 MSSQL
@@ -5119,7 +5126,7 @@ SELECT
 > [!TIP]
 > 💡 **Pro tip — format in the application, not in SQL.** Return plain `DATE`/`DATETIME` values and let your app display them in each user's own style (for example `03/12/2026` in the US and `12/03/2026` in Europe). Formatting in SQL makes results bigger, breaks sorting (`'01/02/2026'` sorts as text), and is slow. The exception is a CSV export (a plain text file of rows that Excel can open) or a report where SQL is genuinely the last stop.
 
-## 22.6 ⚠️ Date literals, formats, and the biggest trap
+#### 22.6 ⚠️ Date literals, formats, and the biggest trap
 
 ```sql
 -- ✅ SAFE in BOTH: ISO 8601 (year-month-day), understood the same way everywhere
@@ -5148,7 +5155,7 @@ SELECT order_id FROM orders WHERE order_date >= '03/01/2026';
 > ```
 > This applies to `MONTH()`, `CAST()`, `CONVERT()`, `DATE_FORMAT()` — any function applied to the column. See [Chapter 48](#48-query-optimization-and-sargability).
 
-## 22.7 🎯 When to use which date tool
+#### 22.7 🎯 When to use which date tool
 
 | You want to... | Use | ⚠️ Watch out |
 |---|---|---|
@@ -5164,7 +5171,7 @@ SELECT order_id FROM orders WHERE order_date >= '03/01/2026';
 > [!CAUTION]
 > 🐛 **Common mistake:** `BETWEEN '2026-01-01' AND '2026-01-31'` on a `DATETIME` column. It silently drops everything after midnight on the 31st — roughly one day of data per month, forever. Use the half-open range.
 
-## 22.8 🧪 Try it yourself
+#### 22.8 🧪 Try it yourself
 
 1. Show every order with the number of days it took to ship.
 2. List orders placed in April–June 2026 (Q2) using the index-friendly half-open date range from 14.3.
@@ -5187,7 +5194,7 @@ SELECT order_id FROM orders WHERE order_date >= '03/01/2026';
 
 ---
 
-# 23. Conversion and casting
+### 23. Conversion and casting
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -5198,7 +5205,7 @@ SELECT order_id FROM orders WHERE order_date >= '03/01/2026';
 
 > 🌍 **Analogy:** Currency exchange. You can swap your money at the bank at a clear rate (an explicit conversion), or let a shop quietly convert it at the till for you (an implicit one). Both work — but only one of them lets you see what just happened.
 
-## 23.1 🔁 CAST and CONVERT
+#### 23.1 🔁 CAST and CONVERT
 
 ```sql
 -- 🟥 MSSQL: CAST is standard SQL — but the target type NAMES differ by engine
@@ -5229,7 +5236,7 @@ SELECT CONVERT('123', UNSIGNED) AS n;
 SELECT CONVERT(full_name USING utf8mb4) AS s FROM customers;
 ```
 
-## 23.2 🛡️ Safe conversion that does not blow up
+#### 23.2 🛡️ Safe conversion that does not blow up
 
 ```sql
 -- ✅ Works in BOTH: put a few messy rows into the staging table from Chapter 12
@@ -5268,7 +5275,7 @@ WHERE customer_code REGEXP '^[0-9]+$';       -- only genuinely numeric rows
 
 <a id="233--implicit-conversion--the-silent-performance-killer"></a>
 
-## 23.3 ⚠️ Implicit conversion — the silent performance killer
+#### 23.3 ⚠️ Implicit conversion — the silent performance killer
 
 ```sql
 -- The column holds text (VARCHAR), but the value typed here is a number
@@ -5302,7 +5309,7 @@ SELECT * FROM customers WHERE phone = '+94-77-555-0101';
 > [!TIP]
 > 💡 **The rule: always compare a column with a value of the same data type.** Numbers without quotes, text in quotes, dates as `'YYYY-MM-DD'`. This one habit prevents a whole family of slowdowns on live systems.
 
-## 23.4 🧮 Numeric conversion precision
+#### 23.4 🧮 Numeric conversion precision
 
 ```sql
 -- ✅ Works in BOTH
@@ -5339,7 +5346,7 @@ FROM products;
 >
 > Useful MSSQL format strings: `'N2'` (1,499.00), `'C'` (currency, in the server's local style), `'P1'` (percent), `'0.00'` (no thousands separator). And remember the warning from [Chapter 20](#20-string-functions): `FORMAT()` in MSSQL is slow — fine for a report, bad for a million rows.
 
-## 23.5 🧪 Try it yourself
+#### 23.5 🧪 Try it yourself
 
 1. Convert every product price to a string prefixed with `USD `.
 2. In MSSQL, use `TRY_CAST` to find which values in a text column are not valid integers.
@@ -5361,7 +5368,7 @@ FROM products;
 
 ---
 
-# 24. Conditional logic: CASE, IIF, IF
+### 24. Conditional logic: CASE, IIF, IF
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -5372,7 +5379,7 @@ FROM products;
 
 > 🌍 **Analogy:** Sorting post at a post office: *if* the envelope says London, put it in bag A; *if* it says Paris, bag B; *otherwise*, bag C. `CASE` does exactly this for every row.
 
-## 24.1 🔀 The two forms of CASE
+#### 24.1 🔀 The two forms of CASE
 
 A **searched** `CASE` tests any condition you like. A **simple** `CASE` compares one column with a list of values.
 
@@ -5412,7 +5419,7 @@ FROM orders;
 > [!WARNING]
 > ⚠️ **Always write `ELSE`.** With no `ELSE`, unmatched rows silently become `NULL`. In a `SELECT` that is confusing; in an `UPDATE` it is data loss.
 
-## 24.2 ⚡ Shorthand forms
+#### 24.2 ⚡ Shorthand forms
 
 ```sql
 -- 🟥 MSSQL: IIF is a compact two-branch CASE
@@ -5437,7 +5444,7 @@ SELECT ELT(3, 'Bronze', 'Silver', 'Gold', 'Platinum') AS tier;     -- 'Gold'
 > [!TIP]
 > 💡 **Use `CASE` in code you intend to keep.** `IIF` and `IF` only work in one engine each; `CASE` works in every SQL database on earth. Save the shorthand for quick one-off queries.
 
-## 24.3 🎯 The five patterns you will actually use
+#### 24.3 🎯 The five patterns you will actually use
 
 Some of these examples also use `JOIN` and `GROUP BY` (Chapters 26 and 28). Focus on the `CASE` part for now.
 
@@ -5508,7 +5515,7 @@ SELECT
 FROM products;
 ```
 
-## 24.4 🧠 CASE in every clause
+#### 24.4 🧠 CASE in every clause
 
 ```sql
 -- In SELECT   ✅ (shown above)
@@ -5534,7 +5541,7 @@ GROUP BY CASE WHEN unit_price >= 500 THEN 'Expensive' ELSE 'Affordable' END;
 
 > 🔀 **MySQL convenience:** MySQL lets you `GROUP BY` the alias (`GROUP BY band`), so you do not have to repeat the expression. MSSQL does not — repeat it, or wrap the query in a CTE ([Chapter 31](#31-ctes-and-recursive-queries)).
 
-## 24.5 🎯 When to use CASE
+#### 24.5 🎯 When to use CASE
 
 | You need to... | Use |
 |---|---|
@@ -5550,7 +5557,7 @@ GROUP BY CASE WHEN unit_price >= 500 THEN 'Expensive' ELSE 'Affordable' END;
 > [!CAUTION]
 > 🐛 **Common mistake:** omitting `ELSE`. A `CASE` with no matching branch returns `NULL`. In a `SELECT` that is merely confusing; in an `UPDATE ... SET col = CASE ...` it **wipes the column to NULL** for every unmatched row. Always write an explicit `ELSE`, even if it is `ELSE col` meaning "leave it alone".
 
-## 24.6 🧪 Try it yourself
+#### 24.6 🧪 Try it yourself
 
 1. Classify every customer as `Domestic` or `International` based on country.
 2. In one query, count orders by status **and** show each status as a percentage of the total.
@@ -5572,11 +5579,11 @@ GROUP BY CASE WHEN unit_price >= 500 THEN 'Expensive' ELSE 'Affordable' END;
 
 ---
 
-# 📊 PART 5 — GROUPING AND AGGREGATION
+## 📊 PART 5 — GROUPING AND AGGREGATION
 
 ---
 
-# 25. Aggregate functions
+### 25. Aggregate functions
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -5587,7 +5594,7 @@ GROUP BY CASE WHEN unit_price >= 500 THEN 'Expensive' ELSE 'Affordable' END;
 
 > 🌍 **Analogy:** A **juicer**. You put in 20 oranges (rows) and get out one glass of juice (a single value). You cannot get the oranges back — which is exactly why you cannot mix aggregated and non-aggregated columns without a `GROUP BY`.
 
-## 25.1 🧰 The core five
+#### 25.1 🧰 The core five
 
 | Function | What it does | NULL handling |
 |---|---|---|
@@ -5617,7 +5624,7 @@ FROM products;
 > [!TIP]
 > 💡 **`COUNT(1)` is not faster than `COUNT(*)`.** Both engines optimize them identically. Use `COUNT(*)` — it says what you mean.
 
-## 25.2 📐 Statistical aggregates
+#### 25.2 📐 Statistical aggregates
 
 *Standard deviation* and *variance* measure how spread out values are: a small number means the prices in a group are similar; a big number means they vary a lot.
 
@@ -5642,7 +5649,7 @@ SELECT category_id, AVG(unit_price) AS avg_price, STDDEV_SAMP(unit_price) AS pri
 FROM products GROUP BY category_id;
 ```
 
-## 25.3 💰 Real business questions answered with aggregates
+#### 25.3 💰 Real business questions answered with aggregates
 
 ```sql
 -- ✅ Works in BOTH
@@ -5674,7 +5681,7 @@ SELECT MIN(order_date) AS first_order, MAX(order_date) AS latest_order FROM orde
 > [!WARNING]
 > ⚠️ **The `COUNT(DISTINCT o.order_id)` in that second query is essential.** Because we joined to `order_items`, an order with 3 line items appears 3 times. A plain `COUNT(*)` would count 36 "orders" instead of 17. **Whenever you join one-to-many and then count the "one" side, you need `DISTINCT`.**
 
-## 25.4 🚫 The rule you cannot break
+#### 25.4 🚫 The rule you cannot break
 
 ```sql
 -- ❌ FAILS in MSSQL. Silently WRONG in MySQL without ONLY_FULL_GROUP_BY.
@@ -5691,7 +5698,7 @@ SELECT product_name, AVG(unit_price) FROM products;
 > SELECT @@sql_mode;
 > ```
 
-## 25.5 🎯 When to use which aggregate
+#### 25.5 🎯 When to use which aggregate
 
 | Question in plain English | Function | ⚠️ |
 |---|---|---|
@@ -5708,7 +5715,7 @@ SELECT product_name, AVG(unit_price) FROM products;
 > [!CAUTION]
 > 🐛 **Common mistake:** `SUM()` over zero matching rows returns `NULL`, not `0`. A dashboard tile then shows blank instead of "0". Wrap it: `COALESCE(SUM(amount), 0)`.
 
-## 25.6 🧪 Try it yourself
+#### 25.6 🧪 Try it yourself
 
 1. Find the total, average, highest, and lowest product price in one query.
 2. Count how many customers have a phone number vs how many rows exist. Explain the gap.
@@ -5730,7 +5737,7 @@ SELECT product_name, AVG(unit_price) FROM products;
 
 ---
 
-# 26. GROUP BY and HAVING
+### 26. GROUP BY and HAVING
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -5743,7 +5750,7 @@ SELECT product_name, AVG(unit_price) FROM products;
 
 Several examples in this chapter use `JOIN … ON` to look up matching rows in another table (for example, each product's category name). Joins are explained fully in [Chapter 28](#28-joins-the-complete-picture) — for now, read `JOIN` as *"look up the matching row"*.
 
-## 26.1 🪣 Basic grouping
+#### 26.1 🪣 Basic grouping
 
 ```sql
 -- ✅ Works in BOTH: how many products per category?
@@ -5772,7 +5779,7 @@ GROUP BY c.category_name          -- 🟥 MSSQL: also add c.category_id if you s
 ORDER BY product_count DESC;
 ```
 
-## 26.2 🧩 Grouping by multiple columns
+#### 26.2 🧩 Grouping by multiple columns
 
 ```sql
 -- ✅ Works in BOTH: one bucket per unique COMBINATION
@@ -5788,7 +5795,7 @@ ORDER BY country, loyalty_tier;
 > [!NOTE]
 > 📌 **In plain words:** grouping by two columns means "one row per unique pair". `('UK','Silver')` and `('UK','Bronze')` are different buckets.
 
-## 26.3 🗑️ HAVING — filtering the groups
+#### 26.3 🗑️ HAVING — filtering the groups
 
 ```sql
 -- ✅ Works in BOTH
@@ -5830,7 +5837,7 @@ ORDER BY avg_price DESC;
 > [!TIP]
 > 💡 **Pro tip:** If a condition does not need an aggregate function, it belongs in `WHERE`. Putting `WHERE p.discontinued = 0` into `HAVING` would still give the right answer but force the engine to group rows it was going to throw away. On large tables this is a serious waste.
 
-## 26.4 💼 Real-world grouping recipes
+#### 26.4 💼 Real-world grouping recipes
 
 ```sql
 -- 🏆 Top 5 customers by lifetime spend
@@ -5935,7 +5942,7 @@ HAVING COUNT(*) > 1;
 >
 > If you find yourself joining a `GROUP BY` result back to the original table just to see the detail rows again, **you wanted a window function.**
 
-## 26.5 🐛 The three GROUP BY mistakes
+#### 26.5 🐛 The three GROUP BY mistakes
 
 **① Forgetting a column in `GROUP BY`**
 
@@ -5985,7 +5992,7 @@ ORDER BY orders;
 > [!WARNING]
 > ⚠️ **Note it must be `COUNT(o.order_id)`, not `COUNT(*)`, in that last query.** With a `LEFT JOIN`, a customer with no orders still produces one row (with NULLs), so `COUNT(*)` would return **1** instead of **0**. `COUNT(o.order_id)` skips the NULL and correctly returns 0. This is one of the most valuable details in this entire chapter.
 
-## 26.6 🧪 Try it yourself
+#### 26.6 🧪 Try it yourself
 
 1. Count orders per status, sorted by count.
 2. Find every category whose average product price exceeds 300.
@@ -6008,7 +6015,7 @@ ORDER BY orders;
 
 ---
 
-# 27. ROLLUP, CUBE, and GROUPING SETS
+### 27. ROLLUP, CUBE, and GROUPING SETS
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -6019,7 +6026,7 @@ ORDER BY orders;
 
 > 🌍 **Analogy:** A shop receipt. You get a line per item, a subtotal per department, and a grand total at the bottom. `ROLLUP` produces exactly that shape.
 
-## 27.1 📊 ROLLUP — hierarchical subtotals
+#### 27.1 📊 ROLLUP — hierarchical subtotals
 
 ```sql
 -- ✅ Works in BOTH (syntax differs slightly)
@@ -6072,7 +6079,7 @@ GROUP BY country, loyalty_tier WITH ROLLUP;
 > ORDER BY GROUPING(c.country), c.country, GROUPING(c.loyalty_tier), c.loyalty_tier;
 > ```
 
-## 27.2 🎲 CUBE — every possible combination
+#### 27.2 🎲 CUBE — every possible combination
 
 ```sql
 -- 🟥 MSSQL only (MySQL has no CUBE)
@@ -6093,7 +6100,7 @@ ORDER BY c.country, c.loyalty_tier;
 | Use for | Things that nest: country → city; year → month | Summaries where every combination of columns matters |
 | MySQL support | ✅ `WITH ROLLUP` | ❌ Not supported |
 
-## 27.3 🎛️ GROUPING SETS — exactly the totals you want
+#### 27.3 🎛️ GROUPING SETS — exactly the totals you want
 
 ```sql
 -- 🟥 MSSQL only
@@ -6113,7 +6120,7 @@ ORDER BY c.country, c.loyalty_tier;
 > [!TIP]
 > 💡 **`GROUPING SETS` is the most precise of the three.** `ROLLUP` and `CUBE` are just shorthand for particular grouping sets. Use it when you want, say, totals by country and totals by tier but *not* the combination.
 
-## 27.4 🏷️ Telling a subtotal NULL from a real NULL
+#### 27.4 🏷️ Telling a subtotal NULL from a real NULL
 
 A genuine problem: if `city` can be NULL in your data, how do you know whether a NULL in the result is a real NULL or a `ROLLUP` subtotal marker?
 
@@ -6137,7 +6144,7 @@ FROM customers
 GROUP BY country, loyalty_tier WITH ROLLUP;
 ```
 
-## 27.5 💼 A real management report
+#### 27.5 💼 A real management report
 
 ```sql
 -- ✅ Monthly revenue with a yearly total — the classic finance request
@@ -6159,7 +6166,7 @@ ORDER BY yr, mth;
 > [!WARNING]
 > ⚠️ **`WITH ROLLUP` in MySQL cannot be combined with `ORDER BY` in older versions**, and the subtotal rows always sort with their NULLs. If ordering matters, wrap the whole query in a subquery inside `FROM` (a *derived table*, Chapter 30) and sort outside it.
 
-## 27.6 🧪 Try it yourself
+#### 27.6 🧪 Try it yourself
 
 1. Produce a customer count by country with a grand total.
 2. In MSSQL, use `CUBE` on `(country, loyalty_tier)` and count how many rows come back. Explain the number.
@@ -6183,14 +6190,14 @@ ORDER BY yr, mth;
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — after Chapter 27 · you can query one table
+#### ✅ Checkpoint — after Chapter 27 · you can query one table
 
 </div>
 
 > [!IMPORTANT]
 > This is the largest single milestone in the guide. Everything after it combines tables; everything before it is the foundation that makes those combinations meaningful.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -6201,7 +6208,7 @@ ORDER BY yr, mth;
 - `NULL` and three-valued logic (Ch 15)
 - **Aggregates**, `GROUP BY`, and `HAVING` (Ch 25–26)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. Why can you use a column alias in `ORDER BY` but not in `WHERE`?
 2. A colleague says “we validate everything in the application, so we do not need constraints.” What is the counter-argument, in one sentence?
@@ -6227,17 +6234,17 @@ ORDER BY yr, mth;
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Using only ShopDB and what you have learned so far, answer out loud: *“how would I find the three categories with the highest average product price, ignoring discontinued products?”* Name the clauses you need and the order the database will run them in.
 
 ---
 
-# 🔗 PART 6 — COMBINING TABLES
+## 🔗 PART 6 — COMBINING TABLES
 
 ---
 
-# 28. JOINs, the complete picture
+### 28. JOINs, the complete picture
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -6248,7 +6255,7 @@ Using only ShopDB and what you have learned so far, answer out loud: *“how wou
 
 > 🌍 **Analogy:** You have a **guest list** (customers) and a **stack of RSVP cards** (orders). Joining them means laying each RSVP card next to the matching guest's name. What you do with guests who never RSVP'd — and RSVPs from people not on the list — is exactly what distinguishes the join types.
 
-## 28.1 🎨 The join types at a glance
+#### 28.1 🎨 The join types at a glance
 
 ```text
    customers          orders
@@ -6276,7 +6283,7 @@ Using only ShopDB and what you have learned so far, answer out loud: *“how wou
 | `CROSS JOIN` | Every combination | "Generate a date × product grid for a report" |
 | `SELF JOIN` | A table joined to itself | "Show each employee with their manager" |
 
-## 28.2 🎯 INNER JOIN — the workhorse
+#### 28.2 🎯 INNER JOIN — the workhorse
 
 ```sql
 -- ✅ Works in BOTH
@@ -6329,7 +6336,7 @@ ORDER BY p.product_name;
 > [!TIP]
 > 💡 **Pro tip on join direction:** Write the `ON` condition consistently — `ON child.parent_id = parent.parent_id`. Pick a direction and never vary it. Consistency makes complex joins scannable at a glance.
 
-## 28.3 ⬅️ LEFT JOIN — keeping everything on the left
+#### 28.3 ⬅️ LEFT JOIN — keeping everything on the left
 
 ```sql
 -- ✅ Works in BOTH: EVERY customer, whether or not they ordered
@@ -6378,7 +6385,7 @@ LEFT JOIN payments AS pay ON pay.order_id = o.order_id
 WHERE pay.payment_id IS NULL;
 ```
 
-## 28.4 🚨 The LEFT JOIN trap that silently breaks reports
+#### 28.4 🚨 The LEFT JOIN trap that silently breaks reports
 
 ```sql
 -- ❌ This is secretly an INNER JOIN!
@@ -6403,7 +6410,7 @@ LEFT JOIN orders AS o
 > [!TIP]
 > 💡 **The rule:** In a `LEFT JOIN`, conditions on the **right-hand table** belong in `ON`. Conditions on the **left-hand table** belong in `WHERE`. Get this backwards and your report quietly loses rows — the worst kind of bug, because it produces plausible wrong numbers instead of an error.
 
-## 28.5 ➡️ RIGHT and FULL OUTER JOIN
+#### 28.5 ➡️ RIGHT and FULL OUTER JOIN
 
 ```sql
 -- RIGHT JOIN: all orders, plus customer info where it exists
@@ -6443,7 +6450,7 @@ FROM customers c RIGHT JOIN orders o ON o.customer_id = c.customer_id;
 > [!IMPORTANT]
 > 🎯 **When you actually need `FULL OUTER JOIN`:** comparing two lists that should match. "Show me every product in our catalogue and every product in the supplier feed, flagging the ones that appear in only one of them."
 
-## 28.6 ✖️ CROSS JOIN — every combination
+#### 28.6 ✖️ CROSS JOIN — every combination
 
 ```sql
 -- ✅ Works in BOTH: 6 categories × 5 suppliers = 30 rows
@@ -6482,7 +6489,7 @@ ORDER BY c.category_name, m.month_num;
 > [!TIP]
 > 💡 **This "cross join to fill the gaps" pattern is essential for charts.** Without it, a month with no sales simply does not appear, and your line chart draws a straight line across the gap instead of dropping to zero.
 
-## 28.7 🪞 SELF JOIN — a table joined to itself
+#### 28.7 🪞 SELF JOIN — a table joined to itself
 
 ```sql
 -- ✅ Works in BOTH: every employee with their manager's name
@@ -6528,7 +6535,7 @@ JOIN products p2
    AND ABS(p1.unit_price - p2.unit_price) / p1.unit_price < 0.05;
 ```
 
-## 28.8 💥 The accidental CROSS JOIN and row multiplication
+#### 28.8 💥 The accidental CROSS JOIN and row multiplication
 
 **Mistake 1 — forgetting the `ON` clause:**
 
@@ -6582,7 +6589,7 @@ LEFT JOIN (
 > [!TIP]
 > 💡 **The rule: never join two separate one-to-many children in the same query and aggregate.** First total up each "many" table to one row per order, then join those totals. This single insight prevents more wrong reports than any other in this guide.
 
-## 28.9 ⚙️ How joins are executed (and why it matters)
+#### 28.9 ⚙️ How joins are executed (and why it matters)
 
 Behind the scenes, the database chooses one of three ways to match rows. You never write these yourself — but the names appear when a join is slow (Chapter 47):
 
@@ -6605,7 +6612,7 @@ CREATE INDEX ix_products_category_id ON products(category_id);
 CREATE INDEX ix_payments_order_id    ON payments(order_id);
 ```
 
-## 28.10 🧪 Try it yourself
+#### 28.10 🧪 Try it yourself
 
 1. List every order with its customer name, sales rep name, and item count.
 2. Find every product that has never been sold.
@@ -6629,7 +6636,7 @@ CREATE INDEX ix_payments_order_id    ON payments(order_id);
 
 ---
 
-# 29. Set operators: UNION, INTERSECT, EXCEPT
+### 29. Set operators: UNION, INTERSECT, EXCEPT
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -6640,14 +6647,14 @@ CREATE INDEX ix_payments_order_id    ON payments(order_id);
 
 > 🌍 **Analogy:** A join is **taping two sheets of paper edge to edge** to make a wider page. A union is **stacking two sheets in the same pile**.
 
-## 29.1 📚 The rules every set operator obeys
+#### 29.1 📚 The rules every set operator obeys
 
 1. Every query must have the **same number of columns**.
 2. Matching columns must have **compatible data types** (numbers with numbers, text with text).
 3. The **first query's column names** become the result's column names.
 4. `ORDER BY` appears **only once, at the very end**.
 
-## 29.2 ➕ UNION and UNION ALL
+#### 29.2 ➕ UNION and UNION ALL
 
 ```sql
 -- ✅ Works in BOTH: UNION removes duplicates
@@ -6703,7 +6710,7 @@ FROM employees
 ORDER BY person_type, name;
 ```
 
-## 29.3 ∩ INTERSECT — rows in both
+#### 29.3 ∩ INTERSECT — rows in both
 
 ```sql
 -- 🟥 MSSQL: supported natively
@@ -6720,7 +6727,7 @@ FROM customers c
 WHERE c.city IN (SELECT shipping_city FROM orders);
 ```
 
-## 29.4 ➖ EXCEPT / MINUS — rows in the first but not the second
+#### 29.4 ➖ EXCEPT / MINUS — rows in the first but not the second
 
 ```sql
 -- 🟥 MSSQL: EXCEPT
@@ -6748,7 +6755,7 @@ WHERE c.city IS NOT NULL
 > ```
 > This is how experienced engineers check, in 10 seconds, that data was copied correctly.
 
-## 29.5 🔀 Support and precedence
+#### 29.5 🔀 Support and precedence
 
 | Operator | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -6785,7 +6792,7 @@ SELECT * FROM (
 ) AS cheap;
 ```
 
-## 29.6 🧪 Try it yourself
+#### 29.6 🧪 Try it yourself
 
 1. Build one list of every city that appears either as a customer city or a shipping city.
 2. Find the cities that appear in both.
@@ -6808,7 +6815,7 @@ SELECT * FROM (
 
 ---
 
-# 30. Subqueries and EXISTS
+### 30. Subqueries and EXISTS
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -6819,7 +6826,7 @@ SELECT * FROM (
 
 > 🌍 **Analogy:** *"Give me every product that costs more than the average."* You cannot answer that in one step — you must first work out the average (inner query), then compare (outer query). A subquery is that two-step thought written as one statement.
 
-## 30.1 🔢 Scalar subqueries — returning one single value
+#### 30.1 🔢 Scalar subqueries — returning one single value
 
 ```sql
 -- ✅ Works in BOTH: products priced above the overall average
@@ -6843,7 +6850,7 @@ ORDER BY diff_from_avg DESC;
 > [!WARNING]
 > ⚠️ **A scalar subquery must return exactly one row and one column.** If it returns more, you get *"Subquery returned more than 1 value"* (MSSQL) or *"Subquery returns more than 1 row"* (MySQL).
 
-## 30.2 📋 Multi-row subqueries: IN, ANY, ALL
+#### 30.2 📋 Multi-row subqueries: IN, ANY, ALL
 
 ```sql
 -- ✅ Works in BOTH
@@ -6872,7 +6879,7 @@ WHERE unit_price > ANY (SELECT unit_price FROM products WHERE category_id = 1);
 > [!WARNING]
 > ⚠️ **Remember the `NOT IN` + NULL trap from [Chapter 14](#14-where-asking-precise-questions).** `NOT IN` with a subquery that can return NULL silently returns zero rows. Use `NOT EXISTS`.
 
-## 30.3 🔗 Correlated subqueries — the inner query depends on the outer
+#### 30.3 🔗 Correlated subqueries — the inner query depends on the outer
 
 ```sql
 -- ✅ Works in BOTH: each product compared to ITS OWN category's average
@@ -6914,7 +6921,7 @@ ORDER BY last_order DESC;
 > GROUP BY c.customer_id, c.full_name;
 > ```
 
-## 30.4 ✅ EXISTS and NOT EXISTS — the professional's choice
+#### 30.4 ✅ EXISTS and NOT EXISTS — the professional's choice
 
 ```sql
 -- ✅ Works in BOTH: customers who HAVE ordered
@@ -6959,7 +6966,7 @@ WHERE EXISTS (
 );
 ```
 
-## 30.5 🪆 Derived tables — a subquery in the FROM clause
+#### 30.5 🪆 Derived tables — a subquery in the FROM clause
 
 ```sql
 -- ✅ Works in BOTH
@@ -7013,7 +7020,7 @@ ORDER BY spend.total_spend DESC;
 > [!TIP]
 > 💡 **That query is correct but hard to read** — the same calculation appears twice. This is precisely the problem CTEs solve. See the next chapter.
 
-## 30.6 ⚡ Subquery performance
+#### 30.6 ⚡ Subquery performance
 
 | Pattern | Guidance |
 |---|---|
@@ -7028,7 +7035,7 @@ ORDER BY spend.total_spend DESC;
 > [!TIP]
 > 💡 **Modern optimizers often rewrite subqueries into joins automatically**, so the difference is smaller than people often claim. But "often" is not "always" — check the execution plan rather than trusting a rule of thumb. See [Chapter 47](#47-execution-plans).
 
-## 30.7 🧪 Try it yourself
+#### 30.7 🧪 Try it yourself
 
 1. Find products priced above their own category's average.
 2. Find customers who have ordered from more than one category.
@@ -7050,7 +7057,7 @@ ORDER BY spend.total_spend DESC;
 
 ---
 
-# 31. CTEs and recursive queries
+### 31. CTEs and recursive queries
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -7061,7 +7068,7 @@ ORDER BY spend.total_spend DESC;
 
 > 🌍 **Analogy:** A recipe. Instead of one impossible sentence — *"combine the thing you get from beating eggs with the thing you get from sifting flour mixed with the thing from melting butter"* — you write numbered steps, each with a name. CTEs are those named steps.
 
-## 31.1 ✍️ Basic CTE syntax
+#### 31.1 ✍️ Basic CTE syntax
 
 ```sql
 -- ✅ Works in BOTH (MySQL 8.0+)
@@ -7086,7 +7093,7 @@ ORDER BY total_spend DESC;
 > [!NOTE]
 > 📌 **Compare that to the double-nested version at the end of [Chapter 30](#30-subqueries-and-exists).** Same result, but the aggregation is written **once** and given a meaningful name. That is the whole value of a CTE.
 
-## 31.2 🔗 Multiple CTEs — a readable pipeline
+#### 31.2 🔗 Multiple CTEs — a readable pipeline
 
 ```sql
 -- ✅ Works in BOTH: a genuine business report built in clear stages
@@ -7140,7 +7147,7 @@ ORDER BY segment_revenue DESC;
 > [!TIP]
 > 💡 **Read that query top to bottom and it explains itself.** Written as nested subqueries it would be roughly 40 lines of parentheses that nobody could safely modify. **CTEs are mainly a way to make SQL easier to read and to change** — and readable SQL is SQL that gets fixed correctly at 2 a.m.
 
-## 31.3 🔁 Recursive CTEs — querying hierarchies
+#### 31.3 🔁 Recursive CTEs — querying hierarchies
 
 This is the feature that makes CTEs genuinely irreplaceable. A **recursive** query uses its own results to find the next level, step by step, until nothing new turns up. That lets it walk any tree of parent–child links: an organization chart, categories inside categories, folders inside folders, parts inside products.
 
@@ -7234,7 +7241,7 @@ WITH [RECURSIVE] cte_name AS (
 SELECT ... FROM cte_name;
 ```
 
-## 31.4 🔢 Generating sequences with recursion
+#### 31.4 🔢 Generating sequences with recursion
 
 ```sql
 -- ✅ Generate every date in a range — essential for gap-free reports
@@ -7280,7 +7287,7 @@ ORDER BY ds.d;
 > [!TIP]
 > 💡 **Without the date series, days with no sales simply do not appear** and your chart draws a misleading straight line between two distant points. This pattern is used in virtually every real dashboard.
 
-## 31.5 ⚠️ Recursion safety
+#### 31.5 ⚠️ Recursion safety
 
 > [!WARNING]
 > ⚠️ **An infinite loop is easy to write.** If your data has a cycle (employee A manages B, B manages A), the recursion never stops.
@@ -7309,7 +7316,7 @@ WITH org_chart AS (
 SELECT employee_id, first_name, level FROM org_chart ORDER BY level;
 ```
 
-## 31.6 🔀 CTE vs derived table vs temp table
+#### 31.6 🔀 CTE vs derived table vs temp table
 
 | | CTE | Derived table | Temp table |
 |---|---|---|---|
@@ -7324,7 +7331,7 @@ SELECT employee_id, first_name, level FROM org_chart ORDER BY level;
 > [!WARNING]
 > ⚠️ **The biggest CTE misconception:** a CTE is **not** a temporary table. In MSSQL the CTE's text is simply pasted into the query wherever you use it, so using the same CTE three times can run it three times. If a CTE is expensive **and** used several times, use a `#temp` table instead. MySQL 8.0 may store a CTE's result once, but do not rely on either behaviour — check the execution plan.
 
-## 31.7 🎯 When to reach for a CTE
+#### 31.7 🎯 When to reach for a CTE
 
 | Situation | Use |
 |---|---|
@@ -7340,7 +7347,7 @@ SELECT employee_id, first_name, level FROM org_chart ORDER BY level;
 > [!CAUTION]
 > 🐛 **Common mistake:** assuming a CTE is stored like a temporary table. In SQL Server its text is pasted in wherever it is used, so a CTE used three times can be **run three times**. If it is expensive, that is a 3x cost you cannot see in the query text. Check the plan; if it is repeated, switch to a temp table.
 
-## 31.8 🧪 Try it yourself
+#### 31.8 🧪 Try it yourself
 
 1. Rewrite the "customers above the average spend" query from Chapter 30 using a CTE. Count how many lines you saved.
 2. Build the full org chart with indentation and levels.
@@ -7363,7 +7370,7 @@ SELECT employee_id, first_name, level FROM org_chart ORDER BY level;
 
 ---
 
-# 32. APPLY and LATERAL
+### 32. APPLY and LATERAL
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -7374,7 +7381,7 @@ SELECT employee_id, first_name, level FROM org_chart ORDER BY level;
 
 > 🌍 **Analogy:** A normal join says *"here are two finished lists, match them up."* `APPLY` says *"for each row on the left, go and run this query specially for it."* It behaves like a "for each row" loop, but the database still runs it efficiently as one statement.
 
-## 32.1 🎯 The problem they solve: top-N per group
+#### 32.1 🎯 The problem they solve: top-N per group
 
 **"Show me the 2 most expensive products in each category."** This is genuinely awkward without `APPLY`.
 
@@ -7414,7 +7421,7 @@ ORDER BY c.category_name, top_p.unit_price DESC;
 > [!TIP]
 > 💡 **`ON TRUE` is required syntax in MySQL's `LATERAL`** — the matching already happens inside the subquery, so the join condition is just a formality.
 
-## 32.2 🔀 CROSS APPLY vs OUTER APPLY
+#### 32.2 🔀 CROSS APPLY vs OUTER APPLY
 
 | | `CROSS APPLY` | `OUTER APPLY` |
 |---|---|---|
@@ -7456,7 +7463,7 @@ LEFT JOIN LATERAL (
 ORDER BY last_order.order_date DESC;
 ```
 
-## 32.3 🧰 Other things APPLY is great at
+#### 32.3 🧰 Other things APPLY is great at
 
 ```sql
 -- 🟥 MSSQL: reuse a calculation without repeating it everywhere
@@ -7506,7 +7513,7 @@ WHERE c.tags IS NOT NULL;
 > [!TIP]
 > 💡 **Note that `CROSS APPLY` drops customers whose `tags` is NULL** — `STRING_SPLIT(NULL, ',')` returns no rows. Swap in `OUTER APPLY` if you want to keep them. And remember: a comma-separated column breaks the **first rule of good table design** (*1NF*, [Chapter 51](#51-normalization-1nf-to-bcnf)) — this technique is for cleaning up data you inherited, not for data you design.
 
-## 32.4 ⚖️ APPLY vs window functions for top-N
+#### 32.4 ⚖️ APPLY vs window functions for top-N
 
 Both solve "top N per group". Which to use?
 
@@ -7537,7 +7544,7 @@ ORDER BY category_name, unit_price DESC;
 > [!TIP]
 > 💡 **Rule of thumb:** for "top 1 or 2 per group" with a good index, `APPLY`/`LATERAL` usually wins. For anything needing ranks, ties, or running totals, use window functions. When in doubt, test both and compare their execution plans (Chapter 47).
 
-## 32.5 🧪 Try it yourself
+#### 32.5 🧪 Try it yourself
 
 1. Show the 3 best-selling products in each category.
 2. Show every customer with their most recent order, including customers who have none.
@@ -7559,11 +7566,11 @@ ORDER BY category_name, unit_price DESC;
 
 ---
 
-# 📈 PART 7 — ANALYTICS
+## 📈 PART 7 — ANALYTICS
 
 ---
 
-# 33. Window functions
+### 33. Window functions
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -7574,7 +7581,7 @@ ORDER BY category_name, unit_price DESC;
 
 > 🌍 **Analogy:** In a classroom, `GROUP BY` gives the teacher one sheet with the class average. A window function gives **each student their own report card** showing their mark, the class average, and their rank — every student keeps their own row.
 
-## 33.1 🪟 The anatomy of a window function
+#### 33.1 🪟 The anatomy of a window function
 
 The word **window** means *the set of rows the function is allowed to look at* while it works on each row.
 
@@ -7618,7 +7625,7 @@ ORDER BY category_id, unit_price DESC;
 
 > 🔀 **Window functions require MySQL 8.0+.** In MySQL 5.7 and earlier they do not exist at all; you must imitate them with complicated workarounds. This alone is a strong reason to upgrade.
 
-## 33.2 🏅 Ranking functions
+#### 33.2 🏅 Ranking functions
 
 | Function | Behaviour with ties | Example: 100, 90, 90, 80 |
 |---|---|---|
@@ -7650,7 +7657,7 @@ ORDER BY category_id, unit_price DESC;
 > - **"Price tiers where ties belong together"** → `DENSE_RANK()`
 > - **"Split my customers into 4 equal spending groups"** → `NTILE(4)`
 
-## 33.3 🥇 The top-N-per-group pattern
+#### 33.3 🥇 The top-N-per-group pattern
 
 The most-used window function pattern in the world. Learn it once, use it forever.
 
@@ -7692,7 +7699,7 @@ ORDER BY r.order_date DESC;
 > [!TIP]
 > 💡 **Note the tiebreaker `, o.order_id DESC`.** If a customer placed two orders on the same date, without a tiebreaker the result is unpredictable — you can get a different answer on different runs. **Always make your `ORDER BY` inside `ROW_NUMBER()` fully deterministic.**
 
-## 33.4 ↔️ LAG and LEAD — looking at neighbouring rows
+#### 33.4 ↔️ LAG and LEAD — looking at neighbouring rows
 
 ```sql
 -- ✅ Works in BOTH: month-over-month revenue change
@@ -7753,7 +7760,7 @@ ORDER BY c.full_name, o.order_date;
 > [!IMPORTANT]
 > 🎯 **`LAG`/`LEAD` real-world uses:** month-over-month growth, time between events, detecting gaps in sequences, finding price changes, and spotting customers who have stopped buying (*churn*).
 
-## 33.5 🎬 FIRST_VALUE, LAST_VALUE, NTH_VALUE
+#### 33.5 🎬 FIRST_VALUE, LAST_VALUE, NTH_VALUE
 
 ```sql
 -- ✅ Works in BOTH
@@ -7776,7 +7783,7 @@ ORDER BY c.full_name, o.order_date;
 > [!WARNING]
 > ⚠️ **The `LAST_VALUE` gotcha that trips up everyone.** With `ORDER BY` present, the default *frame* (explained in 33.6, just below) is `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` — so "last value" means "last value **so far**", which is just the current row. You must explicitly widen the frame to `UNBOUNDED FOLLOWING` to get the true last value. `FIRST_VALUE` works as expected because the frame already starts at the beginning.
 
-## 33.6 📏 Window frames explained
+#### 33.6 📏 Window frames explained
 
 The frame decides **which rows inside the window** the function actually sees.
 
@@ -7803,7 +7810,7 @@ Options:
 > [!WARNING]
 > ⚠️ **`ROWS` vs `RANGE`.** `ROWS` counts physical rows. `RANGE` groups rows with **equal ORDER BY values** together. If two rows share the same date, `RANGE` includes both in the frame while `ROWS` does not. `ROWS` is what people usually mean — **prefer `ROWS` unless you specifically want rows with equal values treated as one group.**
 
-## 33.7 🧪 Try it yourself
+#### 33.7 🧪 Try it yourself
 
 1. Show every product with its category's average, minimum, and maximum price alongside.
 2. Rank customers by lifetime spend using all three ranking functions and explain the differences you see.
@@ -7826,7 +7833,7 @@ Options:
 
 ---
 
-# 34. Ranking, running totals, and moving averages
+### 34. Ranking, running totals, and moving averages
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -7837,7 +7844,7 @@ Options:
 
 > 🌍 **Analogy:** A running total is a bank statement's *balance* column: each line shows the new amount **and** everything so far. A moving average is judging your weight by the last seven days instead of by today alone.
 
-## 34.1 📈 Running totals (cumulative sums)
+#### 34.1 📈 Running totals (cumulative sums)
 
 ```sql
 -- ✅ Works in BOTH: revenue accumulating through the year
@@ -7886,7 +7893,7 @@ WHERE o.status IN ('Delivered','Shipped')
 ORDER BY c.full_name, o.order_date;
 ```
 
-## 34.2 📉 Moving averages
+#### 34.2 📉 Moving averages
 
 ```sql
 -- ✅ Works in BOTH: a 3-period moving average smooths out noise
@@ -7915,7 +7922,7 @@ ORDER BY ym;
 > [!IMPORTANT]
 > 🎯 **When to use a moving average:** any time raw daily or monthly numbers are too noisy to see the trend. Stock prices, website traffic, sales, server load — smoothing reveals the direction.
 
-## 34.3 🥧 Percentage of total
+#### 34.3 🥧 Percentage of total
 
 ```sql
 -- ✅ Works in BOTH: each category's share of revenue
@@ -7949,7 +7956,7 @@ ORDER BY revenue DESC;
 > [!IMPORTANT]
 > 🎯 **The `cumulative_pct` column is a *Pareto analysis* (also called ABC analysis)** — "which 20% of categories produce 80% of revenue?" Retailers, warehouses, and finance teams ask for exactly this.
 
-## 34.4 🔍 Finding gaps and islands
+#### 34.4 🔍 Finding gaps and islands
 
 A classic problem. An **island** is an unbroken run of consecutive values — for example, orders on three days in a row. A **gap** is a hole in a sequence — for example, order numbers that were skipped.
 
@@ -8014,7 +8021,7 @@ ORDER BY streak_start;
 > [!NOTE]
 > 📌 **The trick:** subtract the row number from the date. For consecutive dates, that difference is **constant**, so grouping by it isolates each run. It looks like magic the first time; work through three rows by hand and it becomes obvious. The same pattern finds attendance streaks, periods when a system stayed online, consecutive login days, and shift schedules.
 
-## 34.5 📊 Cohort and retention analysis
+#### 34.5 📊 Cohort and retention analysis
 
 A **cohort** is a group of customers who started in the same month. **Retention** asks: how many of them are still buying one, two, three months later?
 
@@ -8044,7 +8051,7 @@ GROUP BY cohort_month, activity_month
 ORDER BY cohort_month, activity_month;
 ```
 
-## 34.6 🎯 Deduplication with ROW_NUMBER
+#### 34.6 🎯 Deduplication with ROW_NUMBER
 
 ```sql
 -- ✅ Works in BOTH: find (and delete) duplicate customers by email
@@ -8082,7 +8089,7 @@ DELETE FROM dupes WHERE rn > 1;
 > [!WARNING]
 > ⚠️ **Always run the `SELECT` version first.** Deduplication deletes real customer records. `ORDER BY customer_id` decides which copy survives — think about whether you want the oldest, the newest, or the most complete row.
 
-## 34.7 📐 Percentiles, medians, and distribution
+#### 34.7 📐 Percentiles, medians, and distribution
 
 > [!NOTE]
 > 📌 **In plain words:** An average can mislead when a few values are extreme. One €50,000 order pulls the average far above what a typical customer actually spends. The **median** (the middle value) and **percentiles** (P90 = the value that 90% of orders are below) describe your data much more honestly.
@@ -8186,7 +8193,7 @@ ORDER BY unit_price DESC;
 > [!IMPORTANT]
 > 🎯 **Report the median and P90, not just the average.** "Average response time 200 ms" hides that one user in ten waits two seconds. P90 and P99 are what your users actually experience, which is why every SLA (a *service-level agreement* — a promised speed or uptime) is written in percentiles.
 
-## 34.8 🪟 Naming a window you reuse
+#### 34.8 🪟 Naming a window you reuse
 
 Repeating a long `OVER (…)` clause three times is noise, and it is a place for a typo to hide.
 
@@ -8206,7 +8213,7 @@ ORDER BY unit_price DESC;
 > [!WARNING]
 > ⚠️ **The `WINDOW` clause sits between `HAVING` and `ORDER BY`**, and it arrived in SQL Server only in **2022**. On earlier versions, repeat the `OVER (…)` clause — or move it into a CTE. MySQL has had it since 8.0.
 
-## 34.9 🧪 Try it yourself
+#### 34.9 🧪 Try it yourself
 
 1. Build a running total of revenue by month for 2026.
 2. Add a 3-month moving average and compare the two lines.
@@ -8230,7 +8237,7 @@ ORDER BY unit_price DESC;
 
 ---
 
-# 35. PIVOT and UNPIVOT
+### 35. PIVOT and UNPIVOT
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -8241,7 +8248,7 @@ ORDER BY unit_price DESC;
 
 > 🌍 **Analogy:** A tall thin list of "month, amount" pairs versus a wide table with a column per month. Same data, rotated 90 degrees.
 
-## 35.1 🔄 The portable way: CASE (works everywhere)
+#### 35.1 🔄 The portable way: CASE (works everywhere)
 
 ```sql
 -- ✅ Works in BOTH — and this is the version you should usually write
@@ -8266,7 +8273,7 @@ ORDER BY total DESC;
 > [!TIP]
 > 💡 **This `SUM(CASE …)` approach (called *conditional aggregation*) is readable and works in every SQL database on earth.** MSSQL's own `PIVOT` syntax is shorter, but it only works in SQL Server and becomes harder to read as soon as you need two totals.
 
-## 35.2 🟥 MSSQL PIVOT syntax
+#### 35.2 🟥 MSSQL PIVOT syntax
 
 ```sql
 -- 🟥 MSSQL only
@@ -8292,7 +8299,7 @@ ORDER BY category_name;
 > [!WARNING]
 > ⚠️ **`PIVOT` has three real limitations:** you must list the column values **explicitly** (you cannot pivot an unknown set of values without dynamic SQL), it supports **one aggregate only**, and every column the pivot does not mention is silently used for grouping — so one stray column in the source query produces confusing extra rows. **Always build the source as a subquery in `FROM` that contains only the three columns you need.**
 
-## 35.3 🔃 UNPIVOT — columns back into rows
+#### 35.3 🔃 UNPIVOT — columns back into rows
 
 ```sql
 -- 🟥 MSSQL
@@ -8335,7 +8342,7 @@ ORDER BY product_name, metric;
 > [!IMPORTANT]
 > 🎯 **When you need `UNPIVOT`:** normalizing a badly designed table that has `jan_sales, feb_sales, mar_sales…` columns into a proper `(month, sales)` structure. Wide tables like that are a sign of poor table design — see [Chapter 51](#51-normalization-1nf-to-bcnf).
 
-## 35.4 🔀 Dynamic pivoting — when the columns are not known in advance
+#### 35.4 🔀 Dynamic pivoting — when the columns are not known in advance
 
 When you do not know the column names in advance, you must build the query's text while the code runs, then execute that text. This is called **dynamic SQL**.
 
@@ -8371,7 +8378,7 @@ EXEC sp_executesql @sql;
 > [!TIP]
 > 💡 **Honestly: pivot in your reporting tool when you can.** Excel, Power BI, Tableau, pandas, and every BI tool pivot natively, handle unknown column sets effortlessly, and do not require dynamic SQL. Pivot in SQL when SQL is the last stop — a CSV export, a stored procedure feeding a fixed report.
 
-## 35.5 🧪 Try it yourself
+#### 35.5 🧪 Try it yourself
 
 1. Build a table of units sold per product per quarter, quarters as columns.
 2. Produce a customer-count-by-country-and-tier cross-tab.
@@ -8395,14 +8402,14 @@ EXEC sp_executesql @sql;
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — after Chapter 35 · you can answer real business questions
+#### ✅ Checkpoint — after Chapter 35 · you can answer real business questions
 
 </div>
 
 > [!IMPORTANT]
 > Joins and window functions are the two skills that separate someone who can retrieve data from someone who can answer questions with it.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -8412,7 +8419,7 @@ EXEC sp_executesql @sql;
 - **CTEs**, including recursive ones (Ch 31)
 - **Window functions**, and how they differ from `GROUP BY` (Ch 33–34)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. How do you find customers who have never placed an order?
 2. You add a condition on the right-hand table of a `LEFT JOIN` and your outer join stops behaving like one. What happened?
@@ -8438,17 +8445,17 @@ EXEC sp_executesql @sql;
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Describe, in plain words, how you would produce “each customer's total spend, their most recent order date, and how that compares with the previous order”. Say which chapter's tool handles each of the three parts.
 
 ---
 
-# 🏗️ PART 8 — DATABASE OBJECTS
+## 🏗️ PART 8 — DATABASE OBJECTS
 
 ---
 
-# 36. Views
+### 36. Views
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -8459,7 +8466,7 @@ Describe, in plain words, how you would produce “each customer's total spend, 
 
 > 🌍 **Analogy:** A view is a **window** in a wall. You are not moving the furniture; you are creating a fixed frame through which people see a particular part of the room. Change the furniture and the window shows the new arrangement automatically.
 
-## 36.1 ✍️ Creating and using views
+#### 36.1 ✍️ Creating and using views
 
 ```sql
 -- ✅ Works in BOTH
@@ -8503,7 +8510,7 @@ CREATE OR REPLACE VIEW v_order_summary AS SELECT order_id, order_date, status FR
 DROP VIEW IF EXISTS v_order_summary;
 ```
 
-## 36.2 🎯 The five real reasons to use a view
+#### 36.2 🎯 The five real reasons to use a view
 
 **① Hide complexity.** A 60-line join becomes `SELECT * FROM v_order_summary`. Analysts who do not know how your tables fit together can still answer questions.
 
@@ -8557,7 +8564,7 @@ WHERE customer_id IN (
 );
 ```
 
-## 36.3 ✏️ Updatable views
+#### 36.3 ✏️ Updatable views
 
 Some views accept `INSERT`, `UPDATE`, and `DELETE`, which pass through to the base table.
 
@@ -8601,7 +8608,7 @@ UPDATE v_uk_customers SET city = 'Manchester' WHERE customer_id = 2;   -- ✅ wo
 > -- Through this view, that UPDATE fails with an error instead of silently hiding the row.
 > ```
 
-## 36.4 ⚡ Materialized views — views that store data
+#### 36.4 ⚡ Materialized views — views that store data
 
 A normal view runs its query every time. A materialized view **stores the result** and refreshes it periodically. This trades freshness for speed.
 
@@ -8657,7 +8664,7 @@ DELIMITER ;
 | Write cost | None | ⚠️ Slows down base-table writes, or needs a refresh job |
 | Best for | Simplification, security | Expensive aggregates read far more often than written |
 
-## 36.5 ⚠️ View pitfalls
+#### 36.5 ⚠️ View pitfalls
 
 > [!WARNING]
 > ⚠️ **`SELECT *` in a view definition does not auto-update.** In MSSQL, columns added to the base table afterwards **do not appear** in the view until you refresh it with `sp_refreshview`. Worse, dropping a column can make the view return wrong data under the old column names. **Always list columns explicitly in a view.**
@@ -8665,7 +8672,7 @@ DELIMITER ;
 > [!TIP]
 > 💡 **Naming convention:** prefix views with `v_` or `vw_`. Six months later, `v_order_summary` immediately tells the reader "this is a view, do not expect an index on it."
 
-## 36.6 🎯 When to create a view (and when not to)
+#### 36.6 🎯 When to create a view (and when not to)
 
 | Use a view when... | Do **not** use a view when... |
 |---|---|
@@ -8679,7 +8686,7 @@ DELIMITER ;
 > [!CAUTION]
 > 🐛 **Common mistake:** nesting views. `v_report` selects from `v_sales`, which selects from `v_orders`. Each level looks tidy, but the database must unpick the whole stack into one giant query, speed drops sharply, and nobody can trace which table a column came from. **Keep views one level deep.**
 
-## 36.7 🧪 Try it yourself
+#### 36.7 🧪 Try it yourself
 
 1. Create `v_product_catalog` joining products, categories, and suppliers with friendly names.
 2. Create `v_low_stock` showing products at or below their reorder level, and query it.
@@ -8701,7 +8708,7 @@ DELIMITER ;
 
 ---
 
-# 37. Stored procedures
+### 37. Stored procedures
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -8712,7 +8719,7 @@ DELIMITER ;
 
 > 🌍 **Analogy:** A view is a saved *question*. A stored procedure is a saved *task* — it can ask several questions, make decisions, change data, handle errors, and report back.
 
-## 37.1 🟥 MSSQL stored procedures
+#### 37.1 🟥 MSSQL stored procedures
 
 ```sql
 CREATE OR ALTER PROCEDURE usp_get_customer_orders
@@ -8769,7 +8776,7 @@ EXEC usp_place_order @customer_id = 1, @employee_id = 3, @new_order_id = @order_
 SELECT @order_id AS created_order_id;
 ```
 
-## 37.2 🟦 MySQL stored procedures
+#### 37.2 🟦 MySQL stored procedures
 
 ```sql
 DELIMITER $$
@@ -8834,7 +8841,7 @@ CALL usp_place_order(1, 3, @new_id);
 SELECT @new_id;
 ```
 
-## 37.3 🧠 Variables, control flow, and loops
+#### 37.3 🧠 Variables, control flow, and loops
 
 ```sql
 -- 🟥 MSSQL
@@ -8914,7 +8921,7 @@ DELIMITER ;
 | Exit a loop | `BREAK` / `CONTINUE` | `LEAVE label` / `ITERATE label` |
 | Raise an error | `THROW` / `RAISERROR` | `SIGNAL SQLSTATE '45000'` |
 
-## 37.4 💼 A complete real-world procedure
+#### 37.4 💼 A complete real-world procedure
 
 This one does real work: it checks the customer, checks and locks the stock, creates the order, reduces the stock, and handles errors — all as one all-or-nothing unit.
 
@@ -9035,7 +9042,7 @@ DELIMITER ;
 > [!TIP]
 > 💡 **Study that procedure.** It contains everything professional database code needs: input validation, explicit locking to prevent two customers buying the last item, a transaction so partial work cannot survive, and error handling that leaves no mess behind. This is what "production quality" looks like.
 
-## 37.5 📦 Table-valued parameters — passing a LIST into a procedure
+#### 37.5 📦 Table-valued parameters — passing a LIST into a procedure
 
 > [!NOTE]
 > 📌 **In plain words:** How do you pass *"these 12 product IDs"* into a stored procedure? Beginners send a comma-separated string and split it. The proper answer in SQL Server is a **table-valued parameter**: a parameter that *is* a table.
@@ -9100,7 +9107,7 @@ EXEC usp_products_by_ids @ids = @list;
 
 > 🔀 **MySQL has no table-valued parameters.** The usual workarounds are a JSON parameter unpacked into rows with `JSON_TABLE()` ([Chapter 58](#58-json-xml-and-semi-structured-data)), or writing the list into a temporary table before calling the procedure.
 
-## 37.6 ⚖️ Should you use stored procedures?
+#### 37.6 ⚖️ Should you use stored procedures?
 
 | ✅ Arguments for | ❌ Arguments against |
 |---|---|
@@ -9114,7 +9121,7 @@ EXEC usp_products_by_ids @ids = @list;
 > [!TIP]
 > 💡 **The pragmatic middle ground most teams land on:** use stored procedures for **data-intensive** operations (bulk updates, complex reports, multi-step transactions, ETL — extracting, cleaning, and loading data between systems) where moving the logic to the data saves enormous time. Keep **business rules** in the application, where they can be tested, versioned, and reviewed properly.
 
-## 37.7 🧭 Inspecting procedures
+#### 37.7 🧭 Inspecting procedures
 
 ```sql
 -- 🟥 MSSQL
@@ -9131,7 +9138,7 @@ SELECT routine_name, routine_type FROM information_schema.routines
 WHERE routine_schema = 'ShopDB';
 ```
 
-## 37.8 🧪 Try it yourself
+#### 37.8 🧪 Try it yourself
 
 1. Write `usp_top_customers(@limit INT)` returning the top N customers by spend.
 2. Write a procedure that cancels an order: sets the status, restores stock, and marks the payment refunded — atomically.
@@ -9153,7 +9160,7 @@ WHERE routine_schema = 'ShopDB';
 
 ---
 
-# 38. User-defined functions
+### 38. User-defined functions
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -9172,7 +9179,7 @@ WHERE routine_schema = 'ShopDB';
 | Can be used in `SELECT`/`WHERE` | ❌ No | ✅ Yes |
 | Can manage transactions | ✅ Yes | ❌ No |
 
-## 38.1 🔢 Scalar functions
+#### 38.1 🔢 Scalar functions
 
 ```sql
 -- 🟥 MSSQL
@@ -9222,7 +9229,7 @@ SELECT order_id, fn_order_total(order_id) AS order_value FROM orders;
 > [!WARNING]
 > ⚠️ **MySQL requires you to say what kind of function it is** — whether it is *deterministic* (the same input always gives the same output) and whether it reads or changes data (`DETERMINISTIC`, `NOT DETERMINISTIC`, `READS SQL DATA`, `NO SQL`, or `MODIFIES SQL DATA`) when binary logging is on. Without it you get *"You do not have the SUPER privilege and binary logging is enabled."*
 
-## 38.2 🐌 The scalar function performance disaster
+#### 38.2 🐌 The scalar function performance disaster
 
 > [!WARNING]
 > ⚠️ **This is one of the most important performance lessons in this entire guide.**
@@ -9263,7 +9270,7 @@ GROUP BY o.order_id;
 > [!TIP]
 > 💡 **MSSQL 2019 introduced "scalar UDF inlining"** which automatically rewrites many scalar functions into the query. It helps enormously, but only for functions that meet its requirements. **The safe rule remains: prefer inline table-valued functions or plain joins.**
 
-## 38.3 📊 Table-valued functions (MSSQL)
+#### 38.3 📊 Table-valued functions (MSSQL)
 
 **Inline TVF (table-valued function) — the good kind.** A single `RETURN (SELECT …)`; the database merges it into your query, just like a view that accepts parameters.
 
@@ -9315,7 +9322,7 @@ GO
 
 > 🔀 **MySQL has no table-valued functions at all.** Use a view (for fixed logic), a stored procedure returning a result set, or a derived table.
 
-## 38.4 🎯 Good uses for functions
+#### 38.4 🎯 Good uses for functions
 
 ```sql
 -- ✅ MSSQL: pure calculation, no table access — cheap and safe
@@ -9348,7 +9355,7 @@ SELECT fn_add_vat(100.00, 0.1500) AS with_vat;       -- 115.00
 > [!IMPORTANT]
 > 🎯 **Use a function when:** the logic is a pure calculation, it is used in many places, and centralizing it prevents inconsistency. **Avoid a function when:** it queries tables and will be called once per row of a large result — write the join instead.
 
-## 38.5 🧪 Try it yourself
+#### 38.5 🧪 Try it yourself
 
 1. Write `fn_days_to_ship(order_id)` returning the shipping duration, or NULL if unshipped.
 2. Write a function that returns a customer's loyalty discount rate.
@@ -9370,7 +9377,7 @@ SELECT fn_add_vat(100.00, 0.1500) AS with_vat;       -- 115.00
 
 ---
 
-# 39. Triggers
+### 39. Triggers
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -9381,7 +9388,7 @@ SELECT fn_add_vat(100.00, 0.1500) AS with_vat;       -- 115.00
 
 > 🌍 **Analogy:** A **motion-sensor light**. You do not flip a switch; walking into the room *is* the switch. Triggers are powerful for the same reason they are dangerous — things happen that are not visible in the code you are reading.
 
-## 39.1 ✍️ Creating triggers
+#### 39.1 ✍️ Creating triggers
 
 ```sql
 -- 🟥 MSSQL: fires ONCE per statement and sees two built-in tables: inserted (new values) and deleted (old values)
@@ -9447,7 +9454,7 @@ CREATE TABLE product_price_history (
 ) ENGINE=InnoDB;
 ```
 
-## 39.2 🔀 The critical difference: statement-level vs row-level
+#### 39.2 🔀 The critical difference: statement-level vs row-level
 
 > [!WARNING]
 > ⚠️ **This is the single most important thing to understand about triggers across the two engines.**
@@ -9474,7 +9481,7 @@ DROP TRIGGER trg_bad;   -- demonstration only: never leave this trigger behind
 > [!TIP]
 > 💡 **The MSSQL rule: always write triggers that handle all rows at once (*set-based*).** Assume `inserted` and `deleted` contain many rows. Never use a variable to hold "the" row, and never use a cursor. Write `INSERT ... SELECT ... FROM inserted` instead.
 
-## 39.3 ⏱️ Trigger timing
+#### 39.3 ⏱️ Trigger timing
 
 | Timing | 🟥 MSSQL | 🟦 MySQL | What it can do |
 |---|---|---|---|
@@ -9538,7 +9545,7 @@ SELECT full_name, email FROM customers WHERE country = 'Lebanon';
 > [!CAUTION]
 > 🐛 **Common mistake:** writing an `INSTEAD OF` trigger that reads a column the view does not select. `inserted` and `deleted` take the shape of the **view**, not the underlying table, so referencing `email` on a view that hides `email` fails with *"Invalid column name 'email'"*. If the base table has a `NOT NULL` column the view hides, an insert through that view can never succeed — either expose the column or give it a default.
 
-## 39.4 💼 Real-world trigger uses
+#### 39.4 💼 Real-world trigger uses
 
 **① Audit trail — who changed what, and when**
 
@@ -9641,7 +9648,7 @@ END$$
 DELIMITER ;
 ```
 
-## 39.5 ⚠️ Why experienced engineers are cautious with triggers
+#### 39.5 ⚠️ Why experienced engineers are cautious with triggers
 
 | Problem | Why it hurts |
 |---|---|
@@ -9663,7 +9670,7 @@ DELIMITER ;
 > - **Validation:** `CHECK` constraints and foreign keys, which the optimizer understands and cannot be bypassed.
 > - **Business rules:** the application or a stored procedure, where they are testable and visible.
 
-## 39.6 🧭 Managing triggers
+#### 39.6 🧭 Managing triggers
 
 ```sql
 -- 🟥 MSSQL
@@ -9685,7 +9692,7 @@ DROP TRIGGER IF EXISTS trg_products_audit;
 -- MySQL has no DISABLE; you must drop and recreate
 ```
 
-## 39.7 🎯 When a trigger is the right answer
+#### 39.7 🎯 When a trigger is the right answer
 
 | Requirement | Trigger? | Better option |
 |---|---|---|
@@ -9698,7 +9705,7 @@ DROP TRIGGER IF EXISTS trg_products_audit;
 | Make a joined view updatable | ✅ `INSTEAD OF` trigger 🟥 | |
 | Send an email / call an API | ❌ **Never** | Write to a queue table; process it outside |
 
-## 39.8 🧪 Try it yourself
+#### 39.8 🧪 Try it yourself
 
 1. Build the `product_price_history` table and its trigger, then change a price and check the log.
 2. In MSSQL, update **5 products at once** and verify your trigger logged all 5, not 1.
@@ -9721,7 +9728,7 @@ DROP TRIGGER IF EXISTS trg_products_audit;
 
 ---
 
-# 40. Temporary tables and table variables
+### 40. Temporary tables and table variables
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -9732,7 +9739,7 @@ DROP TRIGGER IF EXISTS trg_products_audit;
 
 > 🌍 **Analogy:** Scrap paper while doing a long sum. You write the half-way answers down, use them for the next step, and throw the paper away when you are finished.
 
-## 40.1 🟥 MSSQL temporary tables
+#### 40.1 🟥 MSSQL temporary tables
 
 ```sql
 -- LOCAL temp table: visible only to YOUR session, dropped when it ends
@@ -9782,7 +9789,7 @@ GROUP BY c.customer_id, c.full_name;
 | `##table` | **All** sessions (global) | Until the creating session ends |
 | `@table` (table variable) | The current batch only | Ends with the batch |
 
-## 40.2 🟥 MSSQL table variables
+#### 40.2 🟥 MSSQL table variables
 
 ```sql
 DECLARE @top_products TABLE (
@@ -9812,7 +9819,7 @@ SELECT * FROM @top_products;
 > [!TIP]
 > 💡 **The practical rule:** small result → table variable; large or joined-heavily → `#temp` table with an index. The old advice that "table variables live in memory" is a **myth** — both live in `tempdb` (SQL Server's shared scratch database). The real difference is statistics.
 
-## 40.3 🟦 MySQL temporary tables
+#### 40.3 🟦 MySQL temporary tables
 
 ```sql
 -- Session-scoped, auto-dropped at disconnect
@@ -9859,7 +9866,7 @@ SELECT category_id, COUNT(*) AS n FROM products GROUP BY category_id;
 > [!WARNING]
 > ⚠️ **A MySQL temporary table can hide a real table with the same name.** If you have a real `orders` table and create `TEMPORARY TABLE orders`, every subsequent query in that session silently hits the temporary one. **Always prefix temp tables with `tmp_`.**
 
-## 40.4 🧭 Choosing the right tool
+#### 40.4 🧭 Choosing the right tool
 
 ```text
 Do you need the result more than once in the SAME query?
@@ -9881,7 +9888,7 @@ Do you need it across multiple statements or procedures?
 > [!TIP]
 > 💡 **A frequently overlooked win:** breaking one monstrous 200-line query into three steps with `#temp` tables often runs **faster** than the single query, because the optimizer knows the real row count at each step, instead of piling guess upon guess across ten joins.
 
-## 40.5 🧪 Try it yourself
+#### 40.5 🧪 Try it yourself
 
 1. Build a temp table of customer lifetime values, index it, and query it three different ways.
 2. In MSSQL, compare `#temp` vs `@table` for the same 1000-row dataset and inspect both plans.
@@ -9903,7 +9910,7 @@ Do you need it across multiple statements or procedures?
 
 ---
 
-# 41. Sequences and generated columns
+### 41. Sequences and generated columns
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -9914,7 +9921,7 @@ Do you need it across multiple statements or procedures?
 
 > 🌍 **Analogy:** A sequence is the ticket machine at a deli counter — every customer pulls the next number. A generated column is the "total" box on a form that fills itself in as soon as you enter the price and quantity.
 
-## 41.1 🔢 Sequences — shared, independent counters
+#### 41.1 🔢 Sequences — shared, independent counters
 
 > [!NOTE]
 > 📌 **In plain words:** A sequence is a number generator that lives **outside** any table. Several tables can draw from the same sequence, and you can get a number *before* inserting a row.
@@ -10015,7 +10022,7 @@ SELECT @next AS invoice_no;       -- 100001
 > [!IMPORTANT]
 > 🎯 **When a sequence genuinely helps:** a single document-number series shared by invoices, credit notes, and receipts; or when the application needs the ID *before* the insert (to build a file name, a URL, or child rows).
 
-## 41.2 🧮 Computed and generated columns
+#### 41.2 🧮 Computed and generated columns
 
 > [!NOTE]
 > 📌 **In plain words:** A column whose value is **calculated from other columns** instead of being stored by you. You never insert into it; the database keeps it correct forever.
@@ -10093,7 +10100,7 @@ CREATE INDEX ix_customers_email_lower ON customers(email_lower);
 > [!WARNING]
 > ⚠️ **Computed columns must be deterministic** — the same inputs must always give the same output. `GETDATE()` or `RAND()` are not allowed. In MSSQL, a computed column can be `PERSISTED` only if it is deterministic, and indexed only if it is deterministic **and** either precise (no `FLOAT`) or `PERSISTED`.
 
-## 41.3 🧪 Try it yourself
+#### 41.3 🧪 Try it yourself
 
 1. Add a persisted/stored `line_total` column to `order_items` and index it.
 2. Create a sequence (MSSQL) or sequence table (MySQL) for invoice numbers and draw five values.
@@ -10115,11 +10122,11 @@ CREATE INDEX ix_customers_email_lower ON customers(email_lower);
 
 ---
 
-# 🔐 PART 9 — TRANSACTIONS AND INTEGRITY
+## 🔐 PART 9 — TRANSACTIONS AND INTEGRITY
 
 ---
 
-# 42. Transactions and ACID
+### 42. Transactions and ACID
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -10130,7 +10137,7 @@ CREATE INDEX ix_customers_email_lower ON customers(email_lower);
 
 > 🌍 **Analogy:** A **bank transfer**. Money leaves account A and arrives in account B. If the power fails between those two steps, you must not end up in a world where the money left A but never reached B. A transaction guarantees that world cannot exist.
 
-## 42.1 💸 The classic example
+#### 42.1 💸 The classic example
 
 ```sql
 -- ✅ Works in BOTH: a two-account table to try this on
@@ -10197,7 +10204,7 @@ COMMIT;
 > [!NOTE]
 > 📌 **Why this must be one transaction:** if the stock update failed after the order was created, you would have sold an item you do not have. If the order insert succeeded but the item insert failed, you would have an empty order. Only all-or-nothing is correct.
 
-## 42.2 🏛️ ACID — the four guarantees
+#### 42.2 🏛️ ACID — the four guarantees
 
 | Letter | Property | Plain-English meaning | What breaks without it |
 |:---:|---|---|---|
@@ -10227,7 +10234,7 @@ COMMIT;
 >
 > 🐛 **Common mistake:** wrapping a single `UPDATE` in a transaction "to be safe" in application code and then forgetting to commit. The locks stay held, other users pile up behind it, and the app appears frozen. One statement needs no transaction — the engine already gives you one.
 
-## 42.3 ⚙️ Transaction syntax
+#### 42.3 ⚙️ Transaction syntax
 
 ```sql
 -- 🟥 MSSQL
@@ -10266,7 +10273,7 @@ START TRANSACTION;
 COMMIT;
 ```
 
-## 42.4 🔄 Autocommit — the default nobody notices
+#### 42.4 🔄 Autocommit — the default nobody notices
 
 ```sql
 -- By default, BOTH engines run in autocommit mode (each statement is saved the moment it finishes):
@@ -10296,7 +10303,7 @@ COMMIT;
 > [!WARNING]
 > ⚠️ **But do not leave a transaction open while you go to lunch.** An uncommitted transaction holds locks. Other users wait behind it, the application runs out of free connections, and it appears to hang. Open, verify, commit — within seconds.
 
-## 42.5 💥 DDL and implicit commits
+#### 42.5 💥 DDL and implicit commits
 
 > [!WARNING]
 > ⚠️ **A crucial difference between the engines.** *DDL* (Data Definition Language) means the statements that change structure: `CREATE`, `ALTER`, `DROP`, `TRUNCATE`.
@@ -10320,7 +10327,7 @@ ROLLBACK;    -- ✅ the table never existed
 > [!TIP]
 > 💡 **This is one of MSSQL's genuinely nicer features** — you can test a schema migration inside a transaction and roll it back if anything looks wrong. In MySQL you must be far more careful, because `CREATE`, `ALTER`, `DROP`, and `TRUNCATE` all commit implicitly.
 
-## 42.6 📓 How durability actually works
+#### 42.6 📓 How durability actually works
 
 Both engines use **write-ahead logging (WAL)** — every change is written to a log file **before** the main data files are updated:
 
@@ -10344,7 +10351,7 @@ If the server crashes between 3 and 4:
 > [!WARNING]
 > ⚠️ **`innodb_flush_log_at_trx_commit = 2` or `0` makes MySQL much faster and gives up the D in ACID.** It is a legitimate choice for a cache or an analytics replica (a read-only copy of the database on another server); it is **never** acceptable for financial data. Know which one your server is set to.
 
-## 42.7 🎯 Best practices
+#### 42.7 🎯 Best practices
 
 | ✅ Do | ❌ Do not |
 |---|---|
@@ -10373,7 +10380,7 @@ END CATCH;
 > [!WARNING]
 > ⚠️ **Without `SET XACT_ABORT ON`, some MSSQL errors leave the transaction open and "doomed"** — you cannot commit it, and if the client disconnects without rolling back, locks are held until the connection is cleaned up. **Always turn it on in procedures that write data.**
 
-## 42.8 🧪 Try it yourself
+#### 42.8 🧪 Try it yourself
 
 1. Start a transaction, delete all of `order_items`, run a `SELECT COUNT(*)`, then roll back and count again.
 2. Use savepoints to insert an order, insert a bad item, roll back to the savepoint, and still commit the order.
@@ -10395,7 +10402,7 @@ END CATCH;
 
 ---
 
-# 43. Isolation levels, locking, and deadlocks
+### 43. Isolation levels, locking, and deadlocks
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -10406,7 +10413,7 @@ END CATCH;
 
 > 🌍 **Analogy:** Two people editing the same shared document. Either one waits until the other has finished (safe, but slow), or both type at once and hope they do not overwrite each other (fast, but risky). Isolation levels are the settings between those two extremes.
 
-## 43.1 👻 The four concurrency problems
+#### 43.1 👻 The four concurrency problems
 
 **① Dirty read** — you read data another transaction has changed but not committed. If they roll back, you acted on data that never existed.
 
@@ -10443,7 +10450,7 @@ Session B: sets stock = 10 - 5 = 5. COMMIT.
 8 units were sold; the table says 5 were taken. One update was lost. 😱
 ```
 
-## 43.2 🎚️ The four isolation levels
+#### 43.2 🎚️ The four isolation levels
 
 | Level | Dirty read | Non-repeatable read | Phantom read | Speed |
 |---|:---:|:---:|:---:|---|
@@ -10483,7 +10490,7 @@ COMMIT;
 > [!WARNING]
 > ⚠️ **`READ UNCOMMITTED` and the `WITH (NOLOCK)` hint are not "go faster" switches.** They allow dirty reads, and in MSSQL they can also return **missing or duplicated rows** if data moves around inside the table while it is being read. Never use `NOLOCK` on data anyone will act on. It is acceptable only for rough approximations — "roughly how many rows are in this log table."
 
-## 43.3 🔒 Locking
+#### 43.3 🔒 Locking
 
 | Lock type | Also called | Behaviour |
 |---|---|---|
@@ -10526,7 +10533,7 @@ COMMIT;
 > ```
 > This is a single atomic statement — no read-then-write gap exists, so no lost update is possible. **When you can express the change as one statement, do.**
 
-## 43.4 💀 Deadlocks
+#### 43.4 💀 Deadlocks
 
 > [!NOTE]
 > 📌 **In plain words:** Two transactions each hold something the other needs. Neither can proceed. The database detects this and **kills one of them** so the other can finish.
@@ -10583,7 +10590,7 @@ SELECT * FROM sys.innodb_lock_waits;
 > [!TIP]
 > 💡 **Deadlocks are not bugs to be eliminated at all cost — they are a normal fact of concurrent systems.** Every production application should catch the deadlock error (MSSQL 1205, MySQL 1213) and **retry the transaction**, typically 3 times with a short, slightly random pause between tries. Systems without retry logic show users random failures under load.
 
-## 43.5 🔍 Diagnosing blocking right now
+#### 43.5 🔍 Diagnosing blocking right now
 
 ```sql
 -- 🟥 MSSQL: who is blocking whom
@@ -10613,7 +10620,7 @@ SELECT * FROM sys.innodb_lock_waits;
 
 > 🔎 **This chapter covered what the *engine* does. [Chapter 63](#63-concurrency-patterns-for-real-applications) covers what *you* must do** — the lost update that no isolation level prevents, optimistic vs pessimistic concurrency, idempotency keys, and the queue pattern.
 
-## 43.6 🧪 Try it yourself
+#### 43.6 🧪 Try it yourself
 
 1. Open two sessions. In session 1, start a transaction and update a product without committing. In session 2, try to read that row. Observe the block in MSSQL and the non-block in MySQL.
 2. Reproduce a lost update by hand using two sessions and the read-then-write pattern.
@@ -10636,7 +10643,7 @@ SELECT * FROM sys.innodb_lock_waits;
 
 ---
 
-# 44. MERGE and UPSERT
+### 44. MERGE and UPSERT
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -10647,7 +10654,7 @@ SELECT * FROM sys.innodb_lock_waits;
 
 > 🌍 **Analogy:** Updating your phone's contacts from a list. If the person is already in your phone, you update their number; if not, you add them as a new contact.
 
-## 44.1 🟥 MSSQL: MERGE
+#### 44.1 🟥 MSSQL: MERGE
 
 The examples in this chapter read a two-row supplier feed. Load it into the `staging_products` table from [Chapter 12](#12-insert-putting-data-in):
 
@@ -10739,7 +10746,7 @@ OUTPUT $action, inserted.product_id, inserted.product_name;   -- 💡 report wha
 > -- MERGE INTO products WITH (HOLDLOCK) AS target ...   (the full statement is shown above)
 > ```
 
-## 44.2 🟦 MySQL: INSERT ... ON DUPLICATE KEY UPDATE
+#### 44.2 🟦 MySQL: INSERT ... ON DUPLICATE KEY UPDATE
 
 ```sql
 -- ✅ MySQL: requires a UNIQUE or PRIMARY KEY on the matching column
@@ -10787,7 +10794,7 @@ VALUES (4, 'Legacy Netbook 10', 1, 249.00);
 > [!WARNING]
 > ⚠️ **`REPLACE` is genuinely dangerous.** It **deletes** the existing row (firing delete triggers and cascading foreign keys!) and inserts a brand new one with a new auto-increment value. Columns you did not supply revert to their defaults. Child rows can be cascade-deleted. **Prefer `ON DUPLICATE KEY UPDATE` in almost every case.**
 
-## 44.3 ✅ The portable upsert (works everywhere)
+#### 44.3 ✅ The portable upsert (works everywhere)
 
 ```sql
 -- ✅ Works in BOTH: update first, insert what did not exist
@@ -10813,7 +10820,7 @@ WHERE NOT EXISTS (
 > [!TIP]
 > 💡 **Order matters: `UPDATE` first, then `INSERT`.** If you insert first, the newly inserted rows then match the update and get pointlessly updated. Updating first touches only the pre-existing rows.
 
-## 44.4 🎯 Real-world upsert scenarios
+#### 44.4 🎯 Real-world upsert scenarios
 
 **① Daily inventory feed from a supplier** — the bulk upsert shown above.
 
@@ -10872,7 +10879,7 @@ WHEN NOT MATCHED THEN INSERT (customer_id, order_count, last_order)
                       VALUES (s.customer_id, s.order_count, s.last_order);
 ```
 
-## 44.5 🎯 When to use which upsert
+#### 44.5 🎯 When to use which upsert
 
 | Situation | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -10883,7 +10890,7 @@ WHEN NOT MATCHED THEN INSERT (customer_id, order_count, last_order)
 | You want portable code | Two statements: `UPDATE` then `INSERT … WHERE NOT EXISTS` | same |
 | High concurrency, correctness critical | ⚠️ `MERGE` needs `HOLDLOCK`; many teams avoid it | `ON DUPLICATE KEY UPDATE` is atomic |
 
-## 44.6 🧪 Try it yourself
+#### 44.6 🧪 Try it yourself
 
 1. Create a `staging_products` table with 3 existing and 2 new products. Upsert it in both dialects.
 2. In MySQL, compare `REPLACE INTO` and `ON DUPLICATE KEY UPDATE` on a row that has child records. Note what happens to the children.
@@ -10905,7 +10912,7 @@ WHEN NOT MATCHED THEN INSERT (customer_id, order_count, last_order)
 
 ---
 
-# 45. Error handling
+### 45. Error handling
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -10916,7 +10923,7 @@ WHEN NOT MATCHED THEN INSERT (customer_id, order_count, last_order)
 
 > 🌍 **Analogy:** A smoke alarm and a fire exit plan. You hope you never need them, but when something goes wrong, they decide whether you get a small, controlled problem or a disaster.
 
-## 45.1 🟥 MSSQL: TRY ... CATCH
+#### 45.1 🟥 MSSQL: TRY ... CATCH
 
 ```sql
 BEGIN TRY
@@ -11016,7 +11023,7 @@ GO
 > [!WARNING]
 > ⚠️ **Log after the rollback, never before.** If you insert the log row inside the failed transaction and then roll back, the log entry disappears along with everything else — and you are left debugging an error that left no trace.
 
-## 45.2 🟦 MySQL: DECLARE ... HANDLER
+#### 45.2 🟦 MySQL: DECLARE ... HANDLER
 
 ```sql
 -- The MySQL version of the error_log table from 45.1
@@ -11095,7 +11102,7 @@ SIGNAL SQLSTATE '45000'                 -- 45000 = "unhandled user-defined excep
 --     RESIGNAL;
 ```
 
-## 45.3 🔢 The error codes you will meet
+#### 45.3 🔢 The error codes you will meet
 
 | Situation | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -11111,7 +11118,7 @@ SIGNAL SQLSTATE '45000'                 -- 45000 = "unhandled user-defined excep
 > [!TIP]
 > 💡 **Note the confusing overlap: 1205 means "deadlock" in MSSQL and "lock wait timeout" in MySQL.** If you write retry logic for both engines, be precise about which code you are matching.
 
-## 45.4 🔁 Retry logic for deadlocks
+#### 45.4 🔁 Retry logic for deadlocks
 
 ```sql
 -- 🟥 MSSQL: retry a deadlocked transaction up to 3 times
@@ -11147,7 +11154,7 @@ END;
 > [!TIP]
 > 💡 **In production, retry logic usually belongs in the application layer**, where you can add growing, slightly random waits between retries, automatic pausing when a system keeps failing, and proper logging. But knowing how to do it in T-SQL is valuable for batch jobs and ETL that run entirely inside the database.
 
-## 45.5 🎯 When to handle an error — and when to let it fly
+#### 45.5 🎯 When to handle an error — and when to let it fly
 
 | Situation | Handle it? |
 |---|---|
@@ -11161,7 +11168,7 @@ END;
 > [!TIP]
 > 💡 **The rule: catch what you can act on, log everything, and never swallow an error silently.** An empty `CATCH` block is the most expensive four lines in any codebase — it converts a loud failure into silent data corruption.
 
-## 45.6 🧪 Try it yourself
+#### 45.6 🧪 Try it yourself
 
 1. Write a procedure that inserts an order for a non-existent customer, catches the FK error, and logs it.
 2. In MySQL, write a handler that catches duplicate-key errors and returns a friendly message.
@@ -11185,14 +11192,14 @@ END;
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — after Chapter 45 · you can keep data correct under load
+#### ✅ Checkpoint — after Chapter 45 · you can keep data correct under load
 
 </div>
 
 > [!IMPORTANT]
 > Everything up to here was about getting the right answer. This part is about still getting it when a thousand people act at once — and about what the database guarantees when things fail.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -11202,7 +11209,7 @@ END;
 - **Views**, **stored procedures**, and **triggers** — and their costs (Ch 36–39)
 - **Upsert** and idempotency (Ch 44)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. Why must placing an order be a transaction?
 2. Someone suggests adding `WITH (NOLOCK)` to speed up the reports. What do you say?
@@ -11228,17 +11235,17 @@ END;
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Explain to a non-technical colleague why a bank transfer needs a transaction, using no database words. Then say what “isolation” adds that atomicity alone does not.
 
 ---
 
-# ⚡ PART 10 — PERFORMANCE
+## ⚡ PART 10 — PERFORMANCE
 
 ---
 
-# 46. Indexes, the complete guide
+### 46. Indexes, the complete guide
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -11249,7 +11256,7 @@ Explain to a non-technical colleague why a bank transfer needs a transaction, us
 
 > 🌍 **Analogy:** A **textbook index**. To find every mention of "photosynthesis" you could read all 900 pages (a table scan), or flip to the index at the back, find the word in alphabetical order, and jump straight to pages 145 and 302 (an index seek). The index costs a few extra pages and some effort to keep current — exactly like a database index.
 
-## 46.1 🌳 How an index actually works
+#### 46.1 🌳 How an index actually works
 
 Data is stored in fixed-size blocks called **pages** (8 KB in SQL Server, 16 KB in MySQL). Both engines organize an index as a **B-tree** (balanced tree) of pages:
 
@@ -11272,7 +11279,7 @@ Data is stored in fixed-size blocks called **pages** (8 KB in SQL Server, 16 KB 
 > [!NOTE]
 > 📌 **The cost side of the bargain:** every `INSERT`, `UPDATE`, and `DELETE` must also update every index on that table. Ten indexes means ten extra structures to maintain on every write. **Indexes make reads fast and writes slower.** That trade-off is the whole art of indexing.
 
-## 46.2 🗂️ Clustered vs non-clustered
+#### 46.2 🗂️ Clustered vs non-clustered
 
 | | **Clustered index** | **Non-clustered index** |
 |---|---|---|
@@ -11301,7 +11308,7 @@ CREATE CLUSTERED INDEX ix_events_time ON events(event_time);   -- cluster by tim
 > [!TIP]
 > 💡 **Why you might do that:** in a log table you almost always query *by time range*. Clustering by `event_time` means a month's events are physically adjacent on disk — one sequential read instead of thousands of random ones.
 
-## 46.3 🛠️ Creating indexes
+#### 46.3 🛠️ Creating indexes
 
 ```sql
 -- ✅ Works in BOTH
@@ -11327,7 +11334,7 @@ DROP INDEX ix_orders_order_date ON orders;
 ALTER TABLE orders DROP INDEX ix_orders_date_desc;
 ```
 
-## 46.4 🔑 Composite indexes and the left-prefix rule
+#### 46.4 🔑 Composite indexes and the left-prefix rule
 
 > [!WARNING]
 > ⚠️ **This is the most important indexing concept, and the one most people get wrong.**
@@ -11358,7 +11365,7 @@ CREATE INDEX ix_orders_cust_date_status ON orders(customer_id, order_date, statu
 >
 > A range predicate (a `>`, `<`, or `BETWEEN` condition) "stops" the usefulness of everything after it, so a range column should be the last one that matters for seeking.
 
-## 46.5 🎯 Covering indexes — the biggest single win
+#### 46.5 🎯 Covering indexes — the biggest single win
 
 > [!NOTE]
 > 📌 **In plain words:** If an index contains **every column the query needs**, the engine never touches the table at all. This is called a **covering index**, and it is often a 10x improvement.
@@ -11388,7 +11395,7 @@ CREATE INDEX ix_orders_covering
 
 **How to spot the win:** in an MSSQL plan, a "Key Lookup" (or "RID Lookup") operator means the index found the rows but had to go back to the table for extra columns. Adding those columns to `INCLUDE` removes it. In MySQL `EXPLAIN`, `Extra: Using index` means the query was covered.
 
-## 46.6 🎚️ Filtered and partial indexes
+#### 46.6 🎚️ Filtered and partial indexes
 
 ```sql
 -- 🟥 MSSQL: index only the rows you actually query
@@ -11404,7 +11411,7 @@ CREATE INDEX ix_orders_pending
 
 > 🔀 **MySQL has no filtered indexes.** The closest approach is a generated column plus an index on it, or simply accepting the full index.
 
-## 46.7 📚 Other index types
+#### 46.7 📚 Other index types
 
 | Type | 🟥 MSSQL | 🟦 MySQL | Use for |
 |---|---|---|---|
@@ -11459,7 +11466,7 @@ WHERE MATCH(product_name) AGAINST('Ultra Vision' IN NATURAL LANGUAGE MODE);
 > [!TIP]
 > 💡 **Full-text search is the correct answer to `LIKE '%word%'` on a big table.** `LIKE` with a leading wildcard cannot use a B-tree index at all; a full-text index is built for exactly this, and adds relevance ranking (best matches first) and skips common filler words (*stop words*) for free.
 
-## 46.8 🧭 What to index — the practical checklist
+#### 46.8 🧭 What to index — the practical checklist
 
 | ✅ Index these | ❌ Do not index these |
 |---|---|
@@ -11484,7 +11491,7 @@ CREATE INDEX ix_payments_order_id    ON payments(order_id);
 CREATE INDEX ix_employees_manager_id ON employees(manager_id);
 ```
 
-## 46.9 🔍 Finding missing and unused indexes
+#### 46.9 🔍 Finding missing and unused indexes
 
 ```sql
 -- 🟥 MSSQL: what the optimizer wished it had (treat as a HINT, not an order)
@@ -11533,7 +11540,7 @@ SHOW INDEX FROM orders;
 > [!TIP]
 > 💡 **An unused index is pure cost:** disk space, server memory, backup size, and slower writes — with zero read benefit. Auditing for them is one of the easiest wins available to a DBA. Just be sure your usage stats cover a **full business cycle** (including month-end reports) before you drop anything.
 
-## 46.10 🧹 Index maintenance
+#### 46.10 🧹 Index maintenance
 
 Over time, indexes become **fragmented**: as rows are added and removed, pages end up half-empty and out of order, so reading them takes more work.
 
@@ -11567,7 +11574,7 @@ OPTIMIZE TABLE orders;        -- rebuild and defragment (locks the table on Inno
 > [!TIP]
 > 💡 **Modern advice:** fragmentation matters far less on SSDs than it did on spinning disks. Chasing 5% fragmentation nightly is usually wasted effort — **updating statistics is more valuable than rebuilding indexes** in most systems today.
 
-## 46.11 🧪 Try it yourself
+#### 46.11 🧪 Try it yourself
 
 1. Run a query filtering `orders` by `customer_id` and look at the plan. Add an index. Look again.
 2. Create a covering index for a three-column query and confirm the Key Lookup disappears (MSSQL) or `Using index` appears (MySQL).
@@ -11590,7 +11597,7 @@ OPTIMIZE TABLE orders;        -- rebuild and defragment (locks the table on Inno
 
 ---
 
-# 47. Execution plans
+### 47. Execution plans
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -11601,7 +11608,7 @@ OPTIMIZE TABLE orders;        -- rebuild and defragment (locks the table on Inno
 
 > 🌍 **Analogy:** A **route map from a satnav**. You asked to get to the airport; the plan shows which roads it chose, how long each leg took, and where the traffic jam was.
 
-## 47.1 🟥 Getting a plan in MSSQL
+#### 47.1 🟥 Getting a plan in MSSQL
 
 ```sql
 -- Estimated plan (does not run the query): Ctrl+L in SSMS
@@ -11642,7 +11649,7 @@ Table 'orders'. Scan count 1, logical reads 145, physical reads 0, read-ahead re
 > [!TIP]
 > 💡 **"Logical reads" is the best single number to tune.** Unlike elapsed time, it does not change with server load or caching. **Tune to reduce logical reads.** If you halve them, you have genuinely halved the work.
 
-## 47.2 🟦 Getting a plan in MySQL
+#### 47.2 🟦 Getting a plan in MySQL
 
 ```sql
 -- Basic plan
@@ -11699,7 +11706,7 @@ GROUP BY c.full_name;
 | `Using join buffer` | 🔴 Joining without an index. Add one |
 | `Impossible WHERE` | The condition can never be true |
 
-## 47.3 🔍 The operators to recognize (MSSQL)
+#### 47.3 🔍 The operators to recognize (MSSQL)
 
 | Operator | What it means | Good or bad? |
 |---|---|---|
@@ -11717,7 +11724,7 @@ GROUP BY c.full_name;
 > [!TIP]
 > 💡 **Read a graphical plan RIGHT TO LEFT, TOP TO BOTTOM** — that is the direction data actually flows. The thickness of the arrows shows the row count; a thin arrow suddenly becoming very thick is where your query went wrong.
 
-## 47.4 🚩 The five warning signs
+#### 47.4 🚩 The five warning signs
 
 **① A huge gap between estimated and actual rows**
 
@@ -11742,7 +11749,7 @@ MSSQL flags implicit conversions, missing statistics, and memory-grant spills ri
 
 The engine asked for too little memory and had to use disk. Caused by bad estimates; fixed by fixing the estimates.
 
-## 47.5 🧪 A worked tuning example
+#### 47.5 🧪 A worked tuning example
 
 ```sql
 -- 😱 THE SLOW VERSION
@@ -11785,7 +11792,7 @@ ORDER BY o.order_date DESC;                   -- ✅ satisfied by the index orde
 
 **Result:** index seek instead of scan, no Sort operator, no Key Lookup. On a real table this is routinely a 100x improvement.
 
-## 47.6 🧰 Plan caching and parameter sniffing
+#### 47.6 🧰 Plan caching and parameter sniffing
 
 > [!NOTE]
 > 📌 **In plain words:** The engine caches the plan it built so the next execution does not have to re-plan. Usually good. Occasionally disastrous.
@@ -11826,7 +11833,7 @@ SELECT * FROM performance_schema.events_statements_summary_by_digest
 ORDER BY sum_timer_wait DESC LIMIT 10;
 ```
 
-## 47.7 🐢 Finding your slowest queries
+#### 47.7 🐢 Finding your slowest queries
 
 ```sql
 -- 🟥 MSSQL: the top 20 by total time
@@ -11857,7 +11864,7 @@ SELECT * FROM sys.statements_with_temp_tables LIMIT 20;
 > [!TIP]
 > 💡 **`sys.statements_with_full_table_scans` is the fastest way to find missing indexes in MySQL.** It goes straight to the queries reading whole tables.
 
-## 47.8 📼 Query Store — the flight recorder
+#### 47.8 📼 Query Store — the flight recorder
 
 > [!NOTE]
 > 📌 **In plain words:** The DMVs in 47.7 only know what is in the plan cache **right now**. Restart the server, or let a plan age out, and the evidence is gone. Query Store writes every query, every plan, and every runtime statistic to disk, inside the database — so you can answer *"what changed at 4 a.m. on Tuesday?"* on Wednesday morning.
@@ -11957,7 +11964,7 @@ END;
 
 > 🔀 **MySQL has no direct equivalent.** The closest combination is the `performance_schema` digest tables plus the `sys` schema views from 47.7 — persisted by scraping them into your own history table on a schedule, or by a monitoring tool (Percona PMM, MySQL Enterprise Monitor). The `slow_query_log` gives you the raw material but no plan history.
 
-## 47.9 🎯 When to look at an execution plan
+#### 47.9 🎯 When to look at an execution plan
 
 | Trigger | Do this |
 |---|---|
@@ -11974,7 +11981,7 @@ END;
 > [!CAUTION]
 > 🐛 **Common mistake:** tuning by stopwatch. Elapsed time changes with server load and caching, so you "fix" things that were never broken. **Tune to reduce logical reads** — that number stays the same from run to run and directly reflects the work done.
 
-## 47.10 🧪 Try it yourself
+#### 47.10 🧪 Try it yourself
 
 1. Run a `SELECT *` on `orders` with `STATISTICS IO ON` (or `EXPLAIN`) and note the reads.
 2. Add a `WHERE customer_id = 3` and compare, before and after adding an index.
@@ -11997,7 +12004,7 @@ END;
 
 ---
 
-# 48. Query optimization and SARGability
+### 48. Query optimization and SARGability
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -12008,7 +12015,7 @@ END;
 
 > 🌍 **Analogy:** You are looking for "Silva" in a phone book. **SARGable:** flip straight to S. **Non-SARGable:** *"find everyone whose surname UPPERCASED equals SILVA"* — now you must read and transform every single name, because the book is not sorted by uppercased names.
 
-## 48.1 🚫 The seven non-SARGable patterns (and their fixes)
+#### 48.1 🚫 The seven non-SARGable patterns (and their fixes)
 
 In the examples below, **❌ SCAN** marks the slow version and **✅ SEEK** the fast one. On ShopDB's tiny tables both run instantly — the difference shows up on tables with millions of rows.
 
@@ -12145,7 +12152,7 @@ SELECT product_name FROM products WHERE needs_reorder = 1;
 > [!TIP]
 > 💡 **The universal principle: keep the indexed column bare (untouched) on one side of the comparison.** Any calculation you can move onto the fixed value instead of the column, move it.
 
-## 48.2 🎯 Ten more optimization rules
+#### 48.2 🎯 Ten more optimization rules
 
 **① Select only the columns you need**
 
@@ -12187,7 +12194,7 @@ IF EXISTS (SELECT 1 FROM orders WHERE customer_id = 3)
 
 **⑩ Do not sort what you do not need sorted.** An `ORDER BY` in a subquery or view is usually wasted work.
 
-## 48.3 🔬 Before and after: a real rewrite
+#### 48.3 🔬 Before and after: a real rewrite
 
 ```sql
 -- 😱 BEFORE: 4 problems in 12 lines
@@ -12224,7 +12231,7 @@ ORDER BY o.order_date;
 
 Every condition is now SARGable, the joins are written out clearly, `DISTINCT` is replaced by a proper `GROUP BY`, and the payment check stops at the first payment it finds.
 
-## 48.4 🎛️ Query hints — the last resort
+#### 48.4 🎛️ Query hints — the last resort
 
 ```sql
 -- 🟥 MSSQL (ix_orders_customer_id is the foreign-key index from Chapter 46.8)
@@ -12253,7 +12260,7 @@ SELECT /*+ MAX_EXECUTION_TIME(1000) */ * FROM orders;    -- 8.0 optimizer hint: 
 > [!WARNING]
 > ⚠️ **Hints freeze a decision that should stay flexible.** The plan you force today becomes wrong when the data grows, the statistics change, or you upgrade the engine — and nobody remembers the hint is there. **Fix the root cause instead: the index, the condition, or the statistics.** Use hints only as a temporary bridge, with a comment explaining why and a date to revisit.
 
-## 48.5 🧪 Try it yourself
+#### 48.5 🧪 Try it yourself
 
 1. Take each of the seven non-SARGable patterns, run both versions on `ShopDB`, and compare the plans.
 2. Rewrite the "before" query in 48.3 yourself before reading the "after".
@@ -12275,7 +12282,7 @@ SELECT /*+ MAX_EXECUTION_TIME(1000) */ * FROM orders;    -- 8.0 optimizer hint: 
 
 ---
 
-# 49. Statistics and the optimizer
+### 49. Statistics and the optimizer
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -12286,7 +12293,7 @@ SELECT /*+ MAX_EXECUTION_TIME(1000) */ * FROM orders;    -- 8.0 optimizer hint: 
 
 > 🌍 **Analogy:** A delivery driver planning a route uses a **traffic forecast**, not live cameras on every street. If the forecast says "the bridge is clear" but the bridge has been closed for a month, the route will be terrible — through no fault of the driver's logic.
 
-## 49.1 📊 What statistics contain
+#### 49.1 📊 What statistics contain
 
 A statistics object holds:
 
@@ -12327,7 +12334,7 @@ ANALYZE TABLE orders UPDATE HISTOGRAM ON status, order_date WITH 100 BUCKETS;
 SELECT * FROM information_schema.column_statistics WHERE schema_name = 'ShopDB';
 ```
 
-## 49.2 🔄 Keeping statistics current
+#### 49.2 🔄 Keeping statistics current
 
 ```sql
 -- 🟥 MSSQL
@@ -12353,7 +12360,7 @@ ANALYZE TABLE orders, order_items, products;
 > [!TIP]
 > 💡 **Rebuilding an index updates its statistics with a full scan, for free.** So `ALTER INDEX ... REBUILD` gives you fresh stats as a side effect — but `REORGANIZE` does **not**. If you reorganize, update statistics separately.
 
-## 49.3 🎯 Symptoms of bad statistics
+#### 49.3 🎯 Symptoms of bad statistics
 
 | Symptom | Likely cause |
 |---|---|
@@ -12379,7 +12386,7 @@ WHERE sp.rows > 1000
 ORDER BY pct_changed DESC;
 ```
 
-## 49.4 🧮 How the optimizer chooses a plan
+#### 49.4 🧮 How the optimizer chooses a plan
 
 ```text
 1. Check the query's grammar, and look up every table and column name
@@ -12396,7 +12403,7 @@ ORDER BY pct_changed DESC;
 > 1. **The optimizer makes an educated guess; it is not a mind reader.** It cannot try every plan — on a 10-table join there are millions. It uses rules of thumb and stops when it finds something "good enough".
 > 2. **Every input it uses comes from statistics.** Garbage in, garbage out. Most "the optimizer chose a stupid plan" complaints are really "the optimizer was given stale or missing statistics."
 
-## 49.5 🧪 Try it yourself
+#### 49.5 🧪 Try it yourself
 
 1. Look at the statistics on `orders` and note when they were last updated.
 2. Insert 1000 rows, then check `modification_counter`.
@@ -12418,7 +12425,7 @@ ORDER BY pct_changed DESC;
 
 ---
 
-# 50. Partitioning and very large tables
+### 50. Partitioning and very large tables
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -12429,7 +12436,7 @@ ORDER BY pct_changed DESC;
 
 > 🌍 **Analogy:** A **filing cabinet with one drawer per year**. It is still "the archive", and you still ask for a document the same way — but when you need something from 2024, you open one drawer instead of tipping the entire cabinet onto the floor.
 
-## 50.1 🎯 When partitioning genuinely helps
+#### 50.1 🎯 When partitioning genuinely helps
 
 | ✅ Good reasons | ❌ Bad reasons |
 |---|---|
@@ -12441,7 +12448,7 @@ ORDER BY pct_changed DESC;
 > [!WARNING]
 > ⚠️ **Partitioning is a manageability feature first, a performance feature second.** A well-indexed 100-million-row table usually beats a badly-indexed partitioned one. Partition when your problem is *managing* the data — loading, archiving, purging — or when partition elimination genuinely removes most of the work.
 
-## 50.2 🟥 MSSQL table partitioning
+#### 50.2 🟥 MSSQL table partitioning
 
 ```sql
 -- STEP 1: a partition FUNCTION defines the boundaries
@@ -12512,7 +12519,7 @@ LEFT JOIN sys.partition_range_values prv
 WHERE p.object_id = OBJECT_ID('orders_partitioned') AND i.index_id <= 1;
 ```
 
-## 50.3 🟦 MySQL partitioning
+#### 50.3 🟦 MySQL partitioning
 
 ```sql
 -- RANGE partitioning by year
@@ -12578,7 +12585,7 @@ EXPLAIN SELECT * FROM orders_partitioned WHERE order_date >= '2026-01-01';
 > [!WARNING]
 > ⚠️ **The MySQL partitioning rule that surprises everyone:** **every unique key (including the primary key) must contain all columns of the partitioning expression.** This is why `PRIMARY KEY (order_id, order_date)` above is not optional. It also means you cannot have a simple `UNIQUE (email)` on a table partitioned by `signup_date`. This constraint rules partitioning out for many designs.
 
-## 50.4 🧱 Other big-table strategies
+#### 50.4 🧱 Other big-table strategies
 
 | Strategy | What it is | When |
 |---|---|---|
@@ -12613,7 +12620,7 @@ CREATE CLUSTERED COLUMNSTORE INDEX cci_sales_fact ON sales_fact;
 > [!TIP]
 > 💡 **Compression is an underused win.** Less data on disk means fewer pages read, which means more of your table fits in memory. On systems limited by disk speed, page compression frequently makes queries **faster** despite the CPU cost of decompression.
 
-## 50.5 🎯 When to partition — the honest decision tree
+#### 50.5 🎯 When to partition — the honest decision tree
 
 ```text
 Is the table causing you actual pain?
@@ -12640,7 +12647,7 @@ Do nearly all queries filter on ONE obvious column (usually a date)?
 > [!CAUTION]
 > 🐛 **Common mistake:** partitioning on a column the queries do not filter on. You get zero partition elimination, every query still touches every partition, and you have added real complexity to your backups, indexes, and constraints. **Partition on the column in your `WHERE` clause, or do not partition.**
 
-## 50.6 🧪 Try it yourself
+#### 50.6 🧪 Try it yourself
 
 1. Create a partitioned copy of `orders` by year in your engine.
 2. Run a date-filtered query and confirm partition elimination in the plan.
@@ -12663,11 +12670,11 @@ Do nearly all queries filter on ONE obvious column (usually a date)?
 
 ---
 
-# 📐 PART 11 — DESIGN
+## 📐 PART 11 — DESIGN
 
 ---
 
-# 51. Normalization, 1NF to BCNF
+### 51. Normalization, 1NF to BCNF
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -12678,7 +12685,7 @@ Do nearly all queries filter on ONE obvious column (usually a date)?
 
 > 🌍 **Analogy:** Writing your home address on 50 different forms. Move house, and you must find and correct all 50 — and you will miss some. Normalization means writing it **once**, and everything else pointing at that one copy.
 
-## 51.1 💥 The three anomalies normalization prevents
+#### 51.1 💥 The three anomalies normalization prevents
 
 Start with an unnormalized table:
 
@@ -12696,7 +12703,7 @@ Start with an unnormalized table:
 
 Plus the `products` column holding `'Laptop, Mouse'` makes it impossible to answer *"how many laptops did we sell?"* without string parsing.
 
-## 51.2 1️⃣ First Normal Form (1NF)
+#### 51.2 1️⃣ First Normal Form (1NF)
 
 > **Rule:** every cell holds a **single value** that cannot be split further (*atomic*), and there are no repeating groups of columns.
 
@@ -12725,7 +12732,7 @@ Plus the `products` column holding `'Laptop, Mouse'` makes it impossible to answ
 > [!TIP]
 > 💡 **How to spot a 1NF violation in the wild:** a column containing commas, a column named `phone1`, `phone2`, `phone3`, or a query that needs `SUBSTRING` to find a value. Any of those means the model is fighting you.
 
-## 51.3 2️⃣ Second Normal Form (2NF)
+#### 51.3 2️⃣ Second Normal Form (2NF)
 
 > **Rule:** be in 1NF, **and** every non-key column must depend on the **whole** primary key — not just part of it.
 >
@@ -12750,7 +12757,7 @@ products(product_id, product_name, unit_price)             -- unit_price = the p
 > [!TIP]
 > 💡 **Note `unit_price` stays in `order_items`.** That is not a violation — it is the price **at the time of sale**, which genuinely depends on the specific order line. `products.unit_price` is the current price. Two different facts, correctly stored separately.
 
-## 51.4 3️⃣ Third Normal Form (3NF)
+#### 51.4 3️⃣ Third Normal Form (3NF)
 
 > **Rule:** be in 2NF, **and** no non-key column may depend on another non-key column (no *transitive* dependency — a chain where the key decides A, and A decides B).
 
@@ -12774,7 +12781,7 @@ countries(country_code, country_name, dial_code)
 > 💡 **The classic mnemonic for 3NF:**
 > *"Every non-key column must depend on **the key** (1NF), **the whole key** (2NF), and **nothing but the key** (3NF) — so help me Codd."* (Edgar F. Codd invented the relational database model.)
 
-## 51.5 🔒 BCNF and beyond
+#### 51.5 🔒 BCNF and beyond
 
 **BCNF (Boyce-Codd Normal Form)** is a stricter 3NF: any column that decides another column's value (a *determinant*) must on its own be able to identify a row uniquely (a *candidate key*). It only matters in the unusual case where a table has several overlapping candidate keys.
 
@@ -12785,7 +12792,7 @@ countries(country_code, country_name, dial_code)
 > [!IMPORTANT]
 > 🎯 **In real-world practice: 3NF is the target.** Reaching 3NF eliminates virtually every anomaly that causes real pain. BCNF and above are worth knowing for interviews and for the rare edge case, but a well-designed 3NF design is what real systems run on.
 
-## 51.6 🏗️ Normalizing ShopDB — a worked example
+#### 51.6 🏗️ Normalizing ShopDB — a worked example
 
 **❌ The flat, unnormalized version:**
 
@@ -12831,7 +12838,7 @@ SELECT order_id, SUM(unit_price * quantity * (1 - discount)) AS total
 FROM order_items GROUP BY order_id;
 ```
 
-## 51.7 🧭 The practical normalization checklist
+#### 51.7 🧭 The practical normalization checklist
 
 Ask these questions of every table you design:
 
@@ -12847,7 +12854,7 @@ Ask these questions of every table you design:
 > [!TIP]
 > 💡 **A "yes" to any of 1–7 means you have more normalizing to do. A "yes" to 8 means you should either remove it or read the next chapter deliberately.**
 
-## 51.8 🧪 Try it yourself
+#### 51.8 🧪 Try it yourself
 
 1. Take the `orders_flat` table above and normalize it to 3NF on paper, then in SQL.
 2. Find the 3NF violation in this table and fix it: `employees(employee_id, name, department_id, department_name, department_budget)`.
@@ -12869,7 +12876,7 @@ Ask these questions of every table you design:
 
 ---
 
-# 52. Denormalization and when to break the rules
+### 52. Denormalization and when to break the rules
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -12880,7 +12887,7 @@ Ask these questions of every table you design:
 
 > 🌍 **Analogy:** Keeping a spare key at your neighbour's house. Strictly, there should be one key. But retrieving it is so much faster than calling a locksmith that the duplication is worth it — **as long as you remember to update both when you change the lock.**
 
-## 52.1 ⚖️ The trade
+#### 52.1 ⚖️ The trade
 
 | You gain | You pay |
 |---|---|
@@ -12891,7 +12898,7 @@ Ask these questions of every table you design:
 > [!WARNING]
 > ⚠️ **The last one is the real cost.** Every denormalized copy is a promise you have to keep, forever, in every code path. If a single `UPDATE` somewhere forgets to maintain it, your data starts lying and nobody notices for months.
 
-## 52.2 🎯 The five legitimate denormalization patterns
+#### 52.2 🎯 The five legitimate denormalization patterns
 
 **① Historical snapshot values** — *the one everybody needs*
 
@@ -12945,7 +12952,7 @@ CREATE TABLE daily_sales_summary (
 
 **⑤ Star schemas for analytics** — see the next chapter.
 
-## 52.3 🛡️ Keeping denormalized data honest
+#### 52.3 🛡️ Keeping denormalized data honest
 
 Whatever you denormalize, you need **all three** of these:
 
@@ -12989,7 +12996,7 @@ JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) s
 > [!TIP]
 > 💡 **If you cannot write the verification query, you are not ready to denormalize.** Put that reconciliation query in a scheduled job and alert on any rows it returns. Silent data drift is the entire danger, and this is how you make it loud.
 
-## 52.4 📏 The decision rule
+#### 52.4 📏 The decision rule
 
 ```text
 Is the query genuinely too slow?
@@ -13016,7 +13023,7 @@ Can you write the maintenance, verification, AND rebuild scripts?
 > [!TIP]
 > 💡 **"Normalize until it hurts, denormalize until it works."** Start normalized. Measure. Denormalize only where the numbers prove you must, and never without the three safeguards above.
 
-## 52.5 🧪 Try it yourself
+#### 52.5 🧪 Try it yourself
 
 1. Add an `order_count` column to `customers`, populate it, and write the verification query.
 2. Deliberately insert an order without updating the counter, then run your verification query and see it catch the drift.
@@ -13038,7 +13045,7 @@ Can you write the maintenance, verification, AND rebuild scripts?
 
 ---
 
-# 53. Data modeling and the star schema
+### 53. Data modeling and the star schema
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -13049,7 +13056,7 @@ Can you write the maintenance, verification, AND rebuild scripts?
 
 > 🌍 **Analogy:** An architect's drawing of a house. Moving a wall on paper costs an eraser. Moving it after the house is built costs a fortune.
 
-## 53.1 🧭 The three levels of a data model
+#### 53.1 🧭 The three levels of a data model
 
 | Level | Audience | Contains |
 |---|---|---|
@@ -13057,7 +13064,7 @@ Can you write the maintenance, verification, AND rebuild scripts?
 | **Logical** | Analysts and architects | Every column, key, and relationship, normalized. Not tied to any database product. |
 | **Physical** | Developers and DBAs (database administrators) | Actual `CREATE TABLE` statements: types, indexes, partitions, engine-specific details. |
 
-## 53.2 🔗 Modelling relationships correctly
+#### 53.2 🔗 Modelling relationships correctly
 
 **One-to-many** — the most common. Put the foreign key on the **many** side.
 
@@ -13102,7 +13109,7 @@ employees.manager_id           ──►  employees.employee_id
 categories.parent_category_id  ──►  categories.category_id
 ```
 
-## 53.3 ⭐ The star schema — modelling for analytics
+#### 53.3 ⭐ The star schema — modelling for analytics
 
 > [!NOTE]
 > 📌 **In plain words:** Normalized designs (3NF) are built for **writing** — one fact in one place. Reporting needs fast **reading** — millions of rows summarized quickly. The **star schema** is the standard design for reporting: one big **fact** table of events (each sale) in the middle, surrounded by small **dimension** tables that describe them (when, who, what).
@@ -13207,7 +13214,7 @@ ORDER BY revenue DESC;
 
 > 🔀 **Star vs snowflake:** a **snowflake** schema normalizes the dimensions (so `dim_product` would join to a separate `dim_category`). It saves a little space and costs extra joins on every query. **Prefer the star.** Dimension tables are small; the storage saving is not worth the complexity.
 
-## 53.4 🕰️ Slowly Changing Dimensions (SCD)
+#### 53.4 🕰️ Slowly Changing Dimensions (SCD)
 
 > [!NOTE]
 > 📌 **The question:** a customer moves from Colombo to Kandy. Should last year's sales report now say Kandy? A *slowly changing dimension* is a descriptive table whose values change now and then, and the "type" is how you handle that change.
@@ -13260,7 +13267,7 @@ Because `fact_sales` stores the **`customer_key`** (not `customer_id`), every hi
 
 > 🔎 **[Chapter 62](#62-temporal-tables-history-and-change-tracking) is the full treatment** — creating and querying temporal tables, retention, Change Tracking for ETL, and the MySQL trigger-based equivalent.
 
-## 53.5 ✅ The design review checklist
+#### 53.5 ✅ The design review checklist
 
 | ☑️ | Check |
 |---|---|
@@ -13280,7 +13287,7 @@ Because `fact_sales` stores the **`customer_key`** (not `customer_id`), every hi
 | ☐ | Soft-delete strategy decided consistently across the schema |
 | ☐ | Naming convention documented and followed everywhere |
 
-## 53.6 🧪 Try it yourself
+#### 53.6 🧪 Try it yourself
 
 1. Draw the conceptual model for a library: members, books, copies, loans, reservations, fines.
 2. Turn it into a 3NF logical model, then a physical one with real `CREATE TABLE` statements.
@@ -13305,14 +13312,14 @@ Because `fact_sales` stores the **`customer_key`** (not `customer_id`), every hi
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — after Chapter 53 · you can make it fast, and design it properly
+#### ✅ Checkpoint — after Chapter 53 · you can make it fast, and design it properly
 
 </div>
 
 > [!IMPORTANT]
 > Performance and design are the two areas where confident-sounding advice is most often wrong. The test for this part is whether you can say *why*, and what it costs.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -13323,7 +13330,7 @@ Because `fact_sales` stores the **`customer_key`** (not `customer_id`), every hi
 - **Normalization** to 3NF, and deliberate denormalization (Ch 51–52)
 - The **star schema** (Ch 53)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. What does an index cost you, and when is one not worth adding?
 2. `WHERE YEAR(order_date) = 2026` is slow despite an index on `order_date`. Why, and what is the fix?
@@ -13349,17 +13356,17 @@ Because `fact_sales` stores the **`customer_key`** (not `customer_id`), every hi
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Pick any slow query you have met. Describe the sequence you would follow — plan first, then what — and name one thing you would *not* do until you had evidence.
 
 ---
 
-# 🛡️ PART 12 — ADMINISTRATION AND SECURITY
+## 🛡️ PART 12 — ADMINISTRATION AND SECURITY
 
 ---
 
-# 54. Security: users, roles, and permissions
+### 54. Security: users, roles, and permissions
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -13370,7 +13377,7 @@ Pick any slow query you have met. Describe the sequence you would follow — pla
 
 > 🌍 **Analogy:** An office building. Your **ID badge** proves who you are. The **door access list** decides which floors you can enter. The **entry log** records where you went. A database needs all three.
 
-## 54.1 🔑 The security hierarchy
+#### 54.1 🔑 The security hierarchy
 
 ```text
 🟥 MSSQL                              🟦 MySQL
@@ -13389,7 +13396,7 @@ PERMISSION on objects                 PRIVILEGE on objects
 
 > 🔀 **The key structural difference:** MSSQL separates the **login** (connects to the server) from the **user** (exists inside one database) — so one login can map to users in several databases with different rights. MySQL identifies a user by **name plus host** (`'app'@'10.0.0.%'`), which is itself a security control: the same username from a different machine is a different account.
 
-## 54.2 👤 Creating users
+#### 54.2 👤 Creating users
 
 ```sql
 -- 🟥 MSSQL
@@ -13433,7 +13440,7 @@ DROP USER 'policy_user'@'localhost';
 > [!WARNING]
 > ⚠️ **`'user'@'%'` allows connection from anywhere on the network.** Restrict the host wherever you can — it turns a leaked password into a much smaller incident.
 
-## 54.3 🎫 Granting and revoking permissions
+#### 54.3 🎫 Granting and revoking permissions
 
 ```sql
 -- ✅ MSSQL
@@ -13495,7 +13502,7 @@ FLUSH PRIVILEGES;   -- only needed after editing the grant tables directly; harm
 > [!TIP]
 > 💡 **MSSQL's three-state model: `GRANT`, `REVOKE`, `DENY`.** `REVOKE` removes a permission you granted. `DENY` actively blocks it and **overrides any grant**, including ones inherited from a role. MySQL has only grant and revoke — there is no deny.
 
-## 54.4 👥 Roles — how permissions are actually managed
+#### 54.4 👥 Roles — how permissions are actually managed
 
 > [!NOTE]
 > 📌 **Never grant permissions directly to people.** Grant to roles; put people in roles. When someone changes job, you change one membership instead of auditing 40 individual grants.
@@ -13547,7 +13554,7 @@ REVOKE 'sales_readwrite' FROM 'app_user'@'localhost';
 > [!WARNING]
 > ⚠️ **The MySQL gotcha that wastes hours:** you grant a role, the user connects, and they still have no permissions. MySQL roles must be **activated** — either with `SET DEFAULT ROLE` (once, by an admin) or `SET ROLE` (per session). Always run `SET DEFAULT ROLE ALL` after granting.
 
-## 54.5 🔒 The principle of least privilege
+#### 54.5 🔒 The principle of least privilege
 
 > [!NOTE]
 > 📌 **Give every account the minimum permissions it needs to do its job — and nothing more.**
@@ -13586,7 +13593,7 @@ ALTER ROLE app_role ADD MEMBER shop_app;
 
 <a id="546--row-level-security--filtering-rows-per-user-automatically"></a>
 
-## 54.6 🛡️ Row-Level Security — filtering rows per user, automatically
+#### 54.6 🛡️ Row-Level Security — filtering rows per user, automatically
 
 > [!NOTE]
 > 📌 **In plain words:** Permissions normally work on whole tables and columns. **Row-Level Security (RLS)** goes one level deeper: each user sees only *their own rows* of the same table — and the filter is applied by the engine, so no query can escape it.
@@ -13664,7 +13671,7 @@ DROP SECURITY POLICY rls.orders_filter;
 
 > 🔀 **MySQL has no built-in row-level security.** The standard substitute is a **view that runs with its creator's rights**: create the view with `WITH CHECK OPTION` and `SQL SECURITY DEFINER`, grant users access to the *view only*, and revoke all access to the base table. It is weaker than RLS — it depends on you never granting table access — but it is the closest equivalent.
 
-## 54.7 🔐 Encryption
+#### 54.7 🔐 Encryption
 
 | Protection | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -13696,7 +13703,7 @@ GRANT UNMASK TO senior_support;             -- specific people can see the real 
 > [!WARNING]
 > ⚠️ **Dynamic Data Masking is a display convenience, not a security boundary.** A determined user with `SELECT` rights can work out masked values by guessing with `WHERE` clauses such as `WHERE email LIKE 'a%'`. Use real permissions for real secrets.
 
-## 54.8 🕵️ Auditing
+#### 54.8 🕵️ Auditing
 
 ```sql
 -- 🟥 MSSQL: who has what permission?
@@ -13726,7 +13733,7 @@ SELECT * FROM information_schema.user_privileges;
 SELECT * FROM information_schema.schema_privileges WHERE table_schema = 'ShopDB';
 ```
 
-## 54.9 ✅ The security checklist
+#### 54.9 ✅ The security checklist
 
 | ☑️ | Item |
 |---|---|
@@ -13744,7 +13751,7 @@ SELECT * FROM information_schema.schema_privileges WHERE table_schema = 'ShopDB'
 | ☐ | Backups encrypted, and restore tested |
 | ☐ | Permissions reviewed on a schedule, and whenever someone leaves |
 
-## 54.10 🧪 Try it yourself
+#### 54.10 🧪 Try it yourself
 
 1. Create a read-only reporting user and verify it cannot insert.
 2. Create a role granting access to `products` and `categories` only; add a user and test the boundary.
@@ -13767,7 +13774,7 @@ SELECT * FROM information_schema.schema_privileges WHERE table_schema = 'ShopDB'
 
 ---
 
-# 55. SQL injection and how to stop it
+### 55. SQL injection and how to stop it
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -13778,7 +13785,7 @@ SELECT * FROM information_schema.schema_privileges WHERE table_schema = 'ShopDB'
 
 > 🌍 **Analogy:** A form letter with a blank: *"Dear \_\_\_\_\_, your order has shipped."* If someone writes their name as *"Bob. PS: Also send everyone a refund."* and you photocopy the letter without thinking, you have just executed their instruction. Parameterization is the equivalent of putting the name in a **separate field on the envelope** that can never be read as part of the letter.
 
-## 55.1 💀 How the attack works
+#### 55.1 💀 How the attack works
 
 ```text
 // ❌ VULNERABLE application code (any language)
@@ -13816,7 +13823,7 @@ SELECT * FROM customers WHERE email = ''; DROP TABLE customers; --';
 > [!WARNING]
 > ⚠️ **Injection is not only about `SELECT`.** Attackers use it to read any table, modify data, escalate privileges, read files from the server, and in some configurations execute operating system commands. Every major data breach list is full of injection.
 
-## 55.2 ✅ The one real fix: parameterized queries
+#### 55.2 ✅ The one real fix: parameterized queries
 
 > [!NOTE]
 > 📌 **Parameters keep code and data in separate channels.** The database receives the SQL *structure* and the *values* independently, so a value can never become a command — no matter what it contains.
@@ -13868,7 +13875,7 @@ connection.execute(
 > [!TIP]
 > 💡 **Now `' OR '1'='1` is simply searched for as a literal email address.** No customer has that email, so zero rows come back. The attack does not fail loudly — it becomes meaningless, which is exactly what you want.
 
-## 55.3 🧯 Safe dynamic SQL, when you genuinely need it
+#### 55.3 🧯 Safe dynamic SQL, when you genuinely need it
 
 Sometimes the *structure* must be dynamic (a sortable column, a variable table name). Parameters can only stand in for values, not for column or table names — so you must check names against an **allow-list** (a fixed list of permitted names).
 
@@ -13932,7 +13939,7 @@ DELIMITER ;
 > [!TIP]
 > 💡 **The rule: parameterize values, allow-list names.** There is no third option. If you find yourself gluing a user-supplied string into SQL, stop and build the allow-list.
 
-## 55.4 🚫 Defences that do NOT work
+#### 55.4 🚫 Defences that do NOT work
 
 | ❌ "Defence" | Why it fails |
 |---|---|
@@ -13951,7 +13958,7 @@ BEGIN
 END;
 ```
 
-## 55.5 🛡️ Defence in depth
+#### 55.5 🛡️ Defence in depth
 
 Even with parameterization everywhere, layer your defences:
 
@@ -13966,7 +13973,7 @@ Even with parameterization everywhere, layer your defences:
 
 > 🔎 **The rest of the application-side story is [Chapter 65](#65-sql-from-the-application-layer)** — why parameters are also a *performance* feature, connection pooling, timeouts, and safe retries.
 
-## 55.6 🧪 Try it yourself
+#### 55.6 🧪 Try it yourself
 
 > [!WARNING]
 > ⚠️ **On your own local ShopDB only.** Never test injection against a system you do not own.
@@ -13991,7 +13998,7 @@ Even with parameterization everywhere, layer your defences:
 
 ---
 
-# 56. Backup, restore, and disaster recovery
+### 56. Backup, restore, and disaster recovery
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -14005,7 +14012,7 @@ Even with parameterization everywhere, layer your defences:
 > [!WARNING]
 > ⚠️ **The rule that matters more than any other in this guide: a backup you have never restored is not a backup. It is a hope.**
 
-## 56.1 🎯 RPO and RTO — decide these first
+#### 56.1 🎯 RPO and RTO — decide these first
 
 | Term | Question it answers | Example |
 |---|---|---|
@@ -14015,7 +14022,7 @@ Even with parameterization everywhere, layer your defences:
 > [!TIP]
 > 💡 **These are business decisions, not technical ones.** An RPO of 15 minutes means transaction log backups every 15 minutes. An RPO of zero means a second server updated at the very same instant (*synchronous replication*) and a much larger budget. **Ask the business, then design the backup strategy to meet the number** — not the other way round.
 
-## 56.2 🟥 MSSQL backup
+#### 56.2 🟥 MSSQL backup
 
 **Recovery models — choose deliberately:**
 
@@ -14111,7 +14118,7 @@ WHERE database_name = 'ShopDB'
 ORDER BY backup_start_date DESC;
 ```
 
-## 56.3 🟦 MySQL backup
+#### 56.3 🟦 MySQL backup
 
 **Logical backup — `mysqldump` writes out the SQL statements that rebuild your data (portable, human-readable, slower):**
 
@@ -14172,7 +14179,7 @@ mysqlbinlog --start-datetime="2026-09-09 01:00:00" \
 > [!WARNING]
 > ⚠️ **Without `log_bin` enabled, point-in-time recovery is impossible.** Your only option is restoring last night's dump and losing everything since. **Check that binary logging is on** with `SHOW VARIABLES LIKE 'log_bin';` — it is the MySQL equivalent of the transaction log. It has been on by default since MySQL 8.0, but it is often switched off to save disk space.
 
-## 56.4 🌐 High availability
+#### 56.4 🌐 High availability
 
 | Technology | 🟥 MSSQL | 🟦 MySQL | Protects against |
 |---|---|---|---|
@@ -14185,7 +14192,7 @@ mysqlbinlog --start-datetime="2026-09-09 01:00:00" \
 > [!TIP]
 > 💡 **A replica is not a backup.** Replication faithfully copies your mistakes: `DROP TABLE customers` replicates in milliseconds. A **delayed replica** (MySQL `SOURCE_DELAY = 3600`) gives you a one-hour window to catch a disaster before it reaches the copy — a genuinely useful safety net alongside real backups.
 
-## 56.5 🚨 The disaster recovery plan
+#### 56.5 🚨 The disaster recovery plan
 
 > [!NOTE]
 > 📌 **A backup strategy is not a DR (disaster recovery) plan.** A DR plan is a written document that a tired person can follow at 3 a.m.
@@ -14209,7 +14216,7 @@ mysqlbinlog --start-datetime="2026-09-09 01:00:00" \
 > 2. **The backups were on the same server that died.** Or the same shared storage system (SAN). Or the same datacentre.
 > 3. **Nobody ever tried a restore.** The files were corrupt, or incomplete, or the restore took 14 hours against a 1-hour RTO.
 
-## 56.6 🧪 Try it yourself
+#### 56.6 🧪 Try it yourself
 
 1. Take a full backup of ShopDB and restore it as `ShopDB_Restored`. Time it.
 2. In MSSQL, set `FULL` recovery, take a full backup, delete some rows, take a log backup, and restore to a point in time just before the delete.
@@ -14231,7 +14238,7 @@ mysqlbinlog --start-datetime="2026-09-09 01:00:00" \
 
 ---
 
-# 57. Monitoring and maintenance
+### 57. Monitoring and maintenance
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -14242,7 +14249,7 @@ mysqlbinlog --start-datetime="2026-09-09 01:00:00" \
 
 > 🌍 **Analogy:** The dashboard of that car. Warning lights (monitoring) tell you something is wrong *before* the engine fails, and the service schedule (maintenance) stops most of those lights coming on at all.
 
-## 57.1 📊 What to monitor
+#### 57.1 📊 What to monitor
 
 | Category | Metric | Alert when |
 |---|---|---|
@@ -14255,7 +14262,7 @@ mysqlbinlog --start-datetime="2026-09-09 01:00:00" \
 | **Errors** | Serious errors in the error log (severity 17 or higher) | Immediately |
 | **Corruption** | Consistency check results | Any error at all |
 
-## 57.2 🔍 Essential monitoring queries
+#### 57.2 🔍 Essential monitoring queries
 
 ```sql
 -- 🟥 MSSQL: what is running right now
@@ -14338,7 +14345,7 @@ WHERE table_schema = 'ShopDB'
 ORDER BY (data_length + index_length) DESC;
 ```
 
-## 57.3 🧰 Routine maintenance tasks
+#### 57.3 🧰 Routine maintenance tasks
 
 | Task | Frequency | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|---|
@@ -14360,7 +14367,7 @@ DBCC CHECKDB('ShopDB') WITH NO_INFOMSGS, ALL_ERRORMSGS;
 > [!WARNING]
 > ⚠️ **`DBCC CHECKDB` is the single most important maintenance task in SQL Server.** Storage corruption is silent — it sits in a rarely-read page for months, then surfaces during a restore, at which point every backup you hold may already contain it. **Run it weekly, and alert on any error.**
 
-## 57.4 ⏰ Scheduling jobs
+#### 57.4 ⏰ Scheduling jobs
 
 ```sql
 -- 🟥 MSSQL: SQL Server Agent
@@ -14404,7 +14411,7 @@ SHOW EVENTS FROM ShopDB;
 > [!TIP]
 > 💡 **On Linux, many teams prefer `cron` (Linux's built-in task scheduler) over the MySQL Event Scheduler** — it is easier to monitor, log, and alert on, and it survives a database restart cleanly.
 
-## 57.5 🗂️ The system catalogs — knowing your own database
+#### 57.5 🗂️ The system catalogs — knowing your own database
 
 The **system catalog** is a set of built-in views that describe the database itself — its tables, columns, indexes, and keys. You query it with ordinary `SELECT` statements.
 
@@ -14502,7 +14509,7 @@ WHERE t.table_schema = 'ShopDB'
   AND tc.constraint_name IS NULL;
 ```
 
-## 57.6 🧪 Try it yourself
+#### 57.6 🧪 Try it yourself
 
 1. Find the top 5 wait types on your server and look up what each one means.
 2. List every table in ShopDB with its size, largest first.
@@ -14525,11 +14532,11 @@ WHERE t.table_schema = 'ShopDB'
 
 ---
 
-# 🚀 PART 13 — MODERN AND EXPERT TOPICS
+## 🚀 PART 13 — MODERN AND EXPERT TOPICS
 
 ---
 
-# 58. JSON, XML, and semi-structured data
+### 58. JSON, XML, and semi-structured data
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -14540,7 +14547,7 @@ WHERE t.table_schema = 'ShopDB'
 
 > 🌍 **Analogy:** A normal table is a printed form with fixed boxes. JSON is a blank notes page stapled to that form: you can write whatever details a particular item needs.
 
-## 58.1 🟦 MySQL JSON — a native type
+#### 58.1 🟦 MySQL JSON — a native type
 
 ```sql
 CREATE TABLE product_attributes (
@@ -14621,7 +14628,7 @@ ALTER TABLE product_attributes
     ADD INDEX ix_pa_ports ((CAST(attributes->'$.ports' AS CHAR(30) ARRAY)));
 ```
 
-## 58.2 🟥 MSSQL JSON — functions over NVARCHAR
+#### 58.2 🟥 MSSQL JSON — functions over NVARCHAR
 
 ```sql
 CREATE TABLE product_attributes (
@@ -14688,7 +14695,7 @@ ALTER TABLE product_attributes
 CREATE INDEX ix_pa_ram ON product_attributes(ram_gb);
 ```
 
-## 58.3 📤 Producing JSON from query results
+#### 58.3 📤 Producing JSON from query results
 
 ```sql
 -- 🟥 MSSQL: FOR JSON — build the JSON an app or website expects, directly in SQL
@@ -14727,7 +14734,7 @@ JOIN customers c ON c.customer_id = o.customer_id
 WHERE o.order_id = 1002;
 ```
 
-## 58.4 ⚖️ When to use JSON — and when not to
+#### 58.4 ⚖️ When to use JSON — and when not to
 
 | ✅ Good use of JSON | ❌ Bad use of JSON |
 |---|---|
@@ -14746,7 +14753,7 @@ WHERE o.order_id = 1002;
 > [!TIP]
 > 💡 **The practical rule: use real columns for what you query, and JSON for the many rarely used details.** Put `price`, `stock`, and `category_id` in columns; put the 40 category-specific spec fields in JSON. That is how mature systems actually do it.
 
-## 58.5 📄 XML (MSSQL)
+#### 58.5 📄 XML (MSSQL)
 
 ```sql
 -- 🟥 MSSQL has a full built-in XML type, queried with XQuery (the query language for XML)
@@ -14784,7 +14791,7 @@ FOR XML PATH('order'), ROOT('orders');
 
 > 🔀 **MySQL has only basic XML support** (`ExtractValue`, `UpdateXML`) and no XML data type. If you work with XML, MSSQL is dramatically better equipped. For new work, **prefer JSON** — it is simpler, better supported on both sides, and universally understood by APIs.
 
-## 58.6 🧪 Try it yourself
+#### 58.6 🧪 Try it yourself
 
 1. Create `product_attributes` in your engine and add JSON specs for 5 products.
 2. Query all products with 16 GB or more RAM.
@@ -14807,7 +14814,7 @@ FOR XML PATH('order'), ROOT('orders');
 
 ---
 
-# 59. Dynamic SQL, cursors, and set-based thinking
+### 59. Dynamic SQL, cursors, and set-based thinking
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -14818,7 +14825,7 @@ FOR XML PATH('order'), ROOT('orders');
 
 > 🌍 **Analogy:** Painting a fence. Row-by-row is painting each plank with a separate trip to the paint shop for every plank. Set-based is taking a wide roller and covering the whole fence in one pass.
 
-## 59.1 🔄 Set-based thinking — the mindset that separates levels
+#### 59.1 🔄 Set-based thinking — the mindset that separates levels
 
 > [!NOTE]
 > 📌 **In plain words:** SQL is a language for describing **sets of rows**. Programmers arriving from Java, C#, or Python instinctively write loops. In SQL, the loop is almost always the wrong answer.
@@ -14859,7 +14866,7 @@ UPDATE products SET unit_price = unit_price * 1.10;
 | "Insert if missing, else update" | `MERGE` / `ON DUPLICATE KEY UPDATE` |
 | "Loop until done" | A recursive CTE |
 
-## 59.2 🔁 Cursors — and the rare times they are right
+#### 59.2 🔁 Cursors — and the rare times they are right
 
 ```sql
 -- 🟥 MSSQL cursor syntax
@@ -14941,7 +14948,7 @@ CALL usp_process_pending();
 > [!TIP]
 > 💡 **A `WHILE` loop over batches is not the same as a cursor, and it is often correct.** Deleting 50 million rows in 5000-row batches is a loop, but each iteration is a set-based statement. That is good practice, not RBAR.
 
-## 59.3 ⚙️ Dynamic SQL
+#### 59.3 ⚙️ Dynamic SQL
 
 > [!NOTE]
 > 📌 **In plain words:** SQL that builds SQL as a string and then executes it. Necessary when the *structure* — table names, column names, the set of filters — is not known until runtime.
@@ -15024,7 +15031,7 @@ PRINT @sql;         -- ✅ ALWAYS look at it before you run it
 > [!TIP]
 > 💡 **And always `PRINT` before you `EXEC`.** Dynamic SQL that generates 400 `ALTER` statements deserves a human read-through before it touches anything.
 
-## 59.4 🧪 Try it yourself
+#### 59.4 🧪 Try it yourself
 
 1. Write a cursor that raises every price by 10%, then replace it with one `UPDATE`. Time both.
 2. Convert this to set-based: "for each customer, count their orders and write it to a column."
@@ -15047,7 +15054,7 @@ PRINT @sql;         -- ✅ ALWAYS look at it before you run it
 
 ---
 
-# 60. Collation, character sets, and Unicode
+### 60. Collation, character sets, and Unicode
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -15061,7 +15068,7 @@ PRINT @sql;         -- ✅ ALWAYS look at it before you run it
 > [!WARNING]
 > This is the chapter people skip, and then spend a week debugging. Collation causes three classic production failures: **data silently destroyed** on insert, **joins that refuse to run**, and **indexes that stop being used**. All three appear below.
 
-## 60.1 🔤 Character sets: what can actually be stored
+#### 60.1 🔤 Character sets: what can actually be stored
 
 | Engine | Non-Unicode type | Unicode type | Recommended today |
 |---|---|---|---|
@@ -15128,7 +15135,7 @@ WHERE TABLE_SCHEMA = 'ShopDB'
 > [!TIP]
 > **The rule, in one line:** 🟥 MSSQL — use `NVARCHAR`, or `VARCHAR` with a `_UTF8` collation. 🟦 MySQL — use `utf8mb4` for every database, table, column **and the client connection**. Getting the server right and the connection wrong produces exactly the same `?` corruption.
 
-## 60.2 📖 Reading a collation name
+#### 60.2 📖 Reading a collation name
 
 Collation names look like noise until you realise they are just a list of flags. (In the MySQL name, `0900` means version 9.0 of the *Unicode Collation Algorithm* — UCA — the official sorting rules.)
 
@@ -15177,7 +15184,7 @@ SELECT
 > [!WARNING]
 > ⚠️ **Collations contain linguistic surprises.** Under `Latin1_General_CI_AS`, `N'straße' = N'strasse'` returns **equal** — German `ß` expands to `ss` under the Unicode rules. That is correct behaviour, and it will still astonish you the first time a "duplicate" appears that does not look like one.
 
-## 60.3 🧭 Finding out what you actually have
+#### 60.3 🧭 Finding out what you actually have
 
 ```sql
 -- 🟥 MSSQL: the four levels — server, database, column, expression
@@ -15217,7 +15224,7 @@ SHOW FULL COLUMNS FROM customers;          -- the Collation column
 SHOW COLLATION WHERE Charset = 'utf8mb4';
 ```
 
-## 60.4 💥 The collation conflict error
+#### 60.4 💥 The collation conflict error
 
 This is the one that stops a migration dead, usually the moment you join a new table to a legacy one.
 
@@ -15264,7 +15271,7 @@ ALTER TABLE dbo.legacy_customers
 > [!WARNING]
 > ⚠️ **`ALTER COLUMN` with a new collation rewrites the column, and it fails outright if an index, constraint, or computed column depends on it.** Drop those first, alter, then recreate them. On a large table this is a maintenance-window operation, not a Tuesday-afternoon one.
 
-## 60.5 🐌 The performance trap: `COLLATE` kills your index
+#### 60.5 🐌 The performance trap: `COLLATE` kills your index
 
 This is the quiet one. The query works, returns the right answer, and is a hundred times slower than it should be.
 
@@ -15297,7 +15304,7 @@ GO
 > - Fix the column's collation permanently so no `COLLATE` is needed at all.
 > - If you genuinely need both orderings, add a **persisted computed column** in the other collation and index that ([Chapter 41](#41-sequences-and-generated-columns)).
 
-## 60.6 🎯 Choosing a collation — the decision table
+#### 60.6 🎯 Choosing a collation — the decision table
 
 | Situation | Choose |
 |---|---|
@@ -15315,7 +15322,7 @@ GO
 > [!IMPORTANT]
 > **Decide the collation before the first row goes in.** Changing it later means rebuilding every string column, every index that touches one, and re-testing every comparison in the application. It is one of the few database decisions that is genuinely expensive to reverse.
 
-## 60.7 🧪 Try it yourself
+#### 60.7 🧪 Try it yourself
 
 1. Insert a non-Latin string (use `NCHAR(26085) + NCHAR(26412)`) into a `VARCHAR` column with a `CP1` collation. Confirm you get `??` back, and that **no error was raised**.
 2. Compare `DATALENGTH` and `LEN` for the same emoji stored under an `_SC` collation and a non-`_SC` one.
@@ -15338,7 +15345,7 @@ GO
 
 ---
 
-# 61. Time zones and global data
+### 61. Time zones and global data
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -15352,7 +15359,7 @@ GO
 > [!IMPORTANT]
 > **The single rule that makes all of this manageable: store UTC.** Convert to local time at the edge — at display time, in a report, in the application. Every rule below is a consequence of this one.
 
-## 61.1 🧭 The four ways people store time, ranked
+#### 61.1 🧭 The four ways people store time, ranked
 
 | Approach | Storage | Verdict |
 |---|---|---|
@@ -15364,7 +15371,7 @@ GO
 > [!WARNING]
 > ⚠️ **An offset is not a time zone.** `+01:00` tells you the offset *at that instant*; it does not tell you that the user was in London, and it cannot tell you what the offset will be next July. If you need to answer *"what will 9 a.m. local look like for this user in six months?"*, you must store the **zone name** (`'GMT Standard Time'`), not the offset.
 
-## 61.2 🕐 Getting the current time, correctly
+#### 61.2 🕐 Getting the current time, correctly
 
 ```sql
 -- 🟥 MSSQL
@@ -15404,7 +15411,7 @@ CREATE TABLE audit_utc_demo (
 );
 ```
 
-## 61.3 🔄 Converting between zones
+#### 61.3 🔄 Converting between zones
 
 🟥 **MSSQL uses `AT TIME ZONE`** (2016+). It takes the Windows zone names listed in `sys.time_zone_info` and it handles DST for you.
 
@@ -15488,7 +15495,7 @@ SELECT COUNT(*) AS zones_loaded FROM mysql.time_zone_name;
 > ```
 > On Windows, download the pre-built time-zone SQL bundle from the MySQL site and load it the same way.
 
-## 61.4 📐 `DATETIMEOFFSET` and `TIMESTAMP` — the caveats
+#### 61.4 📐 `DATETIMEOFFSET` and `TIMESTAMP` — the caveats
 
 ```sql
 -- 🟥 MSSQL: DATETIMEOFFSET stores the instant AND the offset it was captured at
@@ -15514,7 +15521,7 @@ SELECT DATALENGTH(@a) AS datetime2_0, DATALENGTH(@b) AS dto_0, DATALENGTH(@c) AS
 > [!WARNING]
 > ⚠️ **🟦 MySQL `TIMESTAMP` is a trap in disguise.** It looks like the "correct" type because it converts automatically — but the conversion depends on `@@session.time_zone`, which differs per connection. A report run from a cron job on the server and the same report run from a developer's laptop can legitimately disagree. And the 2038 limit is real. **Use `DATETIME` holding UTC.**
 
-## 61.5 🚀 The SARGability trap (the one that costs you a night)
+#### 61.5 🚀 The SARGability trap (the one that costs you a night)
 
 Converting the **column** to local time in a `WHERE` clause is a function on a column — it stops the index being used, exactly as in [Chapter 48](#48-query-optimization-and-sargability).
 
@@ -15570,7 +15577,7 @@ WHERE occurred_utc >= @from
 > [!TIP]
 > 💡 **This is the half-open range pattern from [Chapter 14](#14-where-asking-precise-questions), plus a zone conversion on the endpoints.** Two conversions instead of ten million, and the index still seeks. Every "show me today's orders in the customer's local time" report should be written this way.
 
-## 61.6 🌍 Storing the user's zone, and reporting in it
+#### 61.6 🌍 Storing the user's zone, and reporting in it
 
 When the *user's local reading* of an event matters — invoices, opening hours, scheduled jobs, legal deadlines — store the zone name alongside the UTC instant.
 
@@ -15599,7 +15606,7 @@ ORDER BY event_id;
 > [!TIP]
 > 💡 **`AT TIME ZONE` accepts a column, not just a literal** — that is what makes the per-user zone pattern possible in a single query. It is *not* free, though: it is a row-by-row conversion, so keep it in the `SELECT` list and out of the `WHERE` clause (61.5).
 
-## 61.7 🕳️ Daylight saving: the two hours that do not behave
+#### 61.7 🕳️ Daylight saving: the two hours that do not behave
 
 Twice a year, local clock time misbehaves.
 
@@ -15615,7 +15622,7 @@ Twice a year, local clock time misbehaves.
 > [!TIP]
 > **Recurring events are the exception to "store UTC".** For something that repeats — a 09:00 daily standup, a monthly billing run — store the **local wall-clock time plus the zone name**, and compute the UTC instant at read time. Storing UTC for a recurring event bakes today's DST rules into every future occurrence.
 
-## 61.8 🎯 The time-zone checklist
+#### 61.8 🎯 The time-zone checklist
 
 - ☐ Every timestamp column stores **UTC**, and the column name says so (`created_utc`, `occurred_utc`)
 - ☐ Defaults use `SYSUTCDATETIME()` 🟥 / `UTC_TIMESTAMP()` 🟦, never `GETDATE()` / `NOW()`
@@ -15626,7 +15633,7 @@ Twice a year, local clock time misbehaves.
 - ☐ 🟦 MySQL: `mysql.time_zone_name` is populated, and it is checked after every server rebuild
 - ☐ OS and database time-zone data are patched like any other dependency
 
-## 61.9 🧪 Try it yourself
+#### 61.9 🧪 Try it yourself
 
 1. Take one UTC instant and render it in five zones with `AT TIME ZONE`. Repeat with a January date and explain every offset that changed.
 2. Write a "yesterday, in the customer's local time" report over `orders`, with the filter fully SARGable.
@@ -15649,7 +15656,7 @@ Twice a year, local clock time misbehaves.
 
 ---
 
-# 62. Temporal tables, history, and change tracking
+### 62. Temporal tables, history, and change tracking
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -15663,7 +15670,7 @@ Twice a year, local clock time misbehaves.
 > [!TIP]
 > 💡 **You already met the manual version of this** in [Chapter 39](#39-triggers) (audit triggers) and [Chapter 53](#53-data-modeling-and-the-star-schema) (Slowly Changing Dimensions). This chapter is the engine doing it for you, correctly, at no maintenance cost.
 
-## 62.1 🕰️ MSSQL temporal tables — history for free
+#### 62.1 🕰️ MSSQL temporal tables — history for free
 
 ```sql
 -- 🟥 MSSQL 2016+: a system-versioned temporal table
@@ -15734,7 +15741,7 @@ ORDER BY product_id, valid_from;
 >
 > That is the correct behaviour — history records **committed states**, not keystrokes — but it means temporal tables are not a substitute for an application log of every change someone attempted.
 
-## 62.2 🔎 Querying the past
+#### 62.2 🔎 Querying the past
 
 ```sql
 -- 🟥 What was the price at a specific moment?
@@ -15770,7 +15777,7 @@ ORDER BY product_id, valid_from;
 > [!IMPORTANT]
 > 🎯 **`AS OF` is how you answer questions nobody planned for:** *"What price did this customer actually see?"*, *"Reproduce the 3 a.m. report."*, *"Who changed this, and what was it before?"* — with a `WHERE` clause instead of a restore from backup.
 
-## 62.3 🧭 Managing a temporal table
+#### 62.3 🧭 Managing a temporal table
 
 ```sql
 -- 🟥 Which tables are versioned?
@@ -15831,7 +15838,7 @@ DROP TABLE dbo.product_prices_history;
 > [!TIP]
 > 💡 **Index the history table.** It is a normal table and it grows fastest of anything in your schema. A clustered index on `(key_column, valid_to)` is the usual starting point, and 🟥 MSSQL supports a **clustered columnstore index** on it — often a 10× space saving for history you rarely read row-by-row.
 
-## 62.4 📡 Change Tracking — "what changed since I last looked?"
+#### 62.4 📡 Change Tracking — "what changed since I last looked?"
 
 Temporal tables answer *"what did it look like then?"*. Change Tracking answers a different question: *"which rows do I need to sync?"* — the question every cache, search index, and ETL job actually asks.
 
@@ -15869,7 +15876,7 @@ FROM CHANGETABLE(CHANGES dbo.products, 0) AS ct;
 > [!WARNING]
 > ⚠️ **Retention is a hard deadline, not a suggestion.** If a consumer is offline longer than `CHANGE_RETENTION`, its stored version expires, `CHANGETABLE` returns an error, and the consumer must reload all the data from scratch (a **full reseed**). Set retention comfortably longer than your worst realistic outage.
 
-## 62.5 ⚖️ Which history mechanism should you use?
+#### 62.5 ⚖️ Which history mechanism should you use?
 
 | Need | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -15927,7 +15934,7 @@ DELIMITER ;
 > [!TIP]
 > 💡 **Note what the trigger writes: the OLD row, closed off at "now".** The current row stays in the base table. That keeps the base table small and every "as of" query becomes a `UNION ALL` of the base table and the history — which is precisely what MSSQL's temporal tables do internally.
 
-## 62.6 🎯 When to use which
+#### 62.6 🎯 When to use which
 
 | Situation | Reach for |
 |---|---|
@@ -15940,7 +15947,7 @@ DELIMITER ;
 > [!CAUTION]
 > **Do not hand-roll history with triggers if a built-in exists.** Hand-written audit triggers miss `TRUNCATE`, miss bulk inserts, miss `MERGE` branches, handle only one row when a statement changes many if written carelessly ([Chapter 39](#39-triggers)), and silently stop working when someone disables them for a data load. Temporal tables and change tracking cannot be bypassed that way.
 
-## 62.7 🧪 Try it yourself
+#### 62.7 🧪 Try it yourself
 
 1. Make `products` a temporal table. Change a price three times, then reconstruct the price at each intermediate moment with `AS OF`.
 2. Write a query that lists every product whose price changed in the last 7 days, with the old and new values side by side (hint: `LAG` over `FOR SYSTEM_TIME ALL`).
@@ -15964,11 +15971,11 @@ DELIMITER ;
 
 ---
 
-# 🧰 PART 14 — ENGINEERING PRACTICE
+## 🧰 PART 14 — ENGINEERING PRACTICE
 
 ---
 
-# 63. Concurrency patterns for real applications
+### 63. Concurrency patterns for real applications
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -15979,7 +15986,7 @@ DELIMITER ;
 
 > 🌍 **Analogy:** Two people editing the same paper form. Both photocopy it, both write on their copy, both hand it back. The second one filed overwrites the first, and nobody ever finds out. Databases will happily do this for you at any isolation level, because as far as the engine is concerned, both writes were perfectly legal.
 
-## 63.1 💥 The lost update — the bug isolation levels do not fix
+#### 63.1 💥 The lost update — the bug isolation levels do not fix
 
 ```text
 10:00:00  User A reads the stock row.   qty_on_hand = 100
@@ -15995,7 +16002,7 @@ Final value: 95.   Actual sales: 15.   Truth: 85.
 
 There are three correct answers. Pick deliberately.
 
-## 63.2 ✅ Answer 1: don't read-then-write at all
+#### 63.2 ✅ Answer 1: don't read-then-write at all
 
 The best fix is to not have the race. If the new value can be expressed **as a function of the old one**, let the database compute it in a single statement — a single `UPDATE` takes its own locks and is atomic.
 
@@ -16024,7 +16031,7 @@ SELECT @@ROWCOUNT AS rows_changed;
 > [!TIP]
 > 💡 **This is [set-based thinking](#59-dynamic-sql-cursors-and-set-based-thinking) applied to concurrency.** "Read it, change it in the application, write it back" is the row-by-row mindset. "Describe the change and let the engine apply it" is the set-based one, and it happens to be race-free.
 
-## 63.3 🏷️ Answer 2: optimistic concurrency (the default for web apps)
+#### 63.3 🏷️ Answer 2: optimistic concurrency (the default for web apps)
 
 When a human edits a form over 30 seconds, you cannot hold a lock that long. Instead, **detect** the conflict at save time: remember what version you read, and refuse to write if it has moved.
 
@@ -16109,7 +16116,7 @@ SELECT ROW_COUNT();                  -- 0 = conflict
 > [!TIP]
 > 💡 **Every mainstream ORM (a code library that writes SQL for your application, such as Entity Framework or Hibernate) already implements this.** Entity Framework maps a `ROWVERSION` column marked `[Timestamp]` and throws `DbUpdateConcurrencyException`; Hibernate/JPA uses `@Version`; Django uses `select_for_update` or manual version fields. You are not building something exotic — you are turning on a feature.
 
-## 63.4 🔒 Answer 3: pessimistic locking (short, server-side work only)
+#### 63.4 🔒 Answer 3: pessimistic locking (short, server-side work only)
 
 When the read and the write happen microseconds apart inside one transaction — a stored procedure, a job — you can simply reserve the row while you work.
 
@@ -16151,7 +16158,7 @@ COMMIT;
 > [!CAUTION]
 > **Never hold a pessimistic lock across a network round trip, a user's think time, an HTTP call, or a file write.** Locks held for seconds turn into blocking chains, an application that runs out of connections, and a system that looks hung. If a human is involved, you want 63.3, not this.
 
-## 63.5 🔁 Idempotency — surviving the retry
+#### 63.5 🔁 Idempotency — surviving the retry
 
 An operation is **idempotent** when doing it twice has exactly the same effect as doing it once. That matters because networks time out *after* the database committed. The client cannot tell "it failed" from "it worked and the reply was lost", so it retries — and you get two payments.
 
@@ -16198,7 +16205,7 @@ SELECT ROW_COUNT();                   -- 1 = inserted, 0 = already there
 > [!IMPORTANT]
 > 🎯 **Rule of thumb: any operation a client can retry needs a client-supplied key.** Server-generated IDs cannot help — the client never received the first one.
 
-## 63.6 📬 The queue pattern: many workers, one table
+#### 63.6 📬 The queue pattern: many workers, one table
 
 Turning a table into a work queue is a classic, and doing it the simple way means every worker fights for the same rows.
 
@@ -16254,7 +16261,7 @@ COMMIT;
 > [!WARNING]
 > ⚠️ **Always store `claimed_utc` and reset stale claims.** A worker that dies mid-job leaves rows stuck in `Processing` forever. A scheduled job that resets anything claimed more than *N* minutes ago is not optional — it is the difference between a queue and a leak.
 
-## 63.7 🚦 One-at-a-time work: application locks
+#### 63.7 🚦 One-at-a-time work: application locks
 
 Sometimes the thing that must run one at a time is not a row — it is a *job*. Two servers both firing the nightly rollup is a data-corruption event, not a performance problem.
 
@@ -16288,7 +16295,7 @@ SELECT RELEASE_LOCK('nightly_rollup');
 > [!TIP]
 > 💡 **This is a lock shared by all your servers (a *distributed mutex*) that you already own.** No extra infrastructure, no Redis, no ZooKeeper — and it releases automatically if the session dies, which is exactly the failure mode a home-made "is_running" flag column gets wrong.
 
-## 63.8 ⏱️ Fail fast: timeouts every application should set
+#### 63.8 ⏱️ Fail fast: timeouts every application should set
 
 ```sql
 -- 🟥 MSSQL: session guards worth setting on every connection
@@ -16312,7 +16319,7 @@ SET SESSION max_execution_time = 10000;     -- ms, SELECT statements
 > [!TIP]
 > 💡 **Waiting forever is not "safer" than failing.** A query blocked indefinitely holds a connection, and a pool of blocked connections takes down the whole application, not just one request. A 5-second lock timeout turns a total outage into one failed request the client can retry.
 
-## 63.9 🎯 Choosing the right tool
+#### 63.9 🎯 Choosing the right tool
 
 | Situation | Use |
 |---|---|
@@ -16325,7 +16332,7 @@ SET SESSION max_execution_time = 10000;     -- ms, SELECT statements
 | Only one server may run this job | **`sp_getapplock` 🟥 / `GET_LOCK` 🟦** (63.7) |
 | Deadlocks under load, all patterns already correct | **Retry after a short pause** ([Chapter 45](#45-error-handling)), and check table access order |
 
-## 63.10 🧪 Try it yourself
+#### 63.10 🧪 Try it yourself
 
 1. Reproduce the lost update in two connections, step by step, and confirm no error is raised at any point.
 2. Add a `ROWVERSION` column and fix it. Prove the second writer now gets `@@ROWCOUNT = 0`.
@@ -16349,7 +16356,7 @@ SET SESSION max_execution_time = 10000;     -- ms, SELECT statements
 
 ---
 
-# 64. Database DevOps: migrations, standards, and testing
+### 64. Database DevOps: migrations, standards, and testing
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -16363,7 +16370,7 @@ SET SESSION max_execution_time = 10000;     -- ms, SELECT statements
 > [!IMPORTANT]
 > **The one rule that makes everything else possible:** the database schema is **source code**, and the only way it ever changes is by running a versioned script that is in Git. No exceptions, not even for a "tiny" index.
 
-## 64.1 🔀 State-based vs migration-based — pick one and commit
+#### 64.1 🔀 State-based vs migration-based — pick one and commit
 
 | | **State-based** | **Migration-based** |
 |---|---|---|
@@ -16377,7 +16384,7 @@ SET SESSION max_execution_time = 10000;     -- ms, SELECT statements
 > [!IMPORTANT]
 > 🎯 **Default to migration-based.** Its weakness (no single view of the schema) is solved by generating a schema snapshot into the repo on every build. Its strength — being explicit about *data* — is not something a diff tool can fake. A column rename is the classic example: a diff sees `DROP name; ADD full_name` and silently deletes every value.
 
-## 64.2 📜 Anatomy of a migration
+#### 64.2 📜 Anatomy of a migration
 
 ```text
 db/migrations/
@@ -16488,7 +16495,7 @@ PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 > [!WARNING]
 > ⚠️ **🟦 MySQL DDL is not transactional across statements.** MySQL 8.0 made individual DDL statements atomic, but a migration containing three `ALTER`s that fails on the third leaves the first two applied. Either keep each migration to one DDL statement, or write an explicit rollback script and test it.
 
-## 64.3 🛡️ Zero-downtime schema changes: the expand–contract pattern
+#### 64.3 🛡️ Zero-downtime schema changes: the expand–contract pattern
 
 The moment you have more than one application server, old and new code run **at the same time** during a deploy. Any migration the old code cannot survive is an outage.
 
@@ -16538,7 +16545,7 @@ GO
 > [!TIP]
 > 💡 **The rollback plan for expand–contract is "do nothing".** Every phase is independently deployable and every phase leaves the previous version of the code working. That is what makes it safe, far more than any `DOWN` script.
 
-## 64.4 ✍️ The house style guide
+#### 64.4 ✍️ The house style guide
 
 Consistency is not aesthetics. A schema where half the tables are `Customer` and half are `tbl_customers` costs every developer a lookup, every single time.
 
@@ -16596,7 +16603,7 @@ ORDER BY lifetime_value DESC;
 > [!TIP]
 > 💡 **Enforce it with a tool, not with code review.** `sqlfluff` (both engines, and it has a linter as well as a formatter), Poor Man's T-SQL Formatter, or your editor's formatter, wired into a pre-commit hook (a check that runs automatically before every Git commit). Humans arguing about comma placement in a pull request is the single lowest-value activity in software.
 
-## 64.5 🧪 Testing a database
+#### 64.5 🧪 Testing a database
 
 "It ran without an error" is not a test. These are, in ascending order of value:
 
@@ -16652,7 +16659,7 @@ END CATCH;
 > [!IMPORTANT]
 > 🎯 **Test your constraints, not just your queries.** A `CHECK` constraint that was accidentally created `WITH NOCHECK`, or a foreign key someone disabled for a data load and never re-enabled, is invisible until the day bad data arrives. One test per business rule, run in CI (the automatic build-and-test pipeline), and you find out in 30 seconds instead of 30 months.
 
-## 64.6 🚀 The pipeline
+#### 64.6 🚀 The pipeline
 
 ```text
   git push
@@ -16679,7 +16686,7 @@ END CATCH;
 > [!TIP]
 > 💡 **Every production deployment starts with a backup and ends with a verified restore path** ([Chapter 56](#56-backup-restore-and-disaster-recovery)). "We can roll back the code" is not a plan when the migration dropped a column.
 
-## 64.7 ✅ The database DevOps checklist
+#### 64.7 ✅ The database DevOps checklist
 
 - ☐ Every schema change is a script in Git — no exceptions, not even indexes
 - ☐ Migrations are immutable once merged, and checksummed
@@ -16693,7 +16700,7 @@ END CATCH;
 - ☐ Production deploys are automated, backed up first, and reviewed by a human
 - ☐ Nobody — nobody — has a production SSMS window open for routine work
 
-## 64.8 🧪 Try it yourself
+#### 64.8 🧪 Try it yourself
 
 1. Build the `schema_migrations` table and a two-script runner. Run it twice and prove the second run is a no-op.
 2. Take a column rename and write it out as three separate expand–contract deploys.
@@ -16716,7 +16723,7 @@ END CATCH;
 
 ---
 
-# 65. SQL from the application layer
+### 65. SQL from the application layer
 
 | 🎚️ Level | ⏱️ Time | 🎯 After this chapter you can… |
 |:---:|:---:|---|
@@ -16727,7 +16734,7 @@ END CATCH;
 
 > 🌍 **Analogy:** A perfectly efficient checkout till is useless if the shop only lets one customer through the door at a time, or if each customer walks back to the car park between items. The till was never the bottleneck.
 
-## 65.1 🔌 Connections are expensive — pool them
+#### 65.1 🔌 Connections are expensive — pool them
 
 Opening a database connection costs a network handshake, a login check, and memory on the server. A **connection pool** keeps a set of connections open and lends them out, so the app does not pay that cost on every request. Doing that per request is the most common self-inflicted performance wound there is.
 
@@ -16786,7 +16793,7 @@ SELECT @@max_connections;
 SELECT * FROM performance_schema.threads WHERE type = 'FOREGROUND';
 ```
 
-## 65.2 💣 The N+1 problem
+#### 65.2 💣 The N+1 problem
 
 This one is silent in development, where the table has 20 rows, and fatal in production, where it has 200,000.
 
@@ -16814,7 +16821,7 @@ var customers = await db.Customers
 > [!WARNING]
 > ⚠️ **The opposite mistake exists too.** `Include` on five collections at once produces a row explosion — the same customer row repeated 40 times because they have 5 orders and 8 addresses. Split it into two queries, or project to exactly the columns you need. The cure for N+1 is *fewer round trips*, not *one enormous join*.
 
-## 65.3 🔐 Parameters are not optional (and they are also faster)
+#### 65.3 🔐 Parameters are not optional (and they are also faster)
 
 [Chapter 55](#55-sql-injection-and-how-to-stop-it) covered this as a security rule. It is also a performance rule.
 
@@ -16845,7 +16852,7 @@ ORDER BY cp.usecounts DESC;
 > [!TIP]
 > 💡 **A cache full of `objtype = 'Adhoc'` entries with `usecounts = 1` is the signature of unparameterized SQL.** Every one of those cost a compilation. `Prepared` and `Proc` entries with high `usecounts` are what healthy looks like.
 
-## 65.4 📦 Round trips: batch, don't loop
+#### 65.4 📦 Round trips: batch, don't loop
 
 ```csharp
 // ❌ 10,000 round trips
@@ -16874,7 +16881,7 @@ await bulk.WriteToServerAsync(dataTable);
 > [!TIP]
 > 💡 **The same rule applies to reads.** Fetching 500 rows by primary key in a loop is an N+1 in disguise. Send one query with `WHERE product_id IN (…)` — as a table-valued parameter 🟥 or a properly parameterized list 🟦 — and get them in one trip.
 
-## 65.5 🪓 Big writes: batch inside the database too
+#### 65.5 🪓 Big writes: batch inside the database too
 
 A single `DELETE` of ten million rows takes one enormous lock, generates gigabytes of log, and blocks everything until it finishes or times out. Chop it up.
 
@@ -16929,7 +16936,7 @@ LIMIT 5000;
 > [!WARNING]
 > ⚠️ **Make sure the `WHERE` clause is indexed.** A batched delete that scans the whole table to find each 5,000 rows is worse than the single delete — you now do the full scan a thousand times. Check the plan first.
 
-## 65.6 ⏱️ Timeouts, retries, and failing gracefully
+#### 65.6 ⏱️ Timeouts, retries, and failing gracefully
 
 | Setting | Where | What it protects |
 |---|---|---|
@@ -16972,7 +16979,7 @@ for (var attempt = 1; attempt <= 3; attempt++)
 > [!WARNING]
 > ⚠️ **A retry is only safe if the operation is idempotent.** Retrying a payment after a timeout is how customers get charged twice — see 63.5.
 
-## 65.7 🌊 Streaming, paging, and not fetching everything
+#### 65.7 🌊 Streaming, paging, and not fetching everything
 
 ```csharp
 // ❌ Loads 2 million rows into application memory, then throws most away
@@ -16993,7 +17000,7 @@ var recent = await db.Orders
 > [!TIP]
 > 💡 **For genuinely large result sets — an export, a report — stream them.** `SqlDataReader` / a server-side cursor in MySQL yields rows as they arrive instead of buffering the whole set. And for deep paging, use **keyset pagination**, not `OFFSET` ([Chapter 17](#17-paging-top-limit-offset-fetch)) — `OFFSET 900000` makes the server read and discard 900,000 rows on every page.
 
-## 65.8 🧭 Where should the logic live?
+#### 65.8 🧭 Where should the logic live?
 
 | Logic | Put it in the database when… | Put it in the application when… |
 |---|---|---|
@@ -17007,7 +17014,7 @@ var recent = await db.Orders
 > [!TIP]
 > 💡 **The honest test: if you moved this logic, what would break?** Integrity rules moved into the app break the moment anyone connects with a different client — a script, a migration, an admin. Workflow logic moved into the database becomes untestable, unversioned, and invisible to your debugger. Put each where it can actually be enforced.
 
-## 65.9 ✅ The application-layer checklist
+#### 65.9 ✅ The application-layer checklist
 
 - ☐ Connection pooling is on, and the **total** pool across all services fits the server
 - ☐ `pool_pre_ping` / connection validation is enabled
@@ -17023,7 +17030,7 @@ var recent = await db.Orders
 - ☐ Deep paging uses keyset, not `OFFSET`
 - ☐ Credentials come from a secret store, and the app user is not `sa` / `root`
 
-## 65.10 🧪 Try it yourself
+#### 65.10 🧪 Try it yourself
 
 1. Write the N+1 version and the joined version of "customers with their orders". Time both against 10,000 customers.
 2. Run the plan-cache query. Count how many single-use `Adhoc` plans your application has created, then fix one call site and watch the number drop.
@@ -17049,14 +17056,14 @@ var recent = await db.Orders
 
 <div align="center" markdown="1">
 
-## ✅ Checkpoint — after Chapter 65 · you can run it in production
+#### ✅ Checkpoint — after Chapter 65 · you can run it in production
 
 </div>
 
 > [!IMPORTANT]
 > The last part is the one that decides whether a working database stays working. Most of it is about habits rather than syntax.
 
-### 🗣️ Teach it back
+##### 🗣️ Teach it back
 
 **What is it? Why does it matter? How does it work? Can I give an example?** — for each of:
 
@@ -17067,7 +17074,7 @@ var recent = await db.Orders
 - **Migrations** in source control (Ch 64)
 - The **N+1 problem** (Ch 65)
 
-### 🧪 Self-check questions
+##### 🧪 Self-check questions
 
 1. What is the single rule that prevents SQL injection, and why is escaping not enough?
 2. Why is an untested backup not a backup?
@@ -17093,17 +17100,17 @@ var recent = await db.Orders
 
 </details>
 
-### 🎯 Give a simple example
+##### 🎯 Give a simple example
 
 Describe your deployment process for a schema change, from writing it to it being live — and say where a human reads the script before it touches production.
 
 ---
 
-# 🏁 PART 15 — PUTTING IT ALL TOGETHER
+## 🏁 PART 15 — PUTTING IT ALL TOGETHER
 
 ---
 
-# 66. Anti-patterns, cheat sheets, exercises, and the capstone
+### 66. Anti-patterns, cheat sheets, exercises, and the capstone
 
 > [!NOTE]
 > **No 🧭 In practice block in this chapter, and that is deliberate.** Chapters 1–65 each teach a
@@ -17123,12 +17130,12 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 ---
 
-## 66.1 🚫 The 32 SQL anti-patterns
+#### 66.1 🚫 The 32 SQL anti-patterns
 
 > [!NOTE]
 > 📌 Each one below is a mistake you will meet in real codebases — often in your own. Learn to spot them on sight.
 
-### 🔴 Design anti-patterns
+##### 🔴 Design anti-patterns
 
 | # | Anti-pattern | Why it hurts | Do this instead |
 |---|---|---|---|
@@ -17143,7 +17150,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 | 9 | **Mixed date formats / local times** | Unrecoverable ambiguity | Store UTC, ISO format |
 | 10 | **Inconsistent naming** (`custID`, `customer_id`, `CustomerId`) | Every query needs a lookup | One convention, documented |
 
-### 🔴 Query anti-patterns
+##### 🔴 Query anti-patterns
 
 | # | Anti-pattern | Why it hurts | Do this instead |
 |---|---|---|---|
@@ -17158,7 +17165,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 | 19 | **Aggregating two one-to-many joins together** | Fan-out multiplies your totals | Total each side first, then join |
 | 20 | **Cursors for data transformation** | 100x slower than a set-based statement | Think in sets (Chapter 59) |
 
-### 🔴 Operational anti-patterns
+##### 🔴 Operational anti-patterns
 
 | # | Anti-pattern | Why it hurts | Do this instead |
 |---|---|---|---|
@@ -17177,9 +17184,9 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 ---
 
-## 66.2 📋 MSSQL vs MySQL — the complete cheat sheet
+#### 66.2 📋 MSSQL vs MySQL — the complete cheat sheet
 
-### Basics
+##### Basics
 
 | Task | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -17214,7 +17221,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 | Median | `PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY x) OVER ()` | *(none — use `ROW_NUMBER`)* |
 | Named window | `WINDOW w AS (...)` (2022+) | `WINDOW w AS (...)` (8.0+) |
 
-### Structure and objects
+##### Structure and objects
 
 | Task | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -17239,7 +17246,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 | Row version token | `ROWVERSION` column | *(an `INT` version column)* |
 | Idempotent DDL | `IF NOT EXISTS (SELECT 1 FROM sys.columns ...)` | Check `information_schema`, then `PREPARE` the DDL (there is no `ADD COLUMN IF NOT EXISTS`) |
 
-### Procedural code
+##### Procedural code
 
 | Task | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -17254,7 +17261,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 | Catch errors | `BEGIN TRY ... BEGIN CATCH` | `DECLARE EXIT HANDLER FOR SQLEXCEPTION` |
 | Dynamic SQL | `EXEC sp_executesql @sql, @params, ...` | `PREPARE stmt FROM @sql; EXECUTE stmt USING @p;` |
 
-### Administration
+##### Administration
 
 | Task | 🟥 MSSQL | 🟦 MySQL |
 |---|---|---|
@@ -17280,7 +17287,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 ---
 
-## 66.3 🧠 The interview question bank
+#### 66.3 🧠 The interview question bank
 
 <details markdown="1">
 <summary><b>🌱 Beginner — click to expand</b></summary>
@@ -17367,7 +17374,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 ---
 
-## 66.4 🏋️ 40 practice exercises on ShopDB
+#### 66.4 🏋️ 40 practice exercises on ShopDB
 
 <details markdown="1">
 <summary><b>Level 1 — Basics (1-10)</b></summary>
@@ -17435,7 +17442,7 @@ Describe your deployment process for a schema change, from writing it to it bein
 
 ---
 
-## 66.4b 🔑 Solutions to exercises 1–30
+#### 66.4b 🔑 Solutions to exercises 1–30
 
 > ⚠️ **Try each one first.** A solution you read produces a feeling of competence; a solution you
 > wrote produces the real thing. If you are stuck, read only the 💡 hint line before the query.
@@ -18390,12 +18397,12 @@ than a single "right" solution, use the chapter that covers each and the checkli
 
 ---
 
-## 66.5 🎓 The capstone project: build a complete system
+#### 66.5 🎓 The capstone project: build a complete system
 
 > [!IMPORTANT]
 > 🎯 **Goal:** design, build, populate, query, secure, and tune a full database from scratch. This is the exercise that turns knowledge into skill.
 
-### 📚 The brief: a Library Management System
+##### 📚 The brief: a Library Management System
 
 A city library needs a database. The requirements:
 
@@ -18409,7 +18416,7 @@ A city library needs a database. The requirements:
 - The library has multiple **branches**; copies belong to a branch and can be transferred.
 - Management needs reports: most-borrowed titles, overdue lists, member activity, branch comparison, fine revenue.
 
-### 📋 Your deliverables
+##### 📋 Your deliverables
 
 | Phase | Deliverable |
 |---|---|
@@ -18424,7 +18431,7 @@ A city library needs a database. The requirements:
 | **9. Operations** | Backup strategy meeting a 15-minute RPO; a written restore runbook |
 | **10. Analytics** | A star schema for loan analysis, loaded from the operational tables |
 
-### 📊 The 10 required reports
+##### 📊 The 10 required reports
 
 1. Titles currently on loan, with borrower and due date.
 2. Overdue loans with the fine accrued to date.
@@ -18437,7 +18444,7 @@ A city library needs a database. The requirements:
 9. Author popularity: total loans across all their titles.
 10. Copies not borrowed in over 2 years (candidates for withdrawal).
 
-### 🎯 The self-assessment
+##### 🎯 The self-assessment
 
 > **You have genuinely completed this project when you can:**
 >
@@ -18449,7 +18456,7 @@ A city library needs a database. The requirements:
 
 ---
 
-## 66.6 📅 Your 35-day learning plan
+#### 66.6 📅 Your 35-day learning plan
 
 | Days | Focus | Chapters | Daily goal |
 |:---:|---|---|---|
@@ -18487,7 +18494,7 @@ A city library needs a database. The requirements:
 
 ---
 
-## 66.7 📖 Glossary
+#### 66.7 📖 Glossary
 
 | Term | Meaning |
 |---|---|
@@ -18591,9 +18598,9 @@ A city library needs a database. The requirements:
 
 ---
 
-## 66.8 🔗 Where to go next
+#### 66.8 🔗 Where to go next
 
-### Official documentation
+##### Official documentation
 
 | Resource | What it is |
 |---|---|
@@ -18602,7 +18609,7 @@ A city library needs a database. The requirements:
 | **Microsoft Learn — T-SQL reference** | Every function and statement, with examples |
 | **MySQL Performance Blog (Percona)** | Deep, practical MySQL tuning |
 
-### Tools worth learning
+##### Tools worth learning
 
 | Tool | Why |
 |---|---|
@@ -18617,7 +18624,7 @@ A city library needs a database. The requirements:
 | **tSQLt** | The unit-testing framework for T-SQL |
 | **gh-ost / pt-online-schema-change** | Online schema changes on large MySQL tables without locking |
 
-### Topics beyond this guide
+##### Topics beyond this guide
 
 - **Columnstore indexes and data warehousing** for large-scale reporting
 - **In-Memory OLTP** (MSSQL) for extremely fast writes
@@ -18629,7 +18636,7 @@ A city library needs a database. The requirements:
 
 ---
 
-## 66.9 ✅ The professional checklist
+#### 66.9 ✅ The professional checklist
 
 **Print this. Run through it before any schema goes to production.**
 
@@ -18722,7 +18729,7 @@ A city library needs a database. The requirements:
 
 <div align="center" markdown="1">
 
-## 🎓 You made it
+#### 🎓 You made it
 
 </div>
 
@@ -18757,6 +18764,6 @@ Now close the guide, open a query window, and go build something. 🚀
 
 ---
 
-## Documentation links
+#### Documentation links
 
 [Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
