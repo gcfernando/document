@@ -21,11 +21,11 @@ description: "Find Docker commands for images, containers, Dockerfiles, Compose,
 - [🚦 Start safely](#-start-safely)
 - [🚀 Essential command cards](#-essential-command-cards)
 - [🧩 Command catalog](#-command-catalog)
-- [🏗️ Dockerfile and builds](#️-dockerfile-and-builds)
+- [🏗️ Dockerfile and builds](#dockerfile-builds)
 - [🧱 Compose](#-compose)
 - [🌐 Networking and storage](#-networking-and-storage)
 - [🔐 Registries, security, and Swarm](#-registries-security-and-swarm)
-- [🛠️ Ten practical workflows](#️-ten-practical-workflows)
+- [🛠️ Ten practical workflows](#docker-workflows)
 - [📋 Complete reference and help](#-complete-reference-and-help)
 
 ## 🚦 Start safely
@@ -143,6 +143,8 @@ Each row includes a copyable example and its use; detailed flag explanations fol
 | `docker events` | Streams daemon events; use to correlate restarts/destroys. | `docker events --filter container=api --since 1h` | Filters include `type`, `event`, `container`, `image`, and `label`. |
 | `docker diff` | Shows container filesystem changes; use to find unexpected writes. | `docker diff api` | Persist intentional state in volumes, not the writable container layer. |
 | `docker update` | Changes some live resource/restart settings; use for an urgent temporary adjustment. | `docker update --memory 768m --restart unless-stopped api` | Validate the workload after changing limits. |
+
+<a id="dockerfile-builds"></a>
 
 ## 🏗️ Dockerfile and builds
 
@@ -313,6 +315,8 @@ aws ecr get-login-password --region "$AWS_REGION" | \
 docker image tag api:1.0 "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/api:1.0"
 docker push "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/api:1.0"
 ```
+
+<a id="docker-workflows"></a>
 
 ## 🛠️ Ten practical workflows
 

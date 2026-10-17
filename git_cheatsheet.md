@@ -18,8 +18,8 @@ description: "Practice Git setup, commits, branching, collaboration, releases an
 - [🚀 Essential command cards](#-essential-command-cards)
 - [🧩 Everyday command cards](#-everyday-command-cards)
 - [🌳 Collaboration and recovery](#-collaboration-and-recovery)
-- [🏷️ Releases and tags](#️-releases-and-tags)
-- [🛠️ Advanced workflows](#️-advanced-workflows)
+- [🏷️ Releases and tags](#git-releases)
+- [🛠️ Advanced workflows](#git-advanced)
 
 ## 👋 First-time Git walkthrough
 
@@ -128,6 +128,8 @@ The complete command catalog follows; every displayed command includes its use a
 | GitHub Flow | Branch from `main`, small commits, push, open PR, review/CI, merge, delete branch, sync local `main`. |
 | Trunk-based delivery | Keep short-lived branches, integrate frequently, protect `main`, use feature flags for incomplete work. |
 
+<a id="git-releases"></a>
+
 ## 🏷️ Releases and tags
 
 > [!TIP]
@@ -194,6 +196,8 @@ git ls-remote --tags origin
 | `git fetch --tags` | Downloads tags from remote. | `git fetch origin --tags` | Does not change current branch files. |
 | `git tag -d TAG` / `git push origin :refs/tags/TAG` | Deletes local / remote tag. | `git tag -d v1.0.6`<br>`git push origin :refs/tags/v1.0.6` | **⚠️** Coordinate before deleting published release tags. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 
 | `git tag -s` / `git verify-tag` | Creates/verifies signed tag. | `git tag -s v1.0.7 -m "Signed v1.0.7"`<br>`git verify-tag v1.0.7` | Requires configured signing key/trust. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
+
+<a id="git-advanced"></a>
 
 ## 🛠️ Advanced workflows
 

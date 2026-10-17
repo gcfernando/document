@@ -21,58 +21,58 @@ defaults:
   - scope:
       path: "azure_cheatsheet.md"
     values:
-      title: "☁️ Azure Engineering Cheat Sheet"
-      description: "Azure is Microsoft's cloud platform: instead of installing your own physical server, you create services in a Microsoft data center. A resource is one of those services; a resource group…"
+      title: "Azure Engineering Cheat Sheet: Services, CLI and Architecture"
+      description: "Compare Azure services and review identity, networking, storage, compute and operations with explanations, Azure CLI examples and practice exercises."
   - scope:
       path: "azure_resources_cheatsheet.md"
     values:
-      title: "📦 Azure Resources Deep Reference"
-      description: "This is an Azure resource reference: each numbered section explains one family of services, then offers a small practice exercise. The sections are independent; do not run all of them in…"
+      title: "Azure Resources Reference: Compute, Networking, Storage and Data"
+      description: "Explore Azure resource families, their responsibilities and dependencies, with CLI examples, operational considerations and links to official sources."
   - scope:
       path: "csharp_dotnet_oop_guide.md"
     values:
-      title: "🏛️ Complete Object-Oriented Programming with C# and .NET"
-      description: "Learn object-oriented programming with C# and .NET through a chapter-based guide, examples and a day-by-day study plan."
+      title: "Object-Oriented Programming with C# and .NET"
+      description: "Learn C# and .NET object-oriented programming through classes, inheritance, interfaces, design decisions, exercises and a structured study plan."
   - scope:
       path: "docker_cheatsheet.md"
     values:
-      title: "🐳 Docker Command Cheat Sheet"
-      description: "A terminal is a window in which you type commands. A command-line interface (CLI) is a program you control by typing commands. Install Docker Desktop on Windows/macOS or Docker Engine on…"
+      title: "Docker Command Cheat Sheet: Containers, Images and Compose"
+      description: "Find Docker commands for images, containers, Dockerfiles, Compose, networking and troubleshooting, with explanations and practical examples."
   - scope:
       path: "git_cheatsheet.md"
     values:
-      title: "🌿 Git Command Cheat Sheet"
-      description: "A Git command cheat sheet with explanations and practice examples for repositories, commits, branches and everyday version-control workflows."
+      title: "Git Command Cheat Sheet: Branching, Collaboration and Recovery"
+      description: "Practice Git setup, commits, branching, collaboration, releases and recovery with explained command examples and guidance on destructive operations."
   - scope:
       path: "local_ai_learning_lab.md"
     values:
-      title: "Local AI Learning Lab: your first local chat app"
-      description: "Build a browser chat app with Ollama, Qwen3.5 9B, Python, and Streamlit on Windows/PowerShell. A local runtime runs the model; your Python app supplies messages and displays the reply.…"
+      title: "Local AI Chat App with Ollama and Streamlit on Windows"
+      description: "Build a local Python chat app on Windows with Ollama and Streamlit. Follow model setup, context configuration, verification and troubleshooting steps."
   - scope:
       path: "podman_cheatsheet.md"
     values:
-      title: "🦭 Podman Command Cheat Sheet"
-      description: "A terminal is the app for typing commands. Install Podman first. On Linux, open a normal user terminal (rootless means you do not use administrator privileges). On Windows/macOS, start…"
+      title: "Podman Command Cheat Sheet: Rootless Containers, Pods and Quadlet"
+      description: "Review Podman commands for rootless containers, images, pods, virtual machines and Quadlet, with examples and troubleshooting guidance."
   - scope:
       path: "python_dunder.md"
     values:
-      title: "Python Dunder Methods Guide"
-      description: "A guide to Python special methods and their role in object-oriented programming."
+      title: "Python Dunder Methods Reference: Special Methods and Attributes"
+      description: "Understand Python special methods and attributes for object creation, operators, containers, descriptors, async behavior and serialization."
   - scope:
       path: "python_oop_guide.md"
     values:
-      title: "🐍 Complete Object-Oriented Programming with Python"
-      description: "By the end, you should be able to design, implement, test, and refactor object-oriented Python applications using modern Python practices. 🚀"
+      title: "Object-Oriented Programming with Python: Classes, Design and Testing"
+      description: "Learn Python object-oriented programming with classes, inheritance, composition, protocols, testing, design exercises and a structured study plan."
   - scope:
       path: "README.md"
     values:
-      title: "🌈 Knowledge Base Learning Paths — Python, C#/.NET, SQL, Azure, Docker, Podman & Git Guides"
+      title: "Developer Learning Paths — Python, C#, SQL, Azure and Containers"
       description: "Learning paths and guides for Python, C# and .NET, SQL, Azure, Docker, Podman, Git and local AI applications."
   - scope:
       path: "sql_complete_guide.md"
     values:
-      title: "🗄️ The Complete SQL Guide — MSSQL & MySQL"
-      description: "Learn SQL with a complete guide covering Microsoft SQL Server and MySQL, including beginner exercises and database examples."
+      title: "SQL Guide for Microsoft SQL Server and MySQL"
+      description: "Learn SQL with Microsoft SQL Server and MySQL examples covering tables, queries, joins, transactions, indexing, database design and practice exercises."
 
 # Public documentation navigation and presentation.
 repository: gcfernando/document

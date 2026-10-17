@@ -24,7 +24,7 @@ Beginner-to-advanced Markdown guides and cheat sheets: **Python OOP**, **Python 
 ## 📚 Table of contents
 
 - [🧭 Choose your starting path](#-choose-your-starting-path)
-- [🗺️ The complete study map](#️-the-complete-study-map)
+- [🗺️ The complete study map](#study-map)
 - [📚 Guide shelf](#-guide-shelf)
 - [🔁 The learning loop](#-the-learning-loop)
 - [📅 Your study rhythm](#-your-study-rhythm)
@@ -44,6 +44,8 @@ Beginner-to-advanced Markdown guides and cheat sheets: **Python OOP**, **Python 
 | 🧑‍💻 Already write code but want stronger foundations | Pick **one** language path: [Python](python_oop_guide.md) or [C#/.NET](csharp_dotnet_oop_guide.md) | [SQL](sql_complete_guide.md) → [Azure](azure_cheatsheet.md) |
 
 ---
+
+<a id="study-map"></a>
 
 ## 🗺️ The complete study map
 
