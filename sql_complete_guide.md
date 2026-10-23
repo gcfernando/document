@@ -2254,10 +2254,27 @@ ALTER TABLE order_attachments
     ADD CONSTRAINT fk_attachments_order FOREIGN KEY (order_id)
         REFERENCES orders(order_id) ON DELETE CASCADE;
 
--- 🎯 SET NULL: an employee leaving must NOT delete their orders
-ALTER TABLE orders
-    ADD CONSTRAINT fk_orders_employee_demo FOREIGN KEY (employee_id)
-        REFERENCES employees(employee_id) ON DELETE SET NULL;
+-- 🎯 SET NULL: REPLACE the existing Chapter 4 employee FK; do not add a second FK.
+```
+
+The original `fk_orders_employee` uses the default delete action. Keeping it alongside a new `SET NULL` constraint does not replace that rule. Run only your engine’s replacement below; `employee_id` is already nullable in ShopDB.
+
+```sql
+-- 🟥 SQL Server
+ALTER TABLE orders DROP CONSTRAINT fk_orders_employee;
+ALTER TABLE orders ADD CONSTRAINT fk_orders_employee FOREIGN KEY (employee_id)
+    REFERENCES employees(employee_id) ON DELETE SET NULL;
+```
+
+```sql
+-- 🟦 MySQL
+ALTER TABLE orders DROP FOREIGN KEY fk_orders_employee;
+ALTER TABLE orders ADD CONSTRAINT fk_orders_employee FOREIGN KEY (employee_id)
+    REFERENCES employees(employee_id) ON DELETE SET NULL;
+```
+
+```sql
+-- ✅ Works in BOTH: the independent product example follows.
 
 -- 🎯 RESTRICT: never delete a product that has been sold
 ALTER TABLE order_items
@@ -2386,7 +2403,7 @@ ORDER BY table_name, constraint_type;
 
 1. Try to insert a customer with a duplicate email. Read the error. Now try a `loyalty_tier` of `'Diamond'`. Read that error too.
 2. Try to delete customer #1 (who has orders). Which constraint stops you, and what exactly does the message say?
-3. Add a `CHECK` to `employees` ensuring `hire_date` is not in the future. Test it.
+3. 🟥 SQL Server: test a `CHECK` rejecting future `hire_date` values. 🟦 MySQL: first demonstrate that `CHECK (hire_date <= CURRENT_DATE)` is rejected because nondeterministic functions are forbidden. For a deterministic constraint exercise use an explicit fixed cutoff date; for a rolling “today” rule validate on each write in a trigger or application. A fixed cutoff is not the same business rule. See [MySQL CHECK restrictions](https://dev.mysql.com/doc/refman/8.4/en/create-table-check-constraints.html).
 4. Delete order 1000 and observe what happens to its rows in `order_items` and `payments`. Explain why.
 
 > ### 🧭 In practice — constraints
@@ -2483,7 +2500,7 @@ SELECT LAST_INSERT_ID();   -- ✅ per-connection, safe from other users
 ```
 
 > [!TIP]
-> 💡 **`LAST_INSERT_ID()` belongs to your connection only.** Another user inserting at the same moment cannot change your value. For a **multi-row** insert it returns the ID of the **first** row generated, and the rest follow consecutively.
+> 💡 **`LAST_INSERT_ID()` belongs to your connection only.** Another user inserting at the same moment cannot change your value. For a **multi-row** insert it returns the ID of the **first** generated row. Do not infer all later IDs by adding one without controlling increment/offset settings, statement mode and ignored/conflicting rows; retrieve rows through an explicit unique correlation key.
 
 **Inserting explicit values and resetting:**
 
@@ -2587,11 +2604,11 @@ CREATE TABLE sessions (
 
 1. Insert a product without specifying `product_id`. Retrieve the generated ID immediately, using the correct function for your engine.
 2. Start a transaction, insert a row, roll it back, then insert again. Prove to yourself the gap is permanent.
-3. Insert three rows in one statement and capture all three generated IDs (`OUTPUT` in MSSQL; `LAST_INSERT_ID()` plus arithmetic in MySQL).
+3. Insert three rows in one statement and capture all three generated IDs (`OUTPUT` in MSSQL; a unique per-row correlation key followed by a query in MySQL; do not assume consecutive IDs).
 
 > ### 🧭 In practice — auto-numbering
 >
-> **How to use it.** Declare the key column as `INT IDENTITY(1,1)` in SQL Server or `INT AUTO_INCREMENT` in MySQL, then simply omit it from your `INSERT` — the engine assigns the next value. Retrieve what it assigned with `SCOPE_IDENTITY()` (MSSQL) or `LAST_INSERT_ID()` (MySQL). **Expected result:** every row gets a unique identifier with no coordination between concurrent inserts.
+> **How to use it.** Declare the key column as `INT IDENTITY(1,1)` in SQL Server or `INT AUTO_INCREMENT` in MySQL, then simply omit it from your `INSERT` — the engine assigns the next value. Retrieve what it assigned with `SCOPE_IDENTITY()` (MSSQL) or `LAST_INSERT_ID()` (MySQL). **Expected result:** the engine generates identifiers; a `PRIMARY KEY` or `UNIQUE` constraint enforces uniqueness. `IDENTITY` by itself is not a uniqueness constraint.
 >
 > **When to use it.** For the surrogate primary key of nearly every table — a meaningless number whose only job is to identify the row, so that no real-world value has to stay unique forever.
 >
@@ -2979,12 +2996,13 @@ SELECT LAST_INSERT_ID() AS new_customer_id;
 #### 12.6 🚚 Bulk loading large files
 
 > [!NOTE]
-> 📌 **What a staging table is:** a plain table shaped like your incoming file, with **no rules at all**. You load the raw file into it, clean the data *there*, and only then move it into the real table. Several later chapters use these, so create them once now:
+> 📌 **What a staging table is:** a table shaped like your incoming file, usually without business keys or relationship checks. SQL data types and column lengths still apply. Typed staging accepts already parseable fields; a separate wide text landing table is needed to preserve malformed input for later conversion. Several later chapters use these, so create them once now:
 
 ```sql
 -- ✅ Works in BOTH: the staging tables used in Chapters 12, 19, 23 and 44
--- Deliberately NO constraints, NO indexes, NO foreign keys — staging must
--- accept messy data so you can inspect and fix it before it reaches production.
+-- No business constraints/indexes/FKs, but the declared data types and lengths
+-- still reject or convert malformed input according to the engine/load mode.
+-- These typed tables require valid numeric/date fields and bounded text.
 
 CREATE TABLE staging_products (
     product_name    VARCHAR(120),
@@ -3009,7 +3027,7 @@ CREATE TABLE staging_customers (
 ```
 
 > [!TIP]
-> 💡 **Why no constraints on a staging table?** Because a constraint would reject the bad rows *and abort your load*, leaving you with no idea how many were wrong or why. Load everything, then run checking queries (`TRY_CAST`, `LIKE`, `COUNT(*) … GROUP BY`) to find the problems, set the bad rows aside, and copy only the clean rows into the real table.
+> 💡 **Why no constraints on a staging table?** Avoiding business constraints lets you inspect duplicates and missing relationships before accepting rows. It does not make typed staging accept arbitrary input: bad numbers/dates and overlong text can still fail or be converted. To retain original values, load into wide text columns first, keep rejected records, then validate and convert into typed staging. Loader error/strict-mode settings also matter.
 
 **Loading a file.** The next two examples load a **CSV file** — a spreadsheet saved as plain text, with commas between the values (in Excel: *File → Save As → CSV*).
 
@@ -3058,7 +3076,10 @@ IGNORE 1 ROWS
 > 💡 **MSSQL 2019+ gives a much better truncation message** naming the exact table, column, and value. If you are on an older version, find the culprit yourself:
 > ```sql
 > -- 🟥 MSSQL
-> SELECT * FROM staging_products WHERE LEN(product_name) > 120;
+> -- Use a wider raw landing table, NOT staging_products whose name is VARCHAR(120).
+> CREATE TABLE raw_staging_products (product_name VARCHAR(1000));
+> -- Load original names here before truncation/conversion.
+> SELECT * FROM raw_staging_products WHERE LEN(product_name) > 120;
 > ```
 
 #### 12.8 🧪 Try it yourself
@@ -10003,6 +10024,9 @@ CREATE PROCEDURE next_sequence_value(IN p_name VARCHAR(64), OUT p_value BIGINT)
 BEGIN
     UPDATE sequences SET seq_value = LAST_INSERT_ID(seq_value + 1)
     WHERE seq_name = p_name;
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Unknown sequence name';
+    END IF;
     SET p_value = LAST_INSERT_ID();
 END$$
 DELIMITER ;
@@ -10012,7 +10036,7 @@ SELECT @next AS invoice_no;       -- 100001
 ```
 
 > [!TIP]
-> 💡 **The `LAST_INSERT_ID(expr)` trick.** Passing a value to `LAST_INSERT_ID()` stores it for **your connection only**, in the same step as the update. Two users calling at the same moment can never receive the same number. It is the standard MySQL way to build a sequence.
+> 💡 **The `LAST_INSERT_ID(expr)` trick.** Passing a value to `LAST_INSERT_ID()` stores it for **your connection only**, in the same step as the update. The row update serializes concurrent increments. The missing-name guard is essential: without it, a zero-row update would leave the connection’s previous value intact. A caller rollback can undo this counter update, so do not promise permanent, gapless or non-reused numbers outside a defined transaction policy.
 
 | | `IDENTITY` / `AUTO_INCREMENT` | Sequence |
 |---|---|---|
@@ -10097,17 +10121,17 @@ CREATE INDEX ix_customers_email_lower ON customers(email_lower);
 ```
 
 > [!TIP]
-> 💡 **This is the standard cure for the "a function on a column stops the index being used" problem** from [Chapter 48](#48-query-optimization-and-sargability). You cannot index `LOWER(email)` directly, but you *can* store it as a computed column and index that.
+> 💡 **This is the standard cure for the "a function on a column stops the index being used" problem** from [Chapter 48](#48-query-optimization-and-sargability). SQL Server uses a computed-column index for this shape. MySQL 8.4 also supports functional key parts, for example `CREATE INDEX ix_email_expression ON customers ((LOWER(email)))`; a named generated column is another option. Avoid creating redundant indexes and check collation/search semantics. See [MySQL functional indexes](https://dev.mysql.com/doc/refman/8.4/en/create-index.html#functional-key-parts).
 
 > [!WARNING]
-> ⚠️ **Computed columns must be deterministic** — the same inputs must always give the same output. `GETDATE()` or `RAND()` are not allowed. In MSSQL, a computed column can be `PERSISTED` only if it is deterministic, and indexed only if it is deterministic **and** either precise (no `FLOAT`) or `PERSISTED`.
+> ⚠️ **SQL Server permits nondeterministic nonpersisted computed expressions**, for example one using `GETDATE()`. Such a column cannot be `PERSISTED` or indexed. Indexable computed columns have determinism, precision, data-type, ownership and SET-option requirements; persistence alone does not make every expression indexable. MySQL generated expressions have their own restrictions. See [SQL Server computed columns](https://learn.microsoft.com/en-us/sql/relational-databases/tables/specify-computed-columns-in-a-table) and [index requirements](https://learn.microsoft.com/en-us/sql/relational-databases/indexes/indexes-on-computed-columns).
 
 #### 41.3 🧪 Try it yourself
 
 1. Add a persisted/stored `line_total` column to `order_items` and index it.
 2. Create a sequence (MSSQL) or sequence table (MySQL) for invoice numbers and draw five values.
 3. Add a `full_name_upper` computed column to `customers` and index it. Verify with `EXPLAIN` that a search on it seeks rather than scans.
-4. Try to create a computed column using `GETDATE()`. Read the error and explain it.
+4. 🟥 SQL Server: compare a nonpersisted computed column using `GETDATE()` with a `PERSISTED` one; explain why the first is allowed and the second rejected.
 
 > ### 🧭 In practice — sequences and generated columns
 >
@@ -11358,7 +11382,7 @@ CREATE INDEX ix_orders_cust_date_status ON orders(customer_id, order_date, statu
 
 > 🌍 **Analogy — a phone book sorted by (last name, first name).** You can find "all the Silvas" instantly. You can find "Silva, Amara" instantly. But you **cannot** find "everyone called Amara" without reading the whole book, because first names are only sorted *within* each last name.
 
-**Which queries can use that index?**
+**Which filters support a direct left-prefix seek?** The table describes search shape, not a guarantee of the chosen physical plan; the optimizer can still scan a covering index.
 
 | Query filter | Uses the index? | Why |
 |---|:---:|---|
@@ -11366,8 +11390,8 @@ CREATE INDEX ix_orders_cust_date_status ON orders(customer_id, order_date, statu
 | `WHERE customer_id = 1 AND order_date >= '2026-01-01'` | ✅ Fully | Left two columns |
 | `WHERE customer_id = 1 AND order_date = X AND status = 'Paid'` | ✅ Fully | All three |
 | `WHERE customer_id = 1 AND status = 'Paid'` | ⚠️ Partly | Jumps to `customer_id` via the index, then checks `status` row by row |
-| `WHERE order_date >= '2026-01-01'` | ❌ No | Skips the left-most column |
-| `WHERE status = 'Paid'` | ❌ No | Skips the first two |
+| `WHERE order_date >= '2026-01-01'` | ⚠️ No ordinary left-prefix seek | An index scan or engine-specific skip-scan strategy may still be chosen |
+| `WHERE status = 'Paid'` | ⚠️ No ordinary left-prefix seek | An index scan may still cover the query |
 
 > [!TIP]
 > 💡 **The rule for ordering columns in a composite index:**
@@ -11458,7 +11482,7 @@ CREATE FULLTEXT INDEX ON products(product_name)
     KEY INDEX ux_products_ftkey ON ft_catalog;
 GO
 
-SELECT * FROM products WHERE CONTAINS(product_name, 'Ultra OR Vision');
+SELECT * FROM products WHERE CONTAINS(product_name, '"Ultra*" OR "Vision*"');
 ```
 
 > [!WARNING]
@@ -11473,11 +11497,11 @@ SELECT * FROM products WHERE CONTAINS(product_name, 'Ultra OR Vision');
 ALTER TABLE products ADD FULLTEXT INDEX ft_product_name (product_name);
 
 SELECT * FROM products
-WHERE MATCH(product_name) AGAINST('Ultra Vision' IN NATURAL LANGUAGE MODE);
+WHERE MATCH(product_name) AGAINST('Ultra* Vision*' IN BOOLEAN MODE);
 ```
 
 > [!TIP]
-> 💡 **Full-text search is the correct answer to `LIKE '%word%'` on a big table.** `LIKE` with a leading wildcard cannot use a B-tree index at all; a full-text index is built for exactly this, and adds relevance ranking (best matches first) and skips common filler words (*stop words*) for free.
+> 💡 **Full-text search implements token/word search, not arbitrary substring matching.** The examples use explicit word prefixes so `Ultra*` can match a token such as `UltraBook`; searching for `Book` does not necessarily match inside that token. Tokenization, stopwords and minimum token lengths affect results. A leading-wildcard `LIKE` normally prevents a B-tree range seek, although a covering index can still be scanned. Choose the search semantics first; see [MySQL full-text documentation](https://dev.mysql.com/doc/refman/8.4/en/fulltext-search.html).
 
 #### 46.8 🧭 What to index — the practical checklist
 
@@ -11578,11 +11602,11 @@ ALTER INDEX ALL ON orders REBUILD WITH (ONLINE = ON);         -- Enterprise and 
 ```sql
 -- 🟦 MySQL
 ANALYZE TABLE orders;         -- refresh statistics
-OPTIMIZE TABLE orders;        -- rebuild and defragment (locks the table on InnoDB)
+OPTIMIZE TABLE orders;        -- rebuild/reorganize; lock behavior depends on engine/table/DDL path
 ```
 
 > [!WARNING]
-> ⚠️ **`OPTIMIZE TABLE` on a large InnoDB table copies the whole table and blocks writes.** Schedule it in a maintenance window, or use `pt-online-schema-change` / `gh-ost` (free tools that rebuild a table while it stays usable) on busy systems.
+> ⚠️ **InnoDB `OPTIMIZE TABLE` normally uses online DDL**, allowing concurrent DML during the main rebuild with brief exclusive metadata-lock phases. Some configurations/features require a table-copy path and block writes; a long-running transaction can also delay metadata locking. Plan storage, I/O and lock impact for the actual table rather than promising zero blocking. See [MySQL OPTIMIZE TABLE behavior](https://dev.mysql.com/doc/refman/8.4/en/optimize-table.html).
 
 > [!TIP]
 > 💡 **Modern advice:** fragmentation matters far less on SSDs than it did on spinning disks. Chasing 5% fragmentation nightly is usually wasted effort — **updating statistics is more valuable than rebuilding indexes** in most systems today.
@@ -12084,7 +12108,7 @@ WHERE units_in_stock > 10;
 **③ A leading wildcard in `LIKE`**
 
 ```sql
--- ❌ SCAN — a leading wildcard defeats the index entirely
+-- ❌ No normal B-tree range seek for this leading-wildcard predicate; an index scan is still possible
 SELECT product_name FROM products
 WHERE product_name LIKE '%Book%';
 
@@ -12092,7 +12116,7 @@ WHERE product_name LIKE '%Book%';
 SELECT product_name FROM products
 WHERE product_name LIKE 'Ultra%';
 
--- ✅ For genuine "contains" search on a big table: FULLTEXT index (Chapter 46)
+-- For token/word search, consider FULLTEXT (Chapter 46); it is not equivalent to arbitrary substring matching.
 ```
 
 **④ Implicit type conversion**
@@ -15871,15 +15895,17 @@ ALTER DATABASE ShopDB SET CHANGE_TRACKING = ON
 ALTER TABLE dbo.products ENABLE CHANGE_TRACKING WITH (TRACK_COLUMNS_UPDATED = ON);
 GO
 
+-- In this isolated lab, capture a valid baseline before the demonstration update.
+DECLARE @last_version BIGINT = CHANGE_TRACKING_CURRENT_VERSION();
 UPDATE dbo.products SET unit_price = unit_price + 0 WHERE product_id = 1;
-GO
 
--- The version number your consumer stores between runs
+DECLARE @min_version BIGINT = CHANGE_TRACKING_MIN_VALID_VERSION(OBJECT_ID('dbo.products'));
+IF @min_version IS NULL OR @last_version < @min_version
+    THROW 50001, 'Invalid change-tracking baseline; reseed before enumerating changes', 1;
+
 SELECT CHANGE_TRACKING_CURRENT_VERSION() AS current_version;
-
--- Everything that changed since version 0
 SELECT ct.product_id, ct.SYS_CHANGE_OPERATION, ct.SYS_CHANGE_VERSION
-FROM CHANGETABLE(CHANGES dbo.products, 0) AS ct;
+FROM CHANGETABLE(CHANGES dbo.products, @last_version) AS ct;
 ```
 
 **Result:**
@@ -15889,13 +15915,13 @@ FROM CHANGETABLE(CHANGES dbo.products, 0) AS ct;
 | 1 | | 1 | U | 1 |
 
 > [!TIP]
-> 💡 **The consumer pattern:** store the `CHANGE_TRACKING_CURRENT_VERSION()` you last processed, and on the next run pass it to `CHANGETABLE(CHANGES tbl, @last_version)`. You get only the keys that changed, plus `I` / `U` / `D` for insert, update, delete. Join back to the base table for the current values.
+> 💡 **The consumer pattern:** store the version from a consistent completed synchronization. On the next run, validate it against the table’s minimum valid version, capture the next version, enumerate changes and read corresponding rows consistently before advancing the saved checkpoint. You get only the keys that changed, plus `I` / `U` / `D` for insert, update, delete. Join back to the base table for the current values.
 
 > [!WARNING]
 > ⚠️ **`CHANGETABLE` is checked when the batch is compiled, before anything runs.** Enabling change tracking and querying `CHANGETABLE` in the *same batch* fails with *"Change tracking is not enabled on table…"*. Separate them with `GO` (or into two commands from the application).
 
 > [!WARNING]
-> ⚠️ **Retention is a hard deadline, not a suggestion.** If a consumer is offline longer than `CHANGE_RETENTION`, its stored version expires, `CHANGETABLE` returns an error, and the consumer must reload all the data from scratch (a **full reseed**). Set retention comfortably longer than your worst realistic outage.
+> ⚠️ **Validate the baseline before enumerating changes.** Cleanup can make a stored version older than `CHANGE_TRACKING_MIN_VALID_VERSION(OBJECT_ID(...))`; `CHANGETABLE` does not reliably raise an error for an obsolete baseline, and its results must not be treated as complete. Reinitialize if the baseline is invalid. A production consumer should validate, capture its next version and read changes/base rows in a consistent snapshot transaction; snapshot isolation must be enabled first. See [Microsoft’s consumer pattern](https://learn.microsoft.com/en-us/sql/relational-databases/track-changes/work-with-change-tracking-sql-server).
 
 #### 62.5 ⚖️ Which history mechanism should you use?
 
@@ -16897,8 +16923,8 @@ foreach (var item in items)
 | Over a million | 🟥 `BULK INSERT` / `bcp` · 🟦 `LOAD DATA INFILE` ([Chapter 12](#12-insert-putting-data-in)) |
 
 ```csharp
-// ✅ 🟥 MSSQL: hundreds of thousands of rows, one round trip
-using var bulk = new SqlBulkCopy(conn)
+// 🟥 MSSQL: bulk transfer in batches. Choose trigger behavior deliberately.
+using var bulk = new SqlBulkCopy(conn, SqlBulkCopyOptions.CheckConstraints, null)
 {
     DestinationTableName = "dbo.order_items",
     BatchSize = 5000,
@@ -16906,6 +16932,8 @@ using var bulk = new SqlBulkCopy(conn)
 };
 await bulk.WriteToServerAsync(dataTable);
 ```
+
+`SqlBulkCopy` does not check CHECK/foreign-key constraints or fire insert triggers by default. This example opts into `CheckConstraints`; add `SqlBulkCopyOptions.FireTriggers` if insert triggers are part of the intended write path. Do not enable a stock trigger as well as explicit stock maintenance. Select transaction/batch atomicity deliberately and supply column mappings when source and destination orders differ. See [SqlBulkCopyOptions](https://learn.microsoft.com/en-us/dotnet/api/microsoft.data.sqlclient.sqlbulkcopyoptions).
 
 > [!TIP]
 > 💡 **The same rule applies to reads.** Fetching 500 rows by primary key in a loop is an N+1 in disguise. Send one query with `WHERE product_id IN (…)` — as a table-valued parameter 🟥 or a properly parameterized list 🟦 — and get them in one trip.

@@ -4269,8 +4269,16 @@ Two *different* objects are considered equal because their values match.
 
 ```python
 class Product:
+    __slots__ = ("id",)
+
     def __init__(self, product_id: int) -> None:
-        self.id = product_id
+        object.__setattr__(self, "id", product_id)
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError("Product identity is immutable")
+
+    def __delattr__(self, name: str) -> None:
+        raise AttributeError("Product identity is immutable")
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Product):
@@ -4284,7 +4292,7 @@ class Product:
 <a id="183--why-__hash__-matters"></a>
 #### 18.3 #️⃣ Why `__hash__` matters
 
-`set` and `dict` use **hash values** to organize items quickly.
+`set` and `dict` use **hash values** to organize items quickly. The handwritten Product/Coordinate examples block normal assignment and deletion to hashed fields; keep those values fixed after construction. Deliberate low-level writes or calling `__init__` again can bypass these teaching guards. Use a frozen dataclass for ordinary immutable value objects, and keep mutable entities unhashable unless their key contract is stable.
 
 > [!IMPORTANT]
 > If you override `__eq__`, think carefully about `__hash__`.
@@ -4341,9 +4349,17 @@ Build a `Coordinate` class (plain, not a dataclass) with `x` and `y`, implementi
 
 ```python
 class Coordinate:
+    __slots__ = ("x", "y")
+
     def __init__(self, x: int, y: int) -> None:
-        self.x = x
-        self.y = y
+        object.__setattr__(self, "x", x)
+        object.__setattr__(self, "y", y)
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError("Coordinate is immutable")
+
+    def __delattr__(self, name: str) -> None:
+        raise AttributeError("Coordinate is immutable")
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Coordinate):

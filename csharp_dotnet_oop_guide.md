@@ -2581,11 +2581,7 @@ void BadWrite(StreamWriter sharedWriter)
 > that receives a disposable as a parameter should use it and leave it open; a method that
 > constructs one owns it.
 
-The same rule explains a common source of confusion with `HttpClient`: it implements `IDisposable`,
-but the recommended pattern is a single long-lived instance (via `IHttpClientFactory`), not a
-`using` per request. Wrapping every `HttpClient` in a `using` exhausts the machine's available
-sockets under load, because disposal does not immediately release the underlying TCP connection —
-it sits in `TIME_WAIT`. An interface promising "I can be disposed" does not mean "dispose me often".
+For `HttpClient`, choose one documented lifetime strategy: a long-lived client using `SocketsHttpHandler.PooledConnectionLifetime` for connection/DNS renewal, or short-lived clients created by `IHttpClientFactory`. The factory pools handlers, so disposing a factory-created client does not destroy the shared connection pool. Repeatedly creating/disposing independently owned handlers can exhaust ports under load. See [Microsoft’s HttpClient guidelines](https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient-guidelines).
 
 #### 12.5 `IAsyncDisposable` and `await using`
 
@@ -6932,7 +6928,7 @@ Console.WriteLine(dto == same);            // True ✅
 var (id, name, email) = dto;               // ✅ deconstruction
 ```
 
-The **nominal** form — when you need validation or extra members:
+The **nominal** form — when you need validation or extra members: The email example uses a small teaching syntax rule, not full email-standard validation or proof of address ownership; confirm real addresses through an appropriate verification flow.
 
 ```csharp
 public record EmailAddress
@@ -6944,10 +6940,15 @@ public record EmailAddress
         if (string.IsNullOrWhiteSpace(value))
             throw new ArgumentException("Email is required.");
 
-        if (!value.Contains('@') || !value.Contains('.'))
-            throw new ArgumentException($"'{value}' is not a valid email address.");
+        string normalized = value.Trim().ToLowerInvariant();
+        int at = normalized.IndexOf('@');
+        int dot = normalized.LastIndexOf('.');
+        if (at <= 0 || at != normalized.LastIndexOf('@')
+            || dot <= at + 1 || dot == normalized.Length - 1
+            || normalized.Any(char.IsWhiteSpace))
+            throw new ArgumentException($"'{value}' does not match this example's email rule.");
 
-        Value = value.Trim().ToLowerInvariant();
+        Value = normalized;
     }
 
     public string Domain => Value.Split('@')[1];
@@ -7182,6 +7183,9 @@ Console.WriteLine(JsonSerializer.Serialize(product, options));
 //   "price": 1200
 // }
 ```
+
+<a id="️-the-surprise-deserialization-ignores-your-rules"></a>
+<a id="the-surprise-deserialization-ignores-your-rules"></a>
 
 ##### ⚠️ The surprise: deserialization needs an explicit validation contract
 
@@ -8388,7 +8392,8 @@ public Result<Customer> GetCustomer(string email)
         : Result<Customer>.Success(found);
 }
 
-// The caller cannot forget to handle failure — it's in the type.
+// The return type makes failure visible, but C# does not force callers to inspect it.
+// Handle both paths explicitly; this simple type also permits default(Result<T>).
 var result = service.GetCustomer("anna@example.com");
 
 if (result.IsSuccess)
@@ -8814,7 +8819,7 @@ but the fact that a whole category of horrible bugs simply cannot happen.
 >
 > **When to use it.** `static` for genuinely type-level things — a factory method, a pure helper, a cached lookup. `static readonly` for values that cannot be compile-time constants.
 >
-> **Where to use it.** Utilities and caches. **Scenario:** a `static readonly HttpClient` is the documented correct usage, because creating one per request exhausts sockets. It is also shared across threads, which is precisely why it must be used in a thread-safe way.
+> **Where to use it.** Utilities and caches. **Scenario:** a long-lived `HttpClient` with configured connection lifetime is one documented strategy; short-lived `IHttpClientFactory` clients with pooled handlers are another. It is also shared across threads, which is precisely why it must be used in a thread-safe way.
 >
 > **When _not_ to use it.** Avoid **static mutable state**. It is global state by another name: it makes tests interfere with each other, makes behaviour depend on execution order, and is a race condition waiting to happen. Also avoid `const` in a published library for anything that might change — the value is compiled into the *caller*, so changing it has no effect until every consumer recompiles. Use `static readonly` there.
 >
@@ -15045,7 +15050,7 @@ public readonly record struct Isbn
         string normalized = value.Replace("-", "").Replace(" ", "").ToUpperInvariant();
 
         if (normalized.Length is not (10 or 13))
-            throw new DomainException($"'{value}' is not a valid ISBN (must be 10 or 13 digits).");
+            throw new DomainException($"'{value}' does not have the required normalized ISBN length (10 or 13 characters).");
 
         Value = normalized;
     }
@@ -15053,6 +15058,8 @@ public readonly record struct Isbn
     public override string ToString() => Value;
 }
 ```
+
+**ISBN scope:** this teaching value object checks presence and normalized length only. It does not validate allowed characters or the ISBN check digit. Add those rules before treating it as ISBN validation; `default(Isbn)` also bypasses the constructor, so validate at boundaries.
 
 #### 46.5 The `Book` entity
 
