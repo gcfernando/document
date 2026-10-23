@@ -295,6 +295,8 @@ podman push "$ECR_REGISTRY/api:1.0"
 
 ---
 
+<a id="documentation-links"></a>
+
 ## 🔗 Related documentation
 
 [Docker command reference](docker_cheatsheet.md) · [Git workflows](git_cheatsheet.md)

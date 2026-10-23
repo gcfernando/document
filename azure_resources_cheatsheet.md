@@ -3165,6 +3165,8 @@ az group delete --name "${RG}" --yes
 ---
 
 <a id="r51"></a>
+<a id="documentation-links"></a>
+
 ### 51. ⚡ Azure Data Explorer
 
 > 🟦 **What it is:** High-performance analytics service for telemetry/log/time-series data using KQL.

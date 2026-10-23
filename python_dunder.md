@@ -8851,6 +8851,8 @@ Come back to this guide whenever you need it. Bookmark the sections you use most
 
 ---
 
+<a id="documentation-links"></a>
+
 ## 🔗 Related documentation
 
 [Python OOP foundations](python_oop_guide.md) · [Local AI chat lab](local_ai_learning_lab.md)

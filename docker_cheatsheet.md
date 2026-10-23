@@ -390,6 +390,8 @@ Docker ships more command-specific flags than a static document can safely repro
 
 ---
 
+<a id="documentation-links"></a>
+
 ## 🔗 Related documentation
 
 [Podman command reference](podman_cheatsheet.md) · [Git workflows](git_cheatsheet.md)

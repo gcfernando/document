@@ -1823,6 +1823,8 @@ ollama --version
 
 ---
 
+<a id="documentation-links"></a>
+
 ## 🔗 Related documentation
 
 [Python OOP foundations](python_oop_guide.md) · [Python special-method reference](python_dunder.md)

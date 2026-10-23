@@ -255,6 +255,8 @@ git ls-remote --tags origin
 
 ---
 
+<a id="documentation-links"></a>
+
 ## 🔗 Related documentation
 
 [Docker command reference](docker_cheatsheet.md) · [Podman command reference](podman_cheatsheet.md)

@@ -1577,6 +1577,8 @@ VERIFY LIVE → price / limits / regions / SLA / lifecycle
 
 ---
 
+<a id="documentation-links"></a>
+
 ## 🔗 Related documentation
 
 [Azure resources deep reference](azure_resources_cheatsheet.md)

@@ -16701,6 +16701,8 @@ Now close the guide and go build something. 🚀
 
 ---
 
+<a id="documentation-links"></a>
+
 ## 🔗 Related documentation
 
 [SQL Server and MySQL practice](sql_complete_guide.md) · [Azure engineering decisions](azure_cheatsheet.md)

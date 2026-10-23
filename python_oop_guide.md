@@ -9114,6 +9114,8 @@ Good Python OOP means:
 
 ---
 
+<a id="documentation-links"></a>
+
 ## 🔗 Related documentation
 
 [Python special-method reference](python_dunder.md) · [SQL practice](sql_complete_guide.md)

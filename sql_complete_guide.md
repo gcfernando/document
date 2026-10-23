@@ -18763,6 +18763,8 @@ Now close the guide, open a query window, and go build something. 🚀
 
 ---
 
+<a id="documentation-links"></a>
+
 ## 🔗 Related documentation
 
 [Python application foundations](python_oop_guide.md) · [C# application foundations](csharp_dotnet_oop_guide.md)
