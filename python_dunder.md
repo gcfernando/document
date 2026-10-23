@@ -126,7 +126,7 @@ Most Parts also end with a short **🧪 Check your understanding** and collapsed
 
 ## 🧪 How These Examples Were Checked
 
-Honesty about verification matters more than a reassuring claim, so here is exactly what was done.
+This section records the guide’s earlier example-checking pass. It was not rerun as part of the 23 October 2026 documentation review. The environment and limits below describe that recorded pass.
 
 - **Environment:** CPython **3.12.10** on Windows 11.
 - **Method:** every ` ```python ` block in this guide was extracted to its own `.py` file and executed. Printed output was compared against the `#` comments in the code.
@@ -1578,7 +1578,7 @@ False
 Point(x=1, y=2)
 ```
 
-`@dataclass` generates `__init__`, `__repr__`, and `__eq__` (comparing all fields, with the `isinstance` guard built in). Adding `frozen=True` makes instances immutable and generates a matching `__hash__`.
+By default, [`@dataclass`](https://docs.python.org/3.12/library/dataclasses.html) generates `__init__`, `__repr__`, and `__eq__`. Generated equality compares participating fields in order and requires the same exact type, rather than an `isinstance` check. With the default `eq=True`, adding `frozen=True` also generates `__hash__` unless an explicit hash implementation prevents it. Freezing emulates read-only field assignment; it is shallow, and hashing still fails if a participating field is unhashable.
 
 **Choose by situation.** Reach for `@dataclass` when the class is mostly fields, which covers most cases. Write `__eq__` by hand when equality is not "all fields match" — for example an `Order` that is equal when `order_id` matches, regardless of its other contents.
 
@@ -8851,6 +8851,8 @@ Come back to this guide whenever you need it. Bookmark the sections you use most
 
 ---
 
-### Documentation links
+## 🔗 Related documentation
 
-[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
+[Python OOP foundations](python_oop_guide.md) · [Local AI chat lab](local_ai_learning_lab.md)
+
+[Learning paths](README.md) · [Documentation index](documentation.md)

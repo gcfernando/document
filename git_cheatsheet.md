@@ -255,6 +255,8 @@ git ls-remote --tags origin
 
 ---
 
-## Documentation links
+## 🔗 Related documentation
 
-[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
+[Docker command reference](docker_cheatsheet.md) · [Podman command reference](podman_cheatsheet.md)
+
+[Learning paths](README.md) · [Documentation index](documentation.md)

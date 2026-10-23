@@ -1823,6 +1823,8 @@ ollama --version
 
 ---
 
-### Documentation links
+## 🔗 Related documentation
 
-[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
+[Python OOP foundations](python_oop_guide.md) · [Python special-method reference](python_dunder.md)
+
+[Learning paths](README.md) · [Documentation index](documentation.md)

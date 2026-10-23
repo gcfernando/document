@@ -17,7 +17,6 @@ description: "Learn SQL with Microsoft SQL Server and MySQL examples covering ta
 ![MSSQL](https://img.shields.io/badge/Microsoft%20SQL%20Server-2019%2B-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.4%20LTS-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![Chapters](https://img.shields.io/badge/Chapters-66-orange?style=for-the-badge)
-![Examples](https://img.shields.io/badge/Every%20example-Real%20World-success?style=for-the-badge)
 ![Engines](https://img.shields.io/badge/Written%20for-SQL%20Server%202019%2B%20%26%20MySQL%208.4-brightgreen?style=for-the-badge)
 
 **[🚀 Start here](#-start-here--your-first-hour)** &nbsp;·&nbsp; **[📚 Contents](#-table-of-contents)** &nbsp;·&nbsp; **[🎨 Box legend](#-how-to-read-the-colored-boxes-your-legend)** &nbsp;·&nbsp; **[📖 Glossary](#667--glossary)**
@@ -18764,6 +18763,8 @@ Now close the guide, open a query window, and go build something. 🚀
 
 ---
 
-#### Documentation links
+## 🔗 Related documentation
 
-[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
+[Python application foundations](python_oop_guide.md) · [C# application foundations](csharp_dotnet_oop_guide.md)
+
+[Learning paths](README.md) · [Documentation index](documentation.md)

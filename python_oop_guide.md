@@ -94,6 +94,8 @@ Where output matters, an **Expected output** block follows the code. Two things 
 
 ### What was actually verified
 
+This records an earlier checking pass; it was not rerun in full during the 23 October 2026 documentation review.
+
 - **Environment:** CPython **3.12.10** on Windows 11, with **mypy 2.1.0** for every static-typing claim.
 - **Method:** every complete-program block was extracted and executed, and its printed output compared against the "Expected output" shown here.
 - **Scope of that check:** it confirms the code runs and prints what is claimed on this one interpreter. It does not prove the surrounding prose is complete, nor that behaviour is identical on other Python versions or platforms.
@@ -115,7 +117,9 @@ When another language says `private`, the compiler *stops* you. Python has three
 |---|---|---|---|
 | **1. Convention** | `_name` (one underscore) | Nothing — it is a comment to humans | Yes, trivially |
 | **2. Static check** | Type hints, `Protocol`, `mypy` | A separate tool you choose to run | Yes — the program still runs |
-| **3. Runtime** | `@property`, `raise`, `__slots__`, `frozen=True` | The interpreter, while running | No |
+| **3. Runtime** | `@property`, `raise`, `__slots__`, `frozen=True` | The interpreter, while running | Depends on the mechanism; these are not a security boundary |
+
+Runtime checks constrain particular operations. For example, a [frozen dataclass](https://docs.python.org/3.12/library/dataclasses.html#frozen-instances) rejects normal field assignment but only emulates immutability; `object.__setattr__` can still set its fields. [`__slots__`](https://docs.python.org/3.12/reference/datamodel.html#slots) restricts instance storage when no `__dict__` is available, but inheritance can restore a dictionary. Treat these mechanisms as API and correctness tools, not protection from code running in the same process.
 
 ### See all three in one class
 
@@ -186,7 +190,7 @@ The 39 sections are grouped into five parts. Each part ends with a ✅ **Checkpo
 
 | Part | Sections | What you can do at the end of it |
 |---|:---:|---|
-| 🟢 **1 · Foundations** | 1–8 | Write a class with rules that cannot be bypassed, and explain what an object *is* |
+| 🟢 **1 · Foundations** | 1–8 | Write a class that validates normal API use, and explain what an object *is* |
 | 🟣 **2 · The four pillars, in depth** | 9–15 | Choose correctly between inheritance, composition, protocols, and abstract base classes |
 | 🟠 **3 · Building real types** | 16–26 | Use generics, collections, equality, dataclasses, `None` safety, and errors properly — and lay a project out |
 | 🔴 **4 · Professional design** | 27–33 | Apply SOLID and dependency injection *and name what each one costs* |
@@ -4456,7 +4460,7 @@ class Point(NamedTuple):
 
 **▶️ Continues from [§19.2](#192--dataclass)** — assumes the `CustomerDto` dataclass defined there.
 
-`dataclasses.replace` builds a **new** object from an existing one, changing only the fields you name. It works on any dataclass, but it is *essential* for frozen ones: since you cannot edit a frozen object, making a modified copy is the only way to "change" it.
+`dataclasses.replace` builds a **new** object from an existing one, changing only the fields you name. For a frozen dataclass, use this pattern to express a change through a new value rather than trying normal field assignment on the original.
 
 ```python
 from dataclasses import replace
@@ -4465,7 +4469,7 @@ original = CustomerDto(1, "Anna")
 changed = replace(original, name="Maria")
 ```
 
-> 💡 `replace` calls `__init__` on the new object, so any validation in `__post_init__` runs again — the copy cannot be invalid. Note that `original` is untouched: `replace` returns a new object rather than modifying the old one. Pair this with `frozen=True` ([§19.3](#193--frozen-dataclass)) and "make a changed copy" becomes the *only* way to change anything, which is exactly what makes immutable code easy to reason about.
+> 💡 [`replace`](https://docs.python.org/3.12/library/dataclasses.html#dataclasses.replace) calls `__init__` on the new object, so any validation in `__post_init__` runs again. This enforces the checks actually implemented there; it does not prove every possible invariant. `original` is untouched. Pair this copy pattern with `frozen=True` ([§19.3](#193--frozen-dataclass)) for an API that discourages mutation. Freezing is shallow: mutable objects stored in fields can still change, and explicit low-level attribute assignment can bypass the generated setter.
 
 #### 19.6 🧊 Immutability
 
@@ -9110,6 +9114,8 @@ Good Python OOP means:
 
 ---
 
-#### Documentation links
+## 🔗 Related documentation
 
-[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
+[Python special-method reference](python_dunder.md) · [SQL practice](sql_complete_guide.md)
+
+[Learning paths](README.md) · [Documentation index](documentation.md)

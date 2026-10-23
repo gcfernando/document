@@ -1,264 +1,132 @@
-<div align="center" markdown="1">
+# 📚 Developer Knowledge Base — Python, C#/.NET, SQL and DevOps Guides
 
-# 🌈 Knowledge Base Learning Paths — Python, C#/.NET, SQL, Azure, Docker, Podman & Git Guides
+Practical Markdown learning paths and references for object-oriented programming, databases, Azure, containers, Git and a local AI chat application.
+
+[![Format: Markdown](https://img.shields.io/badge/Format-Markdown-7C3AED)](documentation.md)
 
 <a id="build-real-skills-one-practical-guide-at-a-time"></a>
 
-**Build real skills, one practical guide at a time.**
+<!-- Preserve links to earlier section headings. -->
+<a id="-knowledge-base-learning-paths--python-cnet-sql-azure-docker-podman--git-guides"></a>
+<a id="-table-of-contents"></a>
+<a id="️-the-complete-study-map"></a>
+<a id="-path-1--python-builder-journey"></a>
+<a id="-path-2--cnet-builder-journey"></a>
+<a id="️-path-3--database-and-sql-journey"></a>
+<a id="-path-4--local-ai-builder-journey"></a>
+<a id="️-path-5--azure-engineering-journey"></a>
+<a id="-before-moving-to-the-next-topic"></a>
+<a id="-practice-with-real-code"></a>
+<a id="-start-small-stay-curious-build-every-day"></a>
+<a id="documentation-links"></a>
 
-Beginner-to-advanced Markdown guides and cheat sheets: **Python OOP**, **Python dunder methods**, **C# and .NET OOP**, a **complete SQL guide**, an **Azure engineering cheat sheet**, **Docker**, **Podman**, and **Git command cheat sheets**, and a **local AI chat app lab with Ollama and Streamlit**.
+## 🔎 Overview
 
-[![Study by doing](https://img.shields.io/badge/Style-Learn%20by%20doing-7C3AED?style=for-the-badge)](#-the-learning-loop)
-[![Beginner friendly](https://img.shields.io/badge/Start-Beginner%20friendly-16A34A?style=for-the-badge)](#-choose-your-starting-path)
-[![Build steadily](https://img.shields.io/badge/Goal-Confident%20builder-F59E0B?style=for-the-badge)](#-your-study-rhythm)
+This repository collects authored guides for students, self-learners and developers refreshing their foundations. It contains documentation and sample code within that documentation. Choose one subject and work through its examples in a separate practice folder.
 
-**🐍 Python · 💜 C#/.NET · 🗄️ SQL · 🤖 Local AI · ☁️ Azure**
+## ✨ Features
 
-</div>
+- Python and C# courses covering classes, composition, interfaces, testing and design.
+- A Python special-method reference and a SQL Server/MySQL course.
+- Azure service comparisons and a deeper resource reference.
+- Docker, Podman and Git command cheat sheets.
+- A Windows lab for an Ollama and Streamlit chat app.
+- Reusable AI coding instruction and configuration examples in [`ai-cli/`](ai-cli/).
 
----
+<a id="quick-start"></a>
+<a id="-choose-your-starting-path"></a>
 
-> [!TIP]
-> **Your rule for success:** do not read these guides like a book. Read a small section, type the example, run it, break it safely, fix it, and explain it in your own words. That is how knowledge becomes skill. 💪
+## 🚀 Quick start
 
-## 📚 Table of contents
+Open a guide below or browse the [documentation index](documentation.md). Reading on GitHub requires no installation. To keep an offline copy:
 
-- [🧭 Choose your starting path](#-choose-your-starting-path)
-- [🗺️ The complete study map](#study-map)
-- [📚 Guide shelf](#-guide-shelf)
-- [🔁 The learning loop](#-the-learning-loop)
-- [📅 Your study rhythm](#-your-study-rhythm)
+```sh
+git clone https://github.com/gcfernando/document.git
+cd document
+```
 
-## 🧭 Choose your starting path
+Externally hosted images and links to official documentation still need an internet connection.
 
-| If you want to… | Start here | Then continue with… |
+<a id="-guide-shelf"></a>
+
+| Goal | Start here | Continue with |
 |---|---|---|
-| 🐣 Learn programming and software design with Python | [🐍 Python OOP](python_oop_guide.md) | [📖 Python Dunder Methods](python_dunder.md) → [🗄️ SQL](sql_complete_guide.md) |
-| 💜 Learn object-oriented development with C# and .NET | [🏛️ C#/.NET OOP](csharp_dotnet_oop_guide.md) | [🗄️ SQL](sql_complete_guide.md) → [☁️ Azure](azure_cheatsheet.md) |
-| 🗄️ Learn databases from zero | [🗄️ Complete SQL Guide](sql_complete_guide.md) | Return to your Python or .NET path and build an app that uses a database |
-| 🤖 Build your first local AI chat app | [🚀 Local AI Learning Lab](local_ai_learning_lab.md) | Improve the app with your Python or .NET skills, then explore Azure when you need cloud services |
-| ☁️ Learn Azure for real engineering work | [☁️ Azure Engineering Cheat Sheet](azure_cheatsheet.md) | [📦 Azure Resources Deep Reference](azure_resources_cheatsheet.md) |
-| 🐳 Learn Docker containers | [🐳 Docker Command Cheat Sheet](docker_cheatsheet.md) | Build images → Compose → persistent volumes and networking |
-| 🦭 Learn rootless containers and pods | [🦭 Podman Command Cheat Sheet](podman_cheatsheet.md) | Rootless containers → pods → Quadlet/systemd integration |
-| 🌿 Learn version control and releases | [🌿 Git Command Cheat Sheet](git_cheatsheet.md) | Feature branch → review changes → tag a release |
-| 🧑‍💻 Already write code but want stronger foundations | Pick **one** language path: [Python](python_oop_guide.md) or [C#/.NET](csharp_dotnet_oop_guide.md) | [SQL](sql_complete_guide.md) → [Azure](azure_cheatsheet.md) |
+| Learn Python object-oriented programming | [Python OOP](python_oop_guide.md) | [Python dunder methods](python_dunder.md), then SQL |
+| Learn C# and .NET design | [C#/.NET OOP](csharp_dotnet_oop_guide.md) | SQL, then Azure |
+| Learn relational databases | [SQL Server and MySQL](sql_complete_guide.md) | A small application using one engine |
+| Build a local browser chat app | [Local AI learning lab](local_ai_learning_lab.md) | The lab's verification checkpoint |
+| Choose and operate Azure services | [Azure engineering cheat sheet](azure_cheatsheet.md) | [Azure resources reference](azure_resources_cheatsheet.md) |
+| Learn container workflows | [Docker](docker_cheatsheet.md) or [Podman](podman_cheatsheet.md) | Images, persistent storage and networking |
+| Practise version control | [Git command cheat sheet](git_cheatsheet.md) | Branches and recovery in a disposable repository |
 
----
+## 📦 Prerequisites and installation
+
+Reading requires a Markdown viewer or browser. Running examples requires the tools named by each guide; there is no repository-wide dependency installer.
+
+| Subject | Preparation |
+|---|---|
+| Python | Use the guide's Python version and a virtual environment; some special methods require newer versions |
+| C#/.NET | Install the SDK required by the selected example; check version-specific syntax |
+| SQL | Choose SQL Server or MySQL and create a disposable practice database |
+| Containers | Install the relevant runtime and check its local help before using commands |
+| Azure | Have an authorized subscription, permissions and a cost plan before provisioning resources |
+| Local AI | Follow the Windows/PowerShell, Python and Ollama setup in the lab |
+
+## ⚙️ Configuration
+
+Configuration belongs to each lab. Replace example paths, subscriptions, resource names and credentials with values for your practice environment. AI CLI configuration samples are personal examples: read them and select settings before copying. Instruction files describe behavior; they do not grant permissions or enforce a sandbox.
+
+## 💡 Usage
+
+<a id="-the-learning-loop"></a>
+
+Read one concept, type the example, run it, observe the output and adapt one thing. Keep complete programs together with any preceding declarations they depend on. Fragments, intentional failures and database dialects require the surrounding explanation.
+
+<a id="-your-study-rhythm"></a>
+
+A useful study session is one small example and one note explaining the result. Before moving on, reproduce the example and explain an error or edge case.
+
+## 🏗️ Architecture
 
 <a id="study-map"></a>
 
-## 🗺️ The complete study map
-
 ```mermaid
-flowchart TD
-    START([🌟 Start here]) --> CHOOSE{Choose your main path}
-
-    CHOOSE --> PY[🐍 Python OOP]
-    PY --> DUNDER[📖 Python Dunder Methods]
-    DUNDER --> PYSQL[🗄️ SQL]
-
-    CHOOSE --> CS[💜 C#/.NET OOP]
-    CS --> CSSQL[🗄️ SQL]
-
-    CHOOSE --> SQLSTART[🗄️ SQL from zero]
-    SQLSTART --> APP[🛠️ Build an app with data]
-
-    CHOOSE --> AI[🤖 Local AI Learning Lab]
-    AI --> AIAPP[💬 Improve your local chat app]
-
-    PYSQL --> CLOUD[☁️ Azure Engineering Cheat Sheet]
-    CSSQL --> CLOUD
-    APP --> CLOUD
-    AIAPP --> CLOUD
-    CLOUD --> RESOURCES[📦 Azure Resources Deep Reference]
-    RESOURCES --> BUILD([🚀 Build, deploy, improve])
-
-    classDef start fill:#7C3AED,color:#ffffff,stroke:#5B21B6,stroke-width:2px
-    classDef python fill:#16A34A,color:#ffffff,stroke:#15803D,stroke-width:2px
-    classDef dotnet fill:#7C3AED,color:#ffffff,stroke:#5B21B6,stroke-width:2px
-    classDef data fill:#EA580C,color:#ffffff,stroke:#C2410C,stroke-width:2px
-    classDef ai fill:#DB2777,color:#ffffff,stroke:#BE185D,stroke-width:2px
-    classDef cloud fill:#0284C7,color:#ffffff,stroke:#0369A1,stroke-width:2px
-
-    class START,CHOOSE,BUILD start
-    class PY,DUNDER python
-    class CS dotnet
-    class PYSQL,CSSQL,SQLSTART,APP data
-    class AI,AIAPP ai
-    class CLOUD,RESOURCES cloud
+flowchart LR
+    Index[README and documentation index] --> Language[Python or C# fundamentals]
+    Language --> SQL[SQL and application data]
+    SQL --> Cloud[Azure decisions and resources]
+    Index --> Tools[Git, Docker and Podman references]
+    Index --> Lab[Local AI chat lab]
 ```
 
----
+The root contains ten subject guides. [`documentation.md`](documentation.md) is the source index; [`ai-cli/`](ai-cli/) contains instruction templates and configuration samples. `_config.yml`, `_layouts/` and `assets/` provide the Jekyll site's presentation. No application source tree or repository-wide test suite is included.
 
-## 🐣 Path 1 — Python builder journey
+## 🧪 Development and testing
 
-**Best for:** beginners, automation enthusiasts, aspiring backend developers, and learners who want a friendly first programming language.
+Verify relative links, heading anchors, code-fence boundaries and the applicable command reference when editing. Run changed examples in the environment they require. Some guides record earlier example checks and their toolchains; those records do not establish that every example was rerun on your machine or on every supported version.
 
-1. **Start:** [🐍 Complete Object-Oriented Programming with Python](python_oop_guide.md)  
-   Learn classes, objects, encapsulation, inheritance, composition, typing, testing, and professional design. Work through the guide in order—its seven-step read → type → run → break → fix → modify → test loop is your foundation.
+## 🛠️ Troubleshooting and limitations
 
-2. **Go deeper:** [📖 Python Dunder Methods](python_dunder.md)  
-   Start with the core object model, then study construction, representations, comparisons, operators, containers, iteration, context managers, and async behavior. This is a **reference after OOP**, not your first Python lesson.
-
-3. **Add data:** [🗄️ Complete SQL Guide](sql_complete_guide.md)  
-   Learn to model, query, join, protect, and tune relational data. Begin with Chapters 1–4, then reach `SELECT`, filtering, grouping, and joins before moving to performance and administration.
-
-4. **Build:** create a small Python application with a class-based domain model and a database-backed feature: a task tracker, book library, expense tracker, or inventory tool. 🎯
-
----
-
-## 💜 Path 2 — C#/.NET builder journey
-
-**Best for:** learners targeting the .NET ecosystem, Windows development, APIs, enterprise applications, and strongly typed OOP.
-
-1. **Start:** [🏛️ Complete OOP with C# and .NET](csharp_dotnet_oop_guide.md)  
-   Follow the course from basic classes through modern C#, SOLID, dependency injection, testing, design patterns, and refactoring. Aim for one or two chapters per day.
-
-2. **Add data:** [🗄️ Complete SQL Guide](sql_complete_guide.md)  
-   Learn relational modelling and queries, then focus on parameterization, transactions, migrations, and application-to-database patterns.
-
-3. **Prepare for cloud:** [☁️ Azure Engineering Cheat Sheet](azure_cheatsheet.md)  
-   Learn Azure's mental model first: identity, networking, compute, storage, databases, observability, security, cost, and infrastructure as code.
-
-4. **Build:** create a small .NET console app or API with a clear domain model, SQL storage, tests, and a deployment plan. 🚀
-
----
-
-## 🗄️ Path 3 — Database and SQL journey
-
-**Best for:** analysts, backend developers, future DBAs, and anyone who wants to make better data decisions.
-
-1. **Start at the beginning:** [🗄️ Complete SQL Guide](sql_complete_guide.md)  
-   Complete Chapters 1–4 first: database vocabulary, choosing SQL Server or MySQL, installation, and the practice database.
-
-2. **Learn the daily essentials:** focus next on `SELECT`, filters, sorting, inserts/updates/deletes, functions, grouping, and **joins**.
-
-3. **Become production-aware:** move on to transactions, indexes, execution plans, normalization, permissions, backups, and application integration.
-
-4. **Build:** design a database for an online shop, booking system, or school library. Write queries that answer real questions—not just syntax exercises. 📊
-
-> [!TIP]
-> New to databases? Choose **one engine** first. SQL Server is a natural Windows/.NET choice; MySQL is a common web-development choice. You can learn the other later.
-
----
-
-## 🤖 Path 4 — Local AI builder journey
-
-**Best for:** developers who want a hands-on, local-first introduction to an AI application.
-
-1. **Start:** [🚀 Local AI Learning Lab](local_ai_learning_lab.md)  
-   Use Ollama, Qwen, Python, and Streamlit to build a browser chat app on Windows. Follow the essential path exactly: prepare → install → verify a model → install packages → create the app → verify it.
-
-2. **Understand the boundaries:** this lab teaches a local chat application. It is not a database course, autonomous agent system, or cloud deployment tutorial—and that is a strength. Master one working thing first. ✅
-
-3. **Extend it:** add one small, observable improvement at a time: clearer system prompts, saved chat history, input validation, a better UI, or a simple data-backed feature after learning SQL.
-
-4. **Go cloud-aware:** use the Azure path when you need to understand identity, hosting, monitoring, security, and cost before moving a project beyond your machine.
-
----
-
-## ☁️ Path 5 — Azure engineering journey
-
-**Best for:** developers and platform-minded engineers who need to choose, operate, and troubleshoot Azure services responsibly.
-
-1. **Start with the map:** [☁️ Azure Engineering Cheat Sheet](azure_cheatsheet.md)  
-   This is an intermediate-to-advanced decision guide. Learn the Azure hierarchy, then work through identity, networking, compute, storage, data, operations, security, reliability, governance, cost, and delivery.
-
-2. **Choose before you create:** use its comparison tables to understand the trade-offs between services. Always verify current pricing, quotas, regional availability, SKUs, and support status in Microsoft documentation before production decisions. 🔎
-
-3. **Go resource by resource:** [📦 Azure Resources Deep Reference](azure_resources_cheatsheet.md)  
-   Use this after the cheat sheet when you need implementation detail: resource internals, identity, networking, scaling, monitoring, security, costs, CLI, Bicep, and C# examples.
-
-4. **Build:** design a small architecture on paper first, then implement it with least-privilege identity, monitoring, backups, cost awareness, and infrastructure as code. 🏗️
-
----
-
-## 📚 Guide shelf
-
-| Guide | Level | Use it when you need… | Read it after… |
-|---|:---:|---|---|
-| **☁️ Cloud & Azure** |  |  |  |
-| [☁️ Azure Engineering Cheat Sheet](azure_cheatsheet.md) | 🟡 → 🔴 | cloud architecture decisions and production concerns | basic application-development experience |
-| [📦 Azure Resources Deep Reference](azure_resources_cheatsheet.md) | 🟡 → 🔴 | detailed Azure resource implementation and operations | Azure Engineering Cheat Sheet |
-| **🐳 Containers & DevOps** |  |  |  |
-| [🐳 Docker Command Cheat Sheet](docker_cheatsheet.md) | 🟢 → 🔴 | Docker CLI, Dockerfiles, Compose, Buildx, storage, and Swarm | basic command-line familiarity |
-| [🦭 Podman Command Cheat Sheet](podman_cheatsheet.md) | 🟢 → 🔴 | rootless containers, pods, Quadlet, Kubernetes YAML, and machine management | basic command-line familiarity |
-| **🌿 Version Control** |  |  |  |
-| [🌿 Git Command Cheat Sheet](git_cheatsheet.md) | 🟢 → 🔴 | branches, collaboration, recovery, releases, and repository maintenance | no Git background required |
-| **💻 Programming & .NET** |  |  |  |
-| [💜 C#/.NET OOP](csharp_dotnet_oop_guide.md) | 🟢 → 🟡 | modern C# design, SOLID, DI, testing, and patterns | no OOP background required |
-| **🐍 Python** |  |  |  |
-| [🐍 Python OOP](python_oop_guide.md) | 🟢 → 🟡 | a complete software-design foundation in Python | no programming background required |
-| [📖 Python Dunder Methods](python_dunder.md) | 🟡 → 🔴 | Python's object model, special methods, and advanced protocols | Python OOP fundamentals |
-| **🗄️ Databases** |  |  |  |
-| [🗄️ Complete SQL Guide](sql_complete_guide.md) | 🟢 → 🔴 | database design, queries, transactions, performance, and security | no database background required |
-| **🤖 AI & Learning Resources** |  |  |  |
-| [🤖 Local AI Learning Lab](local_ai_learning_lab.md) | 🟢 | a verified local chat app using Ollama, Python, and Streamlit | basic PowerShell and Python installation |
-| [🧠 AI coding CLI instructions](https://github.com/gcfernando/document/tree/main/ai-cli) | 🟡 | example global instruction files (`AGENTS.md`, `CLAUDE.md`, `copilot-instructions.md`, a shared `ENGINEERING.md`) and configuration samples for AI coding command-line tools | experience with at least one AI coding CLI |
-
----
-
-## 🔁 The learning loop
-
-Use this loop for every chapter, lesson, and lab:
-
-```text
-📖 Read one small idea
-        ↓
-⌨️ Type the example yourself
-        ↓
-▶️ Run it and observe the result
-        ↓
-🧨 Change one thing and let it fail safely
-        ↓
-🛠️ Fix it using the error and the guide
-        ↓
-✨ Adapt it into your own tiny feature
-        ↓
-✅ Explain what you learned without looking
-```
-
-> [!IMPORTANT]
-> **Do not skip the “run it” step.** Understanding a paragraph feels good; making a program work, fail, and recover builds durable engineering judgment.
-
----
-
-## 📅 Your study rhythm
-
-| Pace | Practical plan |
+| Problem | Next step |
 |---|---|
-| 🌱 **30 minutes/day** | One concept, one runnable example, one note in your own words |
-| 🔥 **60–90 minutes/day** | One focused section plus its exercise or checkpoint |
-| 🚀 **Weekend project** | Finish a milestone, then make one small project feature without copying the example |
+| A snippet fails with an undefined name | Check whether it continues an earlier example or is a fragment |
+| SQL syntax fails | Confirm the engine and version; keep T-SQL and MySQL blocks separate |
+| A CLI flag is unavailable | Compare the installed version's help with the official reference |
+| A model fails to load | Use the local AI lab's diagnostics and check available memory |
+| Cloud details differ | Verify current pricing, quotas, regions, runtimes and retirement notices in Microsoft documentation |
 
-### ✅ Before moving to the next topic
+Examples may modify data, history, containers or cloud resources. Review each independently; a command catalog is not a script to execute from top to bottom.
 
-- [ ] I can explain the concept in plain language.
-- [ ] I typed and ran at least one example myself.
-- [ ] I saw a failure or edge case and understood the fix.
-- [ ] I changed the example for a problem I care about.
-- [ ] I know what guide comes next on my chosen path.
+## 🤝 Contributing
 
----
+Suggest a focused correction through the [repository](https://github.com/gcfernando/document). Include the guide and section, tool version, minimal example and expected result. Preserve existing section links and functional instruction-template syntax. Add official sources for version-dependent corrections.
 
-## 🔗 Practice with real code
+## 🔒 Security
 
-- [🐍 Python projects](https://github.com/gcfernando/python_codes) — dozens of small, runnable Python scripts and apps to practise on after the Python OOP guide
-- [💜 C# and .NET code examples](https://github.com/gcfernando/csharp_codes) — Azure Functions, dependency injection, async, and SQL Server patterns that build on the C#/.NET and Azure guides
-- [🧰 Developer tools and guides](https://github.com/gcfernando/other_codes) — a Podman database stack, an offline Linux command reference, and an AI coding add-ons beginner's guide
+Keep credentials, private data and confidential source out of examples and issue reports. For sensitive findings, use private security reporting if available; otherwise arrange a private channel with the maintainer before sharing details.
 
----
+## 📄 Support and license
 
-<div align="center" markdown="1">
+Use [repository issues](https://github.com/gcfernando/document/issues) for reproducible documentation problems. No license file is present in this checkout; do not assume a reuse license from public visibility. Third-party tools and services retain their own terms.
 
-## 🌟 Start small. Stay curious. Build every day.
-
-**Choose one path above, open its first guide, and run your first example today.**
-
-</div>
-
----
-
-## Documentation links
-
-[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
+[Read online](https://gcfernando.github.io/document/documentation/) · [Related developer tools](https://github.com/gcfernando/other_codes) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)

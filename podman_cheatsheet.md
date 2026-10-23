@@ -295,6 +295,8 @@ podman push "$ECR_REGISTRY/api:1.0"
 
 ---
 
-## Documentation links
+## 🔗 Related documentation
 
-[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
+[Docker command reference](docker_cheatsheet.md) · [Git workflows](git_cheatsheet.md)
+
+[Learning paths](README.md) · [Documentation index](documentation.md)

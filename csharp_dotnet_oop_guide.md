@@ -18,7 +18,6 @@ description: "Learn C# and .NET object-oriented programming through classes, inh
 ![Language](https://img.shields.io/badge/C%23-Modern-239120?style=for-the-badge&logo=csharp&logoColor=white)
 ![Platform](https://img.shields.io/badge/.NET-8%2B-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![Chapters](https://img.shields.io/badge/Chapters-50-orange?style=for-the-badge)
-![Use](https://img.shields.io/badge/Free-to%20learn-success?style=for-the-badge)
 
 </div>
 
@@ -133,8 +132,7 @@ when you run them, move the usage lines to the top of the file.
 
 ## 🧪 What was actually verified, and how
 
-Claims about correctness are worth only as much as the checking behind them, so here is exactly
-what was done.
+This section records the guide’s earlier example-checking pass. It was not rerun as part of the 23 October 2026 documentation review. The listed environment and limits describe that recorded pass.
 
 - **Toolchain:** **.NET SDK 10.0.401** on Windows 11, compiling against **`net10.0`** with
   `<Nullable>enable</Nullable>` and `LangVersion latest`.
@@ -16703,6 +16701,8 @@ Now close the guide and go build something. 🚀
 
 ---
 
-### Documentation links
+## 🔗 Related documentation
 
-[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
+[SQL Server and MySQL practice](sql_complete_guide.md) · [Azure engineering decisions](azure_cheatsheet.md)
+
+[Learning paths](README.md) · [Documentation index](documentation.md)

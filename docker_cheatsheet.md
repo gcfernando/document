@@ -390,6 +390,8 @@ Docker ships more command-specific flags than a static document can safely repro
 
 ---
 
-## Documentation links
+## 🔗 Related documentation
 
-[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
+[Podman command reference](podman_cheatsheet.md) · [Git workflows](git_cheatsheet.md)
+
+[Learning paths](README.md) · [Documentation index](documentation.md)

@@ -1577,6 +1577,8 @@ VERIFY LIVE → price / limits / regions / SLA / lifecycle
 
 ---
 
-### Documentation links
+## 🔗 Related documentation
 
-[Read all Developer Knowledge Base guides online](https://gcfernando.github.io/document/documentation/) · [Project overview](https://gcfernando.github.io/document/) · [All developer projects](https://gcfernando.github.io/gcfernando/projects/)
+[Azure resources deep reference](azure_resources_cheatsheet.md)
+
+[Learning paths](README.md) · [Documentation index](documentation.md)
