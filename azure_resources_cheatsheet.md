@@ -569,6 +569,7 @@ RG="rg-learn-r5-${RANDOM}"
 VNET_NAME="demo-vnet"
 
 az group create --name "${RG}" --location eastus
+az network vnet create --resource-group "${RG}" --name "${VNET_NAME}" --address-prefixes 10.10.0.0/16 --subnet-name demo-subnet --subnet-prefixes 10.10.1.0/24
 az network private-dns zone create --resource-group "${RG}" --name demo.internal
 az network private-dns link vnet create --resource-group "${RG}" --zone-name demo.internal --name demo-link --virtual-network "${VNET_NAME}" --registration-enabled false
 az network private-dns record-set a add-record --resource-group "${RG}" --zone-name demo.internal --record-set-name app --ipv4-address 10.10.1.4
@@ -576,7 +577,7 @@ az network private-dns record-set a add-record --resource-group "${RG}" --zone-n
 
 **👀 Expected result:** The zone, VNet link, and A record `app.demo.internal -> 10.10.1.4` are created.
 
-**✅ Checkpoint:** From a VM inside the linked VNet, does `nslookup app.demo.internal` resolve to `10.10.1.4`?
+**✅ Checkpoint:** The lab creates no VM or host at `10.10.1.4`. If you separately provision a test VM in the linked VNet, does `nslookup app.demo.internal` resolve to that address? A DNS record alone does not make an application reachable.
 
 **🧹 Clean up:**
 ```bash
@@ -762,9 +763,10 @@ az group create --name "${RG}" --location eastus
 az network nsg create --resource-group "${RG}" --name demo-nsg
 az network nsg rule create --resource-group "${RG}" --nsg-name demo-nsg --name DenyAllInbound --priority 4096 --direction Inbound --access Deny --protocol "*" --source-address-prefixes "*" --destination-address-prefixes "*" --source-port-ranges "*" --destination-port-ranges "*"
 az network nsg rule list --resource-group "${RG}" --nsg-name demo-nsg --output table
+az network nsg show --resource-group "${RG}" --name demo-nsg --query "defaultSecurityRules[]" --output table
 ```
 
-**👀 Expected result:** `DenyAllInbound` appears at priority 4096, below the auto-created `AllowVnetInBound` (65000) and `DenyAllInBound` (65500) default rules.
+**👀 Expected result:** `DenyAllInbound` appears at priority 4096. Lower numbers are evaluated first, so it takes precedence over default inbound rules at 65000, 65001, and 65500. The second command lists those defaults separately. This lab does not attach the NSG to a subnet or NIC, so it does not enforce traffic filtering yet.
 
 **✅ Checkpoint:** What priority do the implicit default rules use compared to your custom rule, and which one wins?
 
@@ -1016,7 +1018,7 @@ az disk show --resource-group "${RG}" --name demo-disk --query "{sku:sku.name,si
 
 **👀 Expected result:** JSON showing `sku: Standard_LRS`, `sizeGb: 4`, `state: Unattached`.
 
-**✅ Checkpoint:** Why does `diskState` stay `Unattached` until a VM's NIC/config references this disk?
+**✅ Checkpoint:** Which part of a VM’s storage profile records its attached disks, and how does that differ from its network-interface configuration?
 
 **🧹 Clean up:**
 ```bash
@@ -1303,29 +1305,20 @@ https://learn.microsoft.com/azure/redis/
 
 #### 🧪 Try it yourself
 
-**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+**Before running:** Select the intended subscription. These commands only inventory visible resources; an empty table is normal.
 
-**Goal:** Check available Redis SKUs, then create the smallest Basic-tier cache.
+**Goal:** Inspect managed cache resource types before choosing a deployment or migration path.
 
 ```bash
-# Example names for this exercise; retain them in this Bash terminal
-RG="rg-learn-r17-${RANDOM}"
-REDIS_NAME="redis-learn-${RANDOM}${RANDOM}"
-
-az redis list-skus --location eastus --output table
-az group create --name "${RG}" --location eastus
-az redis create --resource-group "${RG}" --name "${REDIS_NAME}" --location eastus --sku Basic --vm-size c0
-az redis show --resource-group "${RG}" --name "${REDIS_NAME}" --query "{sku:sku.name,hostName:hostName,port:sslPort}" -o jsonc
+az resource list --resource-type Microsoft.Cache/redisEnterprise --query "[].{name:name,group:resourceGroup,location:location,sku:sku.name}" -o table
+az resource list --resource-type Microsoft.Cache/redis --query "[].{name:name,group:resourceGroup,location:location,sku:sku.name}" -o table
 ```
 
-**👀 Expected result:** JSON showing `sku: Basic`, a `hostName`, and `port: 6380` once provisioning completes.
+**👀 Expected result:** The first table lists `redisEnterprise` resources, a type used by Azure Managed Redis and older Enterprise offerings; inspect each SKU and configuration to distinguish them. The second lists legacy Azure Cache for Redis resources. This exercise creates no cache or database and does not test connectivity.
 
-**✅ Checkpoint:** While creating, what does `az redis show --query provisioningState` report before it reaches `Succeeded`?
+**✅ Checkpoint:** Which resource type and SKU does each existing cache use? For a new managed cache, follow the current [Azure Managed Redis quickstart](https://learn.microsoft.com/en-us/azure/redis/quickstart-create-managed-redis) and [resource schema](https://learn.microsoft.com/en-us/azure/templates/microsoft.cache/2025-04-01/redisenterprise), including its required database child resource, rather than substituting a legacy `az redis create --sku Basic` command.
 
-**🧹 Clean up:**
-```bash
-az group delete --name "${RG}" --yes
-```
+**🧹 Clean up:** Nothing to clean up — read-only inventory.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -1656,7 +1649,7 @@ https://learn.microsoft.com/azure/logic-apps/
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
-**Goal:** Create a minimal (empty) Consumption Logic App workflow and check its state.
+**Goal:** Create a disabled Consumption Logic App with a request trigger and response action, then inspect its state.
 
 ```bash
 # Example names for this exercise; retain them in this Bash terminal
@@ -1664,15 +1657,28 @@ RG="rg-learn-r23-${RANDOM}"
 LOGIC_APP_NAME="demo-logic-app"
 
 az group create --name "${RG}" --location eastus
-az logic workflow create --resource-group "${RG}" --location eastus --name "${LOGIC_APP_NAME}" --definition "{\"$schema\":\"https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#\",\"contentVersion\":\"1.0.0.0\",\"triggers\":{},\"actions\":{}}"
+# Quoted heredoc keeps Bash from expanding the JSON $schema property.
+cat > workflow.json <<'JSON'
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "triggers": {
+    "manual": {"type": "Request", "kind": "Http", "inputs": {"schema": {}}}
+  },
+  "actions": {
+    "reply": {"type": "Response", "inputs": {"statusCode": 200, "body": "Hello from the lab"}, "runAfter": {}}
+  }
+}
+JSON
+az logic workflow create --resource-group "${RG}" --location eastus --name "${LOGIC_APP_NAME}" --definition workflow.json --state Disabled
 az logic workflow show --resource-group "${RG}" --name "${LOGIC_APP_NAME}" --query state
 ```
 
-**👀 Expected result:** `state` returns `Enabled`.
+**👀 Expected result:** `state` returns `Disabled` after successful provisioning. This checks configuration; it does not invoke the HTTP trigger or test an execution. The definition file and CLI shape follow the [Logic Apps CLI quickstart](https://learn.microsoft.com/en-us/azure/logic-apps/quickstart-logic-apps-azure-cli) and [trigger/action schema](https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-workflow-actions-triggers).
 
-**✅ Checkpoint:** Why does this empty workflow never actually run?
+**✅ Checkpoint:** Why can a provisioned workflow remain unable to run while its state is `Disabled`? What additional endpoint authorization and invocation checks would a separate runtime test require?
 
-**🧹 Clean up:**
+**🧹 Clean up:** Delete the lab resource group below. The generated local `workflow.json` remains; remove it separately only if no longer needed.
 ```bash
 az group delete --name "${RG}" --yes
 ```
@@ -1718,12 +1724,12 @@ https://learn.microsoft.com/azure/api-management/
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
-**Goal:** Inspect an existing APIM instance's gateway URL and published APIs (read-only; APIM creation takes ~30+ minutes).
+**Goal:** Inspect an existing APIM instance's gateway URL and published APIs (read-only; select an instance and its resource group from `az apim list`).
 
 ```bash
 # Example names for this exercise; retain them in this Bash terminal
 RG="rg-your-existing-lab"  # Change to a resource group you already have
-APIM_NAME="apim-learn-${RANDOM}${RANDOM}"
+APIM_NAME="apim-your-existing-instance"  # Replace with an instance returned by the list command
 
 az apim list --output table
 az apim show --name "${APIM_NAME}" --resource-group "${RG}" --query gatewayUrl
@@ -1949,9 +1955,9 @@ https://learn.microsoft.com/azure/key-vault/
 
 #### 🧪 Try it yourself
 
-**Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
+**Before running:** This lab creates an isolated test resource group and a vault. Provisioning permissions and secret data permissions are separate. After creating the RBAC-enabled vault, obtain authorized Key Vault Secrets Officer access (or equivalent set/get permissions) before running the secret commands. See the role guidance below.
 
-**Goal:** Create a Key Vault and store/retrieve a secret.
+**Goal:** Create a Key Vault and, once the data-role prerequisite is met, store/retrieve a demonstration secret.
 
 ```bash
 # Example names for this exercise; retain them in this Bash terminal
@@ -1959,14 +1965,18 @@ RG="rg-learn-r28-${RANDOM}"
 KEYVAULT_NAME="kv-learn-${RANDOM}${RANDOM}"
 
 az group create --name "${RG}" --location eastus
-az keyvault create --name "${KEYVAULT_NAME}" --resource-group "${RG}" --location eastus
+az keyvault create --name "${KEYVAULT_NAME}" --resource-group "${RG}" --location eastus --enable-rbac-authorization true
+
+# Before the next commands, an authorized administrator must grant your caller
+# Key Vault Secrets Officer (or equivalent set/get data permissions) on this vault.
+# Allow role propagation and ensure the vault network permits your client.
 az keyvault secret set --vault-name "${KEYVAULT_NAME}" --name demo-secret --value "hello-world"
 az keyvault secret show --vault-name "${KEYVAULT_NAME}" --name demo-secret --query value
 ```
 
 **👀 Expected result:** The command returns `"hello-world"`.
 
-**✅ Checkpoint:** What role/permission would your own identity need to run `secret set` if the vault used RBAC authorization instead of access policies?
+**✅ Checkpoint:** Why does permission to create a vault not automatically grant permission to set its secrets? This example explicitly uses RBAC; see [Key Vault data-plane roles](https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide). A control-plane Contributor role alone is insufficient.
 
 **🧹 Clean up:**
 ```bash
@@ -2011,7 +2021,7 @@ https://learn.microsoft.com/azure/key-vault/managed-hsm/
 
 ```bash
 # Example names for this exercise; retain them in this Bash terminal
-HSM_NAME="hsm-learn-${RANDOM}${RANDOM}"
+HSM_NAME="your-existing-hsm"  # Replace with a pool returned by the list command
 
 az keyvault list --resource-type hsm --output table
 az keyvault show --hsm-name "${HSM_NAME}" --query "{state:properties.provisioningState,sd:properties.securityDomainProperties}"
@@ -2064,15 +2074,18 @@ https://learn.microsoft.com/azure/azure-monitor/
 
 ```bash
 # Example names for this exercise; retain them in this Bash terminal
-RESOURCE_ID="$(az resource list --query "[0].id" -o tsv)"
+RESOURCE_ID="/subscriptions/<subscription-id>/resourceGroups/<group>/providers/<provider>/<type>/<name>"
+# Set the ID of an existing resource you can inspect. Discover its supported metrics:
+az monitor metrics list-definitions --resource "${RESOURCE_ID}" -o table
+METRIC_NAME="<supported-metric-name>"  # Choose from those definitions
 
-az monitor metrics list --resource "${RESOURCE_ID}" --metric "Percentage CPU" --output table
+az monitor metrics list --resource "${RESOURCE_ID}" --metrics "${METRIC_NAME}" --output table
 az monitor diagnostic-settings list --resource "${RESOURCE_ID}"
 ```
 
-**👀 Expected result:** A time series of CPU percentage, then any configured diagnostic routing destinations.
+**👀 Expected result:** Metric values for the selected supported metric, followed by diagnostic routing settings. Some resources expose no metrics, and an idle resource or selected time range can have no data. See [metric discovery and queries](https://learn.microsoft.com/en-us/cli/azure/monitor/metrics).
 
-**✅ Checkpoint:** If the diagnostic settings list is empty, where is this resource's telemetry currently going?
+**✅ Checkpoint:** If diagnostic settings are empty, no destinations are configured through that mechanism. What other telemetry paths, such as native platform metrics or application instrumentation, might still exist?
 
 **🧹 Clean up:** Nothing to clean up — all commands in this exercise only read information.
 
@@ -2599,7 +2612,7 @@ https://learn.microsoft.com/azure/backup/
 
 #### 🧪 Try it yourself
 
-**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+**Before running:** This exercise creates a new resource in an existing lab resource group and may incur charges. Check the active subscription, regional availability, and permissions. Choose an unused name and delete only the resource created by this exercise.
 
 **Goal:** create a Recovery Services Vault and enable backup policy inspection (no VM required to see the mechanics).
 
@@ -2653,9 +2666,9 @@ https://learn.microsoft.com/azure/site-recovery/
 
 #### 🧪 Try it yourself
 
-**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+**Before running:** This exercise creates a new resource in an existing lab resource group and may incur charges. Check the active subscription, regional availability, and permissions. Choose an unused name and delete only the resource created by this exercise.
 
-**Goal:** inspect what a Recovery Services Vault exposes for Site Recovery without needing a full replicated VM.
+**Goal:** Create a new Recovery Services vault and inspect its properties. This does not configure Site Recovery replication or protect a VM.
 
 ```bash
 # Example names for this exercise; retain them in this Bash terminal
@@ -2665,7 +2678,7 @@ az backup vault create --resource-group "${RG}" --name demo-asr-vault --location
 az resource show --ids $(az backup vault show --resource-group "${RG}" --name demo-asr-vault --query id -o tsv) --query "properties"
 ```
 
-**👀 Expected result:** the vault's properties are returned, confirming it is a valid Site Recovery/backup management boundary.
+**👀 Expected result:** The new vault’s properties are returned. Provisioning a vault alone does not demonstrate replication health, a recovery plan, or successful failover.
 
 **✅ Checkpoint:** explain in one sentence why "replication healthy" does not prove the application works after failover.
 
@@ -2813,30 +2826,22 @@ https://learn.microsoft.com/azure/governance/policy/overview
 
 #### 🧪 Try it yourself
 
-**Before running:** This lab creates a test group and a policy assignment; policy assignment typically requires greater permissions than Contributor. Confirm the built-in policy ID and effect in the Azure Portal **before running**. Policies can take time to evaluate, so an empty compliance table immediately after assignment is normal.
+**Before running:** Select the intended subscription and an existing resource group. These commands inspect definitions, assignments, and available compliance records without creating an assignment.
 
-**Goal:** Assign a built-in audit policy (no Deny risk) to a resource group and check compliance.
+**Goal:** Understand a policy’s definition and effective scope before applying it.
 
 ```bash
-# Example names for this exercise; retain them in this Bash terminal
-RG="rg-learn-r44-${RANDOM}"
-
-az group create --name "${RG}" --location eastus
-az policy assignment create --name audit-tag-rg \
-  --scope $(az group show --name "${RG}" --query id -o tsv) \
-  --policy "96670d01-0a4d-4649-9c89-2d3abc0a5025"
+RG="rg-your-existing-lab"
+az policy definition list --query "[].{name:name,displayName:displayName,policyType:policyType}" -o table
+az policy assignment list --resource-group "${RG}" --filter 'atScope()' -o jsonc
 az policy state list --resource-group "${RG}" -o table
 ```
 
-**👀 Expected result:** A policy assignment named `audit-tag-rg` is created, and `az policy state list` shows a compliance record for the resource group.
+**👀 Expected result:** Policy definitions and assignments applicable at the selected resource group, plus any available compliance states. Empty or delayed compliance results do not prove that no policies apply.
 
-**✅ Checkpoint:** Run `az policy assignment show --name audit-tag-rg --scope "$(az group show -g "$RG" --query id -o tsv)"` and inspect the assignment and its policy definition. `enforcementMode: Default` means effects are enforced; it does **not** itself tell you whether the policy effect is Audit or Deny.
+**✅ Checkpoint:** Select a real definition ID from the list and inspect it with `az policy definition show --name <definition-name>`. Read its rule, effect, and parameters. `enforcementMode: Default` on an assignment does not identify the policy effect as Audit or Deny. A separate assignment exercise requires a verified definition, parameter values, permissions, and a reviewed scope; this lab does not create one. See the [policy assignment CLI](https://learn.microsoft.com/en-us/cli/azure/policy/assignment).
 
-**🧹 Clean up:**
-```bash
-az policy assignment delete --name audit-tag-rg --scope "$(az group show -g "$RG" --query id -o tsv)"
-az group delete --name "${RG}" --yes
-```
+**🧹 Clean up:** Nothing to clean up — read-only inspection.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2870,24 +2875,21 @@ https://learn.microsoft.com/azure/governance/management-groups/overview
 
 #### 🧪 Try it yourself
 
-**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+**Before running:** Management groups belong to the tenant hierarchy. Use an identity permitted to inspect the intended tenant; selecting a subscription alone does not grant that access.
 
-**Goal:** Create a small management group hierarchy and list it.
+**Goal:** Inspect an existing management group and its visible children.
 
 ```bash
-az account management-group create --name demo-mg --display-name "Demo MG"
 az account management-group list -o table
-az account management-group show --name demo-mg --expand --recurse
+MG_NAME="your-existing-management-group"  # Select a name from the returned list
+az account management-group show --name "${MG_NAME}" --expand --recurse
 ```
 
-**👀 Expected result:** `demo-mg` appears in the management group list, and `show --expand` returns its (empty) children array.
+**👀 Expected result:** The selected group’s properties and visible descendants. Results depend on the hierarchy and your permissions; this exercise creates no hierarchy.
 
-**✅ Checkpoint:** Confirm `az account management-group show --name demo-mg` returns `properties.displayName` = `Demo MG`.
+**✅ Checkpoint:** Which policies or role assignments are inherited by child subscriptions, and at which ancestor are they assigned?
 
-**🧹 Clean up:**
-```bash
-az account management-group delete --name demo-mg
-```
+**🧹 Clean up:** Nothing to clean up — read-only inspection.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2920,13 +2922,13 @@ https://learn.microsoft.com/azure/governance/resource-graph/
 
 #### 🧪 Try it yourself
 
-**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+**Before running:** The first command installs the Resource Graph extension in your local Azure CLI environment. The query reads resources visible to your identity; it does not change Azure resources. Select the intended subscription scope.
 
 **Goal:** Query all resources in your subscription grouped by type using Resource Graph.
 
 ```bash
 az extension add --name resource-graph --only-show-errors
-az graph query -q "Resources | summarize count() by type | order by count_ desc"
+az graph query --subscriptions "$(az account show --query id -o tsv)" -q "Resources | summarize count() by type | order by count_ desc"
 ```
 
 **👀 Expected result:** A table listing resource types in your subscription and how many of each exist.
@@ -2934,7 +2936,7 @@ az graph query -q "Resources | summarize count() by type | order by count_ desc"
 **✅ Checkpoint:** Identify which resource type has the highest count in your subscription.
 
 **🧹 Clean up:**
-Nothing to clean up — read-only query.
+No Azure resources were created. The locally installed CLI extension remains available for later queries.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -2971,7 +2973,7 @@ https://learn.microsoft.com/azure/cost-management-billing/
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
-**Goal:** Query actual cost for your subscription over the last 7 days.
+**Goal:** Query your subscription’s actual cost for the current month to date.
 
 ```bash
 az costmanagement query --type ActualCost \
@@ -3787,15 +3789,14 @@ https://learn.microsoft.com/azure/iot-operations/
 ```bash
 az provider show --namespace Microsoft.IoTOperations --query registrationState -o tsv
 az provider show --namespace Microsoft.Kubernetes --query registrationState -o tsv
-az provider register --namespace Microsoft.IoTOperations
 ```
 
-**👀 Expected result:** Provider registration state moves to (or already shows) `Registered`, confirming your subscription can host IoT Operations extensions on an Arc-enabled cluster.
+**👀 Expected result:** The commands return each provider’s current registration state. They do not register providers or verify the Arc cluster, extensions, deployment permissions, or other prerequisites.
 
-**✅ Checkpoint:** Re-run the `show` command after a minute and confirm `registrationState` reports `Registered`.
+**✅ Checkpoint:** If a provider is not registered, identify the authorized subscription administrator and remaining deployment prerequisites before a separate registration or deployment change.
 
 **🧹 Clean up:**
-Nothing to clean up — provider registration is non-destructive and reusable.
+Nothing to clean up — read-only provider inspection.
 
 [⬆️ Back to resource TOC](#resource-toc)
 
@@ -3830,7 +3831,7 @@ https://learn.microsoft.com/azure/digital-twins/
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
-**Goal:** Deploy a Digital Twins instance and confirm the data-plane endpoint is reachable.
+**Goal:** Deploy a Digital Twins instance and inspect its host name through the control plane.
 
 ```bash
 # Example names for this exercise; retain them in this Bash terminal
@@ -3844,7 +3845,7 @@ az dt show --name "${DT_NAME}" --resource-group "${RG}" --query hostName -o tsv
 
 **👀 Expected result:** A `hostName` such as `demo-dt-xxxx.api.eus.digitaltwins.azure.net` is returned.
 
-**✅ Checkpoint:** Run `az dt model list --dt-name "$DT_NAME"` and confirm it returns an empty list (no models uploaded yet).
+**✅ Checkpoint:** A returned host name does not test data-plane access. To separately run `az dt model list --dt-name "$DT_NAME"`, your caller needs Azure Digital Twins Data Reader or Data Owner permissions and network access. An authorized caller should see no models on a new instance; see [Digital Twins data access roles](https://learn.microsoft.com/en-us/azure/digital-twins/troubleshoot-error-azure-digital-twins-explorer-authentication).
 
 **🧹 Clean up:**
 ```bash
@@ -4251,7 +4252,7 @@ https://learn.microsoft.com/azure/virtual-desktop/
 
 **Before running:** This lab creates an isolated test resource group and possibly chargeable services. Check regional availability and access permissions first. Run the setup lines and resource commands together in **Bash**; use the saved `$RG` variable for cleanup. Review the returned details before deletion.
 
-**Goal:** Create a pooled AVD host pool and an application group (no session host VM required to see the control-plane objects).
+**Goal:** Create a pooled AVD host pool and inspect it. This exercise does not create an application group, workspace, or session host VM.
 
 ```bash
 # Example names for this exercise; retain them in this Bash terminal
@@ -4316,12 +4317,17 @@ RG="rg-learn-r71-${RANDOM}"
 
 az group create --name "${RG}" --location eastus
 az maps account create --name demo-maps --resource-group "${RG}" --sku G2
-az maps account keys list --name demo-maps --resource-group "${RG}" --query primaryKey -o tsv
+MAPS_KEY="$(az maps account keys list --name demo-maps --resource-group "${RG}" --query primaryKey -o tsv)"
+curl --fail --get "https://atlas.microsoft.com/search/address/json" \
+  --data-urlencode "api-version=1.0" \
+  --data-urlencode "subscription-key=${MAPS_KEY}" \
+  --data-urlencode "query=1 Microsoft Way Redmond"
+unset MAPS_KEY
 ```
 
-**👀 Expected result:** A primary key string is returned, usable as `subscription-key` on Azure Maps REST calls (for example a `/search/address` request).
+**👀 Expected result:** The key is captured in a shell variable and used for the search request without a separate terminal print. The address and key are URL-encoded by curl. The request can incur usage charges; keep shell tracing disabled when handling keys.
 
-**✅ Checkpoint:** Call `curl "https://atlas.microsoft.com/search/address/json?api-version=1.0&subscription-key=<key>&query=1 Microsoft Way Redmond"` and confirm a JSON result set is returned.
+**✅ Checkpoint:** Inspect the returned JSON search results. Compare the request with the [Search Address API](https://learn.microsoft.com/en-us/rest/api/maps/search/get-search-address?view=rest-maps-1.0); an HTTP error is not a successful geocoding result.
 
 **🧹 Clean up:**
 ```bash
@@ -4529,14 +4535,17 @@ az group delete --name "${RG}" --yes
 #### 📚 Official Microsoft docs
 https://learn.microsoft.com/azure/service-health/service-retirement-alerting-guidance
 
+[Front Door classic resource type](https://learn.microsoft.com/en-us/azure/templates/microsoft.network/frontdoors)
+
 #### 🧪 Try it yourself
 
 **Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
 
-**Goal:** Run `az provider list` and check which of the retiring resource types from this section are actually in use in your subscription.
+**Goal:** Inventory selected legacy resource types visible in your subscription, then assess their lifecycle status.
 
 ```bash
-az resource list --resource-type "Microsoft.Cdn/profiles" --query "[?properties.frontDoorId!=null]" -o table
+# Front Door classic; Standard/Premium use Microsoft.Cdn/profiles instead.
+az resource list --resource-type "Microsoft.Network/frontDoors" -o table
 az resource list --resource-type "Microsoft.Cache/Redis" -o table
 az resource list --resource-type "Microsoft.Blueprint/blueprintAssignments" -o table
 ```

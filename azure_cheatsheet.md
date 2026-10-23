@@ -309,7 +309,7 @@ App Service / Function / VM / Container App
 
 ### 🧪 Try it yourself
 
-**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+**Before running:** This exercise creates a new resource in an existing lab resource group and may incur charges. Check the active subscription, regional availability, and permissions. Choose an unused name and delete only the resource created by this exercise.
 
 **Goal:** Create a user-assigned managed identity and inspect its role assignments, then clean up.
 
@@ -319,7 +319,8 @@ RG="rg-your-existing-lab"  # Change to a resource group you already have
 IDENTITY_NAME="id-learn-r3"
 
 az identity create -g "${RG}" -n "${IDENTITY_NAME}"
-az role assignment list --assignee $(az identity show -g "${RG}" -n "${IDENTITY_NAME}" --query principalId -o tsv) -o table
+PRINCIPAL_ID="$(az identity show -g "${RG}" -n "${IDENTITY_NAME}" --query principalId -o tsv)"
+az role assignment list --assignee "${PRINCIPAL_ID}" -o table
 ```
 
 **👀 Expected result:** The identity is created with its own `principalId`, and the role assignment list is empty until you assign a role.
@@ -521,7 +522,7 @@ Storage account keys
 
 ### 🧪 Try it yourself
 
-**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+**Before running:** This exercise creates a new resource in an existing lab resource group and may incur charges. Check the active subscription, regional availability, and permissions. Choose an unused name and delete only the resource created by this exercise.
 
 **Goal:** Create a storage account with ZRS redundancy, verify the setting, then clean up.
 
@@ -632,9 +633,9 @@ az postgres flexible-server list -o table
 
 ### 🧪 Try it yourself
 
-**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+**Before running:** This exercise creates a new resource in an existing lab resource group and may incur charges. Check the active subscription, regional availability, and permissions. Choose an unused name and delete only the resource created by this exercise.
 
-**Goal:** Create a Service Bus queue, send/peek a message, then clean up — proving queue vs DLQ mentally.
+**Goal:** Create a Service Bus namespace and queue, inspect their configuration, then clean up. This control-plane exercise does not send, receive, or dead-letter messages.
 
 ```bash
 # Example names for this exercise; retain them in this Bash terminal
@@ -643,11 +644,12 @@ SB_NS="sb-learn-${RANDOM}${RANDOM}"
 
 az servicebus namespace create -g "${RG}" -n "${SB_NS}" -l swedencentral --sku Basic
 az servicebus queue create -g "${RG}" --namespace-name "${SB_NS}" -n demo-queue
+az servicebus queue show -g "${RG}" --namespace-name "${SB_NS}" -n demo-queue --query "{name:name,maxDeliveryCount:maxDeliveryCount}" -o table
 ```
 
 **👀 Expected result:** A new Service Bus namespace and queue, visible in `az servicebus queue show`.
 
-**✅ Checkpoint:** Where would a message land if its lock expired 10 times in a row?
+**✅ Checkpoint:** Conceptually, what happens when a message reaches the queue’s configured maximum delivery count? The commands above inspect that setting; they do not test delivery or the DLQ.
 
 **🧹 Clean up:** `az servicebus namespace delete -g "$RG" -n "$SB_NS"`
 
@@ -985,7 +987,7 @@ PR → validate/lint → what-if/plan → approval → deploy → smoke test →
 
 ### 🧪 Try it yourself
 
-**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+**Before running:** Supply your own `main.bicep` in the current directory; this repository does not include that template. The example assumes it declares an `environment` parameter. Select an existing lab resource group and review the template first. `build` writes local `main.json`; `validate` checks the deployment without deploying resources.
 
 **Goal:** Run the safer deployment workflow's validate step on a real template.
 
@@ -997,11 +999,11 @@ az bicep build --file main.bicep
 az deployment group validate -g "${RG}" --template-file main.bicep --parameters environment=dev
 ```
 
-**👀 Expected result:** `bicep build` compiles without errors; `validate` returns a success result describing what would be deployed, with no resources actually changed.
+**👀 Expected result:** `bicep build` compiles without errors; `validate` reports whether validation succeeds for that template and parameter set. Use `what-if` separately to preview resource changes.
 
 **✅ Checkpoint:** Where in the "PR → validate → what-if → approval → deploy" pipeline would you insert this command?
 
-**🧹 Clean up:** Nothing to clean up — `validate` does not deploy anything.
+**🧹 Clean up:** `validate` does not deploy Azure resources. Remove the generated local `main.json` only if you no longer need it.
 
 [⬆️ Back to TOC](#toc)
 
@@ -1088,9 +1090,10 @@ User question → embed → retrieve ─┘
 
 ```bash
 az cognitiveservices account list --query "[].{name:name,kind:kind,location:location}" -o table
+az search service list --query "[].{name:name,location:location}" -o table
 ```
 
-**👀 Expected result:** A table of any Azure OpenAI / Foundry / AI Search / Document Intelligence accounts, with their `kind` field telling you which service each one is.
+**👀 Expected result:** The first table lists Cognitive Services accounts, including applicable Azure OpenAI, Foundry, and Document Intelligence account kinds. Azure AI Search uses a separate resource provider and appears in the second table. Empty tables are normal when none are deployed or visible to your identity.
 
 **✅ Checkpoint:** Can you map each returned `kind` value to a row in the "Need → Start with" table above?
 
@@ -1247,7 +1250,7 @@ Private DNS → Private Endpoint → SQL / Storage / Key Vault
 
 ### 🧪 Try it yourself
 
-**Before running:** These commands inspect your subscription or existing resources. Check the active subscription first. If `$RG` or another example name is used, select an existing resource; an empty table can be normal.
+**Before running:** Supply and review your own `main.bicep`; this repository does not include the topology template. This example assumes `appName` and `environment` parameters. Select an existing lab resource group and adjust those parameters to your template.
 
 **Goal:** Validate a Web/API + database topology deployment without actually deploying it.
 
@@ -1261,9 +1264,9 @@ az deployment group what-if \
   --parameters appName=orders environment=dev
 ```
 
-**👀 Expected result:** A color-coded plan showing which resources (App Service, SQL, Key Vault, App Insights) would be created/modified/left unchanged.
+**👀 Expected result:** A preview of resource changes for your actual template and current resource group. App Service, SQL, Key Vault, and Application Insights appear only if your template declares them.
 
-**✅ Checkpoint:** Does the what-if output match the Web/API + database diagram above — one App Service node fanning out to SQL, Key Vault, and App Insights?
+**✅ Checkpoint:** Does the preview match the resources and dependencies declared in your own template? Compare it with the diagram only if you implemented that topology.
 
 **🧹 Clean up:** Nothing to clean up — `what-if` never deploys anything.
 
@@ -1531,10 +1534,12 @@ az vm list-usage --location "swedencentral" -o table
 **Goal:** Practice treating Microsoft Learn as the source of truth instead of memory.
 
 ```bash
-az provider show --namespace Microsoft.Web --query "resourceTypes[?resourceType=='sites'].apiVersions[0]" -o tsv
+az provider show --namespace Microsoft.Web --query "resourceTypes[?resourceType=='sites'].apiVersions" -o jsonc
 ```
 
-**👀 Expected result:** An API version string (e.g. `2023-12-01`) straight from the live platform, not from a cached memory of docs.
+This discovers advertised API versions. The array order does not establish which version is stable or appropriate for a deployment; check the target resource’s official schema and compatibility requirements.
+
+**👀 Expected result:** An array of API versions currently advertised by the live resource provider. This inventory can include preview versions; it is not a recommendation to choose the first entry.
 
 **✅ Checkpoint:** Can you explain why this command is more trustworthy than citing an API version from memory?
 
@@ -1560,19 +1565,21 @@ VERIFY LIVE → price / limits / regions / SLA / lifecycle
 ## ➕ Azure CLI and Bicep operational command cards
 
 > [!IMPORTANT]
-> Run `az login`, select the intended subscription, and use `--what-if` before a production deployment. Examples use placeholder names—replace them deliberately.
+> Run `az login`, select the intended subscription, and run `az deployment group what-if` before a production deployment. Examples use placeholder names—replace them deliberately.
+>
+> The deployment cards assume a local `prod.bicepparam` with a `using` statement that references your template. Pass its filename directly, without `@` or `--template-file`; use Azure CLI 2.53.0+ and Bicep CLI 0.22.x+. See [Bicep parameter file deployment](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-cli#bicep-parameters-files).
 
 | Command | 📖 Description / 🎯 when | 💻 Usage example | 🔍 Safety and flags |
 |---|---|---|---|
 | `az account show/list/set` | Shows, lists, or selects a subscription; use before every deployment or destructive action. | `az account show -o table`<br>`az account list -o table`<br>`az account set --subscription "$(az account show --query id -o tsv)"` | Confirm with `az account show -o table`; CLI state is user-local. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `az group show/list/update` | Inspects, lists, or updates resource-group tags; use for inventory and governance. | `az group show -g "$RG" -o table`<br>`az group list -o table`<br>`az group update -g "$RG" --tags environment=lab` | Tag changes are control-plane updates; follow your organization’s required tag policy. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `az resource show/list/update` | Reads, lists, or generically updates ARM resources; use when no service-specific command is needed. | `az resource show --ids "$RESOURCE_ID" -o jsonc`<br>`az resource list -g "$RG" -o table`<br>`az resource update --ids "$RESOURCE_ID" --set tags.purpose=lab` | Prefer a service-specific command when it offers safer validation. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
-| `az deployment group what-if` | Previews a resource-group Bicep/ARM deployment; use before applying changes. | `az deployment group what-if --resource-group rg-app-prod --template-file main.bicep --parameters @prod.bicepparam` | Read deletions/modifications carefully; what-if is a preview, not a guarantee of runtime success. |
-| `az deployment group create` | Deploys Bicep/ARM at resource-group scope; use after review/what-if. | `az deployment group create --name app-20261010 --resource-group rg-app-prod --template-file main.bicep --parameters @prod.bicepparam` | Use a meaningful deployment name for auditability. |
+| `az deployment group what-if` | Previews a resource-group Bicep/ARM deployment; use before applying changes. | `az deployment group what-if --resource-group rg-app-prod --parameters prod.bicepparam` | Read deletions/modifications carefully; what-if is a preview, not a guarantee of runtime success. |
+| `az deployment group create` | Deploys Bicep/ARM at resource-group scope; use after review/what-if. | `az deployment group create --name app-20261010 --resource-group rg-app-prod --parameters prod.bicepparam` | Use a meaningful deployment name for auditability. |
 | `az bicep build/lint` | Compiles or lints Bicep; use in local and CI validation. | `az bicep build --file main.bicep`<br>`az bicep lint --file main.bicep` | `build --file main.bicep` emits ARM JSON; do not hand-edit generated output. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `az lock create/list/delete` | Creates, lists, or removes resource locks; use to protect critical resources. | `az lock create --name protect-lab --lock-type CanNotDelete -g "$RG"`<br>`az lock list -g "$RG" -o table`<br>`az lock delete --name protect-lab -g "$RG"` | **⚠️** Locks can block emergency changes; document owners and removal procedure. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.** 
 | `az monitor activity-log list` | Queries control-plane activity events; use for incident/change investigation. | `az monitor activity-log list --resource-group rg-app-prod --offset 24h -o table` | Activity Log is not application telemetry; use Application Insights/Log Analytics for runtime behavior. |
-| `az monitor diagnostic-settings create` | Sends platform logs/metrics to Log Analytics, storage, or Event Hubs; use when enabling observability. | `az monitor diagnostic-settings create --name send-to-law --resource "$RESOURCE_ID" --workspace "$WORKSPACE_ID" --logs '[{\"categoryGroup\":\"allLogs\",\"enabled\":true}]'` | Verify categories supported by the target resource; logging has cost and data-retention impact. |
+| `az monitor diagnostic-settings create` | Sends platform logs/metrics to Log Analytics, storage, or Event Hubs; use when enabling observability. | `az monitor diagnostic-settings create --name send-to-law --resource "$RESOURCE_ID" --workspace "$WORKSPACE_ID" --logs '[{"categoryGroup":"allLogs","enabled":true}]'` | Verify categories supported by the target resource; logging has cost and data-retention impact. |
 | `az keyvault secret set/show/delete` | Creates, reads, or deletes Key Vault secrets; use for secret lifecycle operations. | `az keyvault secret set --vault-name "$VAULT_NAME" --name DemoToken --file ./token.txt`<br>`az keyvault secret show --vault-name "$VAULT_NAME" --name DemoToken --query id -o tsv`<br>`az keyvault secret delete --vault-name "$VAULT_NAME" --name DemoToken` | **⚠️** Do not print secret values in CI logs; assign data-plane RBAC before access. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. **⚠️ Creation, permissions, special setup, or destructive operations may be required.**
 
 ---

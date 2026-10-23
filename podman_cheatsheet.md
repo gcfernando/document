@@ -219,7 +219,7 @@ Use `systemctl --user daemon-reload` then `systemctl --user start api.service`; 
 | Rootless web app | `podman run -d --name web -p 127.0.0.1:8080:80 nginx:1.27-alpine`; check with `podman ps`, then `podman logs web`. |
 | Debug exit | `podman ps -a` (find), `podman logs NAME` (error), `podman inspect NAME` (state). |
 | Build/publish | `podman build -t quay.io/acme/api:1.0 .`, `podman login quay.io`, `podman push quay.io/acme/api:1.0`. |
-| Persistent database | `podman volume create db-data`, then `podman run -v db-data:/var/lib/postgresql/data postgres:16`. |
+| Persistent database | `podman volume create db-data`; create `db_password` from a private password file using `podman secret create db_password ./db_password.txt`; then run `podman run -d --name lab-db --secret db_password -e POSTGRES_PASSWORD_FILE=/run/secrets/db_password -v db-data:/var/lib/postgresql/data docker.io/library/postgres:16`. The [Postgres image](https://hub.docker.com/_/postgres) requires an initialization password for a new data directory; keep the source file outside Git. |
 | Multi-container app | `podman pod create --name app -p 8080:8080`; run API and sidecar with `--pod app`. |
 | Windows/macOS start | `podman machine init`, `podman machine start`, then `podman info`. |
 | Kubernetes handoff | `podman kube generate app > app.yaml`, review, then test with `podman kube play app.yaml`. |

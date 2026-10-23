@@ -329,7 +329,9 @@ source .venv/bin/activate
 Create your first Python file and run it:
 
 ```bash
+# Bash/macOS/Linux
 touch main.py
+# PowerShell alternative: New-Item -ItemType File -Path main.py
 python main.py
 ```
 
@@ -584,7 +586,7 @@ defines *what attributes exist*; each object holds *the actual values*.
 | | Class | Object |
 |---|---|---|
 | Exists | Once, in your source code | Many times, in memory while the program runs |
-| Costs | Nothing at runtime | Memory |
+| Costs | Class creation produces a runtime type object | Each instance also uses memory |
 | Defines | Which attributes and methods exist | The actual values |
 | Analogy | Blueprint, recipe, mould | House, cake, casting |
 
@@ -1481,9 +1483,7 @@ AttributeError: property 'balance' of 'BankAccount' object has no setter
 
 **The three decisions worth noticing.**
 
-1. **`_balance` is private and `balance` is a read-only property.** That last `AttributeError` is
-   the proof: there is no way to set the balance except through `deposit` and `withdraw`, which is
-   where the rules live. A public `self.balance` would make every rule optional.
+1. **`_balance` is internal by convention; `balance` is a read-only property.** The `AttributeError` protects assignment to `balance`, not `_balance`. Callers should use `deposit` and `withdraw`, where the rules live. A public `self.balance` would make every rule optional.
 2. **`MINIMUM_BALANCE` is a class attribute**, not a number repeated in three places — so the rule
    changes in one edit. It is safe as a class attribute because it is *immutable* (§22.6).
 3. **The custom exception carries the shortfall in its message**, so the caller can tell the user
@@ -1863,7 +1863,7 @@ For each idea, answer the same four questions: **What is it? Why does it matter?
 
 2. **Only the reference, not the object.** Both names now point at the same object in memory, like two remote controls aimed at one TV. Changing `customer_b.name` changes what `customer_a.name` reads, because there is only one customer. See [§8.2](#82--object-references).
 
-3. **No — level 1 was never a lock.** A single leading underscore is a sign, not a door. It says "this is an internal detail; if you touch it, you accept that it may change without warning." What *would* have stopped them is level 3: a `@property` with no setter, or an explicit `raise` inside a `deposit()` method. Use underscores to communicate intent; use properties and exceptions when a rule genuinely must hold. See the [three levels of enforcement](#-pythons-three-levels-of-enforcement-read-this-before-section-5).
+3. **No — level 1 was never a lock.** A single leading underscore is a sign, not a door. It says "this is an internal detail; if you touch it, you accept that it may change without warning." A read-only `balance` property rejects assignment to `balance`, while checks inside `deposit()` reject invalid calls through that method. Neither blocks deliberate assignment to `_balance`. Use underscores to communicate intent; use properties and exceptions when a rule genuinely must hold. See the [three levels of enforcement](#-pythons-three-levels-of-enforcement-read-this-before-section-5).
 
 4. **The moment the value acquires a rule, a calculation, or a side effect.** Price must not be negative; age must be 0-130; `total` is derived from `price x quantity`. Until then, a plain public attribute is perfectly Pythonic — and because `@property` keeps the `object.attribute` syntax, you can add the rule later *without changing a single line of calling code*. That is exactly why properties exist. See [§5.3](#53--property-with-validation).
 
@@ -2248,7 +2248,7 @@ RETURNS: 5
 TypeError: Can't instantiate abstract class ReportGenerator with abstract methods deliver, fetch_data
 ```
 
-**What this proves.** The workflow order (`fetch → format → deliver`) is fixed in the base class and cannot be skipped or reordered by a subclass; only the individual steps vary — that is the template method pattern (§10.4) doing its job.
+**What this proves.** The inherited workflow orders `fetch → format → deliver`; subclasses supply the steps. A subclass can still override the workflow method, so preserving that contract requires convention, review and tests — that is the template method pattern (§10.4) doing its job.
 
 </details>
 
@@ -2729,7 +2729,7 @@ Meow!
 >
 > **When to use it.** When you notice a conditional that branches on a *type* or a type-like string: `if customer_type == "premium"`, `match shape.kind`. Each branch is a class waiting to be extracted. Polymorphism is also what makes dependency injection useful — the real and the fake implementation are interchangeable because both answer the same call.
 >
-> **Where to use it.** Anywhere a family of behaviours must grow over time: payment methods, notification channels, export formats, pricing rules, report renderers. **Scenario:** a checkout supporting card and PayPal. Next month a business deal adds Apple Pay. With polymorphism you write one new class; the checkout code is not opened, not retested, and cannot regress.
+> **Where to use it.** Anywhere a family of behaviours must grow over time: payment methods, notification channels, export formats, pricing rules, report renderers. **Scenario:** a checkout supporting card and PayPal. Next month a business deal adds Apple Pay. With polymorphism you write one new class; the checkout implementation can stay unchanged. Test the new implementation against the shared contract and rerun relevant checkout integration tests.
 >
 > **When _not_ to use it.** Do not refactor a conditional into classes when the branches are a few fixed values that rarely change — a `match` statement or a plain dictionary (`{"standard": 5.0, "express": 15.0}`) is clearer and shorter. The honest signal to refactor is that the *same* conditional appears in more than one place, or that branches are accumulating their own data. See the trade-off table in [§32.3](#323--example-replace-conditional-with-polymorphism).
 >
@@ -4385,7 +4385,7 @@ True
 
 > ### 🧭 In practice — equality and comparison
 >
-> **How to use it.** Decide first whether two objects are equal by **identity** (the same thing) or by **value** (the same contents). For value equality, implement `__eq__` — returning `NotImplemented` for foreign types — and implement `__hash__` alongside it over the same fields. For ordering, use `@dataclass(order=True)` or `functools.total_ordering`. **Expected result:** `Money(100, "USD") == Money(100, "USD")` is `True`, and both can be stored in a `set` and found again.
+> **How to use it.** Decide first whether two objects are equal by **identity** (the same thing) or by **value** (the same contents). For value equality, implement `__eq__` — returning `NotImplemented` for foreign types — and implement `__hash__` alongside it over the same fields. For ordering, use `@dataclass(order=True)` or `functools.total_ordering`. **Expected result:** `Money(100, "USD") == Money(100, "USD")` is `True`. The mutable dataclass shown above is unhashable; a suitable `@dataclass(frozen=True)` with hashable fields can also be stored in a set.
 >
 > **When to use it.** Whenever objects represent a *value*: money, coordinates, email addresses, date ranges, identifiers. Also whenever you need to put objects in a `set`, use them as dictionary keys, or compare them in a test assertion.
 >
@@ -5822,12 +5822,12 @@ Square with area 16
 ```python
 class Classroom:
     def __init__(self) -> None:
-        self._students: list[Student] = []
+        self._students: list[str] = []
 
-    def add(self, student: "Student") -> None:
+    def add(self, student: str) -> None:
         self._students.append(student)
 
-    def __getitem__(self, index: int) -> "Student":
+    def __getitem__(self, index: int) -> str:
         return self._students[index]
 
     def __len__(self) -> int:
@@ -5842,6 +5842,7 @@ classroom.add("Anna")
 classroom.add("Ben")
 
 first_student = classroom[0]
+print(first_student)
 print(len(classroom))
 ```
 
@@ -7277,6 +7278,10 @@ class Order(Entity):
     def items(self) -> tuple[OrderItem, ...]:
         return tuple(self._items)
 
+    @property
+    def total(self) -> float:
+        return sum(item.total for item in self._items)
+
     def add_item(self, product: "Product", quantity: int) -> None:
         if quantity <= 0:
             raise DomainError("Quantity must be positive.")
@@ -7552,6 +7557,15 @@ class FakeEmailSender:
 
 ```python
 from unittest.mock import Mock
+
+
+# Minimal service for this isolated mock example.
+class OrderService:
+    def __init__(self, email_sender) -> None:
+        self.email_sender = email_sender
+
+    def place_order(self, order_id: int) -> None:
+        self.email_sender.send("learner@example.com", "Order placed", str(order_id))
 
 
 def test_order_service_sends_email() -> None:
@@ -8213,7 +8227,7 @@ class EmailSender:
 
 class Order:
     def __init__(self, sender: EmailSenderProtocol, items: list[str] | None = None) -> None:
-        self._items: list[str] = items if items is not None else []   # fixes 1 & 2
+        self._items: list[str] = list(items) if items is not None else []   # own copy; no caller alias
         self._sender = sender                                          # fixes 3: injected
 
     @property

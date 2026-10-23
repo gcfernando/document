@@ -41,6 +41,8 @@ git commit -m "Add welcome file"
 git log -1 --oneline
 ```
 
+**PowerShell:** replace the `printf` line with `Set-Content -LiteralPath README.md -Value 'Hello, Git!'`. The block above uses Bash syntax; the Git commands work in either shell.
+
 `mkdir` creates a directory; `cd` enters it; `git init -b main` creates a repository with initial branch **main**; `git config` sets the author identity **for this practice repository only**; `printf ... > README.md` writes a text file (the `>` replaces its contents); `status` shows what changed; `add` stages the file; `commit -m` saves it with a message; `log -1 --oneline` displays the latest commit. **Check:** `git status` after the commit should say the working tree is clean. No account or internet connection is needed for this exercise. To clean up, leave the folder and delete **only** this `git-beginner-lab` directory using your file manager.
 
 **About examples below:** `origin` is the conventional name for a remote, but a fresh local repository has none. Commands such as `git fetch`, `git pull`, and `git push` require you to add a real remote first. `HEAD` means the current commit; `HASH` stands for a commit ID such as `abc1234` (replace it with an ID from `git log --oneline`); `NAME`/`FILE`/`URL` mean names, file paths, or addresses **you substitute**. `-m` supplies a message, `-b` names a branch, `-c` creates one, `-a` often means “all” depending on the command, and `--` separates options from path names. For any potentially destructive command, first run `git status` and `git diff`, and read the warning in its row. Use `git COMMAND --help` for flags specific to your version.

@@ -147,7 +147,7 @@ Here is the precise position.
 
 The guide targets **SQL Server 2019+** and **MySQL 8.4 LTS**. Where a feature needs a newer
 release the text says so inline — for example `STRING_AGG` (2017+), `AT TIME ZONE` (2016+),
-`GENERATE_SERIES` (2022+), and `TRIM` with characters (2022+). If a script fails on your server, check
+`GENERATE_SERIES` (2022+), and `TRIM` with characters (2017+; `LEADING`/`TRAILING`/`BOTH` require 2022+ and compatibility 160). If a script fails on your server, check
 the version note beside it first.
 
 ---
@@ -730,7 +730,7 @@ ORDER BY o.order_date DESC;
 | Option | Best for | How |
 |---|---|---|
 | **Developer Edition** ⭐ | Learning on Windows. Every feature included, free for learning and testing (not for a live business). | Download *SQL Server Developer* from Microsoft's website and choose the **Basic** installation. |
-| **Express Edition** | Small real applications (each database is limited to 10 GB). | The same download page — choose **Express**. |
+| **Express Edition** | Small real applications (10 GB per database in SQL Server 2019/2022; later-version limits differ). | The same download page — choose **Express**. |
 | **Docker** | Mac, Linux, or a throwaway practice copy. | One command — see below. |
 | **Azure SQL Database (free offer)** | Practising in the cloud without installing anything. | Create a free Azure SQL Database with a Microsoft account. |
 
@@ -826,11 +826,11 @@ SELECT VERSION() AS engine_version, NOW() AS server_time;
 
 > ### 🧭 In practice — installing and connecting
 >
-> **How to use it.** Install one server and one client. For SQL Server that is the free **Developer** or **Express** edition plus SSMS or Azure Data Studio; for MySQL it is the Community Server plus MySQL Workbench. Connect to `localhost`, run `SELECT 1;`, and confirm you get a single row back. **Expected result:** a window where you can type SQL and see results — nothing else in this guide works until that exists.
+> **How to use it.** Install one server and one client. For SQL Server that is the free **Developer** or **Express** edition plus SSMS or VS Code with the MSSQL extension; for MySQL it is the Community Server plus MySQL Workbench. Connect to `localhost`, run `SELECT 1;`, and confirm you get a single row back. **Expected result:** a window where you can type SQL and see results — nothing else in this guide works until that exists.
 >
 > **When to use it.** Once, at the start. Docker is a good alternative if you would rather not install a server on your machine directly — one container, deleted when you are done.
 >
-> **Where to use it.** Your own machine, for everything in this guide. **Scenario:** you install SQL Server Developer edition locally. It is the *full* Enterprise feature set, licensed for development only — so you can practise features such as partitioning that Express refuses, without paying for anything.
+> **Where to use it.** Your own machine, for everything in this guide. **Scenario:** you install SQL Server Developer edition locally. It is the *full* Enterprise feature set, licensed for development only — so you can practise features beyond Express limits without paying for a production licence. Express also supports partitioning; consult the version-specific edition matrix.
 >
 > **When _not_ to use it.** Never point these lessons at a production server. Chapter 4's build script **deletes and recreates** a database called `ShopDB`, and later chapters `UPDATE` and `DELETE` freely. Practise only on an instance you own and can rebuild from scratch.
 >
@@ -1421,7 +1421,7 @@ UNION ALL SELECT 'payments',    COUNT(*) FROM payments;
 
 > ### 🧭 In practice — the ShopDB practice database
 >
-> **How to use it.** Run the build script for your engine — [§4.3](#43--build-shopdb--mssql-version) for SQL Server, [§4.4](#44--build-shopdb--mysql-version) for MySQL — then the shared seed data in [§4.5](#45--seed-the-data-identical-in-both-engines), then the row-count check in [§4.6](#46--verify-your-build). **Expected result:** eight tables whose row counts match the published numbers exactly (6, 5, 8, 12, 18, 23, 42, 22). If they match, every example in all 66 chapters will run on your machine.
+> **How to use it.** Run the build script for your engine — [§4.3](#43--build-shopdb--mssql-version) for SQL Server, [§4.4](#44--build-shopdb--mysql-version) for MySQL — then the shared seed data in [§4.5](#45--seed-the-data-identical-in-both-engines), then the row-count check in [§4.6](#46--verify-your-build). **Expected result:** eight tables whose row counts match the published numbers exactly (6, 5, 8, 12, 18, 23, 42, 22). If they match, the baseline dataset is ready. Later chapters have engine/version requirements, additional objects and independent destructive exercises; use each chapter’s prerequisites and rebuild the baseline when required.
 >
 > **When to use it.** Before Chapter 5, and again any time your practice data drifts. Rebuilding takes seconds and is the correct response to “my numbers no longer match the guide”.
 >
@@ -2073,7 +2073,7 @@ INSERT INTO support_tickets (subject) VALUES ('Laptop will not power on');
 
 #### 8.4 📄 Creating a table from a query
 
-Extremely useful for backups before a risky change, and for building report tables.
+Useful for a temporary recovery copy before a small practice change, and for building report tables. A table copy is not a database backup.
 
 ```sql
 -- ✅ MSSQL: SELECT ... INTO creates the table and copies rows
@@ -2097,12 +2097,12 @@ SELECT * FROM products;
 CREATE TABLE products_empty_copy AS
 SELECT * FROM products WHERE 1 = 0;
 
--- Exact structural clone INCLUDING indexes and constraints
+-- Copies columns and indexes, but not foreign keys
 CREATE TABLE products_clone LIKE products;
 ```
 
 > [!WARNING]
-> ⚠️ **Important limitation:** `SELECT INTO` and `CREATE TABLE AS SELECT` copy the **data and column types only**. They do **not** copy primary keys, foreign keys, indexes, defaults, or check constraints. The copy is a bag of rows, not a properly protected table. Use MySQL's `CREATE TABLE ... LIKE` when you need a true structural clone.
+> ⚠️ **Important limitation:** `SELECT INTO` and `CREATE TABLE AS SELECT` copy the **data and column types only**. They do **not** copy primary keys, foreign keys, indexes, defaults, or check constraints. The copy is a bag of rows, not a properly protected table. MySQL's [`CREATE TABLE ... LIKE`](https://dev.mysql.com/doc/refman/8.4/en/create-table-like.html) preserves columns and indexes but omits foreign keys; recreate and verify those separately.
 
 > [!TIP]
 > 💡 **Pro tip — the 30-second safety net.** Before any risky `UPDATE` or `DELETE` on production, take a copy first:
@@ -2669,7 +2669,8 @@ ALTER TABLE customers CHANGE COLUMN phone_number phone VARCHAR(40) NULL;   -- an
 | `VARCHAR(100)` → `VARCHAR(50)` | ⚠️ Fails, or cuts off (truncates) any longer text |
 | `VARCHAR` → `INT` | ⚠️ Fails on any non-numeric row |
 | `NULL` → `NOT NULL` | ⚠️ Fails if any row is NULL — clean the data first |
-| `DECIMAL(10,2)` → `DECIMAL(10,4)` | ✅ Safe |
+| `DECIMAL(10,2)` → `DECIMAL(10,4)` | ⚠️ Integer capacity shrinks from 8 digits to 6; existing values can overflow |
+| `DECIMAL(10,2)` → `DECIMAL(12,4)` | ✅ Preserves 8 integer digits while adding 2 fractional digits |
 | `DECIMAL(10,4)` → `DECIMAL(10,2)` | ⚠️ Silent rounding, data loss |
 
 > [!TIP]
@@ -2784,7 +2785,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.columns
 > [!TIP]
 > 💡 **The five rules of production DDL:**
 >
-> 1. **Back up first.** Always. `SELECT * INTO table_backup FROM table;` takes seconds.
+> 1. **Have a recoverable backup first.** A `SELECT ... INTO` table copy can help undo a small change, but runtime depends on data size and it does not replace backups, constraints or a tested restore path.
 > 2. **Run it on a copy first.** A development copy, then a test (*staging*) copy, then the real server. Never the reverse.
 > 3. **Wrap it in a transaction** where the engine supports it, and verify before committing.
 > 4. **Know how long it will block users.** `ALTER TABLE` on a 200-million-row table can lock everyone out of it for hours. Check whether your version can make the change *online* (without blocking).
@@ -4419,7 +4420,7 @@ SELECT * FROM customers WHERE is_deleted = 0;
 | Historical reports still work | ❌ Orders lose their customer | ✅ Everything still joins |
 | Table size | ✅ Shrinks | ⚠️ Grows forever |
 | Query complexity | ✅ Simple | ⚠️ Every query needs the filter |
-| Legal "right to be forgotten" (privacy laws such as GDPR) | ✅ Compliant | ⚠️ Needs a real purge process too |
+| Erasure requirement | Removes these live rows; retention, replicas and backups still need a policy | Needs a separate purge process; soft deletion alone retains the data |
 
 > [!TIP]
 > 💡 **The professional pattern:** soft delete for everyday operations, plus a scheduled job that permanently deletes or anonymizes rows once they are older than the period you must keep them. Wrap the filter in a view so nobody forgets it:
@@ -4534,7 +4535,7 @@ When a table cell says *(2017+)* or *(2022+)*, that function needs SQL Server 20
 | Lowercase | `LOWER(s)` | `LOWER(s)` |
 | Trim both ends | `TRIM(s)` (2017+) | `TRIM(s)` |
 | Trim left / right | `LTRIM(s)` / `RTRIM(s)` | `LTRIM(s)` / `RTRIM(s)` |
-| Trim a specific character | `TRIM('x' FROM s)` (2022+) | `TRIM('x' FROM s)` |
+| Trim a specific character | `TRIM('x' FROM s)` (2017+) | `TRIM('x' FROM s)` |
 | Repeat | `REPLICATE(s, n)` | `REPEAT(s, n)` |
 | Reverse | `REVERSE(s)` | `REVERSE(s)` |
 | Pad left / right | `RIGHT(REPLICATE('0',5)+s,5)` | `LPAD(s,5,'0')` / `RPAD(s,5,'0')` |
@@ -4628,7 +4629,7 @@ FROM customers;
 #### 20.3 🔗 Joining and replacing
 
 ```sql
--- ✅ CONCAT works in BOTH and treats NULL as an empty string
+-- ✅ CONCAT syntax works in BOTH: SQL Server treats NULL as empty; MySQL returns NULL if any argument is NULL
 SELECT CONCAT(full_name, ' (', country, ')') AS label FROM customers;
 
 -- ✅ CONCAT_WS: "with separator" — joins and skips NULLs cleanly
@@ -4719,7 +4720,7 @@ FROM customers;
 >
 > **When _not_ to use it.** Do not apply a string function to a column inside a `WHERE` clause on a large table — `WHERE UPPER(email) = 'A@B.COM'` cannot use an index on `email`, so the engine reads every row. Fix it with a case-insensitive collation or a stored normalised column instead. And do not do heavy text formatting in SQL when the application layer is a better place for it; SQL is for finding data, not for laying it out.
 >
-> **Best practices.** Clean data **on the way in** rather than in every query that reads it. Beware the differences: `CONCAT` ignores `NULL`s in both engines, but `+` in SQL Server turns the whole expression into `NULL` if any part is `NULL`. Remember that character length and byte length diverge for non-ASCII text, which matters for both truncation and column sizing ([Chapter 60](#60-collation-character-sets-and-unicode)).
+> **Best practices.** Clean data **on the way in** rather than in every query that reads it. Beware the differences: `CONCAT` treats `NULL` as empty in SQL Server; [MySQL `CONCAT`](https://dev.mysql.com/doc/refman/8.4/en/string-functions.html#function_concat) returns `NULL` if any argument is `NULL`. Use explicit `COALESCE` arguments for matching behavior. SQL Server `+` propagates `NULL`. Remember that character length and byte length diverge for non-ASCII text, which matters for both truncation and column sizing ([Chapter 60](#60-collation-character-sets-and-unicode)).
 
 
 ---
@@ -4877,13 +4878,13 @@ FROM products;
 
 > ### 🧭 In practice — numeric and math functions
 >
-> **How to use it.** Round with `ROUND`, trim toward zero with `FLOOR`/`CEILING`, take a remainder with `%` or `MOD`, and compute absolute values and powers with `ABS` and `POWER`. **Expected result:** numbers formatted and bucketed as the business defines them, not as the engine happens to default.
+> **How to use it.** Round with `ROUND`, truncate toward zero with `ROUND(x,0,1)` (SQL Server) or `TRUNCATE(x,0)` (MySQL); `FLOOR`/`CEILING` round toward negative/positive infinity, take a remainder with `%` or `MOD`, and compute absolute values and powers with `ABS` and `POWER`. **Expected result:** numbers formatted and bucketed as the business defines them, not as the engine happens to default.
 >
 > **When to use it.** Financial rounding, percentage calculations, bucketing values into bands, and anywhere a raw computed number needs a defined precision.
 >
 > **Where to use it.** Reporting and billing. **Scenario:** an order total computed as `unit_price * quantity * (1 - discount)` produces long fractions. `ROUND(..., 2)` applied once, at a defined point, keeps the invoice, the payment, and the ledger agreeing — rounding at three different points is how a penny goes missing.
 >
-> **When _not_ to use it.** Do not do financial arithmetic on `FLOAT`/`DOUBLE` columns: the type cannot represent many decimal values exactly, so sums drift. Use `DECIMAL`. Also avoid integer division surprises — in both engines `5 / 2` on two integers gives `2`, so cast one side when you want `2.5`.
+> **When _not_ to use it.** Do not do financial arithmetic on `FLOAT`/`DOUBLE` columns: the type cannot represent many decimal values exactly, so sums drift. Use `DECIMAL`. Also avoid integer division surprises — SQL Server `5 / 2` yields `2`, so cast one side when you want `2.5`. [MySQL `/`](https://dev.mysql.com/doc/refman/8.4/en/arithmetic-functions.html) yields a fractional result; MySQL `DIV` performs integer division.
 >
 > **Best practices.** Decide **once** where rounding happens and document it; rounding at several stages of a calculation is a classic source of off-by-a-penny disputes. Be aware that `ROUND` uses half-away-from-zero in both engines here, which is not the banker's rounding some financial rules require — if your domain specifies a rounding mode, implement it explicitly rather than assuming.
 
@@ -6470,7 +6471,7 @@ CROSS JOIN suppliers AS s;
 SELECT
     c.category_name,
     m.month_num,
-    COALESCE(SUM(oi.quantity), 0) AS units_sold
+    COALESCE(SUM(CASE WHEN o.order_id IS NOT NULL THEN oi.quantity ELSE 0 END), 0) AS units_sold
 FROM categories AS c
 CROSS JOIN (
     SELECT 1 AS month_num UNION ALL SELECT 2 UNION ALL SELECT 3
@@ -6746,7 +6747,7 @@ WHERE c.city IS NOT NULL
 ```
 
 > [!TIP]
-> 💡 **`EXCEPT` is a fantastic data-comparison tool.** To check whether two tables hold identical data, run `EXCEPT` in both directions. If both return zero rows, the tables match exactly:
+> 💡 **`EXCEPT` is a fantastic data-comparison tool.** To check whether two tables hold identical data, run `EXCEPT` in both directions. If both return zero rows, the tables contain the same **distinct rows**. Duplicate counts require a separate grouped-count comparison:
 > ```sql
 > -- ✅ Works in BOTH (MySQL 8.0.31+) — products_backup_2026_09 is the copy made in Chapter 8.4
 > SELECT * FROM products EXCEPT SELECT * FROM products_backup_2026_09;   -- in A not B
@@ -6847,7 +6848,7 @@ ORDER BY diff_from_avg DESC;
 ```
 
 > [!WARNING]
-> ⚠️ **A scalar subquery must return exactly one row and one column.** If it returns more, you get *"Subquery returned more than 1 value"* (MSSQL) or *"Subquery returns more than 1 row"* (MySQL).
+> ⚠️ **A scalar subquery returns one column and at most one row.** Zero rows produce `NULL`; more than one row raises an error: you get *"Subquery returned more than 1 value"* (MSSQL) or *"Subquery returns more than 1 row"* (MySQL).
 
 #### 30.2 📋 Multi-row subqueries: IN, ANY, ALL
 
@@ -7029,7 +7030,7 @@ ORDER BY spend.total_spend DESC;
 | `IN` with a large subquery | ⚠️ Consider `EXISTS` or a join |
 | `NOT IN` on a column that can be NULL | 🚫 Use `NOT EXISTS` instead |
 | `EXISTS` | ✅ Generally the best choice for existence checks |
-| Derived table used twice | ⚠️ Use a CTE or a temporary table so it is worked out once |
+| Derived table used twice | ⚠️ A CTE names the expression; a temporary table materializes a reusable result. A CTE alone does not guarantee one evaluation |
 
 > [!TIP]
 > 💡 **Modern optimizers often rewrite subqueries into joins automatically**, so the difference is smaller than people often claim. But "often" is not "always" — check the execution plan rather than trusting a rule of thumb. See [Chapter 47](#47-execution-plans).
@@ -9210,7 +9211,7 @@ WHERE dbo.fn_order_total(order_id) > 1000;
 DELIMITER $$
 CREATE FUNCTION fn_order_total(p_order_id INT)
 RETURNS DECIMAL(12,2)
-DETERMINISTIC
+NOT DETERMINISTIC  -- the same order ID can return a different total after data changes
 READS SQL DATA
 BEGIN
     DECLARE v_total DECIMAL(12,2);
@@ -9647,6 +9648,8 @@ END$$
 DELIMITER ;
 ```
 
+**Keep stock examples separate:** the stock-maintenance trigger and the order procedure in Chapter 37 are alternative implementations. Installing both can decrement stock twice. MySQL foreign-key cascades do not activate child triggers, so a delete-restock trigger must not depend on cascaded deletes.
+
 #### 39.5 ⚠️ Why experienced engineers are cautious with triggers
 
 | Problem | Why it hurts |
@@ -9656,11 +9659,11 @@ DELIMITER ;
 | **Performance** | Every write pays the trigger cost, forever |
 | **Cascading chains** | Trigger A updates a table, firing trigger B, firing trigger C… |
 | **Recursion** | A trigger on `products` that updates `products` can loop |
-| **Bulk operations** | `TRUNCATE` and bulk loads bypass triggers entirely — your audit silently has holes |
+| **Bulk operations** | `TRUNCATE` does not fire delete triggers. SQL Server `BULK INSERT` needs `FIRE_TRIGGERS`; MySQL `LOAD DATA` fires insert triggers |
 | **Transaction scope** | An error inside a trigger rolls back the *whole* outer transaction |
 
 > [!WARNING]
-> ⚠️ **The bulk-load hole is a real problem on live systems.** If a legally required audit depends on a trigger, and someone loads data with `BULK INSERT` or `LOAD DATA INFILE`, those rows are never audited. Verify how data enters your system before relying on triggers for compliance.
+> ⚠️ **Check each ingestion path.** SQL Server `BULK INSERT` skips insert triggers unless `FIRE_TRIGGERS` is specified; MySQL `LOAD DATA INFILE` activates insert triggers. Neither engine fires delete triggers for `TRUNCATE`. Test the actual operation and permissions used by your loader. See the [MySQL trigger reference](https://dev.mysql.com/doc/refman/8.4/en/create-trigger.html) and [SQL Server BULK INSERT options](https://learn.microsoft.com/en-us/sql/t-sql/statements/bulk-insert-transact-sql).
 
 > [!TIP]
 > 💡 **Modern alternatives to consider first:**
@@ -10795,6 +10798,8 @@ VALUES (4, 'Legacy Netbook 10', 1, 249.00);
 
 #### 44.3 ✅ The portable upsert (works everywhere)
 
+**Concurrency contract:** the update-then-insert shape below needs a unique key and engine-specific locking or a duplicate-key retry. A transaction alone does not serialize two sessions that both see a missing row. Prefer a tested engine-native upsert or serialize the key range before deciding to insert.
+
 ```sql
 -- ✅ Works in BOTH: update first, insert what did not exist
 -- Run the two statements inside one transaction —
@@ -10849,12 +10854,21 @@ CREATE TABLE page_views (
 );
 GO
 
-UPDATE page_views SET views = views + 1
-WHERE page_url = '/products/5' AND view_date = CAST(GETDATE() AS DATE);
+SET XACT_ABORT ON;
+BEGIN TRY
+    BEGIN TRANSACTION;
+    UPDATE page_views WITH (UPDLOCK, SERIALIZABLE) SET views = views + 1
+    WHERE page_url = '/products/5' AND view_date = CAST(GETDATE() AS DATE);
 
-IF @@ROWCOUNT = 0
-    INSERT INTO page_views (page_url, view_date, views)
-    VALUES ('/products/5', CAST(GETDATE() AS DATE), 1);
+    IF @@ROWCOUNT = 0
+        INSERT INTO page_views (page_url, view_date, views)
+        VALUES ('/products/5', CAST(GETDATE() AS DATE), 1);
+    COMMIT;
+END TRY
+BEGIN CATCH
+    IF XACT_STATE() <> 0 ROLLBACK;
+    THROW;
+END CATCH;
 ```
 
 **③ Maintaining a summary/cache table after each order:**
@@ -11763,7 +11777,7 @@ WHERE YEAR(o.order_date) = 2026
 ORDER BY o.order_date DESC;
 ```
 
-**What the plan shows:** a table scan on `orders` (145 logical reads on our tiny table — imagine 5 million rows), plus a Sort operator.
+**What to inspect:** look for scans, sorts and logical reads in your actual plan. The 145-read output earlier is illustrative, not a measurement from the 23-row ShopDB seed. A small table may reasonably scan even when an index exists.
 
 **Diagnosis:**
 1. `YEAR(o.order_date)` wraps the column in a function → **not SARGable** → no index can be used.
@@ -11789,7 +11803,7 @@ WHERE o.order_date >= '2026-01-01'            -- ✅ SARGable range
 ORDER BY o.order_date DESC;                   -- ✅ satisfied by the index order
 ```
 
-**Result:** index seek instead of scan, no Sort operator, no Key Lookup. On a real table this is routinely a 100x improvement.
+**Expected opportunity:** an index seek or covering scan may reduce reads and sorting. The optimizer chooses the final plan; measure elapsed time and I/O before claiming an improvement.
 
 #### 47.6 🧰 Plan caching and parameter sniffing
 
@@ -12194,6 +12208,8 @@ IF EXISTS (SELECT 1 FROM orders WHERE customer_id = 3)
 **⑩ Do not sort what you do not need sorted.** An `ORDER BY` in a subquery or view is usually wasted work.
 
 #### 48.3 🔬 Before and after: a real rewrite
+
+**Result-shape change:** the first query returns joined detail columns; the second deliberately produces one summary row per order. This is not a semantics-preserving performance rewrite. Confirm the required projection and aggregation first, and compare equivalent outputs before measuring speed. The country comparison also assumes the intended case-insensitive collation.
 
 ```sql
 -- 😱 BEFORE: 4 problems in 12 lines
@@ -12966,9 +12982,9 @@ BEGIN
     SET NOCOUNT ON;
 
     UPDATE c
-    SET c.order_count = x.n
+    SET c.order_count = COALESCE(x.n, 0)
     FROM customers c
-    JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) x
+    LEFT JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) x
       ON x.customer_id = c.customer_id
     WHERE c.customer_id IN (SELECT customer_id FROM inserted
                             UNION SELECT customer_id FROM deleted);
@@ -12986,9 +13002,9 @@ GROUP BY c.customer_id, c.order_count
 HAVING c.order_count <> COUNT(o.order_id);      -- should return ZERO rows
 
 -- 3️⃣ REBUILD it — a script that recomputes everything from the source of truth
-UPDATE c SET order_count = s.n
+UPDATE c SET order_count = COALESCE(s.n, 0)
 FROM customers c
-JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) s
+LEFT JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) s
   ON s.customer_id = c.customer_id;
 ```
 
@@ -13599,7 +13615,7 @@ ALTER ROLE app_role ADD MEMBER shop_app;
 
 > 🌍 **Analogy:** A **shared office inbox where the mail is pre-sorted**. Everyone opens the same cabinet, but each person physically only finds their own letters. They cannot look at a colleague's post even by accident, because it is not in the drawer they opened.
 
-The naive approach is a view with a `WHERE` clause — but anyone with table access can simply query the table directly and bypass it. RLS cannot be bypassed.
+The naive approach is a view with a `WHERE` clause — but anyone with table access can simply query the table directly and bypass it. RLS filters direct table queries while the policy is enabled. Administrators who can alter the policy remain trusted.
 
 ```sql
 -- 🟥 MSSQL: STEP 1 — a predicate function that returns a row when access is allowed
@@ -13612,8 +13628,8 @@ WITH SCHEMABINDING                        -- 🔑 required
 AS
 RETURN
     SELECT 1 AS is_visible
-    WHERE @employee_id = CAST(SESSION_CONTEXT(N'employee_id') AS INT)
-       OR SESSION_CONTEXT(N'employee_id') IS NULL;   -- no context set = admin/full view
+    WHERE @employee_id = TRY_CAST(SESSION_CONTEXT(N'employee_id') AS INT);
+    -- Missing or invalid context grants no rows.
 GO
 
 -- STEP 2 — bind it to the table as a security policy
@@ -13627,7 +13643,7 @@ GO
 
 ```sql
 -- 🟥 MSSQL
-SELECT COUNT(*) AS visible FROM orders;                  -- 23  (no context = full view)
+SELECT COUNT(*) AS visible FROM orders;                  --  0  (no context = no access)
 
 EXEC sp_set_session_context @key = N'employee_id', @value = 3;
 SELECT COUNT(*) AS visible FROM orders;                  -- 10  (Priya Raman's orders)
@@ -13636,11 +13652,11 @@ EXEC sp_set_session_context @key = N'employee_id', @value = 4;
 SELECT COUNT(*) AS visible FROM orders;                  --  7  (Tom Becker's orders)
 ```
 
-**Verified output on ShopDB:**
+**Expected output with this fail-closed predicate on fresh ShopDB:**
 
 | session context | rows visible in `orders` |
 |---|---|
-| *(none set)* | 23 |
+| *(none set)* | 0 |
 | `employee_id = 3` | 10 |
 | `employee_id = 4` | 7 |
 
@@ -13658,7 +13674,7 @@ SELECT COUNT(*) AS visible FROM orders;                  --  7  (Tom Becker's or
 > [!WARNING]
 > ⚠️ **Three cautions:**
 > 1. **The predicate runs on every query against that table** — keep it trivially cheap and make sure the column it filters on is **indexed**, or you will slow down the entire application.
-> 2. **`sp_set_session_context` must be set by trusted code**, normally right after the connection is opened. If the application can be tricked into setting someone else's ID, RLS has bought you nothing. Also note that this demo shows **every** row when no ID is set — handy for learning, but in a real system a missing ID should show **nothing**.
+> 2. **`sp_set_session_context` must be set by trusted code**, normally right after the connection is opened. If the application can be tricked into setting someone else's ID, RLS has bought you nothing. This demo denies access when no ID is set. A database user who can choose their own session context can impersonate another rep; this pattern assumes authenticated, trusted application code owns the connection.
 > 3. **RLS applies to everyone, including `db_owner` and `sysadmin` members.** If administrators must see all rows, build that rule into the predicate function yourself — and always test with a real, low-privilege user before you trust it.
 
 ```sql
@@ -14054,7 +14070,7 @@ WITH COMPRESSION, CHECKSUM;
 ```
 
 > [!TIP]
-> 💡 **`WITH CHECKSUM` verifies pages as they are backed up**, catching corruption at backup time rather than at 3 a.m. during a restore. `WITH COMPRESSION` typically shrinks the file by 70–80% and, because less is written, often makes the backup **faster**. Use both, always.
+> 💡 **`WITH CHECKSUM` verifies pages as they are backed up**, catching corruption at backup time rather than at 3 a.m. during a restore. `WITH COMPRESSION` can reduce I/O, at a CPU cost; the ratio depends on the data. It is edition-dependent (SQL Server 2022 Express cannot create compressed backups), so omit `COMPRESSION` where unsupported. Check the [edition feature matrix](https://learn.microsoft.com/en-us/sql/sql-server/editions-and-components-of-sql-server-2022).
 
 **A typical schedule for a live system:**
 
@@ -14133,7 +14149,7 @@ mysqldump -u root -p \
 mysqldump -u root -p --all-databases --single-transaction > all_20260909.sql
 
 # Compressed
-mysqldump -u root -p ShopDB | gzip > ShopDB_20260909.sql.gz
+mysqldump -u root -p --single-transaction --routines --triggers --events --source-data=2 ShopDB | gzip > ShopDB_20260909.sql.gz
 ```
 
 > [!TIP]
@@ -14169,14 +14185,17 @@ SHOW BINLOG EVENTS LIMIT 20;       -- the first log; add IN 'mysql-bin.000042' f
 # 1. Restore the last full dump
 mysql -u root -p ShopDB < ShopDB_20260909.sql
 
-# 2. Replay the binlog up to just before the disaster
-mysqlbinlog --start-datetime="2026-09-09 01:00:00" \
+# 2. TEMPLATE: replace this file/position with the coordinates recorded in the dump.
+# Include every subsequent required binlog in order; stop at the chosen recovery event.
+mysqlbinlog --start-position=RECORDED_POSITION \
             --stop-datetime="2026-09-09 12:06:59" \
             /var/log/mysql/mysql-bin.000042 | mysql -u root -p
 ```
 
 > [!WARNING]
 > ⚠️ **Without `log_bin` enabled, point-in-time recovery is impossible.** Your only option is restoring last night's dump and losing everything since. **Check that binary logging is on** with `SHOW VARIABLES LIKE 'log_bin';` — it is the MySQL equivalent of the transaction log. It has been on by default since MySQL 8.0, but it is often switched off to save disk space.
+
+**Recovery preconditions:** use the exact file and position recorded by `--source-data=2`, not an assumed backup start time. Archive the complete required log chain and test replay into an isolated restore instance. See [MySQL point-in-time recovery](https://dev.mysql.com/doc/refman/8.4/en/point-in-time-recovery-binlog.html). Physical `--copy-back` also requires a stopped server, an appropriate empty data directory, compatible tooling and restored ownership; the three XtraBackup commands above are an outline, not a complete restore runbook.
 
 #### 56.4 🌐 High availability
 
@@ -14415,7 +14434,9 @@ SHOW EVENTS FROM ShopDB;
 The **system catalog** is a set of built-in views that describe the database itself — its tables, columns, indexes, and keys. You query it with ordinary `SELECT` statements.
 
 ```sql
--- ✅ INFORMATION_SCHEMA works in BOTH (ANSI standard)
+-- 🟦 MySQL: TABLE_SCHEMA is the database name.
+-- 🟥 SQL Server: use TABLE_CATALOG = 'ShopDB' AND TABLE_SCHEMA = 'dbo'
+-- in each WHERE clause below instead; schema and database are separate concepts.
 SELECT table_name, table_type FROM information_schema.tables WHERE table_schema = 'ShopDB';
 
 SELECT table_name, column_name, data_type, is_nullable, column_default
@@ -15726,19 +15747,20 @@ ORDER BY product_id, valid_from;
 > [!WARNING]
 > ⚠️ **Two updates can collapse into one version, and both reasons surprise people.**
 >
-> 1. **Precision.** The period columns above are `DATETIME2(2)` — a 10 ms tick. Two updates inside the same tick produce a zero-duration history row, which the engine discards. Run the three statements back to back with no delay and you get **no history at all**. `DATETIME2(7)` records all three. Choose the precision to match how fast the table actually changes.
-> 2. **Transactions.** Every row version written inside one transaction gets the **transaction's** start time. Two updates in one explicit transaction therefore produce **one** history row, and the intermediate value never existed as far as the history is concerned:
+> 1. **Precision.** The period columns above are `DATETIME2(2)` — a 10 ms tick. Updates within the same tick can produce a zero-duration history version. It remains in the history table, but `FOR SYSTEM_TIME` filters it out. Higher precision reduces timestamp ties; it does not guarantee distinct times.
+> 2. **Transactions.** Every row version written inside one transaction gets the **transaction's** start time. Two updates in one explicit transaction can therefore create an intermediate history version with `valid_from = valid_to`:
 >
 > ```sql
 > -- 🟥 MSSQL
 > BEGIN TRANSACTION;
->     UPDATE dbo.product_prices SET unit_price = 1650.00 WHERE product_id = 1;   -- never recorded
+>     UPDATE dbo.product_prices SET unit_price = 1650.00 WHERE product_id = 1;   -- retained as a zero-duration history version
 >     UPDATE dbo.product_prices SET unit_price = 1600.00 WHERE product_id = 1;
 > COMMIT;
-> -- history gains exactly one row: the value as it was BEFORE the transaction
+> -- FOR SYSTEM_TIME omits the zero-duration intermediate version.
+> -- Query dbo.product_prices_history directly to inspect it.
 > ```
 >
-> That is the correct behaviour — history records **committed states**, not keystrokes — but it means temporal tables are not a substitute for an application log of every change someone attempted.
+> Temporal queries reconstruct transaction-time states; direct history queries can also reveal zero-duration versions. Neither records attempted changes that roll back or the business reason for a change. See [Microsoft’s temporal query semantics](https://learn.microsoft.com/en-us/sql/relational-databases/tables/temporal/overview).
 
 #### 62.2 🔎 Querying the past
 
@@ -15829,7 +15851,7 @@ DROP TABLE dbo.product_prices_history;
 
 | What temporal tables give you | What they do **not** give you |
 |---|---|
-| Every version of every row, automatically | **Who** changed it — add your own `updated_by` column with a `SYSTEM_USER` default |
+| Prior row versions while versioning is enabled | **Who** changed it — set `updated_by` on every update; a `SYSTEM_USER` default only fills inserts |
 | Correct behaviour under bulk loads and `MERGE` | **Why** it changed — add a reason column if the business needs one |
 | Point-in-time reads with normal SQL | A record of who *read* data — only changes are recorded |
 | History you can index (it is a real table) | Free storage — a frequently changed table can generate a lot of history |
@@ -15888,7 +15910,7 @@ FROM CHANGETABLE(CHANGES dbo.products, 0) AS ct;
 > [!WARNING]
 > ⚠️ **Check your edition before designing around CDC.** Change Data Capture requires SQL Server Agent and is **not available on Express**. Change Tracking *is* available on every edition including Express, which is one reason it is the more portable choice.
 
-> 🔀 **MySQL has no built-in system versioning.** The three realistic options are: a history table maintained by `AFTER INSERT/UPDATE/DELETE` triggers ([Chapter 39](#39-triggers)); an SCD Type 2 design where the application closes the old row and inserts a new one ([Chapter 53](#53-data-modeling-and-the-star-schema)); or a tool that reads changes from the binary log. The trigger route is the easiest to get running and the easiest to get subtly wrong — a bulk load that bypasses triggers leaves gaps in history that nobody notices for months.
+> 🔀 **MySQL has no built-in system versioning.** The three realistic options are: a history table maintained by `AFTER INSERT/UPDATE/DELETE` triggers ([Chapter 39](#39-triggers)); an SCD Type 2 design where the application closes the old row and inserts a new one ([Chapter 53](#53-data-modeling-and-the-star-schema)); or a tool that reads changes from the binary log. The trigger route is the easiest to get running and the easiest to get subtly wrong — missing event handlers leave gaps: the following example handles updates only, not inserts or deletes. MySQL `LOAD DATA` fires insert triggers; `TRUNCATE` does not fire delete triggers.
 
 ```sql
 -- 🟦 MySQL: the trigger-maintained history pattern, done properly
@@ -15944,7 +15966,7 @@ DELIMITER ;
 | You just want `updated_at` on a row | A column with a default. Do not over-engineer |
 
 > [!CAUTION]
-> **Do not hand-roll history with triggers if a built-in exists.** Hand-written audit triggers miss `TRUNCATE`, miss bulk inserts, miss `MERGE` branches, handle only one row when a statement changes many if written carelessly ([Chapter 39](#39-triggers)), and silently stop working when someone disables them for a data load. Temporal tables and change tracking cannot be bypassed that way.
+> **Do not hand-roll history with triggers if a built-in exists.** Hand-written audit triggers need explicit coverage for every event and ingestion path. SQL Server `BULK INSERT` needs `FIRE_TRIGGERS`; MySQL `LOAD DATA` fires insert triggers. Both engines omit delete triggers for `TRUNCATE`. SQL Server statement triggers must handle all rows in `inserted`/`deleted` ([Chapter 39](#39-triggers)). Built-in history and change features also require permissions, retention and consumer checks.
 
 #### 62.7 🧪 Try it yourself
 
@@ -15953,7 +15975,7 @@ DELIMITER ;
 3. Try to `DROP` a system-versioned table without turning versioning off. Read the error, then do it properly.
 4. Enable Change Tracking on `orders`, make three changes, and write the consumer query that a nightly ETL job would run.
 5. Deliberately let a `CHANGETABLE` version expire past retention and observe what the consumer sees.
-6. 🟦 MySQL: build the trigger-based history table above, then bulk-load rows in a way that bypasses it and explain what is now wrong with your history.
+6. 🟦 MySQL: extend the update-only history example with insert and delete handlers. Verify that `LOAD DATA` fires insert triggers, and explain why `TRUNCATE` still needs separate operational controls.
 
 > ### 🧭 In practice — temporal tables and change tracking
 >
@@ -16199,7 +16221,7 @@ SELECT ROW_COUNT();                   -- 1 = inserted, 0 = already there
 ```
 
 > [!TIP]
-> 💡 **The `PRIMARY KEY` is doing the real work.** Even if the `WHERE NOT EXISTS` loses the race, the unique constraint rejects the duplicate — so the worst case is a caught error, never a double charge. **Belt and braces is the correct engineering here**, because the cost of being wrong is a customer charged twice.
+> 💡 **The `PRIMARY KEY` is doing the real work.** Even if the `WHERE NOT EXISTS` loses the race, the unique constraint rejects the duplicate — so the ledger can reject duplicate keys. This alone does not make a payment exactly-once: reject key reuse with different payloads, commit database effects with the ledger in the same transaction, and use the payment provider’s idempotency contract for remote charges.
 
 > [!IMPORTANT]
 > 🎯 **Rule of thumb: any operation a client can retry needs a client-supplied key.** Server-generated IDs cannot help — the client never received the first one.
@@ -16226,7 +16248,7 @@ SET    status     = 'Processing',
        claimed_by = @@SPID,
        claimed_utc = SYSUTCDATETIME()
 OUTPUT inserted.job_id, inserted.payload
-FROM dbo.job_queue AS j WITH (READPAST, UPDLOCK, ROWLOCK)
+FROM dbo.job_queue AS j WITH (READPAST, UPDLOCK, READCOMMITTEDLOCK)
 WHERE j.status = 'Pending';
 ```
 
@@ -16252,7 +16274,7 @@ COMMIT;
 ```
 
 > [!TIP]
-> 💡 **`READPAST` 🟥 / `SKIP LOCKED` 🟦 is the whole trick.** Instead of *waiting* for a row another worker has locked, the query steps over it. Ten workers pull ten separate batches and none of them block. Without it, all ten queue up behind worker one and your throughput (jobs finished per second) is that of a single worker.
+> 💡 **`READPAST` 🟥 / `SKIP LOCKED` 🟦 is the whole trick.** Instead of *waiting* for a row another worker has locked, the query steps over it. Workers can claim separate batches, although page locks, schema locks and other contention can still block them. The SQL Server example uses `READCOMMITTEDLOCK` so it also works at `READ COMMITTED` when `READ_COMMITTED_SNAPSHOT` is enabled; see [table-hint restrictions](https://learn.microsoft.com/en-us/sql/t-sql/queries/hints-transact-sql-table). Without skip-locked behavior, workers may wait on each other; actual throughput depends on the plan, indexes, lock granularity and transaction duration.
 
 > [!TIP]
 > 💡 **`OUTPUT` 🟥 claims and reads in one statement** ([Chapter 12](#12-insert-putting-data-in)) — there is no window between "I claimed it" and "I read it" for a crash to fall into. 🟦 MySQL has no `OUTPUT` or `RETURNING`, which is why its version selects the rows `FOR UPDATE SKIP LOCKED` inside a transaction and then updates them.
@@ -16285,14 +16307,15 @@ COMMIT;
 ```
 
 ```sql
--- 🟦 MySQL: the equivalent
+-- 🟦 MySQL application-controlled fragment: run work ONLY when got_lock = 1.
+-- On 0 or NULL, skip work and report failure; release in application finally logic.
 SELECT GET_LOCK('nightly_rollup', 0) AS got_lock;    -- 1 = granted, 0 = timeout
 -- ... do the work ...
 SELECT RELEASE_LOCK('nightly_rollup');
 ```
 
 > [!TIP]
-> 💡 **This is a lock shared by all your servers (a *distributed mutex*) that you already own.** No extra infrastructure, no Redis, no ZooKeeper — and it releases automatically if the session dies, which is exactly the failure mode a home-made "is_running" flag column gets wrong.
+> 💡 **This coordinates application workers connected to the same database lock authority.** It is not a lock shared across independent database servers. No extra infrastructure, no Redis, no ZooKeeper — and it releases automatically if the session dies, which is exactly the failure mode a home-made "is_running" flag column gets wrong.
 
 #### 63.8 ⏱️ Fail fast: timeouts every application should set
 
@@ -16403,7 +16426,7 @@ Four rules make a migration safe:
 | **Idempotent** | Deploys get retried. Running it twice must be harmless |
 | **Transactional where the engine allows** | 🟥 MSSQL wraps DDL in transactions. 🟦 MySQL 8.0 has atomic DDL per statement, but **not** across statements |
 
-Here is a migration runner you can build yourself in an afternoon — and the tracking table every tool listed above creates for you:
+The following ledger and migration template illustrate the mechanism; they are not a complete concurrent migration runner. A runner must hash the **exact migration file bytes**, compare previously applied checksums, serialize execution, and manage engine-specific transaction rules. Hashing a filename would not detect an edited file. For example, PowerShell `Get-FileHash -LiteralPath ./db/migrations/V0007__add_opt_in.sql -Algorithm SHA256` computes the file hash.
 
 ```sql
 -- 🟥 MSSQL: the ledger of what has been applied
@@ -16420,7 +16443,9 @@ GO
 ```
 
 ```sql
--- 🟥 A migration script: guarded so re-running it is harmless
+-- 🟥 Migration template: a runner must substitute the file-byte SHA-256 below.
+-- The runner must serialize migrations and compare existing checksums before execution.
+DECLARE @migration_sha256 CHAR(64) = '<replace with SHA-256 of exact migration file bytes>';
 IF NOT EXISTS (SELECT 1 FROM dbo.schema_migrations WHERE version = '0007')
 BEGIN
     DECLARE @t0 DATETIME2(3) = SYSUTCDATETIME();
@@ -16434,7 +16459,7 @@ BEGIN
 
         INSERT INTO dbo.schema_migrations (version, description, checksum, duration_ms)
         VALUES ('0007', 'Add customers.marketing_opt_in',
-                CONVERT(CHAR(64), HASHBYTES('SHA2_256', 'V0007__add_opt_in.sql'), 2),
+                @migration_sha256,
                 DATEDIFF(MILLISECOND, @t0, SYSUTCDATETIME()));
 
         COMMIT;
@@ -16645,18 +16670,23 @@ SELECT COUNT(*) AS rows_only_in_new FROM (
 
 ```sql
 -- ✅ 🟥 MSSQL — constraint test: assert that the database refuses bad data
+BEGIN TRANSACTION;
 BEGIN TRY
     INSERT INTO orders (customer_id, order_date, status)
-    VALUES (1, '2026-01-01', 'Teleported');       -- violates ck_orders_status
-    SELECT 'FAIL - the constraint did not fire' AS result;
+    VALUES (1, '2026-01-01', 'Teleported');
+    ROLLBACK;
+    THROW 50001, 'FAIL - expected ck_orders_status to reject the insert', 1;
 END TRY
 BEGIN CATCH
-    SELECT 'PASS - rejected: ' + ERROR_MESSAGE() AS result;
+    IF XACT_STATE() <> 0 ROLLBACK;
+    IF ERROR_NUMBER() <> 547 OR ERROR_MESSAGE() NOT LIKE '%ck_orders_status%'
+        THROW;  -- an unrelated error is a failed test, never a PASS
+    SELECT 'PASS - expected status constraint rejected the insert' AS result;
 END CATCH;
 ```
 
 > [!IMPORTANT]
-> 🎯 **Test your constraints, not just your queries.** A `CHECK` constraint that was accidentally created `WITH NOCHECK`, or a foreign key someone disabled for a data load and never re-enabled, is invisible until the day bad data arrives. One test per business rule, run in CI (the automatic build-and-test pipeline), and you find out in 30 seconds instead of 30 months.
+> 🎯 **Test your constraints, not just your queries.** A disabled constraint permits invalid writes. A constraint added `WITH NOCHECK` can enforce new writes while leaving old data unvalidated and the constraint untrusted; validate existing rows with `WITH CHECK CHECK CONSTRAINT` when appropriate. One test per business rule, run in CI (the automatic build-and-test pipeline), and you find out in 30 seconds instead of 30 months.
 
 #### 64.6 🚀 The pipeline
 
@@ -17512,7 +17542,7 @@ ORDER BY order_date;
 | 1009 | 2026-03-21 |
 
 💡 **This is the point of the exercise.** `WHERE MONTH(order_date) = 3` returns the same rows and
-**cannot use an index**, because wrapping the column in a function makes the predicate
+**cannot directly seek a normal index on `order_date` for the month condition**, because wrapping the column in a function makes the predicate
 non-SARGable ([§48](#48-query-optimization-and-sargability)). The half-open range `>= start AND < next_start`
 is the SARGable form, and using `<` for the upper bound means you never have to think about whether
 the month has 28, 30, or 31 days — or about time components hiding at `23:59:59.997`.
@@ -17678,7 +17708,7 @@ moment nulls appear, and the difference is a common source of wrong totals ([§2
 **11. Every order with its customer name and sales rep name.**
 
 ```sql
--- ✅ Works in BOTH
+-- 🟥 MSSQL (MySQL concatenation variant explained below)
 SELECT o.order_id,
        c.full_name AS customer,
        COALESCE(e.first_name + ' ' + e.last_name, '(none)') AS sales_rep
@@ -17863,7 +17893,8 @@ exist but failed — a different, and usually wrong, answer.
 **18. Every employee with their manager's name, including the CEO.**
 
 ```sql
--- ✅ Works in BOTH
+-- 🟥 MSSQL; MySQL: use CONCAT(e.first_name, ' ', e.last_name)
+-- and COALESCE(CONCAT(m.first_name, ' ', m.last_name), '(no manager)')
 SELECT e.first_name + ' ' + e.last_name AS employee,
        COALESCE(m.first_name + ' ' + m.last_name, '(no manager)') AS manager
 FROM employees AS e
@@ -17961,10 +17992,10 @@ ORDER BY c.category_name, p.unit_price DESC;
 
 💡 This is a **correlated subquery**: it references `p.category_id` from the outer query, so it is
 conceptually re-evaluated per row. The window-function form is usually clearer and lets the engine do
-one pass:
+a windowed aggregate; compare plans before assuming it is faster:
 
 ```sql
--- ✅ Works in BOTH — same answer, one pass
+-- ✅ Works in BOTH — same answer, physical plan depends on the engine
 WITH priced AS (
     SELECT p.product_name, p.unit_price, c.category_name,
            AVG(p.unit_price) OVER (PARTITION BY p.category_id) AS cat_avg
@@ -18041,11 +18072,9 @@ ORDER BY c.category_name, r.rn;
 | Laptops | UltraBook Air 13 | 3 |
 | … | … | … |
 
-💡 **Two stacked CTEs**: aggregate first, then rank the aggregates. Trying to do both in one step
-fails, because you cannot rank a `SUM` in the same `SELECT` that computes it.
+💡 **Two stacked CTEs** make the stages explicit: aggregate first, then rank. You can also rank aggregates in the same grouped query with `ROW_NUMBER() OVER (... ORDER BY SUM(oi.quantity) DESC, p.product_name)`; aggregation precedes window evaluation.
 
-💡 Audio has a genuine tie at 4 units, broken alphabetically by the `, s.product_name` clause. Use
-`RANK()` instead if you would rather return **both** tied products and sometimes get three rows.
+💡 Audio has a genuine tie at 4 units, broken alphabetically by the `, s.product_name` clause. To keep ties together, replace the ranking expression with `RANK() OVER (PARTITION BY s.category_id ORDER BY s.units DESC)`; remove `s.product_name` from the ranking order. A rank-2 tie can then return more than two rows.
 
 ---
 
@@ -18196,8 +18225,7 @@ ORDER BY lvl, org_chart;
 | 2 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tom Becker |
 | 2 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Yuki Sato |
 
-💡 **A recursive CTE always has exactly two parts** joined by `UNION ALL`: an *anchor* that does not
-reference the CTE, and a *recursive member* that does. Get the anchor wrong and you get no rows; get
+💡 **This recursive CTE has two parts** joined by `UNION ALL`: an *anchor* that does not reference the CTE, and a *recursive member* that does. More complex CTEs may have multiple anchor or recursive members. Get the anchor wrong and you get no rows; get
 the join direction wrong and you walk the tree upward instead of downward.
 
 🟦 **MySQL:** `REPLICATE` is `REPEAT`, and `+` concatenation is `CONCAT`. MySQL also requires the
@@ -18532,7 +18560,7 @@ A city library needs a database. The requirements:
 | **Fact / dimension table** | The measurement table and its descriptive lookups in a star schema |
 | **Fan-out** | Row multiplication caused by joining two one-to-many children |
 | **Foreign key** | A column referencing a key in another table |
-| **GUID / UUID** | A long random ID that is unique across every computer, e.g. `3f2504e0-4f89-11d3-9a0c-0305e82c3301` |
+| **GUID / UUID** | A 128-bit identifier with version-dependent generation; some UUID versions encode time rather than randomness, e.g. `3f2504e0-4f89-11d3-9a0c-0305e82c3301` |
 | **Heap** | A table with no clustered index |
 | **Idempotent** | Safe to run more than once — the second run changes nothing |
 | **Index** | A sorted lookup structure that finds rows fast, like the index at the back of a book |
@@ -18544,7 +18572,7 @@ A city library needs a database. The requirements:
 | **Latency** | Waiting time — how long one request takes |
 | **Lost update** | Two writers both save, and one silently overwrites the other. No error is raised |
 | **Migration** | A versioned script, kept in Git, that changes the database structure (Chapter 64) |
-| **MVCC** | Multi-Version Concurrency Control — readers see a snapshot, so they never block writers |
+| **MVCC** | Multi-Version Concurrency Control — nonlocking reads can use snapshots; locking reads and writes can still block |
 | **N+1** | One query for a list, plus one more per row returned — an application-side performance bug |
 | **Normalization** | Structuring tables so each fact is stored exactly once |
 | **NULL** | "No value / unknown" — not zero and not an empty string (Chapter 15) |
@@ -18582,14 +18610,14 @@ A city library needs a database. The requirements:
 | **Surrogate key** | A meaningless generated identifier (an `IDENTITY` / `AUTO_INCREMENT` ID) |
 | **T-SQL** | *Transact-SQL* — Microsoft SQL Server's version of SQL |
 | **Table** | One list of one kind of thing, in rows and columns — like a spreadsheet tab |
-| **Temporal table** | 🟥 A table where the engine keeps every past version of every row automatically |
+| **Temporal table** | 🟥 A current/history table pair retaining prior updated or deleted versions while versioning is enabled; retention and query semantics still matter |
 | **Throughput** | How much work gets done per second |
 | **TLS** | Encryption for network connections — the padlock you see in a web browser |
 | **Transaction** | A group of changes that all succeed or all fail |
 | **Trigger** | Code that runs automatically on insert, update, or delete |
 | **UDF / TVF** | User-defined function / table-valued function — your own function that returns one value, or a whole table (Chapter 38) |
 | **Upsert** | Insert if new, update if existing |
-| **UTC** | Coordinated Universal Time — the only sane thing to store in a timestamp column |
+| **UTC** | Coordinated Universal Time — useful for instants; local schedules also need a time-zone ID, and dates may need no zone |
 | **utf8mb4** | 🟦 MySQL's real UTF-8 charset. The one named `utf8` is a broken three-byte subset |
 | **View** | A saved query that behaves like a table |
 | **Window function** | A calculation across related rows that does not collapse them |

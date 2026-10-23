@@ -334,6 +334,8 @@ graph TD
     R -->|returns NotImplemented| ERR["TypeError:<br/>unsupported operand type#40;s#41;"]
 ```
 
+**Dispatch caveat.** This diagram simplifies the distinct, unrelated-type case. For arithmetic, operands of the same type do not get a second reflected attempt; a right-hand strict subclass with its own reflected implementation can take priority. See the [Python data model](https://docs.python.org/3.12/reference/datamodel.html#emulating-numeric-types).
+
 **In words, if the diagram does not render.** For `a + b`, Python asks the **left** operand first.
 If `a.__add__` returns a real value, that is the answer. If it returns `NotImplemented`, Python asks
 the **right** operand's reflected method, `b.__radd__`. Only when *both* decline does Python raise a
@@ -356,7 +358,7 @@ Several special methods have *automatic backups*. Knowing these saves you writin
 | `bool(x)` / `if x:` | `__bool__` | `__len__` (zero → `False`) | `True` |
 | `item in x` | `__contains__` | `__iter__` (scan for a match) | `__getitem__` from index 0 |
 | `iter(x)` | `__iter__` | `__getitem__` from index 0 upward | `TypeError` |
-| `a != b` | `__ne__` | the negation of `__eq__` | `TypeError` |
+| `a != b` | `__ne__` | default delegates to `__eq__` and negates a supported result | identity inequality if both sides decline |
 | `reversed(x)` | `__reversed__` | `__len__` + `__getitem__` | `TypeError` |
 
 This is why defining `__repr__` alone already makes `print()` useful, and why a class with `__len__` is automatically falsy when empty.
@@ -1499,7 +1501,7 @@ True
 True
 ```
 
-**Why returning `NotImplemented` yields `False` here:** Python tries the reflected comparison, `"not a point".__eq__(Point(1, 2))`, which also returns `NotImplemented`. With both sides declining, Python falls back to its last resort for `==` — identity comparison — which is `False`. Unlike arithmetic, `==` never raises `TypeError`; it always produces an answer.
+**Why returning `NotImplemented` yields `False` here:** Python tries the reflected comparison, `"not a point".__eq__(Point(1, 2))`, which also returns `NotImplemented`. With both sides declining, Python falls back to its last resort for `==` — identity comparison — which is `False`. This fallback does not prevent a custom `__eq__` from raising an exception or returning a non-boolean object.
 
 #### ⚠️ Defect 2: defining `__eq__` silently makes your object unhashable
 
@@ -1681,7 +1683,7 @@ In **Python 2**, `!=` did *not* fall back to `__eq__`, so defining both was mand
 A teacher lining up students by height needs to compare any two and decide who goes first. `__lt__` is that comparison.
 
 #### 🔍 When to use it
-When your objects have a natural ordering. `__lt__` is the most valuable of the four ordering methods because `sorted()`, `min()`, `max()`, `list.sort()`, and `heapq` are all built on it alone — they never call `__gt__`.
+When your objects have a natural ordering. `__lt__` is the most valuable of the four ordering methods because `sorted()`, `list.sort()`, `min()` and `heapq` use `<`; `max()` uses `>`, which may use `__gt__` or the reflected `__lt__`.
 
 #### 💻 How to use it
 
@@ -5248,7 +5250,7 @@ This is how form-validation libraries and database ORMs (like Django's models) e
 >
 > **When _not_ to use it.** Avoid `__getattribute__` almost always: it runs on *every* attribute access, so it is slow and extremely easy to send into infinite recursion. Avoid `__getattr__` on classes where a typo should be an error — it can turn `obj.naem` into a silent success. And `__slots__` is not a free optimisation: it blocks adding attributes dynamically, removes `__dict__`, and interacts awkwardly with multiple inheritance and some caching decorators.
 >
-> **Best practices.** Inside `__getattr__` or `__setattr__`, never touch `self.something` directly — that re-enters the same hook and recurses until the stack overflows. Use `object.__setattr__(self, name, value)` or `super().__getattr__`. Always raise `AttributeError` (not `KeyError`) for names you cannot supply, because `hasattr`, `copy`, and `pickle` all depend on that. Prefer `property` to a hand-written descriptor unless the logic is genuinely reused.
+> **Best practices.** Inside `__setattr__`, assign with `object.__setattr__`; ordinary assignment calls the hook again. In `__getattr__`, an existing backing attribute can be read normally, but a missing backing attribute re-enters the hook. Use `object.__getattribute__(self, name)` when bypassing custom lookup; `object` has no `__getattr__` to call. Always raise `AttributeError` (not `KeyError`) for names you cannot supply, because `hasattr`, `copy`, and `pickle` all depend on that. Prefer `property` to a hand-written descriptor unless the logic is genuinely reused.
 
 #### 🧪 Check your understanding
 
@@ -5702,7 +5704,7 @@ class Box:
         self.items = items
 
     def __copy__(self):
-        return Box(self.items[:])   # [:] means "make a copy of the list"
+        return Box(self.items)      # a new Box sharing the original items list
 
 b1 = Box([1, 2, 3])
 b2 = copy.copy(b1)
@@ -5729,7 +5731,10 @@ class Box:
         self.items = items
 
     def __deepcopy__(self, memo):
-        return Box(copy.deepcopy(self.items, memo))
+        new = Box.__new__(Box)
+        memo[id(self)] = new             # register BEFORE copying nested state
+        new.items = copy.deepcopy(self.items, memo)
+        return new
 
 b1 = Box([[1, 2], [3, 4]])
 b2 = copy.deepcopy(b1)
@@ -5739,7 +5744,7 @@ print(b2.items)   # [[1, 2, 99], [3, 4]]
 ```
 
 #### 🧒 In Plain English
-The `memo` argument is Python's way of tracking which objects have already been copied (to handle circular references). You just pass it along — you rarely need to think about it.
+The `memo` argument is Python's way of tracking which objects have already been copied (to handle circular references). Register the new outer object in `memo[id(self)]` before copying its children, then pass `memo` along. This preserves shared references and lets self-referential objects copy without infinite recursion.
 
 ---
 
@@ -5926,7 +5931,7 @@ Read it twice: once to see the breadth, once to notice what the earlier examples
 
 Before the code, three choices that shape everything below:
 
-1. **`Vector` is immutable.** No method modifies `self`; every operation returns a new `Vector`. This is what makes `__hash__` safe (Entry 16) and lets vectors be dictionary keys and set members.
+1. **`Vector` blocks ordinary assignment and deletion.** Arithmetic returns a new `Vector`; coordinates must be finite. This teaching guard does not prevent deliberate `object.__setattr__` or a direct second call to `__init__`. Treat hashed values as fixed after construction. This is what makes `__hash__` safe (Entry 16) and lets vectors be dictionary keys and set members.
 2. **Every binary operator guards its operand type** and returns `NotImplemented` when it cannot help, so Python produces clear `TypeError` messages instead of leaking `AttributeError`.
 3. **It is a sequence of length 2**, so `x, y = v` unpacking, `v[0]`, and `list(v)` all work — the behaviours a caller expects from something coordinate-shaped.
 
@@ -5949,8 +5954,11 @@ class Vector:
         # Reject bad input at construction so an invalid Vector cannot exist.
         if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
             raise TypeError("Vector components must be numbers")
-        object.__setattr__(self, "_x", float(x))
-        object.__setattr__(self, "_y", float(y))
+        x, y = float(x), float(y)
+        if not math.isfinite(x) or not math.isfinite(y):
+            raise ValueError("Vector components must be finite")
+        object.__setattr__(self, "_x", x)
+        object.__setattr__(self, "_y", y)
 
     # --- read-only access ------------------------------------------------
     @property
@@ -5964,6 +5972,9 @@ class Vector:
     def __setattr__(self, name, value):
         # Enforce immutability: block ALL attribute assignment after __init__.
         raise AttributeError(f"Vector is immutable; cannot set {name!r}")
+
+    def __delattr__(self, name):
+        raise AttributeError(f"Vector is immutable; cannot delete {name!r}")
 
     # --- description (Entries 6-8) ---------------------------------------
     def __repr__(self):
@@ -6033,7 +6044,8 @@ class Vector:
     def __lt__(self, other):
         if not isinstance(other, Vector):
             return NotImplemented
-        return abs(self) < abs(other)      # ordered by magnitude
+        return (abs(self), self._x, self._y) < (abs(other), other._x, other._y)
+        # Magnitude first; coordinate tie-breakers agree with coordinate equality.
 
     def __hash__(self):
         return hash((self._x, self._y))    # safe: the object is immutable
@@ -6156,8 +6168,8 @@ Each message names the real problem. Compare with the unguarded version from ear
 **Trace the second line to see the protocol working.** `a * a` is `Vector * Vector`:
 
 1. `Vector.__mul__(a, a)` runs, finds `a` is not an `int` or `float`, and returns `NotImplemented`.
-2. Python tries the reflected form, `Vector.__rmul__(a, a)`. Since `__rmul__ = __mul__`, it also returns `NotImplemented`.
-3. Both sides have declined, so Python raises `TypeError` naming the operator and both operand types.
+2. Both operands have the same type, so Python does not retry `Vector.__rmul__`.
+3. No supported operation remains, so Python raises `TypeError` naming the operator and both operand types.
 
 That final message was produced entirely by Python, not by us — it is the reward for returning `NotImplemented` instead of raising. Had `__mul__` raised its own `TypeError` immediately, step 2 could never happen, and a future `Matrix` class defining `__rmul__` would be unable to cooperate with `Vector`.
 
@@ -6615,7 +6627,7 @@ NameError: name '_internal_helper' is not defined
 The edition number on a book. This is a **convention** (not enforced by Python) that packages use to declare their version.
 
 #### 🔍 When to use it
-In every package you publish. Users and tools like `pip` and `importlib.metadata` check this.
+Expose it when useful to users. `pip` and `importlib.metadata` read installed distribution metadata, not the module’s `__version__` variable.
 
 #### 💻 How to use it
 
@@ -6844,7 +6856,7 @@ Not a dunder method, but you will see this folder appear next to your code. It i
 |--------|---------|----------------|
 | `__name__` | Module's name (or `"__main__"` if run directly) | Every module |
 | `__doc__` | Module docstring | Every module |
-| `__file__` | Path to the file on disk | Every module |
+| `__file__` | Source or loader path, when provided | Optional; absent on some modules |
 | `__dict__` | Module's namespace | Every module |
 | `__package__` | Parent package name | Every module |
 | `__path__` | Search paths for submodules | Packages only |
@@ -6918,7 +6930,7 @@ print(another.name)             # Max
 ### 122. `__dict__` — The Object's Storage Room 🟢
 
 #### 🎨 The story
-The drawer where an object keeps all its personal belongings (its attributes). Every object has one, unless it uses `__slots__`.
+The drawer where an object keeps all its personal belongings (its attributes). Many user-defined instances have one. Built-in objects such as `int` and `list`, and many slotted instances, do not.
 
 #### 🔍 When to use it
 - To see all attributes of an object at once.
@@ -7987,6 +7999,9 @@ class Coordinate:
     def __setattr__(self, name, value):
         raise AttributeError("Coordinate is immutable")
 
+    def __delattr__(self, name):
+        raise AttributeError("Coordinate is immutable")
+
     def __eq__(self, other):
         if not isinstance(other, Coordinate):
             return NotImplemented              # never raise on a foreign type
@@ -8360,7 +8375,7 @@ try:
 except TypeError as e:
     print(e)
 
-print(sum([Vector2D(1, 1), Vector2D(2, 2)], Vector2D(0, 0)))
+print(sum([Vector2D(1, 1), Vector2D(2, 2)]))
 ```
 
 **Expected output:**
@@ -8376,7 +8391,7 @@ unsupported operand type(s) for +: 'Vector2D' and 'str'
 Vector2D(3, 3)
 ```
 
-`v1 + "nope"` raises because `__add__` returns `NotImplemented` for a `str`, Python then tries `str.__add__`, which also returns `NotImplemented`, and Python raises `TypeError` itself. `sum(...)` works only because `__radd__` handles the `0 + Vector2D(...)` step that `sum` always starts with.
+`v1 + "nope"` raises because `__add__` returns `NotImplemented` for a `str`, there is no supported reflected addition from the string operand, and Python raises `TypeError` itself. `sum(...)` works only because `__radd__` handles the `0 + Vector2D(...)` step that `sum` always starts with.
 
 ---
 
@@ -8643,7 +8658,7 @@ import pickle
 class Deck:
     def __init__(self, cards):
         self.cards = list(cards)
-        self.shuffle_rng = object()     # stand-in for something unpicklable
+        self.shuffle_rng = object()     # picklable transient placeholder, deliberately omitted below
 
     def __aiter__(self):
         return self
@@ -8662,13 +8677,14 @@ class Deck:
 
     def __deepcopy__(self, memo):
         new = Deck.__new__(Deck)
-        new.cards = copy.deepcopy(self.cards, memo)   # independent list
+        memo[id(self)] = new
+        new.cards = copy.deepcopy(self.cards, memo)   # independent list; cycles preserved
         new.shuffle_rng = object()
         return new
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        del state["shuffle_rng"]          # drop the unpicklable attribute
+        del state["shuffle_rng"]          # exclude transient state (a real lock/socket would be unpicklable)
         return state
 
     def __setstate__(self, state):
@@ -8826,7 +8842,7 @@ origin is not a valid point
 
 ## 🎉 Final Words
 
-You now hold the complete map of Python's most powerful hidden feature. Every dunder method Python offers is on these pages, explained the same simple way.
+You now hold the complete map of Python's most powerful hidden feature. These pages cover a broad teaching selection of special methods and attributes, using Python 3.12 as the main baseline. They are not an exhaustive language reference; check the versioned Python documentation for omitted or newer hooks.
 
 You do not need to memorize them all. Just remember the pattern:
 

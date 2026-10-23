@@ -16,7 +16,7 @@ Build a browser chat app with **Ollama, Qwen3.5 9B, Python, and Streamlit on Win
 
 **Minimum prerequisites:** install Python 3.12 if available; be able to create a file and run a PowerShell command. VS Code is a convenient editor. You do not need .NET, Azure, SQL, Codex, Claude Code, or MCP for this lab.
 
-Follow [1–4](#lab-build): prepare the folder → install Ollama → get one base-model answer → create the profile used by this app. Then [5–8](#lab-packages): install two Python packages → create the app → start it → verify it. Stop at the browser-chat checkpoint. Profile experiments, 64K context, removal and uninstall are [optional reference](#lab-reference).
+Follow [1–4](#lab-build): prepare the folder → install Ollama → get one base-model answer → create the profile used by this app. Then [5–8](#lab-packages): install three Python packages → create the app → start it → verify it. Stop at the browser-chat checkpoint. Profile experiments, 64K context, removal and uninstall are [optional reference](#lab-reference).
 
 **Commands have different destinations:** `ollama ...` and `python ...` run in PowerShell; `/bye` runs inside the Ollama chat; code goes in the named file; chat questions go in the browser. A long-running command occupies its terminal—use a second PowerShell to inspect it.
 
@@ -520,7 +520,7 @@ Set-Location "$HOME\LocalAI-Learning-Lab"
 Install into the selected global Python interpreter:
 
 ```powershell
-python -m pip install ollama streamlit
+python -m pip install ollama streamlit httpx
 ```
 
 Verify both imports:
@@ -548,6 +548,7 @@ Create a minimal dependency record:
 @'
 ollama
 streamlit
+httpx
 '@ | Set-Content -Encoding ascii .\requirements.txt
 
 Get-Content .\requirements.txt
@@ -559,17 +560,19 @@ Record the versions that actually work before a later upgrade:
 
 ```powershell
 python --version
-python -m pip show ollama streamlit
+python -m pip show ollama streamlit httpx
 python -m pip check
 ```
 
-The two unpinned entries in `requirements.txt` describe dependencies, not a reproducible lockfile. After successful browser verification, record the installed `ollama` and `streamlit` versions in the lab notes; use those tested versions when sharing the exercise. Do not copy another machine's complete global `pip freeze` into this project's requirements.
+The three unpinned entries in `requirements.txt` describe dependencies, not a reproducible lockfile. After successful browser verification, record the installed `ollama`, `streamlit` and `httpx` versions in the lab notes; use those tested versions when sharing the exercise. Do not copy another machine's complete global `pip freeze` into this project's requirements.
+
+The app catches both Ollama’s connection wrapper and [HTTPX connection/timeout exceptions](https://www.python-httpx.org/exceptions/), which can escape during streaming. The 120-second setting limits network operations or inactivity; it is not a wall-clock limit for a stream that keeps producing chunks.
 
 ### ✅ Checkpoint — packages installed
 
 ```powershell
-pip show streamlit
-pip show ollama
+python -m pip show streamlit
+python -m pip show ollama
 ```
 
 **Expected:** both commands print a `Name`, `Version`, and `Location`, and the `Location` matches the Python interpreter confirmed earlier with `python -c "import sys; print(sys.executable)"`. Confirm the printed `Version` matches what you recorded in the lab notes.
@@ -594,6 +597,7 @@ Create `main.py` in VS Code and paste this complete teaching application:
 import os
 from collections.abc import Iterator
 
+import httpx
 import streamlit as st
 from ollama import Client, ResponseError
 
@@ -629,6 +633,7 @@ def initialize_session_state() -> None:
 def get_ollama_client() -> Client:
     """Create one Ollama client for the Streamlit process."""
 
+    # HTTPX applies this timeout to network operations/inactivity, not total generation time.
     return Client(host=OLLAMA_HOST, timeout=120.0)
 
 
@@ -747,13 +752,13 @@ def process_user_message(client: Client) -> None:
         except ResponseError as error:
             st.session_state["messages"].pop()
             st.error(f"Ollama returned an error:\n\n{error.error}")
-        except ConnectionError:
+        except (ConnectionError, httpx.ConnectError):
             st.session_state["messages"].pop()
             st.error(
                 "Cannot connect to Ollama. Start the Ollama Windows application "
                 f"and verify {OLLAMA_HOST}."
             )
-        except TimeoutError:
+        except (TimeoutError, httpx.TimeoutException):
             st.session_state["messages"].pop()
             st.error(
                 "Ollama did not respond before the timeout. Check the loaded model "
@@ -1001,7 +1006,7 @@ Correct `Modelfile.32k`, recreate the named profile with `ollama create`, then r
 ```powershell
 python -c "import sys; print(sys.executable)"
 python -m pip --version
-python -m pip install --upgrade ollama streamlit
+python -m pip install --upgrade ollama streamlit httpx
 ```
 
 The first two commands must point to the same Python installation.

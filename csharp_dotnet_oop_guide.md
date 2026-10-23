@@ -883,7 +883,7 @@ graph LR
 | Class | Object |
 |---|---|
 | Exists once, in your source code | Exists many times, in memory while the program runs |
-| Costs nothing at runtime | Takes up memory |
+| Defines a runtime type and its metadata | Each instance also uses memory |
 | Defines *what members exist* | Holds *the actual values* |
 | Blueprint / recipe / mould | House / cake / casting |
 
@@ -2050,7 +2050,7 @@ This is why every object in .NET already has four methods, **even if you never w
 | `ToString()` | Returns the type's full name — usually useless | ✅ **Almost always yes** |
 | `Equals(object)` | Compares *references* (are they the same object?) | Only for value-like types |
 | `GetHashCode()` | A number used by `Dictionary` / `HashSet` | Always, **if** you override `Equals` |
-| `GetType()` | The runtime type of the object | ❌ You cannot — it's sealed |
+| `GetType()` | The runtime type of the object | ❌ It is nonvirtual |
 
 Prove it to yourself:
 
@@ -2313,9 +2313,9 @@ at a new house does not move the caller's key.
 
 | | 📄 Value type | 🔑 Reference type |
 |---|---|---|
-| **Stored** | Usually on the **stack** (or inline inside its owner) | Object on the **heap**; reference on the stack |
-| **Cleaned up** | Instantly, when the method ends | By the **garbage collector**, whenever it decides |
-| **Copy cost** | Copies all the bytes | Copies 8 bytes (the reference) |
+| **Stored** | Inline in its owner, a local/register, or boxed on the managed heap | Object normally on the managed heap; references can be locals, fields or array elements |
+| **Cleaned up** | Lifetime follows its storage; resources still need explicit disposal | Unreachable managed storage is reclaimed by the garbage collector |
+| **Copy cost** | Copies the value (unless passed by reference) | Copies a reference; its size depends on the process architecture |
 | **Default value** | Zero-filled (`0`, `false`) | `null` |
 
 ```csharp
@@ -2902,7 +2902,7 @@ public class Order
     private readonly List<OrderItem> items = new();       // 🔒 the real list
 
     // 🔍 A read-only VIEW. Callers can look and loop, but not modify.
-    public IReadOnlyList<OrderItem> Items => items;
+    public IReadOnlyList<OrderItem> Items => items.AsReadOnly();
 
     public OrderStatus Status { get; private set; } = OrderStatus.Draft;
 
@@ -3019,7 +3019,7 @@ compile or throw a clear exception.
 >
 > **When _not_ to use it.** A pure data carrier crossing a boundary — a deserialised request, a DTO about to become JSON — has no rules to protect, and a `record` with `init` properties is the better shape. Encapsulation there is ceremony.
 >
-> **Best practices.** Exposing a collection as `IReadOnlyList<T>` is a **shallow** guard: callers cannot add or remove, but they can still mutate the objects inside it. Make the elements immutable too when that matters. And put the rule in the object rather than in the caller — validating in the UI and trusting the object is the classic failure.
+> **Best practices.** Expose a read-only wrapper such as `items.AsReadOnly()` instead of the raw list: an `IReadOnlyList<T>` reference to a raw `List<T>` can be cast back and mutated. A wrapper still allows mutable element objects to change. Make the elements immutable too when that matters. And put the rule in the object rather than in the caller — validating in the UI and trusting the object is the classic failure.
 
 
 ---
@@ -4929,7 +4929,7 @@ public class Department
     private readonly List<Employee> employees = new();
 
     public string Name { get; init; } = "";
-    public IReadOnlyList<Employee> Employees => employees;
+    public IReadOnlyList<Employee> Employees => employees.AsReadOnly();
 
     public void Assign(Employee employee) => employees.Add(employee);
     public void Release(Employee employee) => employees.Remove(employee);
@@ -4949,7 +4949,7 @@ public class Order
 {
     private readonly List<OrderItem> items = new();
 
-    public IReadOnlyList<OrderItem> Items => items;
+    public IReadOnlyList<OrderItem> Items => items.AsReadOnly();
 
     // 👑 The Order CREATES its own items — they have no life outside it.
     public void AddItem(string productName, int quantity, decimal unitPrice)
@@ -5311,7 +5311,8 @@ else
     Console.WriteLine("invalid");                     // ← this runs
 
 // string → Enum
-if (Enum.TryParse<OrderStatus>("Shipped", ignoreCase: true, out var parsed))
+if (Enum.TryParse<OrderStatus>("Shipped", ignoreCase: true, out var parsed)
+    && Enum.IsDefined(parsed))
     Console.WriteLine(parsed);                        // Shipped
 
 // List every value
@@ -5321,7 +5322,7 @@ foreach (OrderStatus value in Enum.GetValues<OrderStatus>())
 
 > ⚠️ **Gotcha 1** — Casting *any* integer to an enum succeeds, even nonsense values. Any enum
 > arriving from a database, API, or user input **must** be validated with `Enum.IsDefined` or
-> `Enum.TryParse`.
+> `Enum.TryParse` **plus** `Enum.IsDefined` for a non-flags enum. Parsing alone accepts numeric strings such as `"999"` even when no member has that value; see [Enum.TryParse](https://learn.microsoft.com/en-us/dotnet/api/system.enum.tryparse).
 
 > ⚠️ **Gotcha 2 — `Enum.IsDefined` does NOT work for `[Flags]` enums**
 > It checks for a **single named value**, so a perfectly legal combination fails it:
@@ -5599,7 +5600,7 @@ public class Repository<T> where T : Entity      // 👈 "T is always an Entity 
     public T? GetById(int id)
         => items.FirstOrDefault(item => item.Id == id);   // ✅ now legal — T has an Id
 
-    public IReadOnlyList<T> GetAll() => items;
+    public IReadOnlyList<T> GetAll() => items.AsReadOnly();
 
     public bool Remove(int id)
     {
@@ -5626,7 +5627,7 @@ var customers = new Repository<Customer>();
 |---|---|---|
 | `where T : class` | T is a reference type | You need `null` to be valid |
 | `where T : struct` | T is a non-nullable value type | Numeric or small-value algorithms |
-| `where T : notnull` | T is never null | Dictionary keys |
+| `where T : notnull` | Non-nullable type argument; violations produce nullable-analysis warnings, not a runtime null guard | Dictionary keys |
 | `where T : new()` | T has a public parameterless constructor | You need to `new T()` |
 | `where T : SomeBaseClass` | T inherits from that class | You need its members |
 | `where T : ISomeInterface` | T implements that interface | You need its contract |
@@ -5651,8 +5652,7 @@ public class EntityFactory<T> where T : Entity, IValidatable, new()
 }
 ```
 
-> ⚠️ **Gotcha** — Order matters: `class`/`struct` first, then base class, then interfaces,
-> then `new()` last. The compiler will tell you if you get it wrong.
+> ⚠️ **Gotcha** — Use at most one primary constraint (`class`, `struct`, `notnull`, `unmanaged`) or a base-class constraint; a base-class constraint cannot be combined with `class` or `struct`. Interfaces follow, and `new()` goes last (it cannot be combined with `struct`/`unmanaged`). The compiler will tell you if you get it wrong.
 
 #### 21.5 Generic classes with interface constraints — a real example
 
@@ -6099,7 +6099,7 @@ public class Order
 {
     private readonly List<OrderItem> items = new();
 
-    public IReadOnlyList<OrderItem> Items => items;         // ✅ safe view
+    public IReadOnlyList<OrderItem> Items => items.AsReadOnly();         // ✅ safe view
 
     // ❌ public List<OrderItem> Items { get; set; }         // anyone can wreck it
 }
@@ -6692,7 +6692,7 @@ Person deep = new Person
 };
 
 deep.Address.City = "Galle";
-Console.WriteLine(original.Address.City);   // "Colombo"  ✅ untouched
+Console.WriteLine(original.Address.City);   // "Kandy"  ✅ unchanged by the deep copy
 ```
 
 ##### `with` on records — a shallow copy with changes
@@ -6708,7 +6708,7 @@ Person renamed = original with { Name = "Maria" };   // ⚠️ SHALLOW — Addre
 
 > ⚠️ **Gotcha** — `with` produces a **shallow** copy. If a record contains a mutable reference
 > type, the copy shares it. The fix: make everything the record holds **immutable too**
-> (records all the way down, or `IReadOnlyList<T>`).
+> (immutable elements and immutable collections such as `ImmutableArray<T>`). `IReadOnlyList<T>` alone is only an interface: a mutable list can implement it.
 
 ##### How to deep-copy properly
 
@@ -6758,7 +6758,7 @@ public class Person
 2. Put several `Money` objects in a `HashSet<Money>` and prove duplicates are rejected.
 3. Now delete the whole class and replace it with
    `public readonly record struct Money(decimal Amount, string Currency);`
-   Verify the tests still pass. Count the lines you saved.
+   Equality and hashing tests should still pass. A record struct does not generate `IComparable<Money>`; preserve or implement the comparison contract separately before expecting sorting tests to pass.
 
 > ### 🧭 In practice — equality, comparison, sorting, and copying
 >
@@ -6790,7 +6790,7 @@ most of the time the answer is simple once you know the questions.
 | **Equality** | By reference | By all fields | ✅ **By value** | ✅ By value |
 | **Inheritance** | ✅ Yes | ❌ No | ✅ From other records | ❌ No |
 | **Mutable?** | Your choice | Your choice (prefer no) | Prefer immutable | Prefer immutable |
-| **`with` expression** | ❌ | ❌ | ✅ | ✅ |
+| **`with` expression** | ❌ | ✅ C# 10+ | ✅ | ✅ |
 | **Auto `ToString()`** | ❌ | ❌ | ✅ | ✅ |
 | **🎯 Use for** | Entities, services | Tiny values (≤16 bytes) | DTOs, value objects | Tiny immutable values |
 
@@ -6811,7 +6811,7 @@ public class Customer
         Name = name;
     }
 
-    public IReadOnlyList<Order> Orders => orders;
+    public IReadOnlyList<Order> Orders => orders.AsReadOnly();
 
     public void Rename(string newName)
     {
@@ -7083,7 +7083,7 @@ public class Level2
     public required string Name { get; init; }
 }
 
-// ③ Record — immutable by default, plus value equality and `with`
+// ③ Positional record class — init-only properties, value equality and `with` (shallow immutability)
 public record Level3(string Name);
 ```
 
@@ -7109,7 +7109,7 @@ public record Order
     private readonly List<OrderItem> items;
 
     public int Id { get; }
-    public IReadOnlyList<OrderItem> Items => items;
+    public IReadOnlyList<OrderItem> Items => items.AsReadOnly();
 
     public Order(int id, IEnumerable<OrderItem> items)
     {
@@ -7183,7 +7183,7 @@ Console.WriteLine(JsonSerializer.Serialize(product, options));
 // }
 ```
 
-##### ⚠️ The surprise: deserialization ignores your rules
+##### ⚠️ The surprise: deserialization needs an explicit validation contract
 
 Here is the trap. This class carefully protects itself:
 
@@ -7195,7 +7195,7 @@ public class Order
     private readonly List<OrderItem> items = new();
 
     public OrderStatus Status { get; private set; } = OrderStatus.Draft;
-    public IReadOnlyList<OrderItem> Items => items;
+    public IReadOnlyList<OrderItem> Items => items.AsReadOnly();
 
     public Order(int customerId)
     {
@@ -7211,9 +7211,7 @@ public class Order
 }
 ```
 
-But a deserializer builds objects by **reflection**, not by calling your public API. Depending
-on the settings, it can set private setters and skip your validation completely — producing an
-`Order` that your own code says is impossible.
+`System.Text.Json` calls a selected constructor: here the sole public parameterized constructor validates `customerId`. It ignores private setters by default; attributes, converters and options can change what is populated. Constructor validation still does not replace validation of a complete incoming DTO and its collection contents. See [constructor selection and immutable types](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/immutability).
 
 ##### ✅ The professional solution: separate DTOs from domain objects
 
@@ -7233,7 +7231,9 @@ graph LR
 public record CreateOrderDto(int CustomerId, List<OrderItemDto> Items);
 public record OrderItemDto(int ProductId, string ProductName, int Quantity, decimal UnitPrice);
 
-// 🛡️ The mapper — the ONE place where untrusted data becomes a valid domain object.
+// 🛡️ Mapper fragment: assumes an Order.AddItem(productId, name, quantity, Money)
+// overload; adapt this call to the aggregate API in your own project.
+// This is a separate domain shape from the single-OrderItem overload above.
 public static class OrderMapper
 {
     public static Order ToDomain(CreateOrderDto dto)
@@ -7350,7 +7350,7 @@ object thing = "hello";
 string s1 = (string)thing;              // ✅ works
 // int n = (int)thing;                  // 💥 InvalidCastException
 
-// ② `as` — returns null on failure (reference types only)
+// ② `as` — returns null on failure (reference types and nullable value types)
 string? s2 = thing as string;           // "hello"
 int[]? arr = thing as int[];            // null — no exception
 
@@ -7367,7 +7367,8 @@ if (thing is string s3)
 #### 26.2 Implicit vs explicit numeric conversion
 
 ```csharp
-// ✅ IMPLICIT — always safe, no data can be lost. C# does it for you.
+// ✅ IMPLICIT — no cast required. These small values are exact; other implicit
+// conversions (such as long to double or int to float) can lose precision.
 int small = 42;
 long big = small;
 double d = small;
@@ -7671,7 +7672,7 @@ Write a `TransactionDescriber` that takes an `object` and returns a description,
 >
 > **When to use it.** When handling a closed set of shapes — parsed results, message types, a sealed hierarchy — and when interoperating with APIs that hand you `object`.
 >
-> **Where to use it.** Parsers, message handlers, and the edges of a system. **Scenario:** a `switch` expression over a sealed record hierarchy handles each message type, and adding a new type produces a compiler warning at every switch that no longer covers every case — which is the whole reason to seal the hierarchy.
+> **Where to use it.** Parsers, message handlers, and the edges of a system. **Scenario:** a `switch` expression over record subtypes makes cases readable, but C# does not treat such a hierarchy as a closed union. Adding another subtype does **not** guarantee warnings at every switch; keep a fallback and tests for supported cases.
 >
 > **When _not_ to use it.** Frequent type-testing in your *own* domain code is usually a design smell: if you are asking “what type is this?”, a `virtual` method on the type itself is normally the better answer ([Chapter 16](#16--polymorphism)). Pattern matching is for data you *receive*, polymorphism is for behaviour you *own*.
 >
@@ -7789,7 +7790,7 @@ it has checked. `null` still walks in through:
 
 | Route in | Why the compiler cannot help |
 |---|---|
-| **JSON / XML deserialisation** | Values are produced by reflection, bypassing constructors entirely |
+| **JSON / XML deserialisation** | Nullable annotations alone do not validate incoming data; constructor selection and validation depend on the serializer, options and type |
 | **Any library compiled without `<Nullable>enable</Nullable>`** | Its types are "null-oblivious" — neither nullable nor non-nullable |
 | **Reflection** (`Activator.CreateInstance`, `PropertyInfo.SetValue`) | No compile-time checking applies at all |
 | **Any use of `!`** (§27.4) | You explicitly told the compiler to stop checking |
@@ -7995,7 +7996,7 @@ var ok = new Customer { Name = "Anna", Email = "anna@x.com" };   // ✅
 ```
 
 **🎯 Use `required` when:** the value has no sensible default and you want object-initializer
-syntax. It gives you constructor-level safety without writing a constructor.
+syntax. It requires member assignment at the call site; it does not validate blank strings, ranges, or runtime nulls. Put business validation in constructors or validating accessors.
 
 > ⚠️ **Gotcha — `required` and constructors fight each other by default**
 > If you add a constructor that already sets the required members, the compiler *still* demands
@@ -8323,7 +8324,8 @@ but you must not throw the diagnostic information away.
 ```csharp
 try
 {
-    await httpClient.GetAsync(url);
+    using HttpResponseMessage response = await httpClient.GetAsync(url);
+    response.EnsureSuccessStatusCode(); // GetAsync alone does not throw for HTTP 404/500
 }
 catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
 {
@@ -8406,8 +8408,7 @@ else
 | Parsing user-supplied text | 📋 `TryParse` |
 | A business rule violation | 💥 `DomainException` — either is defensible |
 
-> ⚠️ **Performance note** — Throwing an exception costs roughly 5,000–10,000× more than returning
-> a value. In a loop or a hot path, that matters enormously. In a once-per-request path, it does not.
+> ⚠️ **Performance note** — Throwing and catching exceptions adds work compared with a normal return; the ratio depends on the runtime, stack and workload. Benchmark a hot path rather than relying on a fixed multiplier. Use exceptions for failures, not routine control flow.
 
 #### 28.9 The rules of exception handling
 
@@ -8479,7 +8480,7 @@ public static class MathHelper
     public static bool IsPrime(int number)
     {
         if (number < 2) return false;
-        for (int i = 2; i * i <= number; i++)
+        for (int i = 2; i <= number / i; i++) // avoids i * i overflow near int.MaxValue
             if (number % i == 0) return false;
         return true;
     }
@@ -9595,7 +9596,7 @@ public class Invoice
 {
     private readonly List<InvoiceLine> lines = new();
 
-    public IReadOnlyList<InvoiceLine> Lines => lines;
+    public IReadOnlyList<InvoiceLine> Lines => lines.AsReadOnly();
 
     public void AddLine(string description, decimal amount)
         => lines.Add(new InvoiceLine(description, amount));
@@ -10876,7 +10877,7 @@ public class Order
 
     // 5️⃣ Properties
     public int Id { get; }
-    public IReadOnlyList<OrderItem> Items => items;
+    public IReadOnlyList<OrderItem> Items => items.AsReadOnly();
     public decimal Total => items.Sum(i => i.LineTotal);
 
     // 6️⃣ Public methods
@@ -11660,8 +11661,10 @@ services.AddScoped<IEmailSender, SendGridEmailSender>();
 services.AddScoped<IPaymentGateway, StripePaymentGateway>();
 services.AddScoped<OrderService>();
 
-var provider = services.BuildServiceProvider();
-var orderService = provider.GetRequiredService<OrderService>();
+await using var provider = services.BuildServiceProvider(new ServiceProviderOptions
+{ ValidateScopes = true, ValidateOnBuild = true });
+await using var scope = provider.CreateAsyncScope();
+var orderService = scope.ServiceProvider.GetRequiredService<OrderService>();
 ```
 
 Everywhere else, classes just declare what they need in their constructor. No `new` of a
@@ -11897,10 +11900,12 @@ services.AddScoped<OrderService>();
 services.AddSingleton<IClock, SystemClock>();
 
 // 2️⃣ BUILD the container
-ServiceProvider provider = services.BuildServiceProvider();
+await using ServiceProvider provider = services.BuildServiceProvider(new ServiceProviderOptions
+{ ValidateScopes = true, ValidateOnBuild = true });
 
-// 3️⃣ RESOLVE — the container builds the whole object graph for you
-OrderService orderService = provider.GetRequiredService<OrderService>();
+// 3️⃣ RESOLVE scoped services within a scope, which owns their disposal.
+await using var scope = provider.CreateAsyncScope();
+OrderService orderService = scope.ServiceProvider.GetRequiredService<OrderService>();
 await orderService.PlaceOrderAsync(order);
 ```
 
@@ -12238,7 +12243,7 @@ public class CheckoutService
 
 ```csharp
 var express = new CheckoutService(new ExpressShipping());
-Console.WriteLine(express.CalculateTotal(50m, 2m));    // 17.4
+Console.WriteLine(express.CalculateTotal(50m, 2m));    // 67.4
 ```
 
 **🎯 Use when:** you have several interchangeable ways to do the same job — pricing, shipping,
@@ -13141,11 +13146,12 @@ public abstract class Entity
     public int Id { get; protected set; }
 
     public override bool Equals(object? obj)
-        => obj is Entity other
+        => ReferenceEquals(this, obj) || obj is Entity other
            && GetType() == other.GetType()
            && Id != 0
            && Id == other.Id;                 // 👈 identity, not data
 
+    // Do not change Id while this object is a key in a Dictionary or HashSet.
     public override int GetHashCode() => HashCode.Combine(GetType(), Id);
 }
 ```
@@ -13255,7 +13261,7 @@ public class Order : Entity
 
     public int CustomerId { get; }
     public OrderStatus Status { get; private set; } = OrderStatus.Draft;
-    public IReadOnlyList<OrderItem> Items => items;
+    public IReadOnlyList<OrderItem> Items => items.AsReadOnly();
     public Money Total => items.Aggregate(
         Money.Zero("USD"), (sum, item) => sum.Add(item.LineTotal));
 
@@ -13535,7 +13541,7 @@ public class Order : Entity
 {
     private readonly List<OrderItem> items = new();
     public OrderStatus Status { get; private set; }
-    public IReadOnlyList<OrderItem> Items => items;
+    public IReadOnlyList<OrderItem> Items => items.AsReadOnly();
     public void AddItem(/* ... */) { /* business rules */ }
 }
 
@@ -14398,7 +14404,7 @@ public class Order
 {
     private readonly List<OrderItem> items = new();
 
-    public IReadOnlyList<OrderItem> Items => items;
+    public IReadOnlyList<OrderItem> Items => items.AsReadOnly();
     public OrderStatus Status { get; private set; } = OrderStatus.Draft;
     public decimal Total => items.Sum(i => i.LineTotal);      // always correct
 
@@ -14462,7 +14468,7 @@ public class Order
 public class Order
 {
     private readonly List<OrderItem> items = new();
-    public IReadOnlyList<OrderItem> Items => items;
+    public IReadOnlyList<OrderItem> Items => items.AsReadOnly();
     public OrderStatus Status { get; private set; }
     public decimal Total => items.Sum(i => i.LineTotal);
 }
@@ -14586,9 +14592,7 @@ private void CheckoutButton_Click(object sender, EventArgs e)
 
 #### 44.9 🗄️ Business logic only in the database
 
-Stored procedures containing all your rules have the mirror-image problem: they cannot be unit
-tested, cannot be versioned properly with the application, and cannot be reused by anything that
-isn't a database client.
+Stored procedures can be tested and versioned alongside the application. Putting every rule in them couples those rules to the database interface and engine; weigh that trade-off against transactional enforcement and set-based work.
 
 Keep rules **in the domain**. Use the database for storage and for the things it's genuinely
 better at (set-based reporting, constraints as a safety net).
@@ -14991,8 +14995,10 @@ public abstract class Entity
     public int Id { get; protected set; }
 
     public override bool Equals(object? obj)
-        => obj is Entity other && GetType() == other.GetType() && Id != 0 && Id == other.Id;
+        => ReferenceEquals(this, obj)
+           || obj is Entity other && GetType() == other.GetType() && Id != 0 && Id == other.Id;
 
+    // Do not change Id while this object is a key in a Dictionary or HashSet.
     public override int GetHashCode() => HashCode.Combine(GetType(), Id);
 }
 ```
@@ -15127,7 +15133,7 @@ public abstract class Member : Entity
     private readonly List<Book> borrowedBooks = new();
 
     public string Name { get; }
-    public IReadOnlyList<Book> BorrowedBooks => borrowedBooks;
+    public IReadOnlyList<Book> BorrowedBooks => borrowedBooks.AsReadOnly();
     public Money OutstandingFees { get; private set; } = Money.Zero;
 
     protected Member(int id, string name)
@@ -15165,11 +15171,12 @@ public abstract class Member : Entity
     {
         ArgumentNullException.ThrowIfNull(book);
 
-        if (!borrowedBooks.Contains(book))
+        Book? borrowed = borrowedBooks.Find(candidate => candidate.Equals(book));
+        if (borrowed is null)
             throw new DomainException($"{Name} did not borrow '{book.Title}'.");
 
-        int daysLate = book.Return(today);
-        borrowedBooks.Remove(book);
+        int daysLate = borrowed.Return(today);
+        borrowedBooks.Remove(borrowed);
 
         Money fee = DailyLateFee * daysLate;
         OutstandingFees += fee;
@@ -15179,13 +15186,16 @@ public abstract class Member : Entity
 
     public void PayFees(Money amount)
     {
+        if (amount.Currency != OutstandingFees.Currency)
+            throw new DomainException("Payment currency must match outstanding fees.");
+
         if (amount.Amount <= 0)
             throw new DomainException("Payment must be positive.");
 
         if (amount.Amount > OutstandingFees.Amount)
             throw new DomainException($"Payment exceeds outstanding fees of {OutstandingFees}.");
 
-        OutstandingFees += new Money(-amount.Amount);
+        OutstandingFees += new Money(-amount.Amount, amount.Currency);
     }
 
     public override string ToString()
@@ -16068,7 +16078,7 @@ public class Thermostat
         get => target;
         set
         {
-            if (value is < 5 or > 30)
+            if (double.IsNaN(value) || value is < 5 or > 30)
                 throw new ArgumentOutOfRangeException(
                     nameof(value), value, "Target must be between 5 and 30 °C.");
             target = value;
@@ -16458,7 +16468,7 @@ public class UserProfile
     public string? Bio { get; set; }                  // genuinely optional
     public Address? Address { get; set; }             // genuinely optional
 
-    public IReadOnlyList<string> Tags => tags;        // exposed, but not mutable from outside
+    public IReadOnlyList<string> Tags => tags.AsReadOnly();        // exposed, but not mutable from outside
 
     public void AddTag(string tag)
     {

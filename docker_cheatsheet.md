@@ -126,7 +126,7 @@ Each row includes a copyable example and its use; detailed flag explanations fol
 | `docker run --rm` | Removes the container on exit; use for one-off tools/tests. | `docker run --rm alpine:3.20 echo "hello"` | Do not use when you need post-exit logs/files from its writable layer. |
 | `docker run -it` | Allocates stdin and a terminal; use for interactive shells. | `docker run --rm -it ubuntu:24.04 bash` | `-i` keeps input open; `-t` allocates a pseudo-TTY. |
 | `docker run --env/-e` | Sets runtime environment variables; use for non-secret configuration. | `docker run --rm --env LOG_LEVEL=info alpine:3.20 env`<br>`docker run --rm -e LOG_LEVEL=info alpine:3.20 env` | Prefer `--env-file .env` for local non-secret values; never commit secrets. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
-| `docker run --mount` | Attaches a volume/bind/tmpfs with explicit syntax; use for durable or host data. | `docker run --rm --mount type=volume,src=db-data,dst=/var/lib/postgresql/data postgres:16` | Prefer `--mount` over short `-v` in documentation because fields are explicit. |
+| `docker run --mount` | Attaches a volume/bind/tmpfs with explicit syntax; use for durable or host data. | `docker run --rm --mount type=volume,src=demo-data,dst=/data alpine:3.20 ls -la /data` | Prefer `--mount` over short `-v` in documentation because fields are explicit. |
 | `docker run --read-only` | Makes the root filesystem read-only; use to limit writes. | `docker run --read-only --tmpfs /tmp nginx:1.27-alpine` | Supply writable tmpfs/volumes for legitimate writes. |
 | `docker ps` | Lists running containers; use for a fast health/status view. | `docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'` | `-a` includes exited containers; `-q` outputs IDs for scripts; `--no-trunc` shows full fields. |
 | `docker start/stop/restart` | Starts, gracefully stops, or restarts existing containers; use for lifecycle changes. | `docker start web`<br>`docker stop web`<br>`docker restart web` | `-t 30` allows 30 seconds before kill; `docker start -ai job` attaches to an interactive job. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
@@ -251,6 +251,8 @@ secrets:
     file: ./secrets/db_password.txt
 ```
 
+**Before using this Compose fragment:** provide an API Dockerfile in the current build context and create the password file outside source control. The API must also receive the `db_password` secret and explicitly read `/run/secrets/db_password` when building its database connection. Setting `POSTGRES_PASSWORD_FILE` configures only the Postgres container; it does not supply the API password automatically. See the [official Postgres image contract](https://hub.docker.com/_/postgres).
+
 ## 🌐 Networking and storage
 
 > [!WARNING]
@@ -268,7 +270,7 @@ secrets:
 | `docker volume create/ls/inspect` | Creates/lists/inspects managed persistent storage; use for databases. | `docker volume create db-data`<br>`docker volume ls`<br>`docker volume inspect db-data` | Volumes outlive containers. **Each command has its own example.** Run them only on resources you own, in an order that makes sense. 
 | `docker run --mount type=volume` | Mounts Docker-managed persistent storage; use for database state and durable application data. | `docker run --rm --mount type=volume,src=db-data,dst=/data alpine:3.20 ls /data` | Docker manages the volume lifecycle and host storage location. |
 | `docker run --mount type=bind` | Mounts an existing host path into the container; use for source code or host-provided configuration. | `docker run --rm --mount type=bind,src=/absolute/host/path,dst=/workspace,readonly alpine:3.20 ls /workspace` | Replace the source with a **real absolute path** that exists on the Docker daemon host; omit `readonly` only if writes are necessary. |
-| `docker volume rm` | **⚠️** Deletes a volume and its data; use only after backup/confirmation. | `docker volume rm old-db-data` | `docker volume prune` deletes all unused volumes—review carefully. |
+| `docker volume rm` | **⚠️** Deletes a volume and its data; use only after backup/confirmation. | `docker volume rm old-db-data` | [`docker volume prune`](https://docs.docker.com/reference/cli/docker/volume/prune/) removes unused anonymous volumes by default; `--all` also includes unused named volumes. |
 | `docker volume prune` | **⚠️** Removes unused local volumes; use to reclaim disk after inspection. | `docker volume prune` | A stopped container may be your only reference to needed data. |
 
 ## 🔐 Registries, security, and Swarm
@@ -325,7 +327,7 @@ docker push "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/api:1.0"
 | 1. Verify installation | Run `docker --version` (client version), `docker info` (daemon health), then `docker run --rm hello-world` (create/run/remove a test container). |
 | 2. Find an app that exited | Run `docker ps -a` (include stopped containers), `docker logs --tail 100 NAME` (read error), then `docker inspect NAME` (check exit state/config). |
 | 3. Debug a running app | Run `docker exec -it NAME sh` (shell), `docker top NAME` (processes), and `docker stats --no-stream NAME` (one resource snapshot). |
-| 4. Publish a local service safely | Use `docker run -d --name web -p 127.0.0.1:8080:80 nginx:1.27-alpine` (bind only localhost) and `docker port api` (confirm mapping). |
+| 4. Publish a local service safely | Use `docker run -d --name web -p 127.0.0.1:8080:80 nginx:1.27-alpine` (bind only localhost) and `docker port web` (confirm mapping). |
 | 5. Persist database data | Create `docker volume create db-data`, mount with `--mount type=volume,src=db-data,dst=/var/lib/postgresql/data`, then inspect with `docker volume inspect db-data`. |
 | 6. Move an image offline | Use `docker image save -o app.tar IMAGE` (export), transfer securely, then `docker image load -i app.tar` (import). |
 | 7. Build/release an image | Run `docker build -t registry.example.com/team/api:1.0 .`, `docker login registry.example.com`, then `docker push registry.example.com/team/api:1.0`. |
